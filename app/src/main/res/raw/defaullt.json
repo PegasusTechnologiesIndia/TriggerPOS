@@ -1,0 +1,340 @@
+{
+    "address_category": [
+	{
+	    "address_category_id": "1",
+	    "device_code": "SYSTEM",
+	    "address_category_code": "AC-1",
+	    "name": "Home",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "address_category_id": "2",
+	    "device_code": "SYSTEM",
+	    "address_category_code": "AC-2",
+	    "name": "Office",
+	    "is_active": "1",
+	    "modified_by": "0"
+	}
+    ],
+    "address_type": [
+	{
+	    "address_type": "1",
+	    "name": "contact"
+	},
+	{
+	    "address_type": "2",
+	    "name": "location"
+	},
+	{
+	    "address_type": "3",
+	    "name": "outlet"
+	}
+    ],
+    "business_group": [
+	{
+	    "business_group_id": "1",
+	    "device_code": "SYSTEM",
+	    "business_group_code": "BGC-1",
+	    "parent_code": "",
+	    "name": "CUSTOMER GROUP",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "business_group_id": "2",
+	    "device_code": "SYSTEM",
+	    "business_group_code": "BGC-2",
+	    "parent_code": "",
+	    "name": "SUPPLIER GROUP",
+	    "is_active": "1",
+	    "modified_by": "0"
+	}
+    ],
+    "order_type": [
+	{
+	    "order_type_id": "1",
+	    "name": "Delivery",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "order_type_id": "2",
+	    "name": "Drive-Thru",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "order_type_id": "3",
+	    "name": "Pick-Up",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "order_type_id": "4",
+	    "name": "Take-Out",
+	    "is_active": "1",
+	    "modified_by": "0"
+	},
+	{
+	    "order_type_id": "5",
+	    "name": "Dine-In",
+	    "is_active": "1",
+	    "modified_by": "0"
+	}
+    ],
+    "payments": [
+	{
+	    "payment_id": "1",
+	    "parent_id": "0",
+	    "payment_name": "CASH",
+	    "is_active": "1",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "2",
+	    "parent_id": "0",
+	    "payment_name": "BANK CARD",
+	    "is_active": "1",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "3",
+	    "parent_id": "0",
+	    "payment_name": "LOYALTY CARD",
+	    "is_active": "0",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "4",
+	    "parent_id": "0",
+	    "payment_name": "CHEQUE",
+	    "is_active": "0",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "5",
+	    "parent_id": "0",
+	    "payment_name": "CUSTOMER ACCOUNT",
+	    "is_active": "1",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "6",
+	    "parent_id": "0",
+	    "payment_name": "PROMO CODE",
+	    "is_active": "0",
+	    "modified_by": "1"
+	},
+	{
+	    "payment_id": "7",
+	    "parent_id": "0",
+	    "payment_name": "P1",
+	    "is_active": "0",
+	    "modified_by": "0"
+	},
+	{
+	    "payment_id": "8",
+	    "parent_id": "0",
+	    "payment_name": "P2",
+	    "is_active": "0",
+	    "modified_by": "0"
+	},
+	{
+	    "payment_id": "9",
+	    "parent_id": "0",
+	    "payment_name": "P3",
+	    "is_active": "0",
+	    "modified_by": "0"
+	},
+	{
+	    "payment_id": "10",
+	    "parent_id": "0",
+	    "payment_name": "P4",
+	    "is_active": "0",
+	    "modified_by": "0"
+	},
+	{
+	    "payment_id": "11",
+	    "parent_id": "2",
+	    "payment_name": "KNET",
+	    "is_active": "0",
+	    "modified_by": "0"
+	}
+    ],
+    "setting": [
+	{
+	    "setting_id": "507",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_code_prefix",
+	    "value": "LITE_POS"
+	}, {
+	    "setting_id": "508",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "report_header",
+	    "value": "A"
+	}, {
+	    "setting_id": "509",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "report_footer",
+	    "value": "B"
+	}, {
+	    "setting_id": "510",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "customer_group_code",
+	    "value": "BGC-1"
+	}, {
+	    "setting_id": "511",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "supplier_group_code",
+	    "value": "BGC-2"
+	}, {
+	    "setting_id": "512",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_multiple_service",
+	    "value": "0"
+	}, {
+	    "setting_id": "513",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_date_format",
+	    "value": "d-m-Y"
+	}, {
+	    "setting_id": "514",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_datetime_format",
+	    "value": "d-m-Y H:i A"
+	}, {
+	    "setting_id": "515",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_mail_enable",
+	    "value": "1"
+	}, {
+	    "setting_id": "516",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_name",
+	    "value": "LIte Pos"
+	}, {
+	    "setting_id": "517",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_mail_protocol",
+	    "value": "smtp"
+	}, {
+	    "setting_id": "518",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_email",
+	    "value": "mkt@pegasustech.net"
+	}, {
+	    "setting_id": "519",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_smtp_hostname",
+	    "value": "smtpout.secureserver.net"
+	}, {
+	    "setting_id": "520",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_smtp_username",
+	    "value": "mkt@pegasustech.net"
+	}, {
+	    "setting_id": "521",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_smtp_password",
+	    "value": "NS@123456"
+	}, {
+	    "setting_id": "522",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_smtp_port",
+	    "value": "25"
+	}, {
+	    "setting_id": "523",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_smtp_timeout",
+	    "value": "5"
+	}, {
+	    "setting_id": "524",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_additional_emails",
+	    "value": "mkt@pegasustech.net, mkt@gmail.com"
+	}, {
+	    "setting_id": "525",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_sms_enable",
+	    "value": "0"
+	}, {
+	    "setting_id": "526",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_sms_url",
+	    "value": "https:\/\/control.msg91.com\/api\/sendhttp.php"
+	}, {
+	    "setting_id": "527",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_sms_auth_key",
+	    "value": "102234"
+	}, {
+	    "setting_id": "528",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_sms_sender_id",
+	    "value": "102234"
+	}, {
+	    "setting_id": "529",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_wifi_printer_enable",
+	    "value": "1"
+	}, {
+	    "setting_id": "530",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_wifi_printer_ip",
+	    "value": "192.168.1.99"
+	}, {
+	    "setting_id": "531",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "config_wifi_printer_port",
+	    "value": "9100"
+	}, {
+	    "setting_id": "532",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "offer_barcode_prefix",
+	    "value": ""
+	}, {
+	    "setting_id": "533",
+	    "location_id": "0",
+	    "code": "config",
+	    "key": "minimum_barcode_size",
+	    "value": ""
+	}
+    ],
+	"unit": [
+		{
+			"unit_id": "1",
+			"name": "Piece",
+			"code": "Pc",
+			"description": "",
+			"is_active": "1",
+			"modified_by": "0"
+		}
+	]
+}

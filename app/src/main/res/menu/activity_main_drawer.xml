@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:android="http://schemas.android.com/apk/res/android">
+
+    <group android:checkableBehavior="single">
+
+        <item
+            android:id="@+id/nav_class"
+            android:icon="@drawable/item_category"
+            android:title="Class/Category" />
+
+        <item
+            android:id="@+id/nav_destination"
+            android:icon="@drawable/destination"
+            android:title="Area/Destination" />
+
+        <item
+            android:id="@+id/nav_setup"
+            android:icon="@drawable/ticketing_setup"
+            android:title="Setup" />
+
+        <item
+            android:id="@+id/nav_ticketing"
+            android:icon="@drawable/ticketing"
+            android:title="Ticketing" />
+
+        <item
+            android:id="@+id/nav_item_category"
+            android:icon="@drawable/item_category"
+            android:title="@string/Item_Category" />
+        <item
+            android:id="@+id/nav_item"
+            android:icon="@drawable/item"
+            android:title="@string/Item" />
+
+        <item
+            android:id="@+id/nav_contact"
+            android:icon="@drawable/contact_gray"
+            android:title="@string/Contact" />
+
+        <item
+            android:id="@+id/nav_manufacture"
+            android:icon="@drawable/manufacture"
+            android:title="@string/Manufacture" />
+
+        <item
+            android:id="@+id/nav_search_order"
+            android:icon="@drawable/search_order"
+            android:title="@string/search_order" />
+
+
+        <item
+            android:id="@+id/nav_recepts"
+            android:icon="@drawable/receipt"
+            android:title="@string/Receipt" />
+
+        <item
+            android:id="@+id/nav_return"
+            android:icon="@drawable/nav_return"
+            android:title="@string/returns" />
+
+
+
+        <item
+            android:id="@+id/nav_acc"
+            android:icon="@drawable/account"
+            android:title="@string/accounts" />
+        <item
+            android:id="@+id/nav_resv"
+            android:icon="@drawable/reservation"
+            android:title="@string/reservation" />
+
+        <item
+            android:id="@+id/nav_stock_adjest"
+            android:icon="@drawable/stock_adjustment"
+            android:title="@string/stock_adjustment" />
+
+        <item
+            android:id="@+id/nav_man"
+            android:icon="@drawable/manager"
+            android:title="@string/Manager" />
+
+        <item
+            android:id="@+id/nav_purchese"
+            android:icon="@drawable/purchase"
+            android:title="@string/purchase" />
+        <!--<item-->
+            <!--android:id="@+id/nav_customer_image"-->
+            <!--android:icon="@drawable/customer_image"-->
+            <!--android:title="@string/customer_image" />-->
+
+        <item
+            android:id="@+id/nav_pay_collection"
+            android:icon="@drawable/payment_collection"
+            android:title="@string/payment_collection" />
+
+        <item
+            android:id="@+id/nav_settings"
+            android:icon="@drawable/setting"
+            android:title="@string/Settings">
+
+        </item>
+
+
+        <item
+            android:id="@+id/nav_Report"
+            android:icon="@drawable/report"
+            android:title="@string/Report" />
+
+
+        <item
+            android:id="@+id/nav_logout"
+            android:icon="@drawable/logout"
+            android:title="@string/Logout" />
+
+    </group>
+
+</menu>

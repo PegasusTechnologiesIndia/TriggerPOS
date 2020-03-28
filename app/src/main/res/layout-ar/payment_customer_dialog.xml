@@ -1,0 +1,56 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <EditText
+        android:id="@+id/edt_name"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="@string/Name"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <EditText
+        android:id="@+id/edt_mobile_dialog"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="@string/Mobile"
+        android:inputType="phone"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <EditText
+        android:id="@+id/edt_email"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="@string/Email"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+
+    <LinearLayout
+
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_marginTop="40dp">
+
+        <Button
+            android:id="@+id/btn_save"
+            style="@style/AppTheme.HorizontalButton"
+            android:text="@string/save" />
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="@string/Cancel"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+</LinearLayout>

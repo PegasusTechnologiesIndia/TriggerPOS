@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.SearchOrderActivity"
+    tools:showIn="@layout/activity_search_order"
+    android:orientation="vertical">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+    android:layout_height="45dp"
+    android:orientation="horizontal"
+        android:layout_marginTop="20dp"
+        android:layout_margin="10dp"
+  >
+
+    <EditText
+        android:id="@+id/edt_barcode"
+        android:layout_width="0dp"
+        android:layout_height="45dp"
+        android:layout_alignParentTop="true"
+         android:layout_weight="0.8"
+        android:background="@drawable/edittext_bg"
+        android:hint="Enter here"
+        android:paddingLeft="5dp"
+        />
+
+        <ImageView
+            android:id="@+id/img_search"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/order_search"
+            />
+
+</LinearLayout>
+
+
+
+    <LinearLayout
+
+        style="@style/AppTheme.HorizontalButtonLayout"
+
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="40dp"
+        android:layout_below="@+id/edt_barcode"
+        >
+
+        <Button
+            android:id="@+id/btn_scan"
+            style="@style/AppTheme.HorizontalButton"
+            android:text="Scan"
+            android:layout_weight="1"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"/>
+
+        <Button
+            android:id="@+id/btn_get_order"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="Get Order"
+            android:layout_weight="1"
+           />
+
+        <Button
+            android:id="@+id/btn_print_kot"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="Print KOT"
+            android:layout_weight="1"
+            />
+
+    </LinearLayout>
+
+    <ListView
+        android:id="@+id/list_search"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content">
+    </ListView>
+
+
+</LinearLayout>

@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<config>
+    <debug>1</debug> <!-- if need app to catch the crash info ，1 yes   0 no -->
+    <initDataBase>0</initDataBase>   <!-- if need the SDK to init database when application start  1 yes    0 no-->
+    <initServiceManager>0</initServiceManager>   <!-- if init ServiceManager in SDK   1 yes    0 no-->
+</config>
+  

@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingRight="20dp">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginRight="5dp"
+                android:layout_marginTop="5dp"
+                android:weightSum="60">
+
+                <TextView
+                    android:id="@+id/txt_sr_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_item_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+
+                <TextView
+                    android:id="@+id/txt_item_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="6"
+                    android:paddingRight="10dp"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/tax_tax_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:layout_marginRight="15dp"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_item_gp_code"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="9"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp"
+                    />
+
+
+                <TextView
+                    android:id="@+id/txt_item_gp_name"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="16"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp"
+                    android:gravity="center"
+                    android:layout_marginRight="25dp"/>
+
+                <TextView
+                    android:id="@+id/tax_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="7.8"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp"
+                    />
+
+                <TextView
+                    android:id="@+id/tax_invc_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="5.3"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+            </TableRow>
+
+        </TableLayout>
+    </LinearLayout>
+</LinearLayout>

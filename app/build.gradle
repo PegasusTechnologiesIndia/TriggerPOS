@@ -1,0 +1,70 @@
+apply plugin: 'com.android.application'
+
+android {
+
+    compileSdkVersion 28
+    buildToolsVersion '28.0.2'
+    aaptOptions.cruncherEnabled = false
+    aaptOptions.useNewCruncher = false
+    defaultConfig {
+        applicationId "org.phomellolitepos"
+        minSdkVersion 15
+        targetSdkVersion 28
+        multiDexEnabled true
+    }
+
+    buildTypes {
+        release {
+            minifyEnabled false
+            proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+        }
+    }
+
+    lintOptions {
+        abortOnError false
+        checkReleaseBuilds false
+    }
+    productFlavors {}
+}
+
+dependencies {
+    compile fileTree(include: ['*.jar'], dir: 'libs')
+    androidTestCompile('com.android.support.test.espresso:espresso-core:2.2.2', {
+        exclude group: 'com.android.support', module: 'support-annotations'
+    })
+    implementation files('libs/itextg-5.4.4.jar')
+    implementation files('libs/hoinsdk.jar')
+    implementation files('libs/sunmiscan.jar')
+    implementation files('libs/A1088SDK.jar')
+    implementation files('libs/zbar.jar')
+    implementation files('libs/jxl.jar')
+    implementation 'com.android.support:appcompat-v7:25.0.0'
+    implementation 'com.android.support:design:25.0.0'
+    implementation 'com.android.support:support-v4:25.0.0'
+    implementation 'com.android.support.constraint:constraint-layout:1.0.2'
+    implementation 'com.android.support:percent:25.0.0'
+    implementation 'org.jbundle.util.osgi.wrapped:org.jbundle.util.osgi.wrapped.org.apache.http.client:4.1.2'
+    implementation 'com.squareup.picasso:picasso:2.5.2'
+    implementation 'cn.finalteam:galleryfinal:1.4.8.7'
+    implementation 'com.sunmi:DS_Lib:1.0.2'
+    implementation 'se.emilsjolander:stickylistheaders:2.1.5'
+    implementation 'com.sun.mail:android-mail:1.5.5'
+    implementation 'com.sun.mail:android-activation:1.5.5'
+    implementation 'com.google.code.gson:gson:2.6.2'
+    implementation 'com.intuit.sdp:sdp-android:1.0.4'
+    implementation 'com.sunmi:sunmiui:1.0.2'
+    implementation 'me.srodrigo:androidhintspinner:1.0.0'
+    implementation 'com.android.support:recyclerview-v7:25.0.0'
+    testCompile 'junit:junit:4.12'
+    implementation files('libs/PGSDK_V2.1.jar')
+    implementation 'com.squareup.retrofit2:retrofit:2.2.0'
+    implementation 'com.squareup.retrofit2:converter-gson:2.2.0'
+    implementation files('libs/bcprov-jdk16-1.45.jar')
+    implementation files('libs/zbardecoder.jar')
+    provided files('extern_libs/classes.jar')
+    implementation files('libs/bw_pos_sdk2.0.19.jar')
+    implementation 'com.android.volley:volley:1.0.0'
+    implementation('me.dm7.barcodescanner:zxing:1.9.8') {
+        exclude group: 'com.google.zxing'
+    }
+}

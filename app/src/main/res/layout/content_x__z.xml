@@ -1,0 +1,493 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_x__z"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.X_ZActivity"
+    tools:showIn="@layout/activity_x__z">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+    <TableLayout
+        android:id="@+id/tableLayout1"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:shrinkColumns="*"
+        android:stretchColumns="*"
+        android:layout_marginTop="20dp"
+        tools:ignore="UselessParent">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/lbl_ob"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text="@string/Opening_Balance"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/edt_ob"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.2"
+                android:ems="10"
+                android:enabled="false"
+                android:hint=""
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="10dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/lbl_cash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text="@string/Cash"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/lbl_plus"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="+"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/edt_cash"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.1"
+                android:ems="10"
+                android:hint=""
+                android:inputType="numberDecimal"
+                android:maxLength="100"
+                android:enabled="false"
+                android:textColor="#333333"
+                android:singleLine="true"
+                android:textCursorDrawable="@drawable/edittext_cursor_color"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#333333">
+
+            </View>
+
+         </LinearLayout>
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="0dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/lbl_cash_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text=""
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+
+            <EditText
+                android:id="@+id/edt_cash_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.2"
+                android:ems="10"
+                android:enabled="false"
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+
+
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="10dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/lbl_expenses"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text="@string/Expenses"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <TextView
+                android:id="@+id/lbl_menu"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="-"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/edt_expenses"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.1"
+                android:ems="10"
+                android:enabled="false"
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+
+
+        <TableRow
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_gravity="center_vertical"
+        android:baselineAligned="false"
+        android:gravity="clip_vertical"
+        android:layout_marginTop="10dp"
+        android:weightSum="3">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="0.8"
+            android:text="@string/credit_amount"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <TextView
+
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_marginLeft="2dp"
+            android:layout_weight="0.2"
+            android:text="+"
+            android:textColor="#333333"
+            android:textSize="16sp" />
+
+        <EditText
+            android:id="@+id/edt_cr_amt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="1dp"
+            android:layout_weight="2.1"
+            android:ems="10"
+            android:enabled="false"
+            android:maxLength="100"
+            android:singleLine="true"
+            android:textColor="#333333"
+            android:textSize="16sp">
+
+        </EditText>
+
+    </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="10dp"
+            android:weightSum="3"
+            android:visibility="gone">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text="Debit Amount"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <TextView
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="-"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/edt_dr_amt"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.1"
+                android:ems="10"
+                android:enabled="false"
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#333333">
+
+            </View>
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="0dp"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/lbl_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.8"
+                android:text="@string/net_cash"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+
+            <EditText
+                android:id="@+id/edt_total"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.2"
+                android:ems="10"
+                android:enabled="false"
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+
+            </EditText>
+
+        </TableRow>
+    </TableLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#333333">
+
+        </View>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/sales_detail"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/total_sale"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:textColor="#333333"
+            android:textSize="16sp"
+            android:text=""
+            />
+
+        <TableLayout
+            android:id="@+id/ll"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+        </TableLayout>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#333333"
+            android:layout_marginTop="10dp">
+        </View>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:layout_marginTop="10dp"
+            android:weightSum="3">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="1"
+                android:text="@string/total_return"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+            <TextView
+
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text=""
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+            <EditText
+                android:id="@+id/edt_totl_return"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="1dp"
+                android:layout_weight="2.1"
+                android:ems="10"
+                android:enabled="false"
+                android:maxLength="100"
+                android:singleLine="true"
+                android:textColor="#333333"
+                android:textSize="16sp">
+            </EditText>
+
+        </TableRow>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#333333"
+            android:layout_marginTop="10dp">
+        </View>
+
+    <Button
+        android:id="@+id/btn_post"
+        style="@style/AppTheme.Button"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        android:text="@string/post1">
+    </Button>
+
+
+    <Button
+        android:id="@+id/btn_exp_print"
+        style="@style/AppTheme.Button"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        android:text="@string/Expense_Print">
+    </Button>
+
+     <Button
+            android:id="@+id/btn_xz_print"
+            style="@style/AppTheme.Button"
+            android:layout_centerHorizontal="true"
+            android:background="#403c3c"
+            android:text="@string/print_x_to_z">
+     </Button>
+
+    </LinearLayout>
+</ScrollView>

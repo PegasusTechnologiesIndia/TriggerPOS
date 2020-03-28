@@ -1,0 +1,189 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string-array name="mode_ne">
+        <item>Not encrypted</item>
+        <item>encryption</item>
+    </string-array>
+
+    <string-array name="port">
+        <item>ttyS2</item>
+    </string-array>
+
+    <string-array name="butrat">
+        <item>4800</item>
+        <item>9600</item>
+        <item>19200</item>
+        <item>38400</item>
+        <item>57600</item>
+        <item>115200</item>
+    </string-array>
+
+    <string-array name="stopbits">
+        <item>1</item>
+        <!-- <item>1.5</item> -->
+        <item>2</item>
+    </string-array>
+    <string-array name="bits">
+
+        <!--
+         <item>5</item>
+         <item>6</item>
+        -->
+        <item>7</item>
+        <item>8</item>
+    </string-array>
+
+    <string-array name="event">
+        <item>NONE</item>
+        <item>ODD</item>
+        <item>EVEN</item>
+    </string-array>
+
+    <string-array name="hz">
+        <item>1MHZ</item>
+        <item>2MHZ</item>
+        <item>3MHZ</item>
+        <item>4MHZ</item>
+        <item>6MHZ</item>
+        <item>12MHZ</item>
+    </string-array>
+
+    <string-array name="psam">
+        <item>psam1</item>
+        <item>psam2</item>
+    </string-array>
+
+    <string-array name="language">
+        <item>Unicode</item>
+        <item>Persian/Arabic</item>
+        <item>GB2312</item>
+    </string-array>
+
+    <string-array name="Printer_Type">
+        <item>--Select Printer--</item>
+        <item>PPT8525</item>
+        <item>WIFI</item>
+        <item>Bluetooth 56mm</item>
+        <item>Bluetooth 80mm</item>
+        <item>Bluetooth 100mm</item>
+        <item>PHA-POS24</item>
+        <item>PPT8527</item>
+    </string-array>
+
+    <string-array name="title">
+        <item>السيد</item>
+        <item>يغيب.</item>
+        <item>يغيب.</item>
+        <item>الآنسة.</item>
+    </string-array>
+
+    <string-array name="gender">
+        <item>الذكر</item>
+        <item>إناثا</item>
+
+    </string-array>
+
+    <string-array name="taxtype">
+        <item>معدل الإصلاح</item>
+        <item>النسبة المئوية</item>
+    </string-array>
+
+    <string-array name="project_type">
+        <item>تحديد</item>
+        <item>مستقل</item>
+        <item>غيم</item>
+    </string-array>
+
+    <string-array name="item_type">
+        <item>السلع</item>
+        <item>الخدمات</item>
+    </string-array>
+
+    <string-array name="item_tax">
+        <item>Select</item>
+        <item>مع البند</item>
+        <item>في الفاتورة</item>
+        <item>كلا</item>
+    </string-array>
+
+    <string-array name="customer_display">
+        <item>Select</item>
+        <item>A</item>
+        <item>B</item>
+    </string-array>
+
+    <string-array name="home_layout">
+        <item>List Layout</item>
+        <item>Grid Layout</item>
+        <item>Barcode Layout</item>
+    </string-array>
+
+    <string-array name="Printer_Lang">
+
+        <item>English</item>
+        <item>Arabic</item>
+        <item>Both</item>
+
+    </string-array>
+
+
+    <string-array name="Scale">
+        <!--<item>&#45;&#45;Select Scale&#45;&#45;</item>-->
+        <item>0</item>
+        <item>1</item>
+        <item>5</item>
+    </string-array>
+
+    <string-array name="qty_decimal">
+        <item>0</item>
+        <item>1</item>
+        <item>2</item>
+        <item>3</item>
+
+    </string-array>
+
+    <string-array name="commd">
+        <item>Reset the printer</item>
+        <item>Standard ASCII fonts</item>
+        <item>Compression ASCII fonts</item>
+        <item>Font does not amplify</item>
+        <item>Width and height doubled</item>
+        <item>Cancel emphasized mode</item>
+        <item>Select emphasized mode</item>
+        <item>Cancel upside-down printing</item>
+        <item>Select upside-down printing</item>
+        <item>Cancel black and white reverse display</item>
+        <item>Choose black and white reverse display</item>
+        <item>Cancel rotated 90 ° clockwise</item>
+        <item>Select rotated 90 ° clockwise</item>
+    </string-array>
+
+    <string-array name="Industry_type">
+        <item>Hotels and Restaurants</item>
+        <item>Salon and SPA</item>
+        <item>Payment Collection</item>
+        <item>Parking Solution</item>
+        <item>Retail Solution</item>
+        <!--<item>Bus Ticketing Solution</item>-->
+    </string-array>
+
+    <string-array name="tax_group">
+    <item>Select Group</item>
+    <item>CGST</item>
+    <item>SGST</item>
+    <item>IGST</item>
+    </string-array>
+
+    <string-array name="qr_type">
+        <item>Single Scan</item>
+        <item>Continues Scan</item>
+    </string-array>
+
+    <string-array name="print_memo">
+        <item>Full Invoice</item>
+        <item>Token</item>
+        <!--<item>Bus Ticketing Solution</item>-->
+    </string-array>
+
+</resources>

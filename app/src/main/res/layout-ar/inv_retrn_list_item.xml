@@ -1,0 +1,65 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txt_voucher_no"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Voucher No"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/txt_inv_no"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Invoice No"
+        android:textColor="#000000"
+        android:layout_below="@+id/txt_voucher_no"/>
+
+    <TextView
+        android:id="@+id/txt_remarks"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_inv_no"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Remarks"
+        android:textSize="16sp" />
+
+    <TextView
+        android:id="@+id/txt_date"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Date"
+        android:textColor="#ff0000" />
+
+    <TextView
+        android:id="@+id/txt_total"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Total"
+        android:textColor="#ff0000"
+        android:layout_below="@+id/txt_voucher_no"/>
+
+</RelativeLayout>

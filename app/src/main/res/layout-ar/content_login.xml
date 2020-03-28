@@ -1,0 +1,142 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_login"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.LoginActivity"
+    tools:showIn="@layout/activity_login"
+    android:background="#201713">
+
+    <ImageView
+        android:id="@+id/pegasus_image"
+        android:layout_width="150dp"
+        android:layout_height="75dp"
+        android:background="@drawable/phomello_litepos"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="15dp"
+        />
+
+
+    <TextView
+        android:id="@+id/txt_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pegasus_image"
+        android:layout_centerHorizontal="true"
+        android:text=""
+        android:textColor="#ffffff"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"/>
+
+    <EditText
+        android:id="@+id/edt_username"
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:layout_below="@+id/pegasus_image"
+        android:layout_marginTop="60dp"
+        android:background="#3e3935"
+        android:hint="@string/UserCode"
+        android:paddingLeft="10dp"
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:textColorHint="#f9f9f9" />
+
+
+    <EditText
+        android:layout_width="match_parent"
+        android:layout_height="55dp"
+        android:id="@+id/edt_userpass"
+        android:hint="@string/Password"
+        android:inputType="textPassword"
+        android:singleLine="true"
+        android:background="#3e3935"
+        android:layout_below="@+id/edt_username"
+        android:textColorHint="#f9f9f9"
+        android:textColor="#ffffff"
+        android:paddingLeft="10dp"
+        android:layout_marginTop="10dp"/>
+
+    <LinearLayout
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_below="@+id/edt_userpass"
+        android:layout_marginTop="15dp">
+
+        <Button
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:id="@+id/btn_login"
+            android:background="#e8873a"
+            android:textColor="#fffff2"
+            android:textAllCaps="false"
+            android:text="@string/login"
+            android:textSize="20sp"/>
+
+    </LinearLayout>
+
+
+
+
+    <TextView
+        android:id="@+id/txt_forgot_pswd"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="@string/Forgot_Password"
+        android:textSize="18sp"
+        android:textColor="#ffffff"
+        android:layout_marginBottom="30dp"
+        android:layout_above="@+id/txt_footer"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
+        android:id="@+id/txt_footer"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:textSize="12sp"
+        android:text="Copyright © 2017 www.PegasusTech.net. All right reserved."
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:textColor="#ffffff"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_above="@+id/txt_forgot_pswd"
+        android:gravity="center_horizontal"
+        android:visibility="visible">
+
+        <TextView
+            android:id="@+id/txt_lang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="@string/Language"
+            android:textSize="18sp"
+            android:textColor="#ffffff"
+            android:layout_marginBottom="10dp"
+            android:layout_marginLeft="15dp"
+            android:layout_marginRight="15dp"
+            />
+
+        <ToggleButton
+            android:id="@+id/tgl_btn_lang"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="17dp"
+            android:textOn="@string/Arabic"
+            android:textOff="English"
+            android:textAllCaps="false"
+            android:backgroundTint="#fb7c3e"
+            android:textColor="#ffffff"
+            />
+    </LinearLayout>
+
+
+</RelativeLayout>

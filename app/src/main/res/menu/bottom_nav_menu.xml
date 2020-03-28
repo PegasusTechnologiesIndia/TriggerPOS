@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_check_out"
+        android:enabled="true"
+        android:title="@string/Check_Out"
+        android:icon="@drawable/checkout"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_save"
+        android:enabled="true"
+        android:title="@string/save"
+        android:icon="@drawable/save"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_clear"
+        android:enabled="true"
+        android:title="@string/Clear"
+        android:icon="@drawable/clear"
+        app:showAsAction="ifRoom" />
+</menu>

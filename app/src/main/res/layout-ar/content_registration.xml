@@ -1,0 +1,223 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+            xmlns:app="http://schemas.android.com/apk/res-auto"
+            xmlns:tools="http://schemas.android.com/tools"
+            android:id="@+id/content_registration"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:paddingBottom="@dimen/activity_vertical_margin"
+            android:paddingLeft="@dimen/activity_horizontal_margin"
+            android:paddingRight="@dimen/activity_horizontal_margin"
+            android:paddingTop="@dimen/activity_vertical_margin"
+            app:layout_behavior="@string/appbar_scrolling_view_behavior"
+            tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.RegistrationActivity"
+            tools:showIn="@layout/activity_registration">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_company_name_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_company_name"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/CompanyName"
+                android:paddingLeft="10dp"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_contact_person_layout"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_contact_person"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Contact_Person"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_email_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_license_no_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_email"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Email"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_mobile_no_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_contact_person_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_mobile_no"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Mobile_No"
+                android:inputType="number"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_license_no_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_password_conf_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_license_no"
+                style="@style/AppTheme.EditText"
+                android:hint="License No.(GST/PAN No.)"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_srvc_tarf_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_password_conf_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_srvc_tarf"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Service_Tariff_Code"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/lbl_projuct_id"
+            style="@style/AppTheme.LabelText"
+            android:text="@string/Project_Type"
+            android:layout_marginTop="20dp"/>
+
+        <Spinner
+            android:id="@+id/spn_projuct_id"
+            style="@style/AppTheme.Spinner"
+            />
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#cccccc">
+
+        </View>
+
+        <TextView
+            android:id="@+id/lbl_country"
+            style="@style/AppTheme.LabelText"
+            android:text="@string/Country"/>
+
+        <Spinner
+            android:id="@+id/spn_country"
+            style="@style/AppTheme.Spinner"/>
+
+        <View
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:background="#cccccc">
+
+        </View>
+
+        <TextView
+            android:id="@+id/lbl_zone"
+            style="@style/AppTheme.LabelText"
+            android:text="@string/Zone"
+            />
+
+        <Spinner
+            android:id="@+id/spn_zone"
+            style="@style/AppTheme.Spinner"/>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_password_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/spn_zone"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_password"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Password"
+                android:inputType="textPassword"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_password_conf_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_password_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_password_conf"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Confirm_Password"
+                android:inputType="textPassword"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_address_layout"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_email_layout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_address"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Address"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:weightSum="2"
+            android:orientation="horizontal"
+            android:layout_marginTop="15dp">
+            <CheckBox
+                android:id="@+id/chk_terms"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="0.1" />
+
+            <TextView
+                android:id="@+id/txt_terms"
+                android:layout_width="wrap_content"
+                android:layout_height="30dp"
+                android:text="Terms and Conditions"
+                android:layout_weight="1.9"
+                android:gravity="center_vertical"/>
+        </LinearLayout>
+
+
+
+        <Button
+            android:id="@+id/btn_save"
+            style="@style/AppTheme.Button"
+            android:background="#403c3c"
+            android:text="@string/save"/>
+
+    </LinearLayout>
+
+</ScrollView>

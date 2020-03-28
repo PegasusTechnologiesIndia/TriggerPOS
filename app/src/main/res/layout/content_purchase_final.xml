@@ -1,0 +1,192 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.PurchaseFinalActivity"
+    tools:showIn="@layout/activity_purchase_final">
+    <TableLayout
+        android:id="@+id/tbl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="15dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="@string/ItemName"
+                android:textColor="#333333"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/edt_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.7"
+                android:enabled="false"
+                android:hint="Item Name"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="@string/Quantity"
+                android:textColor="#333333"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/edt_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.7"
+                android:hint="Quantity"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:inputType="numberDecimal"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="10dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.2"
+                android:text="@string/Price"
+                android:textColor="#333333"
+                android:textSize="18sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/edt_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.7"
+                android:hint="Price"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:inputType="numberDecimal"/>
+
+        </TableRow>
+
+
+    </TableLayout>
+
+
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="#fb7c3e"
+        android:text="Add"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:layout_below="@+id/tbl"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_add"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="55dp">
+
+    </ListView>
+
+
+    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/retail_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:menu="@menu/stock_adjestment_nav_menu" />
+</RelativeLayout>

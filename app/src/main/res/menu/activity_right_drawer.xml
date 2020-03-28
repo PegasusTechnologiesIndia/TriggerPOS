@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_tax"
+        android:icon="@drawable/tax"
+        android:title="@string/Tax" />
+    <item
+        android:id="@+id/nav_user"
+        android:icon="@drawable/customer"
+        android:title="@string/User" />
+
+    <item
+        android:id="@+id/nav_unit"
+        android:icon="@drawable/unit"
+        android:title="@string/Unit" />
+
+    <item
+        android:id="@+id/nav_database"
+        android:icon="@drawable/database"
+        android:title="@string/Database" />
+
+    <item
+        android:id="@+id/nav_loyalty"
+        android:icon="@drawable/database"
+        android:title="Loyalty Setup" />
+
+    <item
+        android:id="@+id/nav_coupon"
+        android:icon="@drawable/database"
+        android:title="Coupon Setup" />
+
+    <item
+        android:id="@+id/nav_lic"
+        android:icon="@drawable/license"
+        android:title="@string/Update_License" />
+    <item
+        android:id="@+id/nav_profile"
+        android:icon="@drawable/profile"
+        android:title="@string/Profile" />
+
+
+    <item
+        android:id="@+id/nav_support"
+        android:icon="@drawable/support"
+        android:title="@string/support" />
+
+    <item
+        android:id="@+id/nav_get_file"
+        android:icon="@drawable/get_file"
+        android:title="@string/get_files" />
+
+    <item
+        android:id="@+id/nav_send_db"
+        android:icon="@drawable/get_file"
+        android:title="@string/send_database" />
+
+    <item
+        android:id="@+id/nav_ab"
+        android:icon="@drawable/about_us"
+        android:title="@string/About" />
+</menu>

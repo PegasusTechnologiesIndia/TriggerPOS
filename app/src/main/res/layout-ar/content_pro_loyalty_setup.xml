@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ProLoyaltySetupActivity"
+    tools:showIn="@layout/activity_pro_loyalty_setup">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        android:layout_margin="10dp">
+
+       <android.support.design.widget.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_min_purchase_value"
+                style="@style/AppTheme.EditText"
+                android:hint="Min Purchase Value"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_base_value"
+                style="@style/AppTheme.EditText"
+                android:hint="Base Value"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_earn_point"
+                style="@style/AppTheme.EditText"
+                android:hint="Earn Point"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_earn_value"
+                style="@style/AppTheme.EditText"
+                android:hint="Earn Value"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+       <android.support.design.widget.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_min_redeem_value"
+                style="@style/AppTheme.EditText"
+                android:hint="Min Redeem Value"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+       <LinearLayout
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_below="@+id/ck_PIT"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton"
+                android:text="@string/save" />
+
+            <Button
+                android:id="@+id/btn_delete"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+       </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

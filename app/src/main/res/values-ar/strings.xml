@@ -1,0 +1,744 @@
+<resources>
+    <string name="app_name">Phomello-LitePOS</string>
+
+    <string name="navigation_drawer_open">Open navigation drawer</string>
+    <string name="navigation_drawer_close">Close navigation drawer</string>
+    <string name="select_printer">حدد الطابعة:</string>
+    <string name="printer_Wifi_IPPORT">عنوان بروتوكول الإنترنت :</string>
+    <string name="wifi_iphint">192.168.5.87:9100</string>
+    <string name="save">حفظ</string>
+    <string name="plsinsrtIp">يرجى إدراج إب من طابعة واي فاي</string>
+    <string name="noSet">لم يتم العثور على إعداد !!!</string>
+    <string name="savesucc">حفظ بنجاح</string>
+
+
+    <string name="wificonnect">اتصال واي فاي</string>
+    <string name="connect_to_ip_btn">الاتصال إب</string>
+    <string name="print">طباعة</string>
+    <string name="chkpriset">يرجى التحقق من إعدادات الطابعة.</string>
+
+    <string name="action_settings">إعدادات</string>
+    <string name="title_activity_item_category">ItemCategoryActivity</string>
+    <string name="title_activity_item">ItemActivity</string>
+    <string name="title_activity_recept">ReceptActivity</string>
+    <string name="title_activity_view_order">ViewOrderActivity</string>
+    <string name="title_activity_setttings">SetttingsActivity</string>
+    <string name="title_activity_profile">ProfileActivity</string>
+    <string name="title_activity_change_price">ChangePriceActivity</string>
+    <string name="title_activity_registration">RegistrationActivity</string>
+    <string name="title_activity_category_list">CategoryListActivity</string>
+    <string name="title_activity_edit_item_category">EditItemCategoryActivity</string>
+    <string name="title_activity_item_list">ItemListActivity</string>
+    <string name="title_activity_activate_email">ActivateEmailActivity</string>
+    <string name="title_activity_activate">ActivateActivity</string>
+    <string name="title_activity_retail">RetailActivity</string>
+    <string name="title_activity_mian_category_list">MianCategoryListActivity</string>
+    <string name="title_activity_payment">PaymentActivity</string>
+    <string name="title_activity_recept_detail">ReceptDetailActivity</string>
+    <string name="title_activity_test">testActivity</string>
+    <string name="title_activity_data_base">DataBaseActivity</string>
+    <string name="title_activity_report">ReportActivity</string>
+    <string name="title_activity_daily_sales">DailySalesActivity</string>
+    <string name="title_activity_item_summary">ItemSummaryActivity</string>
+    <string name="title_activity_mini_postest">MiniPOSTestActivity</string>
+    <string name="title_activity_customer">CustomerActivity</string>
+    <string name="title_activity_customer_group">CustomerGroupActivity</string>
+    <string name="title_activity_cuustomer_list">CuustomerListActivity</string>
+    <string name="title_activity_customer_list">CustomerListActivity</string>
+    <string name="title_activity_supplier_group">SupplierGroupActivity</string>
+    <string name="title_activity_supplier_group_list">SupplierGroupListActivity</string>
+    <string name="title_activity_supplier">SupplierActivity</string>
+    <string name="title_activity_supplier_list">SupplierListActivity</string>
+    <string name="title_activity_test_autocomplete">testAutocomplete</string>
+    <string name="title_activity_login">LoginActivity</string>
+    <string name="title_activity_read_json">ReadJson</string>
+    <string name="title_activity_bussiness_group">BussinessGroupActivity</string>
+    <string name="title_activity_contact">ContactActivity</string>
+    <string name="title_activity_bussiness_group_list">BussinessGroupListActivity</string>
+    <string name="title_activity_contact_list">ContactListActivity</string>
+    <string name="title_activity_bussiness_group_check_list">BussinessGroupCheckListActivity
+    </string>
+    <string name="title_activity_manufacture">ManufactureActivity</string>
+    <string name="title_activity_manufacture_list">ManufactureListActivity</string>
+    <string name="title_activity_item_check_list">ItemCheckListActivity</string>
+    <string name="title_activity_tax">TaxActivity</string>
+    <string name="title_activity_tax_list">TaxListActivity</string>
+    <string name="title_activity_order_type_list">OrderTypeListActivity</string>
+    <string name="title_activity_item_group_check_list">ItemGroupCheckListActivity</string>
+    <string name="title_activity_order_type_check_list">OrderTypeCheckListActivity</string>
+    <string name="title_activity_suppier_group_check_list">SuppierGroupCheckListActivity</string>
+    <string name="title_activity_item_wise_report">ItemWiseReportActivity</string>
+    <string name="title_activity_invoice_header_report">InvoiceHeaderReportActivity</string>
+    <string name="title_activity_category_sale_report">CategorySaleReportActivity</string>
+    <string name="login">تسجيل الدخول</string>
+    <string name="charge">الدفع</string>
+    <string name="title_activity_user_item_tax">UserItemTaxActivity</string>
+    <string name="title_activity_user_system_tax">UserSystemTaxActivity</string>
+    <string name="title_activity_user_system_discount">UserSystemDiscountActivity</string>
+    <string name="title_activity_user_sys_discount_acivity">UserSysDiscountAcivity</string>
+    <string name="title_activity_order_tax_report">OrderTaxReportActivity</string>
+    <string name="title_activity_item_tax_report">ItemTaxReportActivity</string>
+    <string name="title_activity_order_summary_report">OrderSummaryReportActivity</string>
+    <string name="title_activity_manager">ManagerActivity</string>
+    <string name="title_activity_opening_balance">OpeningBalanceActivity</string>
+    <string name="title_activity_expenses_list">ExpensesListActivity</string>
+    <string name="title_activity_expenses">ExpensesActivity</string>
+    <string name="title_activity_x__z">X_ZActivity</string>
+    <string name="title_activity_order_detail_report">OrderDetailReportActivity</string>
+    <string name="title_activity_item_detail_report">ItemDetailReportActivity</string>
+    <string name="title_activity_monthly_report">MonthlyReportActivity</string>
+    <string name="title_activity_monthly_sales_report">MonthlySalesReportActivity</string>
+    <string name="title_activity_user_llist">UserLlistActivity</string>
+    <string name="title_activity_user">UserActivity</string>
+    <string name="title_activity_bluetooth_device_list">BluetoothDeviceListActivity</string>
+    <string name="bluetooth_button_scan">مسح للأجهزة</string>
+    <string name="bluetooth_none_found">لم تجد الأجهزة</string>
+    <string name="bluetooth_select_device">حدد جهاز للاتصال</string>
+    <string name="bluetooth_scanning">جار البحث عن الأجهزة ...</string>
+    <string name="bluetooth_none_paired">لم يتم إقران أي أجهزة</string>
+    <string name="bluetooth_strLang">في</string>
+    <string name="title_activity_zclose_report">ZCloseReportActivity</string>
+    <string name="title_activity_order_tax">OrderTaxActivity</string>
+    <string name="title_activity_order_item_tax">OrderItemTaxActivity</string>
+
+    <!--//.........................//-->
+    <string name="nointernet">الإنترنت غير متوفر</string>
+    <string name="title_activity_about">AboutActivity</string>
+    <string name="activate">تفعيل</string>
+    <string name="email">البريد الإلكتروني</string>
+    <string name="bussiness_group_code">رمز مجموعة الأعمال</string>
+    <string name="bussiness_group_name">اسم مجموعة الأعمال</string>
+    <string name="delete">حذف</string>
+    <string name="finish">إنهاء</string>
+    <string name="Enterremarks">أدخل ملاحظات</string>
+    <string name="S_No">سنو.</string>
+    <string name="Code">الشفرة</string>
+    <string name="Category">الفئة</string>
+    <string name="qty">الكمية</string>
+    <string name="CostPrice">سعر الكلفة</string>
+    <string name="SalePrice">سعر البيع</string>
+    <string name="Tax">ضريبة</string>
+    <string name="Discount">خصم</string>
+    <string name="LineTotal">مجموعه الخط</string>
+    <string name="Profit">ربح</string>
+    <string name="about_contant">ليتيبوس هو الحل الأمثل لسرعة الفواتير وخدمة العملاء. نظام نقاط البيع بسيطة لجميع احتياجاتك ... ليتيبوس أمر لا غنى عنه في قطاعات التجزئة والضيافة اليوم. أنها فعالة، وسهلة الاستخدام وتنوعا. ومن المؤكد أن جعل تشغيل عملك أسهل. التي وضعتها بيغاسوس، شركة رائدة في انتاج أنظمة نقاط البيع لمجموعة واسعة من القطاعات والتطبيقات منذ العقد الماضي. من المطعم المحلي الصغير إلى الفندق الكبير، من خدمة سيارات الأجرة المحلية إلى وكالة السفر الدولية، بغض النظر عن ما هو عملك، مع برنامج ليتيبوس لدينا يمكنك تبسيط يومك إلى أنشطة الفوترة اليوم. الرموز الفورية، والفواتير السريعة، وإدارة الموظفين وخلق الخصم، كل هذا يمكن أن يتحقق بسهولة مع نظام واحد.</string>
+    <string name="ExpiryDate">تاريخ الانتهاء</string>
+    <string name="Activate">تفعيل</string>
+    <string name="Email">البريد الإلكتروني</string>
+    <string name="No_Catgy_Fnd">لم يتم العثور على فئة</string>
+    <string name="No_Report_Found">لم يتم العثور على تقرير</string>
+    <string name="Price">السعر</string>
+    <string name="Quantity">كمية</string>
+    <string name="Title">عنوان</string>
+    <string name="ContactName">اسم جهة الاتصال</string>
+    <string name="Gender">جنس</string>
+    <string name="DOB">تاريخ الميلاد / العمر</string>
+    <string name="CompanyName">اسم الشركة</string>
+    <string name="Contact_1">جهة الاتصال 1</string>
+    <string name="Email_1">البريد الإلكتروني 1</string>
+    <string name="Email_2">البريد الإلكتروني 2</string>
+    <string name="Description">وصف</string>
+    <string name="Address">عنوان</string>
+    <string name="Next">التالى</string>
+    <string name="No_Itm_Splr_Fnd">لم يتم العثور على مورد المورد</string>
+    <string name="No_Contact_Fnd">لم يتم العثور على جهة اتصال</string>
+    <string name="Date">تاريخ</string>
+    <string name="Total_Invoice">إجمالي الفاتورة</string>
+    <string name="SubTotal">جنوب إجمالي</string>
+    <string name="NetAmount">كمية الشبكة</string>
+    <string name="TableCode">رمز الجدول</string>
+    <string name="BackUp">دعم</string>
+    <string name="Push">إدفع</string>
+    <string name="Pushorders">أوامر الدفع</string>
+    <string name="ImportTable">جدول الاستيراد</string>
+    <string name="ExpenseName">اسم النفقات</string>
+    <string name="ExpenseAmount">مبلغ النفقات</string>
+    <string name="No_Expnse_Fnd">لم يتم العثور على نفقة</string>
+    <string name="InvoiceNo">رقم الفاتورة.</string>
+    <string name="Amount">كمية</string>
+    <string name="Total">مجموع</string>
+    <string name="Manufacture">صناعة</string>
+    <string name="ItemCode">رمز الصنف</string>
+    <string name="ItemName">اسم العنصر</string>
+    <string name="SKU">SKU</string>
+    <string name="Barcode">الباركود</string>
+    <string name="Is_Rtrn_Stckble">هو عودة ستوكابل</string>
+    <string name="IsService">هي الخدمة</string>
+    <string name="ItemGroupCode">رمز مجموعة العناصر</string>
+    <string name="CategoryName">اسم التصنيف</string>
+    <string name="No_Itm_Grp_Fnd">لم يتم العثور على مجموعة عناصر</string>
+    <string name="No_Itm_Fnd">لم يتم العثور على عنصر</string>
+    <string name="From">من عند</string>
+    <string name="To">إلى</string>
+    <string name="ItemGroup">مجموعة العناصر</string>
+    <string name="Item">بند</string>
+    <string name="Slct_Itm_Grp">حدد مجموعة العناصر</string>
+    <string name="Slct_Itm">حدد العنصر</string>
+    <string name="Slct_Tax">حدد الضريبة</string>
+    <string name="Generate_Report">إنشاء تقرير</string>
+    <string name="Name">اسم</string>
+    <string name="UserCode">الرقم السري للمستخدم</string>
+    <string name="Password">كلمه السر</string>
+    <string name="Forgot_Password">نسيت رقمك السري؟</string>
+    <string name="Opening_Balance">الرصيد الافتتاحي</string>
+    <string name="Expenses">نفقات</string>
+    <string name="X_Z">X-Z</string>
+    <string name="Manufacture_Code">تصنيع رمز</string>
+    <string name="Manufacture_Name">اسم التصنيع</string>
+    <string name="No_Manufacture_Fnd">لم يتم العثور على تصنيع</string>
+    <string name="Year">عام</string>
+    <string name="Month">شهر</string>
+    <string name="Monthly_sales_report">تقرير المبيعات الشهرية</string>
+    <string name="Total_Amount">المبلغ الإجمالي</string>
+    <string name="No_Order_Tpye_Fnd">لم يتم العثور على تبي</string>
+    <string name="F">F</string>
+    <string name="P">P</string>
+    <string name="Value">القيمة</string>
+    <string name="Discounted_Value">القيمة المخفضة</string>
+    <string name="Tender">مناقصة</string>
+    <string name="Change">يتغيرون</string>
+    <string name="Registration_Code">رمز التسجيل</string>
+    <string name="Contact_Person">الشخص الذي يمكن الاتصال به</string>
+    <string name="GST_PAN_LIC">GST/PAN/LIC</string>
+    <string name="Mobile_No">رقم المحمول.</string>
+    <string name="Device_No">رقم الجهاز</string>
+    <string name="Update_License">تحديث الترخيص</string>
+    <string name="Update_Profile">تحديث الملف</string>
+    <string name="No_Receipt_Found">لم يتم العثور على إيصال</string>
+    <string name="Project_Type">نوع المشروع</string>
+    <string name="Country">بلد</string>
+    <string name="Zone">منطقة</string>
+    <string name="Confirm_Password">تأكيد كلمة المرور</string>
+    <string name="Slct_category">اختر الفئة</string>
+    <string name="Daily_Sales_Report">تقرير المبيعات اليومية</string>
+    <string name="Category_Sales_Report">تقرير مبيعات الفئة</string>
+    <string name="Monthly_Report">التقرير الشهري</string>
+    <string name="Z_Close_Report">Z كلوز ريبورت</string>
+    <string name="Order_Tax">ضريبة النظام</string>
+    <string name="Order_Item_Tax">النظام البند الضرائب</string>
+    <string name="Invoice_Header_Report">تقرير رأس الفاتورة</string>
+    <string name="Item_Wise_Report">البند تقرير الحكمة</string>
+    <string name="Cancel_Order_Report">إلغاء تقرير الطلب</string>
+    <string name="Select_Printer">حدد الطابعة</string>
+    <string name="Printer_Language">لغة الطابعة</string>
+    <string name="Select_Scale">حدد مقياس</string>
+    <string name="Is_Online">متصل</string>
+    <string name="Select_Logo">حدد الشعار</string>
+    <string name="Email_Settings">إعدادات البريد الإلكتروني</string>
+    <string name="Is_Email">هو البريد الإلكتروني</string>
+    <string name="Manager_Email">إدارة البريد الإلكتروني</string>
+    <string name="Is_SMS">هو سمز</string>
+    <string name="SMS_Api_Url">سمز أبي ورل</string>
+    <string name="SMS_Auth_Key">سمز مفتاح المصادقة</string>
+    <string name="SMS_Sender_Id">سمز المرسل إد</string>
+    <string name="Tax_Name">اسم الضريبة</string>
+    <string name="Type">اكتب</string>
+    <string name="Comment">تعليق</string>
+    <string name="No_Tax_Found">لم يتم العثور على ضرائب</string>
+    <string name="User_Name">اسم المستخدم</string>
+    <string name="Max_Discount">ماكس الخصم</string>
+    <string name="No_User_Found">لم يتم العثور على المستخدم</string>
+    <string name="Cash">السيولة النقدية</string>
+    <string name="Post">بريد</string>
+    <string name="Post1">بريد</string>
+    <string name="Expense_Print">نفقة الطباعة</string>
+    <string name="Z_No">أكسيد الزنك.</string>
+    <string name="Modified_Date">تاريخ معدل</string>
+    <string name="No_Buss_Grp_Fnd">لم يتم العثور على مجموعة الأعمال</string>
+    <string name="Search">بحث</string>
+    <string name="Item_group">نوع الضريبة</string>
+    <string name="dilog_msg_cdopr">هل تريد أن تفعل عملية سحابة!</string>
+    <string name="Get">احصل على</string>
+    <string name="dilog_msg_srvropr">هل تريد الحصول على بيانات من الخادم؟</string>
+    <string name="Ok">حسنا</string>
+    <string name="snding_data_on_srvr">جار إرسال البيانات على الخادم ....</string>
+    <string name="Data_pst_succ">نشر البيانات بنجاح</string>
+    <string name="Import_CSV">استيراد ملف كسف</string>
+    <string name="Imprt_csv_dilog_msg">هل تريد استيراد فئة كسف؟</string>
+    <string name="Impting_itm_ctgry">جار استيراد فئة العنصر كسف ....</string>
+    <string name="itm_catgy_imprt_succ">البند الفئة استيراد بنجاح</string>
+    <string name="Wait_msg">انتظر....</string>
+    <string name="dilog_pst_data_on_srvr">هل تريد نشر البيانات على الخادم؟</string>
+    <string name="down_item_grp">جار تنزيل مجموعة العناصر ....</string>
+    <string name="Itm_Grp_downld">مجموعة البند تحميل!</string>
+    <string name="Itm_grp_not_fnd">لم يتم العثور على مجموعة العناصر!</string>
+    <string name="srvr_error">خطأ في الخادم!</string>
+    <string name="dwnld_item">جار تنزيل مجموعة العناصر ....</string>
+    <string name="item_dwnld">البند تحميل!</string>
+    <string name="item_not_fnd">العنصر غير موجود!</string>
+    <string name="somthing_wnt_wrng">هناك خطأ ما!</string>
+    <string name="itm_ctgry_csv_import_msg">هل تريد استيراد كسف البند؟</string>
+    <string name="Importing_item_csv">جار استيراد عنصر كسف ....</string>
+    <string name="Item_Import_Successfully">استيراد العنصر بنجاح</string>
+    <string name="About">حول</string>
+    <string name="Updating_License">جار تحديث الترخيص ....</string>
+    <string name="Not_Update_Found">لم يتم العثور على تحديث</string>
+    <string name="Updated_Successfully">تم التحديث بنجاح</string>
+    <string name="License_Not_Updated">لم يتم تحديث الترخيص</string>
+    <string name="connection_error">خطأ في الإتصال</string>
+    <string name="Invalid_Email">بريد إلكتروني خاطئ</string>
+    <string name="Device_registration">تسجيل الجهاز</string>
+    <string name="Activate_Successfully">التنشيط بنجاح</string>
+    <string name="Device_List">قائمة الأجهزة</string>
+    <string name="Bussiness_Group">مجموعة عمل</string>
+    <string name="Update_Successfully">تم التحديث بنجاح</string>
+    <string name="Record_Not_Updated">سجل لم يتم تحديثه</string>
+    <string name="Save_Successfully">حفظ بنجاح</string>
+    <string name="Record_Not_Inserted">لم يتم إدراج السجل</string>
+    <string name="Cant_Enter_Space">لا يمكن إدخال مساحة!</string>
+    <string name="Name_is_required">مطلوب اسم!</string>
+    <string name="Delete_Successfully">حذف بنجاح</string>
+    <string name="Record_Not_Deleted">سجل غير محذوف</string>
+    <string name="Select_All">اختر الكل</string>
+    <string name="Deselect_All">الغاء تحديد الكل</string>
+    <string name="Downloading_Bussiness_Group">جار تنزيل مجموعة بسينيس ....</string>
+    <string name="Bussiness_Group_Updated">مجموعة الأعمال تحديث!</string>
+    <string name="Contact_name_is_required">اسم جهة الاتصال مطلوب!</string>
+    <string name="DOB_is_required">مطلوب دوب!</string>
+    <string name="Company_name_is_required">اسم الشركة مطلوب!</string>
+    <string name="Contact_is_required">مطلوب الاتصال!</string>
+    <string name="Enter_valid_Email_ID">أدخل معرف البريد الإلكتروني صالحا</string>
+    <string name="Description_is_required">الوصف مطلوب!</string>
+    <string name="Address_is_required">العنوان مطلوب!</string>
+    <string name="Contact">اتصل</string>
+    <string name="Item_Supplier">البند المورد</string>
+    <string name="Downloading_Contact">جار تنزيل جهة الاتصال ....</string>
+    <string name="Contact_not_found">لم يتم العثور على جهة الاتصال!</string>
+    <string name="Contact_data_not_found">لم يتم العثور على بيانات الاتصال!</string>
+    <string name="Database">قاعدة البيانات</string>
+    <string name="Importing_table_csv">استيراد جدول كسف ....</string>
+    <string name="Tables_Import_Successfully">استيراد الجداول بنجاح</string>
+    <string name="Tables_Not_Import">الجداول غير استيراد</string>
+    <string name="Transaction_Clear_Successfully">تمت إزالة المعاملة بنجاح</string>
+    <string name="Database_Backup_Successfully">قاعدة بيانات النسخ الاحتياطي بنجاح\n</string>
+    <string name="Amount_is_required">المبلغ مطلوب</string>
+    <string name="Expenses_Added_Successfully">تمت إضافة النفقات بنجاح</string>
+    <string name="Expenses_Not_Added">لم تتم إضافة النفقات</string>
+    <string name="Item_name_is_required">اسم العنصر مطلوب!</string>
+    <string name="Sku_is_required">مطلوب سكو!</string>
+    <string name="Barcode_is_required">مطلوب الباركود!</string>
+    <string name="Cost_price_is_required">مطلوب سعر التكلفة!</string>
+    <string name="Sale_price_is_required">Sale price is required!</string>
+    <string name="Item_Category">العنصر فئة</string>
+    <string name="Category_name_is_required">مطلوب اسم الفئة!</string>
+    <string name="Supplier_Group">مجموعة الموردين</string>
+    <string name="Login">تسجيل الدخول</string>
+    <string name="Usercode_is_required">مطلوب رمز المستخدم!</string>
+    <string name="Password_is_required">كلمة المرور مطلوبة!</string>
+    <string name="msg_dilog_login">تسجيل الدخول....</string>
+    <string name="usercode_passwd_incorrect">رمز المستخدم أو كلمة المرور غير صحيحة</string>
+    <string name="Login_Successfully">تسجيل الدخول بنجاح</string>
+    <string name="licence_expired_msg">انتهت صلاحية الترخيص لا يمكن تسجيل الدخول</string>
+    <string name="Enter_Email">أدخل البريد الإلكتروني</string>
+    <string name="Send">إرسال</string>
+    <string name="Manager">مدير</string>
+    <string name="Manufacture_name_is_required">Manufacture name is required!</string>
+    <string name="Downloading_manufacture">جار تنزيل التصنيع ....</string>
+    <string name="Manufacture_download">Manufacture download!</string>
+    <string name="Manufacture_data_not_fnd">لم يتم العثور على بيانات التصنيع!</string>
+    <string name="OB_Added_Successfully">تمت إضافة الرصيد الافتتاحي بنجاح</string>
+    <string name="OB_Not_Added">الرصيد الافتتاحي لم تتم إضافته</string>
+    <string name="Order_Type">نوع الطلب</string>
+    <string name="Payment">دفع</string>
+    <string name="Orders_Not_Saved">لم يتم حفظ الطلبات</string>
+    <string name="Payment_Error">خطأ الدفع</string>
+    <string name="Orders_Saved_Successfully">تم حفظ الطلبات بنجاح</string>
+    <string name="Profile">الملف الشخصي</string>
+    <string name="Profile_Update">تحديث الملف الشخصي</string>
+    <string name="Profile_Not_Update">الملف الشخصي غير محدث</string>
+    <string name="Receipt">إيصال</string>
+    <string name="Receipt_Detail">استلام التفاصيل</string>
+    <string name="Registration">التسجيل</string>
+    <string name="Select">تحديد</string>
+    <string name="Standalone">مستقل</string>
+    <string name="Cloud">غيم</string>
+    <string name="Contact_person_required">الشخص المطلوب الاتصال!</string>
+    <string name="Enter_Email_Address">أدخل عنوان البريد الالكتروني!</string>
+    <string name="License_is_required">مطلوب ترخيص!</string>
+    <string name="Mobile_is_required">مطلوب موبايل!</string>
+    <string name="Cnfrm_paswrd_is_required">تأكيد كلمة المرور مطلوب!</string>
+    <string name="Cnfrm_paswrd_not_matched">تأكيد كلمة المرور غير متطابقة!</string>
+    <string name="Select_project_type">حدد نوع المشروع</string>
+    <string name="Registering">تسجيل</string>
+    <string name="Select_terms_cndtn">حدد البنود والشروط</string>
+    <string name="Terms_Condition">الشروط والأحكام</string>
+    <string name="Close">قريب</string>
+    <string name="Registration_Successfully">التسجيل بنجاح</string>
+    <string name="Not_Registered">غير مسجل</string>
+    <string name="Report">أبلغ عن</string>
+    <string name="Settings">إعدادات</string>
+    <string name="Url_is_required">مطلوب عنوان ورل!</string>
+    <string name="Key_is_required">مطلوب مفتاح!</string>
+    <string name="Sender_id_is_required">مطلوب معرف المرسل!</string>
+    <string name="Fix_Rate">معدل الإصلاح</string>
+    <string name="Percentage">النسبة المئوية</string>
+    <string name="Tax_name_is_required">مطلوب الاسم الضريبي!</string>
+    <string name="Tax_value_is_required">القيمة الضريبية مطلوبة!</string>
+    <string name="Downloading_tax">جار تنزيل الضريبة ...</string>
+    <string name="Tax_download">تحميل الضرائب!</string>
+    <string name="Tax_not_found">لم يتم العثور على الضريبة!</string>
+    <string name="User">المستعمل</string>
+    <string name="User_Name_Is_Required">اسم المستخدم مطلوب!</string>
+    <string name="Max_Discount_Is_Required">ماكس خصم مطلوب!</string>
+    <string name="Max_Discount_Validation">يجب ألا يزيد الخصم الأقصى عن 100</string>
+    <string name="Posting_on_server">جار النشر على الخادم ....</string>
+    <string name="Post_Error">حدث خطأ</string>
+    <string name="Orders_not_closed">لم يتم إغلاق الطلبات</string>
+    <string name="No_Expenses_found">لم يتم العثور على نفقات!</string>
+    <string name="No_data_fnd">لم يتم العثور على بيانات!</string>
+    <string name="ContactCode">رمز الاتصال</string>
+    <string name="Contact_2">جهة الاتصال 2</string>
+    <string name="Contact_download">الاتصال تحميل!</string>
+    <string name="Bussiness_Group_download">الأعمال مجموعة تحميل!</string>
+    <string name="Cancel">إلغاء</string>
+    <string name="Bussiness_Group_not_fnd">لم يتم العثور على مجموعة الأعمال!</string>
+    <string name="Empty_Bucket">سلة فارغة</string>
+    <string name="Logout">الخروج</string>
+    <string name="Check_Out">الدفع</string>
+    <string name="Clear">واضح</string>
+    <string name="Invoice">فاتورة</string>
+    <string name="Mr">السيد</string>
+    <string name="Miss">يغيب.</string>
+    <string name="Mrs">يغيب.</string>
+    <string name="Ms">الآنسة.</string>
+    <string name="Male">الذكر</string>
+    <string name="Female">إناثا</string>
+    <string name="Select_Table">حدد جدول</string>
+    <string name="Remarks">ملاحظات</string>
+    <string name="Select_Order_Type">حدد نوع الطلب</string>
+    <string name="Select_Contact">حدد جهة الاتصال</string>
+    <string name="Cart_is_empty">البطاقه خاليه!</string>
+    <string name="Change_price_alrt">أتليست عنصر واحد يجب أن يكون هناك في ترتيب تحرير
+</string>
+    <string name="No_Contact_Found">لم يتم العثور على جهة اتصال!</string>
+    <string name="No_Order_Type_Fnd">لم يتم العثور على نوع الطلب!</string>
+    <string name="No_Table_Fnd">لم يتم العثور على جدول!</string>
+    <string name="Clear_Transaction">محو المعاملة</string>
+    <string name="Costprice_is_required">مطلوب سعر التكلفة!</string>
+    <string name="Version">الإصدار: 2.0.1</string>
+    <string name="Daily_Sales">المبيعات اليومية</string>
+    <string name="ItemWise_Sales_Report">البند تقرير المبيعات الحكمة</string>
+    <string name="Year_is_required">مطلوب سنة!</string>
+    <string name="Monthly_Sales">المبيعات الشهرية</string>
+    <string name="Order_Tax_Report">طلب تقرير الضرائب</string>
+    <string name="Select_Customer_Display">حدد عرض العملاء</string>
+    <string name="Is_Customer_Display">هو عرض العملاء</string>
+    <string name="Z_Code">الشفرة</string>
+    <string name="Item_Group_Name">اسم مجموعة العنصر</string>
+    <string name="Tax_Amount">قيمة الضريبة</string>
+    <string name="Invoice_Amount">قيمة الفاتورة</string>
+    <string name="Order_ID">رقم التعريف الخاص بالطلب</string>
+    <string name="Order_Status">حالة الطلب</string>
+    <string name="Tax_Value">القيمة الضريبية</string>
+    <string name="Order_Total">الطلب الكلي</string>
+    <string name="Order">طلب</string>
+    <string name="POS_No">لحم.</string>
+    <string name="Order_No">رقم الطلب</string>
+    <string name="Order_Date">تاريخ الطلب</string>
+    <string name="Cashier">أمين الصندوق</string>
+    <string name="Total_Tax">مجموع الضريبة</string>
+    <string name="Mobile">التليفون المحمول</string>
+    <string name="Total_Discount">إجمالي الخصم</string>
+    <string name="Signature">التوقيع</string>
+    <string name="Pdf_Created_Successfully">بدف تم إنشاؤها بنجاح</string>
+    <string name="PDF_validation">لا التطبيق متاح لعرض قوات الدفاع الشعبي
+</string>
+    <string name="Category_Code">رمز الفئة</string>
+    <string name="Language">اللغة:</string>
+    <string name="Arabic">Arabic</string>
+    <string name="hsn_code">هسن / ساك رمز</string>
+    <string name="Item_Type">نوع العنصر</string>
+    <string name="Unit">وحدة</string>
+    <string name="select_item_type">حدد نوع العنصر</string>
+    <string name="hsn_is_required">مطلوب هسن!</string>
+    <string name="Service_Tariff_Code">رمز تعرفة الخدمة</string>
+    <string name="gstn">GSTN</string>
+    <string name="gstn_is_required">مطلوب غستن</string>
+    <string name="Search_Here">ابحث هنا</string>
+    <string name="item_tax">ضريبة البند</string>
+    <string name="select_item_tax">حدد ضريبة البند</string>
+    <string name="hsn_print">طباعة هسن</string>
+    <string name="enter_here">أدخل هنا</string>
+    <string name="field_vaccant">الوظيفة الشاغرة</string>
+    <string name="password_is_wrong">كلمة المرور غير صحيحة</string>
+    <string name="reset">إعادة تعيين</string>
+    <string name="quantity_decimal">الكمية العشرية</string>
+    <string name="Item_Tax">ضريبة البند</string>
+    <string name="no_item_tax_found">لم يتم العثور على ضريبة على العنصر
+</string>
+    <string name="price_including_tax">السعر بما في ذلك الضرائب
+</string>
+    <string name="enter_print_footer_text_here">أدخل نص تذييل الطباعة هنا
+</string>
+    <string name="no_reservation_found">لم يتم العثور على حجز</string>
+    <string name="reservation">حجز</string>
+    <string name="customer_image">صورة العميل</string>
+    <string name="select_customer_display">حدد عرض العملاء</string>
+    <string name="do_u_want_to_delete">هل تريد حذف العنصر المحدد؟</string>
+    <string name="Browse_Image_First">تصفح الصورة أولا</string>
+    <string name="No_data_in_list">لا توجد بيانات في القائمة</string>
+    <string name="edit">تصحيح</string>
+    <string name="invoice">فاتورة</string>
+    <string name="do_u_want_to_genert">هل تريد تعديل أو إنشاء فاتورة؟</string>
+    <string name="payment_collection">الدفع المجموعة</string>
+    <string name="name">Name</string>
+    <string name="bank_name">اسم البنك</string>
+    <string name="customer_name">اسم الزبون</string>
+    <string name="cheque_no">رقم الشيك</string>
+    <string name="select_customer">حدد العميل</string>
+    <string name="import_bank">الحصول على تفاصيل البنك</string>
+    <string name="payment_method">طريقة الدفع او السداد</string>
+    <string name="on_account">على حساب</string>
+    <string name="bank_detail_succ">بانك ديتايل تم تحميله بنجاح</string>
+    <string name="Bank_detail_not_found">لم يتم العثور على تفاصيل البنك</string>
+    <string name="no_collection_found">لم يتم العثور على مجموعة</string>
+    <string name="customer_code">رمز العميل</string>
+    <string name="Payment_Collection_Report">تقرير تحصيل الدفعات</string>
+    <string name="split">انشق، مزق</string>
+    <string name="done">فعله</string>
+    <string name="select_image">اختر صورة</string>
+    <string name="industry_type">نوع الصناعة</string>
+    <string name="post1">بريد</string>
+    <string name="device_name">اسم الجهاز</string>
+    <string name="downloading_paycollection">جارٍ تنزيل مجموعة الدفع ...</string>
+    <string name="pay_dwnlod_sucfly">تحميل مجموعة الدفع بنجاح</string>
+    <string name="Data_not_found">لم يتم العثور على بيانات</string>
+    <string name="sync">مزامنة</string>
+    <string name="sync_data_from_server">هل تريد مزامنة البيانات من الخادم؟
+</string>
+    <string name="device_code">رمز الجهاز</string>
+    <string name="order_payment_report">طلب تقرير الدفع</string>
+    <string name="excel_export_succ">تم تصدير Excel بنجاح</string>
+    <string name="excel_export_error">خطأ في تصدير Excel</string>
+    <string name="time">زمن</string>
+    <string name="total_cash">مجموع المبالغ النقدية</string>
+    <string name="initialize">تهيئة</string>
+    <string name="all_data_sync">جميع مزامنة البيانات</string>
+    <string name="Data_sync_succ">مزامنة البيانات بنجاح</string>
+    <string name="print_x_to_z">طباعة X إلى Z</string>
+    <string name="no_unit_found">لا توجد وحدة</string>
+    <string name="unit_name">إسم الوحدة</string>
+    <string name="unit_code">كود الوحدة</string>
+    <string name="Unit_is_required">الوحدة مطلوبة</string>
+    <string name="Unit_Download">تحميل الوحدة</string>
+    <string name="Unit_not_found">الوحدة غير موجودة</string>
+    <string name="downloading_unit">جارٍ تنزيل الوحدة ....</string>
+    <string name="no_permission_found">لا يوجد اذن</string>
+    <string name="search_order">ترتيب البحث</string>
+    <string name="delivery_report">إشعار بالإستلام</string>
+    <string name="item_category_report">تقرير فئة العنصر</string>
+    <string name="item_report">تقرير البند</string>
+    <string name="contact_group_report">تقرير فريق الاتصال</string>
+    <string name="contact_report">تقرير الاتصال</string>
+    <string name="Tax_Report">تقرير الضرائب</string>
+    <string name="user_report">تقرير المستخدم</string>
+    <string name="india_gst_report">الهند تقرير ضريبة السلع والخدمات
+</string>
+    <string name="gst_sale_register_report">تقرير الرأس
+</string>
+    <string name="order_tax_report">طلب تقرير الضريبة</string>
+    <string name="tax_group">مجموعة الضرائب
+</string>
+    <string name="enter_mobile_number">أدخل رقم الجوال</string>
+    <string name="get_customer">الحصول على العملاء</string>
+    <string name="support_menu">قائمة الدعم</string>
+    <string name="support">الدعم</string>
+    <string name="get_files">الحصول على الملفات</string>
+    <string name="item_wise_report">البند تقرير الحكمة</string>
+    <string name="Order_Not_Found">لم يتم العثور على الطلب</string>
+    <string name="customer">زبون</string>
+    <string name="accounts">حسابات</string>
+    <string name="order_item_report">تقرير بند الطلب</string>
+    <string name="sales_by_item_report">مبيعات حسب بند تقرير</string>
+    <string name="order_item_gst_report">تقرير بند الطلب</string>
+    <string name="item_profit_report">تقرير الربح البند</string>
+    <string name="customer_credit_collection_report">تقرير جمع الائتمان للعملاء</string>
+    <string name="host">مضيف</string>
+    <string name="port">ميناء</string>
+    <string name="Location_Stock_Sync">موقع مزامنة الأسهم</string>
+    <string name="Downloading_data">تنزيل البيانات .....</string>
+    <string name="No_Data_Found">لاتوجد بيانات</string>
+    <string name="data_dwld_sufly">تحميل البيانات بنجاح</string>
+    <string name="stock_adjustment">التعديل الأسهم</string>
+    <string name="returns">إرجاع</string>
+    <string name="purchase">شراء</string>
+    <string name="send_database">إرسال قاعدة البيانات</string>
+    <string name="GetData">احصل على</string>
+    <string name="class_category">الطبقة / الفئة</string>
+    <string name="area_destination">المنطقة / البلد</string>
+    <string name="total_qty">إجمالي الكمية</string>
+    <string name="return_qty">عودة الكمية</string>
+    <string name="parent_category">القسم الرئيسي</string>
+    <string name="item_group_code_auto_generated">رمز مجموعة البنود (مولود آليًا)</string>
+    <string name="Checkout">الدفع</string>
+    <string name="no_of_print">لا من الطباعة</string>
+    <string name="list_limit">حد القائمة</string>
+    <string name="list_limit_like_50">حد القائمة مثل 50</string>
+    <string name="print_memo">مذكرة الطباعة</string>
+    <string name="is_cash_drawer">هو درج النقود</string>
+    <string name="home_layout">تخطيط المنزل</string>
+    <string name="default_order_type">نوع الطلب الافتراضي</string>
+    <string name="is_denomination">هو طائفة</string>
+    <string name="is_barcode_print">هو طباعة الباركود</string>
+    <string name="is_discount">هو الخصم</string>
+    <string name="is_print_kot">هل طباعة KOT</string>
+    <string name="is_print_invoice">هو طباعة الفاتورة</string>
+    <string name="is_file_share">هو مشاركة الملفات</string>
+    <string name="is_accounts_show">هو عرض الحسابات</string>
+    <string name="is_stock_manage">هو إدارة المخزون</string>
+    <string name="is_zero_stock_item_show">هو صفر البند الأسهم المعرض</string>
+    <string name="is_change_price">هو سعر التغيير</string>
+    <string name="is_show_z_detail_in_report">
+هو عرض Z-Detail In Report</string>
+    <string name="is_show_device_customer">هو إظهار العميل الجهاز</string>
+    <string name="is_direct_print">هي الطباعة المباشرة</string>
+    <string name="is_qr_code_scanner_show">
+هو عرض رمز الاستجابة السريعة الماسح الضوئي</string>
+    <string name="is_cost_price_show">هو عرض سعر التكلفة</string>
+    <string name="customer_debit_amount">مبلغ الخصم من العملاء</string>
+    <string name="always_debit">دائما الخصم</string>
+    <string name="always_cash">دائما نقدا</string>
+    <string name="based_on_parameter">على أساس المعلمة</string>
+    <string name="gst_no">رقم ضريبة السلع والخدمات</string>
+    <string name="gst_label">تسمية GST</string>
+    <string name="print_order">طلب طباعة</string>
+    <string name="print_cashier">طباعة أمين الصندوق</string>
+    <string name="print_invoice_no">طباعة الفاتورة لا</string>
+    <string name="print_invoice_date">تاريخ طباعة الفاتورة</string>
+    <string name="print_device_id">طباعة معرف الجهاز</string>
+    <string name="sequence_number">رقم التسلسل</string>
+    <string name="get_payment_methods">الحصول على طرق الدفع</string>
+    <string name="item_code_auto_generated">رمز البند (مولود آليًا)</string>
+    <string name="net_cash">صافي النقد
+</string>
+    <string name="Import_Function">وظيفة الاستيراد</string>
+    <string name="contact_code_auto_generated">رمز الاتصال (السيارات التي تم إنشاؤها)
+</string>
+    <string name="other_information">معلومات أخرى</string>
+    <string name="customer_return">عودة العملاء</string>
+    <string name="invoice_return">فاتورة العودة</string>
+    <string name="return_option">خيار العودة</string>
+    <string name="voucher_no_auto_generated">قسيمة رقم (السيارات التي تم إنشاؤها)
+</string>
+    <string name="invoice_no">رقم الفاتورة.
+</string>
+    <string name="no_return_found">لم يتم العثور على عائد
+</string>
+    <string name="Return">إرجاع
+</string>
+    <string name="add">إضافة</string>
+    <string name="enter_qty">أدخل الكمية
+</string>
+    <string name="customer_server_balance">رصيد خادم العملاء
+</string>
+    <string name="customer_local_balance">الرصيد المحلي للعملاء
+</string>
+    <string name="paid_amount">المبلغ المدفوع
+</string>
+    <string name="paid">دفع</string>
+    <string name="credit_amount">مبلغ الائتمان
+</string>
+    <string name="total_return">عودة كاملة
+</string>
+    <string name="sales_detail">مبيعات التفاصيل
+</string>
+    <string name="qr_scanning">مسح QR</string>
+    <string name="summary_report">تقرير ملخص
+</string>
+    <string name="header_report">تقرير الرأس
+</string>
+    <string name="detail_report">تقرير التفاصيل
+</string>
+    <string name="accounts_report">تقرير الحسابات
+</string>
+    <string name="purchase_report">تقرير الشراء
+</string>
+    <string name="master_report">تقرير ماجستير
+</string>
+    <string name="item_tax_report">تقرير ضريبة البند
+</string>
+    <string name="header">رأس</string>
+    <string name="summary_by_item">ملخص حسب البند
+</string>
+    <string name="summary_by_supplier_payment">ملخص بواسطة المورد الدفع
+</string>
+    <string name="low_stock_report">تقرير انخفاض المخزون
+</string>
+    <string name="stock_report">تقرير الاسهم
+</string>
+    <string name="customer_statement_report">تقرير بيان العملاء
+</string>
+    <string name="customer_summery_report">تقرير صيفي العملاء
+</string>
+    <string name="clear_filter">مرشح واضح
+</string>
+    <string name="report_viewer">عارض التقرير
+</string>
+    <string name="total2">مجموع :
+</string>
+    <string name="do_you_want_to_delete">هل تريد أن تحذف؟
+</string>
+    <string name="user_permission">إذن المستخدم
+</string>
+    <string name="UpdateSuccessfully">تحديث بنجاح
+</string>
+    <string name="SaveSuccessfully">حفظ بنجاح
+</string>
+    <string name="Dywntclearformserver">هل تريد مسح خادم النموذج؟
+</string>
+    <string name="ClearTransaction">مسح المعاملات
+</string>
+    <string name="PassIsRequired">كلمة المرور مطلوبة
+</string>
+    <string name="ClearTrasactionLocally">هل أنت متأكد من أنك تريد trasaction واضح محليا؟
+</string>
+    <string name="yes">نعم فعلا
+</string>
+    <string name="no">لا</string>
+    <string name="enter_password">أدخل كلمة المرور
+</string>
+    <string name="BankDetailDnlding">تنزيل تفاصيل البنك
+</string>
+    <string name="Syncdataserver">مزامنة البيانات على الخادم ...
+</string>
+    <string name="GettingData">الحصول على البيانات...
+</string>
+    <string name="Paymddownld">تم تنزيل طريقة الدفع بنجاح
+</string>
+    <string name="Paymethodsnotfound">طرق الدفع غير موجودة
+</string>
+    <string name="get_profile">الحصول على الملف الشخصي
+</string>
+    <string name="location">موقعك</string>
+    <string name="DownloadServerData">تنزيل بيانات الخادم ....
+</string>
+    <string name="FilesDownloadSucc">تحميل الملفات بنجاح
+</string>
+    <string name="PressAgainexit">اضغط مرة أخرى للخروج
+</string>
+    <string name="BackupSuccCreated">Backup successfully created</string>
+    <string name="customer_sale_price">سعر بيع العملاء
+</string>
+    <string name="Amount2">كمية :
+</string>
+    <string name="File10KB">يجب أن يكون الملف أقل من 10 كيلو بايت
+</string>
+    <string name="Canparent">لا يمكن أن تجعل نفس الفئة كوالد
+</string>
+    <string name="AlreadyChild">بالفعل طفل من هذه الفئة
+</string>
+    <string name="Alreadyothercategory">الأم بالفعل من فئة أخرى
+</string>
+    <string name="AlreadyChildthiscategory">بالفعل طفل من هذه الفئة
+</string>
+    <string name="categoryDeleteMessage">هذه الفئة تستخدم للعناصر الحالية ، هل ما زلت تريد حذفها؟ إذا كانت الإجابة بنعم في حالة إزالة هذه الفئة من العنصر ذي الصلة وتحتاج إلى إعادة تحديد فئة أخرى لتلك العناصر.
+</string>
+    <string name="test_email">البريد الإلكتروني اختبار
+</string>
+    <string name="test_sms">اختبار الرسائل القصيرة
+</string>
+    <string name="email_separator">Multiple email use \',\' for email separator</string>
+    <string name="reset_settings">Reset Settings</string>
+    <string name="Reset_Succ">Reset Successful!</string>
+    <string name="scan_here">Scan Barcode Here...</string>
+</resources>

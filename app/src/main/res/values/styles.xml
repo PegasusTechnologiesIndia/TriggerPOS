@@ -1,0 +1,318 @@
+<resources>
+
+    <!-- Base application theme. -->
+    <style name="AppTheme" parent="Theme.AppCompat.Light.DarkActionBar">
+        <!-- Customize your theme here. -->
+        <item name="colorPrimary">@color/colorPrimary</item>
+        <item name="colorPrimaryDark">@color/colorPrimaryDark</item>
+        <item name="colorAccent">@color/colorAccent</item>
+    </style>
+
+    <style name="AppTheme.NoActionBar">
+        <item name="windowActionBar">false</item>
+        <item name="windowNoTitle">true</item>
+    </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
+
+    <style name="AppTheme.PopupOverlay" parent="ThemeOverlay.AppCompat.Light" />
+
+    <style name="TextAppearence.App.TextInputLayout" parent="@android:style/TextAppearance">
+
+        <item name="android:textColor">#333333</item>
+
+
+    </style>
+
+
+    <style name="Theme.AlertDialog" parent="@android:style/Theme.Holo.Light.Dialog">
+        <item name="android:background">@android:color/transparent</item>
+        <item name="android:textColor">#659F26</item>
+        <!--<item name="android:windowTitleStyle">@style/Theme.AlertDialog.Title</item>-->
+    </style>
+
+    <!--.................................My Style...........................................-->
+
+
+    <!--this is floating edittext style  -->
+
+    <style name="AppTheme.EditText">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+        <item name="android:textSize">16sp</item>
+    </style>
+
+    <!--this is text input layout style  -->
+
+    <style name="AppTheme.TextInputLayout">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">#C0C0C0</item>
+        <item name="android:textSize">15dp</item>
+
+    </style>
+
+    <!--this is text label style  -->
+    <style name="AppTheme.LabelText">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">17sp</item>
+
+    </style>
+
+    <!--this is spinner style  -->
+    <style name="AppTheme.Spinner">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:textColor">#808080</item>
+
+
+    </style>
+
+
+    <!--this is button style  -->
+    <style name="AppTheme.Button">
+
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">30dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+
+    </style>
+
+
+    <!--this is simple edittext style  -->
+    <style name="AppTheme.SimpleEditText">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">42dp</item>
+        <item name="android:textSize">18sp</item>
+        <item name="android:background">@drawable/edittext_bg</item>
+
+    </style>
+
+
+    <!--this is No list found text style  -->
+    <style name="AppTheme.NoListfoundText">
+
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_alignParentTop">true</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#C0C0C0</item>
+        <item name="android:visibility">invisible</item>
+        <item name="android:textSize">30dp</item>
+
+    </style>
+
+
+    <!--this is footer button layout style  -->
+
+    <style name="AppTheme.FooterButtonLayout">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_horizontal</item>
+        <item name="android:layout_marginBottom">1dp</item>
+
+    </style>
+
+
+    <!--this is footer button style  -->
+
+    <style name="AppTheme.FooterButton">
+
+        <item name="android:layout_width">178dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:background">#181717</item>
+        <item name="android:textColor">#ffffff</item>
+
+    </style>
+
+
+    <!--this is toolbar edittext style  -->
+
+    <style name="AppTheme.ToolbarEditText">
+
+        <item name="android:layout_width">230dp</item>
+        <item name="android:layout_height">45dp</item>
+        <item name="android:background">#ffffff</item>
+        <item name="android:textColor">#000000</item>
+        <item name="android:paddingLeft">5dp</item>
+
+
+    </style>
+
+    <!--this is horizontal button layout style  -->
+
+    <style name="AppTheme.HorizontalButtonLayout">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:gravity">center_horizontal</item>
+
+    </style>
+
+
+    <!--this is horizontal button style  &ndash;&gt;-->
+
+    <style name="AppTheme.HorizontalButton">
+
+        <item name="android:layout_width">140dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">16sp</item>
+
+    </style>
+
+
+    <style name="AppTheme.SearchHintColor">
+
+        <item name="android:textColorHint">#f0f0f0</item>
+
+    </style>
+
+
+    <!--...................this is Plus Minus layout and button styling............................... -->
+
+    <style name="AppTheme.PlusMinusLayout">
+
+        <item name="android:layout_width">286dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">60dp</item>
+        <item name="android:background">@drawable/edittext_bg</item>
+
+    </style>
+
+    <style name="AppTheme.PlusMinusButton">
+
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#ffffff</item>
+
+    </style>
+
+
+    <style name="AppTheme.PlusMinusEdittext">
+
+        <item name="android:layout_width">145.5dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+
+    </style>
+
+
+    <!--...................this is Plus Minus layout and button styling for ticking payment............................... -->
+
+    <style name="AppTheme.PlusMinusLayouttc">
+
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">60dp</item>
+        <item name="android:background">@drawable/edittext_bg</item>
+
+    </style>
+
+    <style name="AppTheme.PlusMinusButtontc">
+
+        <item name="android:layout_width">50dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#ffffff</item>
+
+    </style>
+
+
+    <style name="AppTheme.PlusMinusEdittexttc">
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textAlignment">center</item>
+        <item name="android:background">#FFFFFF</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+
+    </style>
+
+
+    <!--this is list view style -->
+
+    <style name="AppTheme.ListView">
+
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">fill_parent</item>
+        <item name="android:dividerHeight">0.5dp</item>
+        <item name="android:divider">#000000</item>
+
+    </style>
+
+
+    <!--this is Text size style -->
+
+    <style name="AppTheme.ListItemTextSize">
+
+        <item name="android:textSize">18sp</item>
+
+    </style>
+
+
+    <!--this is Spinner Item style -->
+
+    <style name="AppTheme.SpinnerTextSize">
+
+        <item name="android:layout_width">fill_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">16sp</item>
+        <item name="android:textColor">#555555</item>
+
+    </style>
+
+
+    <!--this is Database button style -->
+
+    <style name="AppTheme.DatabaseButton">
+
+        <item name="android:layout_width">160dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+
+
+    </style>
+
+
+    <style name="AppTheme.WhiteAccent">
+        <item name="colorAccent">@color/white</item> <!-- Whatever color you want-->
+    </style>
+
+
+</resources>

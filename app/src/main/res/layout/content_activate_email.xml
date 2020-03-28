@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_activate_email"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ActivateEmailActivity"
+    tools:showIn="@layout/activity_activate_email">
+
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/edt_layout_email"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="40dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        style="@style/AppTheme.TextInputLayout"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+        <EditText
+            android:id="@+id/edt_email"
+            android:hint="@string/Email"
+            style="@style/AppTheme.EditText"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+    <android.support.design.widget.TextInputLayout
+        android:id="@+id/edt_layout_regis"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_below="@+id/edt_layout_email"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+        <EditText
+            android:id="@+id/edt_regis_code"
+            android:hint="@string/Registration_Code"
+            style="@style/AppTheme.EditText"
+            />
+
+    </android.support.design.widget.TextInputLayout>
+
+
+    <Button
+        android:id="@+id/btn_save"
+        android:text="Activate"
+        android:layout_below="@+id/edt_layout_regis"
+        android:layout_marginTop="40dp"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        style="@style/AppTheme.Button"/>
+
+
+</RelativeLayout>

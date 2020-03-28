@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+
+    <item
+        android:id="@+id/action_order_type"
+        android:enabled="true"
+        android:title="@string/Order_Type"
+        app:showAsAction="always|withText" />
+    <item
+        android:id="@+id/action_category"
+        android:enabled="true"
+        android:title="@string/Contact"
+        app:showAsAction="ifRoom"
+        android:icon="@drawable/contact1"
+        />
+    <item
+        android:id="@+id/action_music"
+        android:enabled="true"
+        android:title="@string/Order"
+        android:icon="@drawable/receipt_bottom"
+        app:showAsAction="ifRoom" />
+
+    <item
+        android:id="@+id/action_reset"
+        android:enabled="true"
+        android:title="@string/reset"
+        android:icon="@drawable/reset"
+        app:showAsAction="ifRoom" />
+
+</menu>

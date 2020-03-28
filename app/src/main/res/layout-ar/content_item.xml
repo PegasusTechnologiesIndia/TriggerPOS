@@ -1,0 +1,288 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_item"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginTop="60dp"
+    tools:context="org.phomellolitepos.ItemActivity"
+    tools:showIn="@layout/activity_item">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/lbl_spinner"
+            style="@style/AppTheme.LabelText"
+            android:layout_marginTop="30dp"
+            android:text="@string/Category" />
+
+        <Spinner
+            android:id="@+id/spinner_item_category"
+            style="@style/AppTheme.Spinner"
+            android:paddingLeft="30dp"
+            android:paddingRight="30dp"
+            android:inputType="text"
+            android:foreground="@drawable/border"
+            >
+
+        </Spinner>
+
+
+        <TextView
+            android:id="@+id/lbl_spinner_manufacture"
+            style="@style/AppTheme.LabelText"
+            android:layout_marginTop="15dp"
+            android:text="@string/Manufacture"
+            android:visibility="gone"/>
+
+        <Spinner
+            android:id="@+id/spinner_manufacture"
+            style="@style/AppTheme.Spinner"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text"
+            android:visibility="gone">
+
+        </Spinner>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_code"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_code"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/item_code_auto_generated" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_name"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+
+            >
+
+            <EditText
+                android:id="@+id/edt_item_name"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/ItemName" />
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_sku"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+
+            >
+
+            <EditText
+                android:id="@+id/edt_item_sku"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/SKU" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_barcode"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_barcode"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Barcode" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_hsn_code"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_hsn_code"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/hsn_code" />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <TextView
+            android:id="@+id/lbl_spn_item_type"
+            style="@style/AppTheme.LabelText"
+            android:layout_marginTop="15dp"
+            android:text="@string/Item_Type" />
+
+        <Spinner
+            android:id="@+id/spinner_item_type"
+            style="@style/AppTheme.Spinner"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text">
+
+        </Spinner>
+
+        <TextView
+            android:id="@+id/lbl_spn_item_unit"
+            style="@style/AppTheme.LabelText"
+            android:layout_marginTop="15dp"
+            android:text="@string/Unit" />
+
+        <Spinner
+            android:id="@+id/spinner_item_unit"
+            style="@style/AppTheme.Spinner"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text">
+
+        </Spinner>
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_description"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_description"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/Description"
+
+                />
+
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/ck_stockable"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/Is_Rtrn_Stckble"
+            android:visibility="gone"/>
+
+        <CheckBox
+            android:id="@+id/ck_service"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/IsService"
+            android:visibility="gone"/>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_cost_price"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_marginTop="10dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_cost_price"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/CostPrice"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true">
+            </EditText>
+
+        </android.support.design.widget.TextInputLayout>
+
+
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_sales_price"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_sales_price"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/SalePrice"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </android.support.design.widget.TextInputLayout>
+
+        <CheckBox
+            android:id="@+id/ck_PIT"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="@string/price_including_tax" />
+        <View
+            android:id="@+id/view1"
+            android:layout_width="match_parent"
+            android:layout_height="0.5dp"
+            android:layout_below="@+id/img_logo"
+            android:layout_marginTop="20dp"
+            android:background="#333333">
+
+        </View>
+
+        <TextView
+            android:id="@+id/lbl_logo"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="5dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/select_image"
+            android:textStyle="bold"
+            android:textSize="17sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp">
+
+            <ImageView
+                android:id="@+id/img_logo_add"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/is_logo"
+                android:layout_marginLeft="10dp"
+                android:layout_marginTop="15dp"
+                android:background="@drawable/plus_icon" />
+
+            <ImageView
+                android:id="@+id/img_logo"
+                android:layout_width="50dp"
+                android:layout_height="50dp"
+                android:layout_below="@+id/is_logo"
+                android:layout_marginLeft="20dp"
+                android:layout_marginTop="15dp" />
+        </LinearLayout>
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_below="@+id/ck_PIT"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton"
+                android:text="@string/Next" />
+
+            <Button
+                android:id="@+id/btn_item_delete"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

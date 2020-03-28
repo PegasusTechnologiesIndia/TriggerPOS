@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_excel"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+        android:icon="@drawable/excel_export"/>
+    <item
+        android:id="@+id/action_daily_sales_pdf"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+        android:icon="@drawable/pdf"/>
+
+    <item
+        android:id="@+id/action_pdf_mail"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+        android:icon="@drawable/pdf_email"/>
+
+
+</menu>
