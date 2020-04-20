@@ -9,6 +9,7 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.Color;
+import android.graphics.drawable.ColorDrawable;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
@@ -173,7 +174,9 @@ public class CustomerReturnListActivity extends AppCompatActivity {
     }
 
     private void getStockList(String strFilter) {
-        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='CR'" + strFilter + " Order By lower(date) asc limit "+Globals.ListLimit+"", database);
+        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='CR'" + strFilter + " Order By lower(modified_date) desc limit "+Globals.ListLimit+"", database);
+        returns = Returns.getReturns(getApplicationContext(), "", database);
+
         ListView category_list = (ListView) findViewById(R.id.item_list);
         if (arrayList.size() > 0) {
             customerReturnListAdapter = new CustomerReturnListAdapter(CustomerReturnListActivity.this, arrayList);
@@ -186,6 +189,8 @@ public class CustomerReturnListActivity extends AppCompatActivity {
             category_list.setVisibility(View.GONE);
             item_title.setVisibility(View.VISIBLE);
         }
+
+
     }
 
     @Override
@@ -218,6 +223,7 @@ public class CustomerReturnListActivity extends AppCompatActivity {
     public void setView(final String voucher_no) {
 
         returns = Returns.getReturns(getApplicationContext(), "where voucher_no ='" + voucher_no + "'", database);
+
         if (returns != null) {
             listDialog.setTitle("Select below action");
             LayoutInflater li1 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

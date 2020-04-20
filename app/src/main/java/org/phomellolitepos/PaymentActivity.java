@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.Dialog;
@@ -22,6 +23,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -29,9 +31,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
@@ -236,7 +240,9 @@ public class PaymentActivity extends AppCompatActivity {
     public static PrinterBinder printer;
     ArrayList<Order_Payment> order_payment_array;
     MenuItem menuItem;
-
+    String serial_no, android_id, myKey, device_id,imei_no;
+    String liccustomerid;
+    Lite_POS_Device liteposdevice;
     private ISendCallback callback = new ISendCallback() {
 
         @Override
@@ -408,6 +414,14 @@ public class PaymentActivity extends AppCompatActivity {
         //Denomination(amt, scale, place);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         settings = Settings.getSettings(getApplicationContext(), database, "");
         if (settings.getPrinterId().equals("7")) {
             try {
@@ -583,7 +597,25 @@ public class PaymentActivity extends AppCompatActivity {
         btn_get_cus = (Button) findViewById(R.id.btn_get_cus);
         txt_show_info = (TextView) findViewById(R.id.txt_show_info);
         chk_cus_debit = (CheckBox) findViewById(R.id.chk_cus_debit);
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         String strChangeParam = settings.get_Change_Parameter();
         if (strChangeParam.equals("AD")) {
             chk_cus_debit.setChecked(true);
@@ -596,7 +628,30 @@ public class PaymentActivity extends AppCompatActivity {
             chk_cus_debit.setEnabled(true);
         }
 
+  edt_mobile.setOnKeyListener(new View.OnKeyListener() {
+      @Override
+      public boolean onKey(View v, int keyCode, KeyEvent event) {
+          if (event.getAction()==KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
 
+
+              try {
+                  Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_1 = '" + edt_mobile.getText().toString() + "'");
+
+                  if (contact.get_contact_1().equals(edt_mobile.getText().toString())) {
+                      txt_show_info.setText(contact.get_name());
+                  } else {
+                      txt_show_info.setText("");
+                  }
+              }
+              catch(Exception e){
+
+              }
+              return true;
+          }
+
+          return false;
+      }
+  });
         btn_get_cus.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -1570,12 +1625,14 @@ public class PaymentActivity extends AppCompatActivity {
         Window window = listDialog2.getWindow();
         window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
         try {
-            Contact contact = Contact.getContact(getApplicationContext(), database, db, "where contact_code='" + Globals.strContact_Code + "'");
+            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_1 = '" + edt_mobile.getText().toString() + "'");
+           // Contact contact = Contact.getContact(getApplicationContext(), database, db, "where contact_code='" + Globals.strContact_Code + "'");
             if (contact == null) {
                 edt_name.setText("");
                 edt_mobile_dialog.setText(edt_mobile.getText().toString().trim());
                 edt_email.setText("");
             } else {
+                Globals.strContact_Code=contact.get_contact_code();
                 edt_name.setText(contact.get_name());
                 edt_mobile_dialog.setText(contact.get_contact_1());
                 edt_email.setText(contact.get_email_1());
@@ -1606,12 +1663,12 @@ public class PaymentActivity extends AppCompatActivity {
                 }
 
                 if (Globals.strContact_Code.equals("")) {
-                    Contact objCT1 = Contact.getContact(getApplicationContext(), database, db, "  order By contact_id Desc LIMIT 1");
+                    Contact objCT1 = Contact.getContact(getApplicationContext(), database, db, " Where contact_code like  '"+ Globals.objLPD.getDevice_Symbol() +"-CT-%'  order By contact_id Desc LIMIT 1");
 
                     if (objCT1 == null) {
-                        strCTCode = "CT-" + 1;
+                        strCTCode = Globals.objLPD.getDevice_Symbol() + "-"+"CT-" + 1;
                     } else {
-                        strCTCode = "CT-" + (Integer.parseInt(objCT1.get_contact_id()) + 1);
+                        strCTCode = Globals.objLPD.getDevice_Symbol() + "-"+"CT-" + (Integer.parseInt(objCT1.get_contact_code().toString().replace(Globals.objLPD.getDevice_Symbol() + "-CT-","")) + 1);
                     }
 
                     pDialog = new ProgressDialog(PaymentActivity.this);
@@ -2026,7 +2083,7 @@ public class PaymentActivity extends AppCompatActivity {
                         strDis = "0";
                     }
 
-                    objOrder = new Orders(getApplicationContext(), orderId, Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
+                    objOrder = new Orders(getApplicationContext(), orderId, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
                             "0", Globals.TotalItem + "", Globals.TotalQty + "",
                             Globals.TotalItemPrice + "", iTax + "", strDis, edt_net_amount.getText().toString(), tenderAmountStr + "",
                             changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, edt_description.getText().toString(), Globals.strTable_Code, edt_date.getText().toString());
@@ -2036,7 +2093,7 @@ public class PaymentActivity extends AppCompatActivity {
                         strFlag = "1";
                         for (int count = 0; count < myCart.size(); count++) {
                             ShoppingCart mCart = myCart.get(count);
-                            objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
+                            objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                                     mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
                             long o = objOrderDetail.insertOrder_Detail(database);
@@ -2100,7 +2157,7 @@ public class PaymentActivity extends AppCompatActivity {
                                         PayId, "", "", Globals.Param1, Globals.Param2, strBankCode, "");
                             }
                         } else {
-                            objOrderPayment = new Order_Payment(getApplicationContext(), null, Globals.Device_Code, strOrderNo, "1", edt_net_amount.getText().toString(),
+                            objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, "1", edt_net_amount.getText().toString(),
                                     PayId, "", "", edt_cheque.getText().toString().trim(), "", strBankCode, "");
                         }
                         long op = objOrderPayment.insertOrder_Payment(database);
@@ -2239,7 +2296,7 @@ public class PaymentActivity extends AppCompatActivity {
                         strDis = "0";
                     }
                     objOrder = Orders.getOrders(getApplicationContext(), database, " WHERE order_code = '" + strOrderNo + "'");
-                    objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), Globals.strContact_Code,
+                    objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), liccustomerid ,locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), Globals.strContact_Code,
                             "0", Globals.TotalItem + "", Globals.TotalQty + "",
                             edt_total.getText().toString().trim() + "", iTax + "", strDis, edt_net_amount.getText().toString(), tenderAmountStr + "",
                             changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, edt_description.getText().toString(), Globals.strTable_Code, edt_date.getText().toString());
@@ -2249,7 +2306,7 @@ public class PaymentActivity extends AppCompatActivity {
                         long e = Order_Detail.delete_order_detail(getApplicationContext(), "order_detail", "order_code =?", new String[]{strOrderNo}, database);
                         for (int count = 0; count < myCart.size(); count++) {
                             ShoppingCart mCart = myCart.get(count);
-                            objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
+                            objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                                     mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
                             long o = objOrderDetail.insertOrder_Detail(database);
@@ -2286,7 +2343,7 @@ public class PaymentActivity extends AppCompatActivity {
                             }
                         }
                         long e5 = Order_Payment.delete_order_payment(getApplicationContext(), "order_payment", " order_code =? ", new String[]{strOrderNo}, database);
-                        objOrderPayment = new Order_Payment(getApplicationContext(), null, Globals.Device_Code, strOrderNo, "1", edt_net_amount.getText().toString(),
+                        objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, "1", edt_net_amount.getText().toString(),
                                 "1", "", "", "", "", "", "");
                         long op = objOrderPayment.insertOrder_Payment(database);
                         if (op > 0) {
@@ -2439,7 +2496,7 @@ public class PaymentActivity extends AppCompatActivity {
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
+                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
                     progressDialog.dismiss();
                     if (result_order.equals("1")) {
                         if (settings.get_Is_KOT_Print().equals("true")) {
@@ -2451,7 +2508,29 @@ public class PaymentActivity extends AppCompatActivity {
                                     }
                                 } catch (Exception ex) {
                                 }
-                            } else if (PrinterType.equals("4")) {
+                            }
+                            else if (PrinterType.equals("2")) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                            lite_pos_device.setStatus("Out");
+                                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                            if (ct > 0) {
+
+                                                Intent intent_category = new Intent(PaymentActivity.this, LoginActivity.class);
+                                                startActivity(intent_category);
+                                                finish();
+                                            }
+
+
+                                        }
+                                    }
+                                });
+                            }
+
+                            else if (PrinterType.equals("4")) {
                                 print_kot_phapos(strOrderNo);
                             } else {
                                 runOnUiThread(new Runnable() {
@@ -3974,7 +4053,7 @@ public class PaymentActivity extends AppCompatActivity {
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
+                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
 
                     if (result_order.equals("1")) {
                         runOnUiThread(new Runnable() {
@@ -4159,7 +4238,30 @@ public class PaymentActivity extends AppCompatActivity {
                             }
                         });
 
-                    } else {
+                    }
+                    else if (PrinterType.equals("2")) {
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                    lite_pos_device.setStatus("Out");
+                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                    if (ct > 0) {
+
+                                        Intent intent_category = new Intent(PaymentActivity.this, LoginActivity.class);
+                                        startActivity(intent_category);
+                                        finish();
+                                    }
+
+
+                                }
+                            }
+                        });
+                    }
+
+
+                    else {
                         runOnUiThread(new Runnable() {
                             public void run() {
 
@@ -5710,12 +5812,17 @@ public class PaymentActivity extends AppCompatActivity {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/accounts");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
+                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts");
+        ArrayList nameValuePairs = new ArrayList(9);
+        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
         nameValuePairs.add(new BasicNameValuePair("contact_code", Globals.strContact_Code));
         nameValuePairs.add(new BasicNameValuePair("type", "S"));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

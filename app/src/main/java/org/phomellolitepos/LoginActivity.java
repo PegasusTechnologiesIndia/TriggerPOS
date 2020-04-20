@@ -44,6 +44,17 @@ import android.widget.Toast;
 import android.widget.ToggleButton;
 
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -62,7 +73,9 @@ import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,6 +130,7 @@ public class LoginActivity extends AppCompatActivity {
     Lite_POS_Registration lite_pos_registration;
     String status;
     String serial_no, android_id, myKey, device_id,imei_no;
+    String email,password,reg_code;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -196,6 +210,7 @@ public class LoginActivity extends AppCompatActivity {
         lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
         lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
         Globals.Industry_Type = lite_pos_registration.getIndustry_Type();
+        reg_code=lite_pos_registration.getRegistration_Code();
         pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         editor = pref.edit();
         int id = pref.getInt("id", 0);
@@ -263,6 +278,8 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 edt_username.setText(user.get_user_code());
                 edt_userpass.setText(user.get_password());
+               /* email=user.get_email();
+                password=user.get_password();*/
             } catch (Exception ex) {
             }
         } else {
@@ -271,6 +288,8 @@ public class LoginActivity extends AppCompatActivity {
                 Globals.UserCode = Globals.user;
                 edt_username.setText(pref.getString("user_code", null));
                 edt_userpass.setText(pref.getString("pass", null));
+                email=user.get_email();
+                password=user.get_password();
             } catch (Exception ex) {
 
             }
@@ -320,7 +339,7 @@ public class LoginActivity extends AppCompatActivity {
                 }
                 pDialog = new ProgressDialog(LoginActivity.this);
                 pDialog.setCancelable(false);
-                pDialog.setMessage(getString(R.string.msg_dilog_login));
+             pDialog.setMessage(getString(R.string.msg_dilog_login));
                 pDialog.show();
 
                 Thread timerThread = new Thread() {
@@ -419,28 +438,10 @@ public class LoginActivity extends AppCompatActivity {
                                                     }
                                                 }
                                                 else if(status.equals("Out")) {
-                                                    lite_pos_device.setStatus("IN");
-                                                    long ct = lite_pos_device.updateDevice("Id=?", new String[]{"1"}, database);
-                                                    // long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
-                                                    if (ct > 0) {
-                                                        if (settings.get_Home_Layout().equals("0")) {
-                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                            pDialog.dismiss();
-                                                            Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
-                                                            startActivity(intent_category);
-                                                        } else if (settings.get_Home_Layout().equals("2")) {
-                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                            pDialog.dismiss();
-                                                            Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
-                                                            startActivity(intent_category);
-                                                        } else {
-                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                            pDialog.dismiss();
-                                                            Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
-                                                            startActivity(intent_category);
-                                                        }
+                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
 
-                                                    }
+                                                    String licensecustomerid= lite_pos_device.getLic_customer_license_id();
+                                                    postDeviceInfo(email, password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
 
                                                 }
 
@@ -468,6 +469,7 @@ public class LoginActivity extends AppCompatActivity {
 
                                         runOnUiThread(new Runnable() {
                                             public void run() {
+                                                if(status.equals("IN")) {
                                                 if (settings.get_Home_Layout().equals("0")) {
                                                     Globals.user = user.get_user_code();
                                                     Globals.UserCode = Globals.user;
@@ -489,6 +491,14 @@ public class LoginActivity extends AppCompatActivity {
                                                     pDialog.dismiss();
                                                     Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
                                                     startActivity(intent_category);
+                                                }
+                                                }
+                                                else if(status.equals("Out")) {
+                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+
+                                                    String licensecustomerid= lite_pos_device.getLic_customer_license_id();
+                                                    postDeviceInfo(email, password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
+
                                                 }
                                             }
                                         });
@@ -878,7 +888,7 @@ public class LoginActivity extends AppCompatActivity {
         try {
             nameValuePairs.add(new BasicNameValuePair("email", lite_pos_registration.getEmail()));
             nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
-            nameValuePairs.add(new BasicNameValuePair("lic_code", lite_pos_registration.getRegistration_Code()));
+            nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
             nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
             nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
             nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
@@ -1060,5 +1070,158 @@ public class LoginActivity extends AppCompatActivity {
             _prefsEditor.commit();
         }
     }
+    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String registrationcode) {
 
+        pDialog = new ProgressDialog(LoginActivity.this);
+        pDialog.setMessage("Logging In....");
+        pDialog.show();
+        String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/database_detail/device_login";
+        HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            //  Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                            JSONObject responseObject = new JSONObject(response);
+
+
+                            String status = responseObject.getString("status");
+                            final String message = responseObject.getString("message");
+                            if (status.equals("true")) {
+                                Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+
+                                JSONObject result2 = responseObject.optJSONObject("result");
+                                //  for (int i = 0; i < result2.length(); i++) {
+                                // JSONObject jobj= result2.getJSONObject(i);
+                                String lic_custid = result2.getString("lic_customer_license_id");
+                                String oc_custid = result2.getString("oc_customer_id");
+                                String lic_product_id = result2.getString("lic_product_id");
+                                String lic_code = result2.getString("lic_code");
+                                String license_key = result2.getString("license_key");
+                                String licenseType = result2.getString("license_type");
+                                String deviceCode = result2.getString("device_code");
+                                String locationId = result2.getString("location_id");
+                                String deviceName = result2.getString("device_name");
+                                String deviceSymbol = result2.getString("device_symbol");
+                                String registrationDate = result2.getString("registration_date");
+                                String expiryDate = result2.getString("expiry_date");
+                                String isActive = result2.getString("is_active");
+                                String isUse = result2.getString("is_use");
+                                String isUpdate = result2.getString("is_update");
+                                String modifiedBy = result2.getString("modified_by");
+                                String modifiedDate = result2.getString("modified_date");
+
+                               /* boolean recordExists = db.checkIfDeviceRecordExist("DeviceInformation");
+                                if (recordExists == true) {
+
+                                Toast.makeText(getApplicationContext(), message, Toast.LENGTH_SHORT).show();
+                                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                                startActivity(i);
+                                finish();
+                                 }*/
+
+                                try {
+                                    lite_pos_device.setStatus("IN");
+                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"Out"}, database);
+                                    // long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                    if (ct > 0) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                            pDialog.dismiss();
+                                            Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
+                                            startActivity(intent_category);
+                                        } else if (settings.get_Home_Layout().equals("2")) {
+                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                            pDialog.dismiss();
+                                            Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
+                                            startActivity(intent_category);
+                                        } else {
+                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                            pDialog.dismiss();
+                                            Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
+                                            startActivity(intent_category);
+                                        }
+                                    }
+
+                                     else {
+                                        /*database.endTransaction();*/
+                                        pDialog.dismiss();
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                    }
+                                } catch (Exception e) {
+
+                                }
+
+                                //  }
+
+                                pDialog.dismiss();
+
+                            } else if (status.equals("false")) {
+                                pDialog.dismiss();
+                                Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+                            }
+
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(i);
+                            finish();
+                            Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(), "Authentication issue", Toast.LENGTH_LONG).show();
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(), "Server not available", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(i);
+                            finish();
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
+                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
+                            startActivity(i);
+                            finish();
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("password", password);
+                params.put("is_use", isuse);
+                params.put("master_product_id", masterproductid);
+                params.put("lic_customer_license_id", liccustomerlicenseid);
+                params.put("device_code", devicecode);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("reg_code", registrationcode);
+                System.out.println("params"+ params);
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
 }

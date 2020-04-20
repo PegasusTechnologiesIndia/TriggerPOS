@@ -23,7 +23,7 @@ import javax.mail.Folder;
 
 
 public class Database extends SQLiteOpenHelper {
-    private static final int version = 75;
+    private static final int version = 76;
 
     public static final String DATABASE_FILE_PATH = Environment.getExternalStorageDirectory() +
             File.separator + "Phomello-LitePOS";
@@ -601,6 +601,22 @@ public class Database extends SQLiteOpenHelper {
                     try {
                         arg0.execSQL("ALTER TABLE returns ADD COLUMN payment_id NVARCHAR(2)");
                         arg0.execSQL("UPDATE returns SET payment_id = ''");
+                    } catch (Exception ex) {}
+
+                case 76:
+                    try {
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN lic_customer_license_id TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET lic_customer_license_id = ''");
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN lic_code TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET lic_code = ''");
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN license_key TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET license_key = ''");
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN license_type TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET license_type = ''");
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN Status TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET Status = ''");
+                        arg0.execSQL("ALTER TABLE last_code ADD COLUMN last_order_return_code NVARCHAR(50)");
+                        arg0.execSQL("UPDATE last_code SET last_order_return_code = ''");
                     } catch (Exception ex) {}
             }
         }

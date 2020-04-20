@@ -586,7 +586,7 @@ public class ProfileActivity extends AppCompatActivity {
             } else {
                 nameValuePairs.add(new BasicNameValuePair("email", lite_pos_registration.getEmail()));
                 nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
-                nameValuePairs.add(new BasicNameValuePair("lic_code", lite_pos_registration.getRegistration_Code()));
+                nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
@@ -752,8 +752,8 @@ public class ProfileActivity extends AppCompatActivity {
                             jsonObject_device.getString("device_name"), javaEncryption.encrypt(jsonObject_device.getString("expiry_date"), "12345678"),
                             jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
                             jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
-                            jsonObject_device.getString("currency_place"),jsonObject_device.getString("lic_customer_license_id"),jsonObject_device.getString("lic_code"),
-                            jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN");
+                            jsonObject_device.getString("currency_place"), jsonObject_device.getString("lic_customer_license_id"), jsonObject_device.getString("lic_code"),
+                            jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN");
 
                     long d = lite_pos_device.insertDevice(database);
                     if (d > 0) {
@@ -813,8 +813,25 @@ public class ProfileActivity extends AppCompatActivity {
                     });
                 }
             } else if (strStatus.equals("false")) {
-                try {
-                    database.beginTransaction();
+
+
+                if (msg.equals("Device Not Found")) {
+
+                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                    lite_pos_device.setStatus("Out");
+                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                    if (ct > 0) {
+
+                        Intent intent_category = new Intent(ProfileActivity.this, LoginActivity.class);
+                        startActivity(intent_category);
+                        finish();
+                    }
+
+
+                }
+            }
+
+  /*                  database.beginTransaction();
                     JSONObject jsonObject_result = jsonObject1.getJSONObject("result");
                     JSONObject jsonObject_device = jsonObject_result.optJSONObject("device");
                     JSONObject jsonObject_company = jsonObject_result.optJSONObject("company");
@@ -906,17 +923,18 @@ public class ProfileActivity extends AppCompatActivity {
                         }
                     });
                 }
+            }*/
+
+            } catch (JSONException e) {
+        progressDialog.dismiss();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                progressDialog.dismiss();
+                Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
             }
-        } catch (JSONException e) {
-            progressDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    progressDialog.dismiss();
-                    Toast.makeText(getApplicationContext(), "Something went wrong", Toast.LENGTH_SHORT).show();
-                }
-            });
-        }
+        });
     }
+        }
 
     private String getting_profile_server() {
         String serverData = null;//
@@ -927,7 +945,7 @@ public class ProfileActivity extends AppCompatActivity {
         try {
             nameValuePairs.add(new BasicNameValuePair("email", lite_pos_registration.getEmail()));
             nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
-            nameValuePairs.add(new BasicNameValuePair("lic_code", lite_pos_registration.getRegistration_Code()));
+            nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
             nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
             nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
             nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));

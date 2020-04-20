@@ -15,16 +15,7 @@
     android:text=""
     android:textColor="#000000" />
 
-    <TextView
-        android:id="@+id/txt_item_code"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/txt_item_name"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:layout_marginTop="5dp"
-        android:text=""
-        android:textSize="16sp" />
+
 
     <TextView
         android:id="@+id/txt_price"
@@ -37,5 +28,29 @@
         android:layout_marginTop="16dp"
         android:text=""
         android:textColor="#ff0000" />
-
+    <TextView
+        android:id="@+id/txt_item_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:layout_below="@+id/txt_price"
+        android:text=""
+        android:textColor="#ff0000"
+        android:textSize="16sp" />
+<!--    <ImageView
+        android:id="@+id/delete"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/bnav_delete"
+        android:layout_below="@+id/txt_price"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="16dp"
+        android:text=""
+        android:textColor="#ff0000" />-->
 </RelativeLayout>

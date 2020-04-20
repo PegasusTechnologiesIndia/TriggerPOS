@@ -410,9 +410,32 @@ public class Item {
         return list;
 
     }
+    public static ArrayList<String> getAllItemforautocompleteinv(Context context, String WhereClasue) {
+        ArrayList<String> list = new ArrayList<String>();
+        try {
+            String Query = "Select am.item_code,am.order_code,e.item_name,e.barcode,e.item_code FROM item e left join order_detail am on am.item_code=e.item_code " + WhereClasue;
 
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry) {
+            Database db = new Database(context);
+            SQLiteDatabase database = db.getReadableDatabase();
+            Cursor cursor = database.rawQuery(Query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    String itemname=cursor.getString(cursor.getColumnIndex("item_name"));
+                    list.add(itemname);
+                } while (cursor.moveToNext());
+            }
+
+        } catch (Exception ex) {
+        }
+        //cursor.close();
+//        database.close();
+//        db.close();
+        return list;
+
+    }
+
+    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid) {
 
         String strItemCode = "", resultStr = "0";
         Cursor cursor = database.rawQuery(strTableQry, null);
@@ -493,7 +516,7 @@ public class Item {
                     row.put("item_tax", array_item_tax);
                     result.put(row);
                     sender.put("item".toLowerCase(), result);
-                    String serverData = send_item_json_on_server(sender.toString());
+                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid);
                     final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                     final String strStatus = collection_jsonObject1.getString("status");
                     if (strStatus.equals("true")) {
@@ -523,16 +546,23 @@ public class Item {
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString) {
+    private static String send_item_json_on_server(String JsonString,String liccustomerid) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/item/data");
 
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.reg_code));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+        System.out.println("send item "+ nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         } catch (UnsupportedEncodingException e1) {

@@ -76,6 +76,8 @@ public class ActivateEmailActivity extends AppCompatActivity {
     String strResult = "";
     JavaEncryption javaEncryption;
     Last_Code last_code;
+    String licensecustomer;
+    String registration_code;
     String serial_no, android_id, myKey, device_id,imei_no;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -111,6 +113,9 @@ public class ActivateEmailActivity extends AppCompatActivity {
         }
         device_id = telephonyManager.getDeviceId();
         imei_no=telephonyManager.getImei();
+        Globals.serialno=serial_no;
+        Globals.androidid=android_id;
+        Globals.mykey=myKey;
 //        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
 //        int id = pref.getInt("id", 0);
 //        if (id == 0) {
@@ -169,10 +174,27 @@ public class ActivateEmailActivity extends AppCompatActivity {
                         @Override
                         public void run() {
                             String rslt = device_process();
+
                             progressDialog.dismiss();
                             if (rslt.equals("1")) {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
+                                        try {
+                                            Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
+                                            if (last_code == null) {
+                                                new Thread() {
+                                                    @Override
+                                                    public void run() {
+                                                        Lite_POS_Device liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                        Lite_POS_Registration  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                                                        getLastCode(Globals.license_id, Globals.reg_code);
+                                                    }
+                                                }.start();
+                                            }
+                                        }
+                                        catch(Exception e){
+
+                                        }
                                         Toast.makeText(getApplicationContext(), R.string.Activate_Successfully, Toast.LENGTH_SHORT).show();
                                         Intent intent = new Intent(ActivateEmailActivity.this, LoginActivity.class);
                                         startActivity(intent);
@@ -180,10 +202,26 @@ public class ActivateEmailActivity extends AppCompatActivity {
                                     }
                                 });
                             } else if (rslt.equals("2")) {
+
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
 //                                Intent intent = new Intent(ActivateEmailActivity.this, RegistrationActivity.class);
 //                                startActivity(intent);
 //                                finish();
-                            } else {
+                            }
+                            else if (rslt.equals("4")) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), R.string.devicesymbolerror, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                            else {
                                 runOnUiThread(new Runnable() {
                                     public void run() {
                                         Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
@@ -221,78 +259,86 @@ public class ActivateEmailActivity extends AppCompatActivity {
                     try {
                         JSONObject myResult = collection_jsonObject1.getJSONObject("result");
                         JSONObject jsonObject_device = myResult.optJSONObject("device");
+                        if (jsonObject_device.getString("device_symbol").length() == 0) {
+                            succ = "4";
+                        }
+                        else {
+                            lpd = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
+                                    jsonObject_device.getString("app_type"), jsonObject_device.getString("device_code"),
+                                    jsonObject_device.getString("device_name"), javaEncryption.encrypt(jsonObject_device.getString("expiry_date"), "12345678"),
+                                    jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
+                                    jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
+                                    jsonObject_device.getString("currency_place"), jsonObject_device.getString("lic_customer_license_id"), jsonObject_device.getString("lic_code"),
+                                    jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN");
 
-                        lpd = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
-                                jsonObject_device.getString("app_type"), jsonObject_device.getString("device_code"),
-                                jsonObject_device.getString("device_name"),javaEncryption.encrypt(jsonObject_device.getString("expiry_date"),"12345678"),
-                                jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
-                                jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
-                                jsonObject_device.getString("currency_place"),jsonObject_device.getString("lic_customer_license_id"),jsonObject_device.getString("lic_code"),
-                                jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN");
-                        long d = lpd.insertDevice(database);
+                           licensecustomer=jsonObject_device.getString("lic_customer_license_id");
+                            long d = lpd.insertDevice(database);
 
-                        if (d > 0) {
-                            succ = "1";
-                            JSONObject jsonObject_company = myResult.optJSONObject("company");
-                            String company_id = jsonObject_company.getString("company_id");
-                            Globals.Company_Id = company_id;
-                            String registration_code = jsonObject_company.getString("registration_code");
-                            String company_name = jsonObject_company.getString("company_name");
-                            String license_no;
-                            try {
-                                license_no = jsonObject_company.getString("license_no");
-                            }catch (Exception ex){
-                                license_no = "";
-                            }
-
-                            String logo = jsonObject_company.getString("logo");
-//                            String splash_screen = jsonObject_company.getString("splash_screen");
-                            String contact_person = jsonObject_company.getString("contact_person");
-                            String email = jsonObject_company.getString("email");
-                            String country_id = jsonObject_company.getString("country_id");
-                            String zone_id = jsonObject_company.getString("zone_id");
-                            String mobile_no = jsonObject_company.getString("mobile_no");
-                            String address = jsonObject_company.getString("address");
-                            String project_id = jsonObject_company.getString("project_id");
-                            String indus_type = jsonObject_company.getString("industry_type");
-                            String srvc_trf = jsonObject_company.getString("service_code_tariff");
-
-                            Settings settings = Settings.getSettings(getApplicationContext(), database, "");
-                            settings.set_Logo(logo);
-                            settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
-
-                            lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name,
-                                    contact_person, mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
-                            long r = lite_pos_registration.insertRegistration(database);
-                            if (r > 0) {
-                                for (int i = 0; i < List.size(); i++) {
-
-                                    String name = List.get(i);
-                                    if (strResult.equals("")){
-                                        strResult = name;
-                                    }
-                                    strResult = strResult + "," + name;
-
-                                }
+                            if (d > 0) {
                                 succ = "1";
-                                JSONArray jsonArray = myResult.getJSONArray("company_user");
+                                JSONObject jsonObject_company = myResult.optJSONObject("company");
+                                String company_id = jsonObject_company.getString("company_id");
+                                Globals.Company_Id = company_id;
+                                 registration_code = jsonObject_company.getString("registration_code");
+                                Globals.reg_code=registration_code;
 
-                                for (int i = 0; i < jsonArray.length(); i++) {
-                                    JSONObject jsonObject_user = jsonArray.getJSONObject(i);
-                                    user = new User(getApplicationContext(), null,
-                                            jsonObject_user.getString("user_group_id"), jsonObject_user.getString("user_code"), jsonObject_user.getString("name"), jsonObject_user.getString("email"), jsonObject_user.getString("password"), jsonObject_user.getString("max_discount"), jsonObject_user.getString("image"), jsonObject_user.getString("is_active"), "0", "0", "N", strResult);
-                                    u = user.insertUser(database);
+                                String company_name = jsonObject_company.getString("company_name");
+                                String license_no;
+                                try {
+                                    license_no = jsonObject_company.getString("license_no");
+                                } catch (Exception ex) {
+                                    license_no = "";
                                 }
-                                if (u > 0) {
+
+                                String logo = jsonObject_company.getString("logo");
+//                            String splash_screen = jsonObject_company.getString("splash_screen");
+                                String contact_person = jsonObject_company.getString("contact_person");
+                                String email = jsonObject_company.getString("email");
+                                String country_id = jsonObject_company.getString("country_id");
+                                String zone_id = jsonObject_company.getString("zone_id");
+                                String mobile_no = jsonObject_company.getString("mobile_no");
+                                String address = jsonObject_company.getString("address");
+                                String project_id = jsonObject_company.getString("project_id");
+                                String indus_type = jsonObject_company.getString("industry_type");
+                                String srvc_trf = jsonObject_company.getString("service_code_tariff");
+
+                                Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+                                settings.set_Logo(logo);
+                                settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
+
+                                lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name,
+                                        contact_person, mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                                long r = lite_pos_registration.insertRegistration(database);
+                                if (r > 0) {
+                                    for (int i = 0; i < List.size(); i++) {
+
+                                        String name = List.get(i);
+                                        if (strResult.equals("")) {
+                                            strResult = name;
+                                        }
+                                        strResult = strResult + "," + name;
+
+                                    }
                                     succ = "1";
-                                    SharedPreferences sharedpreferences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
-                                    SharedPreferences.Editor editor = sharedpreferences.edit();
-                                    editor.putString("pass", user.get_password()); // Storing string
-                                    editor.apply();
+                                    JSONArray jsonArray = myResult.getJSONArray("company_user");
+
+                                    for (int i = 0; i < jsonArray.length(); i++) {
+                                        JSONObject jsonObject_user = jsonArray.getJSONObject(i);
+                                        user = new User(getApplicationContext(), null,
+                                                jsonObject_user.getString("user_group_id"), jsonObject_user.getString("user_code"), jsonObject_user.getString("name"), jsonObject_user.getString("email"), jsonObject_user.getString("password"), jsonObject_user.getString("max_discount"), jsonObject_user.getString("image"), jsonObject_user.getString("is_active"), "0", "0", "N", strResult);
+                                        u = user.insertUser(database);
+                                    }
+                                    if (u > 0) {
+                                        succ = "1";
+                                        SharedPreferences sharedpreferences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
+                                        SharedPreferences.Editor editor = sharedpreferences.edit();
+                                        editor.putString("pass", user.get_password()); // Storing string
+                                        editor.apply();
+                                    }
+                                } else {
                                 }
                             } else {
                             }
-                        } else {
                         }
                     } catch (JSONException jex) {
                         progressDialog.dismiss();
@@ -302,30 +348,19 @@ public class ActivateEmailActivity extends AppCompatActivity {
                     }
                 } else if (strStatus.equals("false")) {
                     succ = "2";
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), strMassage, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-                    progressDialog.dismiss();
+                   Globals.responsemessage=strMassage;
                 }
 
                 if (succ.equals("1")) {
+                    Globals.license_id=licensecustomer;
+                    Globals.reg_code=registration_code;
                     database.setTransactionSuccessful();
                     database.endTransaction();
                 } else {
                     database.endTransaction();
                 }
 
-                Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
-                if (last_code == null) {
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            getLastCode();
-                        }
-                    }.start();
-                }
+
             } catch (JSONException e) {
                 progressDialog.dismiss();
             }
@@ -344,7 +379,7 @@ public class ActivateEmailActivity extends AppCompatActivity {
         nameValuePairs.add(new BasicNameValuePair("reg_code", edt_regis_code.getText().toString().trim()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
         nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
         nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
         nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
         try {
@@ -399,18 +434,23 @@ public class ActivateEmailActivity extends AppCompatActivity {
         List.add("User");
     }
 
-    private void getLastCode() {
-        String serverData = getLastCodeFromServer();
-        if (serverData == null) {
-            System.exit(0);
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Server Not Found", Toast.LENGTH_SHORT).show();
-                }
+    private void getLastCode(String liccustomerid,String registrationcode) {
+        String serverData = getLastCodeFromServer(liccustomerid,registrationcode);
+        try {
+            if (serverData == null) {
 
-            });
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), "Server Not Found", Toast.LENGTH_SHORT).show();
+                    }
+
+                });
+            }
+
         }
+        catch(Exception e){
 
+        }
         try {
             JSONObject collection_jsonObject1 = new JSONObject(serverData);
             String strStatus = collection_jsonObject1.getString("status");
@@ -423,13 +463,14 @@ public class ActivateEmailActivity extends AppCompatActivity {
                 String last_order_code = jsonObject.getString("last_order_code");
                 String last_pos_balance_code = jsonObject.getString("last_pos_balance_code");
                 String last_z_close_code = jsonObject.getString("last_z_close_code");
+                String last_order_return_code=jsonObject.getString("last_order_return_code");
 
                 long l = Last_Code.delete_Last_Code(getApplicationContext(), null, null, database);
                 if (l > 0) {
                 } else {
                 }
 
-                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code);
+                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code,last_order_return_code);
 
                 long d = last_code.insertLast_Code(database);
 
@@ -444,13 +485,20 @@ public class ActivateEmailActivity extends AppCompatActivity {
         }
     }
 
-    private String getLastCodeFromServer() {
+    private String getLastCodeFromServer(String liccustomerid,String regcode) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos/index.php/api/last_code");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
+        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/last_code");
+        ArrayList nameValuePairs = new ArrayList(8);
+        nameValuePairs.add(new BasicNameValuePair("reg_code",regcode));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+           System.out.println("get last code"+ nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -463,6 +511,7 @@ public class ActivateEmailActivity extends AppCompatActivity {
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
             Log.d("response", serverData);
+            System.out.println("get server last code"+ serverData);
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();

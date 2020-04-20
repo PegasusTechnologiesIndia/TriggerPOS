@@ -1,15 +1,20 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.EditText;
@@ -56,7 +61,7 @@ public class ActivateActivity extends AppCompatActivity {
     AESHelper aesHelper;
     JavaEncryption javaEncryption;
     Settings settings;
-
+    String serial_no, android_id, myKey, device_id,imei_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +83,25 @@ public class ActivateActivity extends AppCompatActivity {
         }
 //        aesHelper = new AESHelper();
         javaEncryption = new JavaEncryption();
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -140,7 +164,7 @@ public class ActivateActivity extends AppCompatActivity {
         final Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
         String strCheck = lite_pos_registration.getproject_id();
 
-        if (strCheck.equals("cloud")) {
+
             if (isNetworkStatusAvialable(getApplicationContext())) {
                 progressDialog = new ProgressDialog(ActivateActivity.this);
                 progressDialog.setTitle("");
@@ -163,8 +187,7 @@ public class ActivateActivity extends AppCompatActivity {
             } else {
                 Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
             }
-        } else {
-        }
+
     }
 
     private void update_license(String existing_expiry, final ProgressDialog progressDialog) {
@@ -225,6 +248,22 @@ public class ActivateActivity extends AppCompatActivity {
             } else if (strStatus.equals("false")) {
                 progressDialog.dismiss();
                 try {
+                    if(msg.equals("Device Not Found")){
+
+                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                        lite_pos_device.setStatus("Out");
+                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                        if (ct > 0) {
+
+                            Intent intent_category = new Intent(ActivateActivity.this, LoginActivity.class);
+                            startActivity(intent_category);
+                            finish();
+                        }
+
+
+                    }
+
+
                     JSONObject myResult = jsonObject1.getJSONObject("result");
                     JSONObject myResult1 = myResult.getJSONObject("device");
                     String device_code = myResult1.getString("device_code");
@@ -300,6 +339,10 @@ public class ActivateActivity extends AppCompatActivity {
                 nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
                 nameValuePairs.add(new BasicNameValuePair("email", Globals.objLPR.getEmail()));
                 nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+                nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+                nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
+                nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+                nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
             }
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

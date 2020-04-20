@@ -1,6 +1,8 @@
 package org.phomellolitepos.Adapter;
 
 import android.content.Context;
+import android.content.DialogInterface;
+import android.support.v7.app.AlertDialog;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -51,7 +53,7 @@ public class InvReturnFinalListAdapter extends BaseAdapter{
 
         View itemView = inflater.inflate(R.layout.inv_return_final_listitem,
                 parent, false);
-        StockAdjectmentDetailList resultp = data.get(position);
+        final StockAdjectmentDetailList resultp = data.get(position);
         txt_item_name = (TextView) itemView.findViewById(R.id.txt_item_name);
         txt_item_code = (TextView) itemView.findViewById(R.id.txt_item_code);
         txt_price = (TextView) itemView.findViewById(R.id.txt_price);
@@ -80,7 +82,41 @@ public class InvReturnFinalListAdapter extends BaseAdapter{
                 ((InvReturnFinalActivity) context).setTextView(position+"",resultp.getItem_code(),resultp.getItem_name(),resultp.getQty(),resultp.getPrice(),str_update);
             }
         });
+        itemView.setOnLongClickListener(new View.OnLongClickListener() {
+            @Override
+            public boolean onLongClick(View v) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(context);
 
+                alertDialog.setTitle(resultp.getItem_name());
+                alertDialog.setMessage("Are you sure you want delete this?");
+                alertDialog.setIcon(R.drawable.delete);
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+                        data.remove(position);
+                        notifyDataSetChanged();
+                        String str_update= "DELETE";
+                        ((InvReturnFinalActivity) context).setTextView();
+
+                    }
+                });
+
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+               /* data.remove(position);
+                notifyDataSetChanged();*/
+                return true;
+            }
+        });
         return itemView;
     }
 }

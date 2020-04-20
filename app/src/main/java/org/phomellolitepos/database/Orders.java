@@ -2,6 +2,7 @@ package org.phomellolitepos.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import org.phomellolitepos.AccountsActivity;
+import org.phomellolitepos.LoginActivity;
 import org.phomellolitepos.Util.Globals;
 
 /**
@@ -510,7 +513,7 @@ public class Orders {
         return list;
     }
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry) {
+    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1,String syscode3, String Syscode4) {
 //        Database db = new Database(context);
 //        SQLiteDatabase database = db.getReada,bleDatabase();
         String strOrder_Code = "", resultStr = "0";
@@ -531,7 +534,8 @@ public class Orders {
                 JSONObject order_detail_tax_row = new JSONObject();
                 JSONArray array_order_cus_debit = new JSONArray();
                 JSONObject order_cus_debit = new JSONObject();
-
+                JSONArray array_return = new JSONArray();
+                JSONObject order_array_return = new JSONObject();
                 strOrder_Code = cursor.getString(4);
                 for (int index = 0; index < columnCount; index++) {
                     row.put(cursor.getColumnName(index).toLowerCase(), cursor.getString(index));
@@ -609,29 +613,69 @@ public class Orders {
                 } catch (Exception ex) {
                 }
 
+
+          /*      String return_qry = "SELECT * FROM  returns Where is_push='N'";
+                Cursor return_qry_cursor = database.rawQuery(return_qry, null);
+                try {
+                    int columnCount_order_return = return_qry_cursor.getColumnCount();
+                    while (return_qry_cursor.moveToNext()) {
+                        order_array_return = new JSONObject();
+                        for (int index = 0; index < columnCount_order_return; index++) {
+                            order_array_return.put(return_qry_cursor.getColumnName(index).toLowerCase(), return_qry_cursor.getString(index));
+                        }
+                        array_return.put(order_array_return);
+                    }
+                    return_qry_cursor.close();
+                } catch (Exception ex) {
+                }*/
+
                 row.put("order_detail", array_order_detail);
                 row.put("order_payment", array_order_payment);
                 row.put("order_tax", array_order_tax);
                 row.put("order_detail_tax", array_order_detail_tax);
                 row.put("order_customer_debit", array_order_cus_debit);
+              //  row.put("order_return_array", array_return);
                 result.put(row);
                 sender.put("order".toLowerCase(), result);
-                String serverData = send_item_json_on_server(sender.toString());
+                String serverData = send_item_json_on_server(sender.toString(),liccustomerid,syscode1,syscode3,Syscode4);
                 final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                 final String strStatus = collection_jsonObject1.getString("status");
+                final String strmsg = collection_jsonObject1.getString("message");
                 if (strStatus.equals("true")) {
                     database.beginTransaction();
                     // Update This Item Group Push True
                     String Query = "Update  orders Set is_push = 'Y' Where order_code = '" + strOrder_Code + "'";
                     long or_result = db.executeDML(Query, database);
+
                     if (or_result > 0) {
                         resultStr = "1";
+
                         database.setTransactionSuccessful();
                         database.endTransaction();
                     } else {
 
                     }
+                /*    database.beginTransaction();
+                    String Query1 = "Update  returns Set is_push = 'Y' and is_post='true'";
+                    long or_result1 = db.executeDML(Query1, database);
+                    if (or_result1 > 0) {
+                        resultStr = "3";
+
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                    } else {
+
+                    }*/
+
                 }
+else if(strStatus.equals("false")){
+                    resultStr = "2";
+    Globals.responsemessage=strmsg;
+
+                }
+
+
+
             }
             cursor.close();
         } catch (Exception ex) {
@@ -640,15 +684,22 @@ public class Orders {
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString) {
+    private static String send_item_json_on_server(String JsonString,String liccustomerid,String syscode1,String syscode3,String syscode4) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/order/data");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", syscode1));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3",syscode3));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", syscode4));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         } catch (UnsupportedEncodingException e1) {

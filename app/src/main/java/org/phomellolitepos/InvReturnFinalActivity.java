@@ -1,13 +1,17 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,14 +19,21 @@ import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.support.design.widget.BottomNavigationView;
+import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -31,6 +42,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
+import android.widget.AutoCompleteTextView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -65,6 +79,7 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Location;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Return_detail;
@@ -79,23 +94,27 @@ import org.phomellolitepos.utils.TimerCountTools;
 
 import java.io.ByteArrayOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.TimeUnit;
+import java.util.stream.Collectors;
 
 import woyou.aidlservice.jiuiv5.ICallback;
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
 public class InvReturnFinalActivity extends AppCompatActivity {
-    EditText edt_name, edt_qty, edt_price, edt_return_qty, edt_total_qty;
-    EditText edt_toolbar_item_list;
+    EditText edt_name, edt_qty, edt_price, edt_return_qty, edt_total_qty,edt_itemcode;
+    AutoCompleteTextView edt_toolbar_item_list;
     Button btn_add;
     ListView list, lv;
     String operation, str_voucher_no, str_date, str_remarks, ordCode;
     Database db;
+    String contact;
     SQLiteDatabase database;
     ProgressDialog pDialog;
     BottomNavigationView bottomNavigationView;
@@ -113,6 +132,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
     String strupdate = "", strItemCode, cusCode;
     int Position;
     Lite_POS_Registration lite_pos_registration;
+    String projectid;
     ArrayList<String> arrayList1;
     String relt = "", PayId;
     private boolean iswifi = false;
@@ -132,7 +152,11 @@ public class InvReturnFinalActivity extends AppCompatActivity {
     private PrinterListener printer_callback = new PrinterListener();
     public static PrinterBinder printer;
     private HandlerUtils.MyHandler handlerPPT8555;
-
+    ArrayList<Object> object;
+    ArrayList<Object> itemcode;
+    String serial_no, android_id, myKey, device_id,imei_no;
+    ArrayList<Object> barcodelist;
+    ArrayList<Object> ret_qtylist;
     /*定义打印机状态*/
     private final int PRINTER_NORMAL = 0;
     /*打印机当前状态*/
@@ -159,7 +183,8 @@ public class InvReturnFinalActivity extends AppCompatActivity {
     private final int MSG_MOTOR_HIGH_TEMP_INIT_PRINTER = 9;
     private final int MSG_CURRENT_TASK_PRINT_COMPLETE = 10;
     private int printerStatus = 0;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     private final int DEFAULT_LOOP_PRINT = 0;
 
     //循环打印标志位
@@ -327,7 +352,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                             intent.putExtra("voucher_no", str_voucher_no);
                             intent.putExtra("date", str_date);
                             intent.putExtra("remarks", str_remarks);
-                            intent.putExtra("contact_code",cusCode );
+                            intent.putExtra("contact_code","" );
                             intent.putExtra("order_code", ordCode);
                             startActivity(intent);
                             finish();
@@ -341,6 +366,9 @@ public class InvReturnFinalActivity extends AppCompatActivity {
             }
         });
 
+        // Gettting item list here
+
+
         Intent intent = getIntent();
         getSupportActionBar().setTitle("");
         operation = intent.getStringExtra("operation");
@@ -350,23 +378,108 @@ public class InvReturnFinalActivity extends AppCompatActivity {
         PayId = intent.getStringExtra("payment_id");
         ordCode = intent.getStringExtra("order_code");
         cusCode = intent.getStringExtra("contact_code");
-        Toast.makeText(getApplicationContext(),"Contact code"+ cusCode, Toast.LENGTH_LONG).show();
+
+        Bundle args = intent.getBundleExtra("BUNDLE");
+        object = (ArrayList<Object>) args.getSerializable("ARRAYLIST");
+        itemcode =(ArrayList<Object>) args.getSerializable("ItemCodeList");;
+        barcodelist = (ArrayList<Object>) args.getSerializable("BarCodeList");
+        ret_qtylist = (ArrayList<Object>) args.getSerializable("ret_quantitylist");
+       // Toast.makeText(getApplicationContext(),"Contact code"+ cusCode, Toast.LENGTH_LONG).show();
 
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.retail_bottom_navigation);
-        edt_toolbar_item_list = (EditText) findViewById(R.id.edt_toolbar_item_list);
+        edt_toolbar_item_list = (AutoCompleteTextView) findViewById(R.id.edt_toolbar_item_list);
         edt_name = (EditText) findViewById(R.id.edt_name);
         edt_qty = (EditText) findViewById(R.id.edt_qty);
         edt_return_qty = (EditText) findViewById(R.id.edt_return_qty);
         edt_total_qty = (EditText) findViewById(R.id.edt_total_qty);
         edt_price = (EditText) findViewById(R.id.edt_price);
         list = (ListView) findViewById(R.id.list);
+        edt_itemcode=(EditText)findViewById(R.id.edt_itemcode);
         btn_add = (Button) findViewById(R.id.btn_add);
+        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+        projectid=lite_pos_registration.getproject_id();
+        FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
+        fab.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if(projectid.equals("standalone")) {
+                    Intent intent = new Intent(InvReturnFinalActivity.this, InvReturnItemListActivity.class);
+                    intent.putExtra("operation", operation);
+                    intent.putExtra("voucher_no", str_voucher_no);
+                    intent.putExtra("date", str_date);
+                    intent.putExtra("remarks", str_remarks);
+                    intent.putExtra("contact_code", cusCode);
+                    Bundle args = new Bundle();
+                    args.putSerializable("ARRAYLIST", (Serializable) object);
+                    args.putSerializable("ItemCodeList", (Serializable) itemcode);
+                    args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                    intent.putExtra("BUNDLE", args);
 
+                    intent.putExtra("order_code", ordCode);
+                    if (cusCode.equals("")) {
+                        intent.putExtra("payment_id", "1");
+                    } else {
+                        intent.putExtra("payment_id", PayId);
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+                else{
+                    Intent intent = new Intent(InvReturnFinalActivity.this, InvReturnItemListActivity.class);
+                    intent.putExtra("operation", operation);
+                    intent.putExtra("voucher_no", str_voucher_no);
+                    intent.putExtra("date", str_date);
+                    intent.putExtra("remarks", str_remarks);
+                    intent.putExtra("contact_code", cusCode);
+                    Bundle args = new Bundle();
+                    args.putSerializable("ARRAYLIST", (Serializable) object);
+                    args.putSerializable("ItemCodeList", (Serializable) itemcode);
+                    args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                    intent.putExtra("BUNDLE", args);
+
+                    intent.putExtra("order_code", ordCode);
+                    if (cusCode.equals("")) {
+                        intent.putExtra("payment_id", "1");
+                    } else {
+                        intent.putExtra("payment_id", PayId);
+                    }
+                    startActivity(intent);
+                    finish();
+                }
+            }
+        });
         callback = new ICallback.Stub() {
 
             @Override
@@ -462,7 +575,38 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                 }
             }
         });
+        edt_toolbar_item_list.addTextChangedListener(new TextWatcher() {
+            @Override
+            public void beforeTextChanged(CharSequence charSequence, int i, int i1, int i2) {
 
+            }
+
+            @Override
+            public void onTextChanged(CharSequence charSequence, int i, int i1, int i2) {
+                String strFilter = edt_toolbar_item_list.getText().toString();
+                autocomplete(strFilter);
+            }
+
+            @Override
+            public void afterTextChanged(Editable editable) {
+            }
+        });
+
+        edt_toolbar_item_list.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
+
+        edt_toolbar_item_list.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+            }
+        });
         settings = Settings.getSettings(getApplicationContext(), database, "");
         if (settings == null) {
             PrinterType = "";
@@ -661,12 +805,21 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                             arraylist.add(Position, stockAdjectmentDetailList);
                             list_load(arraylist);
                         } else {
+                            String strWhere="";
+//
+//                            for(int i=0;i<itemcode.size();i++){
+//                                strWhere = itemcode.get(i).toString();
+//
+//
+//                                String strcode= strWhere;
+//                                resultp1 = Item.getItem(getApplicationContext(), "where item_code='" + strcode + "'", database, db);
+//                            }
 
                             int count = 0;
                             boolean bFound = false;
 
                             while (count < arraylist.size()) {
-                                if (resultp1.get_item_code().equals(arraylist.get(count).getItem_code())) {
+                                if (arraylist.get(count).getItem_code().equals(edt_itemcode.getText())) {
                                     bFound = true;
                                     arraylist.get(count).setQty(((Integer.parseInt(arraylist.get(count).getQty())) + Integer.parseInt(edt_qty.getText().toString().trim())) + "");
                                     arraylist.get(count).setLine_total(((Double.parseDouble(arraylist.get(count).getQty())) * Double.parseDouble(edt_price.getText().toString().trim())) + "");
@@ -675,7 +828,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                             }
 
                             if (!bFound) {
-                                StockAdjectmentDetailList stockAdjectmentDetailList = new StockAdjectmentDetailList(getApplicationContext(), "", "", "", resultp1.get_item_code(), edt_qty.getText().toString().trim(), str_inv, resultp1.get_item_name(), edt_price.getText().toString().trim(), (Double.parseDouble(edt_qty.getText().toString().trim()) * Double.parseDouble(edt_price.getText().toString().trim())) + "");
+                                StockAdjectmentDetailList stockAdjectmentDetailList = new StockAdjectmentDetailList(getApplicationContext(), "", "", "", edt_itemcode.getText().toString(), edt_qty.getText().toString().trim(), str_inv, edt_name.getText().toString(), edt_price.getText().toString().trim(), (Double.parseDouble(edt_qty.getText().toString().trim()) * Double.parseDouble(edt_price.getText().toString().trim())) + "");
                                 arraylist.add(stockAdjectmentDetailList);
                             }
                             list_load(arraylist);
@@ -712,13 +865,64 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                             runOnUiThread(new Runnable() {
                                                 public void run() {
                                                     try {
-                                                        Toast.makeText(getApplicationContext(),"print start 1", Toast.LENGTH_LONG).show();
-                                                        print_return();
+                                                        if(PrinterType.equals("0")) {
+
+                                                            Globals.strContact_Code="";
+                                                            Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                            Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                            startActivity(intent1);
+                                                            finish();
+
+
+
+
+                                                        }
+
+                                                        else {
+
+
+                                                            //  Toast.makeText(getApplicationContext(),"print start 1",Toast.LENGTH_LONG).show();
+                                                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(InvReturnFinalActivity.this);
+
+                                                            alertDialog.setTitle("Invoice Return");
+                                                            alertDialog.setMessage("Do you want to print the Invoice return?");
+                                                            alertDialog.setIcon(R.drawable.delete);
+
+                                                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    Globals.strContact_Code="";
+                                                                    Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    try {
+                                                                        print_return();
+                                                                    } catch (Exception e) {
+
+                                                                    }
+                                                                }
+                                                            });
+
+
+                                                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                    Globals.strContact_Code="";
+                                                                    Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    dialog.cancel();
+                                                                }
+                                                            });
+
+                                                            // Showing Alert Message
+                                                            alertDialog.show();
+                                                        }
                                                     } catch (Exception ex) {}
-                                                    Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                  /*  Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
                                                     Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
                                                     startActivity(intent1);
-                                                    finish();
+                                                    finish();*/
                                                 }
                                             });
                                         } else {
@@ -751,17 +955,68 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                             public void run() {
 
                                                                                 try {
-                                                                                    Toast.makeText(getApplicationContext(),"print start 2", Toast.LENGTH_LONG).show();
+                                                                                    if(PrinterType.equals("0")) {
 
-                                                                                    print_return();
+                                                                                        Globals.strContact_Code="";
+                                                                                        Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                        Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                                                        startActivity(intent1);
+                                                                                        finish();
+
+
+
+
+                                                                                    }
+
+                                                                                    else {
+
+
+                                                                                        //  Toast.makeText(getApplicationContext(),"print start 1",Toast.LENGTH_LONG).show();
+                                                                                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(InvReturnFinalActivity.this);
+
+                                                                                        alertDialog.setTitle("Invoice Return");
+                                                                                        alertDialog.setMessage("Do you want to print the Invoice return?");
+                                                                                        alertDialog.setIcon(R.drawable.delete);
+
+                                                                                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                                                Globals.strContact_Code="";
+                                                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                                Intent intent1 = new Intent(InvReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                                startActivity(intent1);
+                                                                                                finish();
+                                                                                                try {
+                                                                                                    print_return();
+                                                                                                } catch (Exception e) {
+
+                                                                                                }
+                                                                                            }
+                                                                                        });
+
+
+                                                                                        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                                Globals.strContact_Code="";
+                                                                                                Intent intent1 = new Intent(InvReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                                startActivity(intent1);
+                                                                                                finish();
+                                                                                                dialog.cancel();
+                                                                                            }
+                                                                                        });
+
+                                                                                        // Showing Alert Message
+                                                                                        alertDialog.show();
+                                                                                    }
+
                                                                                 } catch (Exception ex) {
                                                                                     Toast.makeText(getApplicationContext(),ex.getMessage(), Toast.LENGTH_LONG).show();
 
                                                                                 }
-                                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                              /*  Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
                                                                                 Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
                                                                                 startActivity(intent1);
-                                                                                finish();
+                                                                                finish();*/
                                                                             }
                                                                         });
                                                                         break;
@@ -773,6 +1028,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                             }
                                                                         });
                                                                         break;
+
                                                                     default:
                                                                         runOnUiThread(new Runnable() {
                                                                             public void run() {
@@ -781,7 +1037,37 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                         });
                                                                         break;
                                                                 }
-                                                            } else {
+                                                            }
+
+                                                           else if(result.equals("3")) {
+                                                               runOnUiThread(new Runnable() {
+                                                                   public void run() {
+                                                                       if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                                                           Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                           lite_pos_device.setStatus("Out");
+                                                                           long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                           if (ct > 0) {
+
+                                                                               Intent intent_category = new Intent(InvReturnFinalActivity.this, LoginActivity.class);
+                                                                               startActivity(intent_category);
+                                                                               finish();
+                                                                           }
+
+
+                                                                       }
+                                                                   }
+                                                               });
+                                                           }
+                                                            else if(result.equals("4")){
+                                                                pDialog.dismiss();
+                                                                runOnUiThread(new Runnable() {
+                                                                    public void run() {
+                                                                        Toast.makeText(getApplicationContext(), Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                            }
+                                                            else {
                                                                 pDialog.dismiss();
                                                             }
                                                         } else {
@@ -832,10 +1118,55 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                             if (result.equals("1")) {
                                                 runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
-                                                        Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
-                                                        startActivity(intent1);
-                                                        finish();
+
+                                                        if(PrinterType.equals("0")) {
+
+
+                                                            Globals.strContact_Code="";
+                                                            Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                            Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                            startActivity(intent1);
+                                                            finish();
+
+
+                                                        }
+                                                        else{
+                                                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(InvReturnFinalActivity.this);
+
+                                                            alertDialog.setTitle("Invoice Return");
+                                                            alertDialog.setMessage("Do you want to print the Invoice return?");
+                                                            alertDialog.setIcon(R.drawable.delete);
+
+                                                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    Globals.strContact_Code="";
+                                                                    Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    try {
+                                                                        print_return();
+                                                                    } catch (Exception e) {
+
+                                                                    }
+                                                                }
+                                                            });
+
+
+                                                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    Globals.strContact_Code="";
+                                                                    Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent1 = new Intent(InvReturnFinalActivity.this, InvReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    dialog.cancel();
+                                                                }
+                                                            });
+
+                                                            // Showing Alert Message
+                                                            alertDialog.show();
+                                                        }
                                                     }
                                                 });
 
@@ -851,6 +1182,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                     timerThread.start();
                                 }
                                 break;
+
                             case R.id.action_cancel:
                                 if (arraylist.size() == 0) {
                                     Toast.makeText(getApplicationContext(), "No item added", Toast.LENGTH_SHORT).show();
@@ -968,6 +1300,32 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                     timerThread3.start();
                                 }
                                 break;
+                            case R.id.action_print:
+                                returns = Returns.getReturns(getApplicationContext(), " where voucher_no ='" + str_voucher_no + "' ", database);
+                                if (returns == null) {
+                                    Toast.makeText(getApplicationContext(), "New mode this operation will not work", Toast.LENGTH_SHORT).show();
+
+                                }
+
+                                else{
+                                    if(PrinterType.equals("0")){
+                                        Toast.makeText(getApplicationContext(), "Please check printer settings", Toast.LENGTH_SHORT).show();
+
+
+
+                                    }
+
+                                    else{
+                                        try{
+                                            print_return();
+                                        }
+                                        catch (Exception e){
+
+                                        }
+
+                                    }
+                                }
+                                break;
                         }
                         return true;
                     }
@@ -984,12 +1342,18 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                            if (edt_toolbar_item_list.getText().toString().equals("\n") || edt_toolbar_item_list.getText().toString().equals("")) {
                                                                Toast.makeText(getApplicationContext(), "field vaccant", Toast.LENGTH_SHORT).show();
                                                                edt_toolbar_item_list.requestFocus();
-                                                           } else {
-                                                              // resultp = Item.getItem(getApplicationContext(), "where item_code='" + item_code + "'", database, db);
+                                                           }
+
+
+                                                           else {
+                                                               // resultp = Item.getItem(getApplicationContext(), "where item_code='" + item_code + "'", database, db);
 
                                                                if (lite_pos_registration.getproject_id().equals("standalone")) {
                                                                    String strWhere = strValue;
-                                                                   Order_Detail order_detail = Order_Detail.getOrder_Detail(getApplicationContext(), "where order_code='" + ordCode + "' and item_code='" + strWhere + "'", database);
+
+                                                                   //String selectquery ="SELECT am.order_code,am.item_code,e.item_name FROM  order_detail am left join item e on e.item_code = am.item_code where am.order_code='" + ordCode + "'  and am.item_code='" + strWhere + "' and e.item_name='" + strWhere + "'";
+
+                                                                   Order_Detail order_detail = Order_Detail.getOrder_DetailInv(getApplicationContext(), "where am.order_code='" + ordCode + "'  or am.item_code='" + strWhere + "' or e.item_name='" + strWhere + "'or e.barcode='" + strWhere + "'", database);
                                                                    if (order_detail != null) {
                                                                        strupdate = "";
                                                                        item_code = order_detail.get_item_code();
@@ -1009,6 +1373,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                            total = Globals.myNumberFormat2Price(linetotal, decimal_check);
                                                                            resultp = Item.getItem(getApplicationContext(), "where item_code='" + item_code + "'", database, db);
                                                                            edt_name.setText(resultp.get_item_name());
+                                                                           edt_itemcode.setText(resultp.get_item_code());
                                                                            edt_price.setText(total);
                                                                            edt_qty.setText("1");
                                                                            edt_qty.requestFocus();
@@ -1028,9 +1393,67 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                        Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_SHORT).show();
                                                                    }
                                                                } else {
-                                                                   final String strWhere = strValue;
 
-                                                                   pDialog = new ProgressDialog(InvReturnFinalActivity.this);
+
+
+                                                                   String strWhere="";
+                                                                   String strbarcode= "";
+                                                                   for(int i=0;i<itemcode.size();i++){
+                                                                       strWhere = itemcode.get(i).toString();
+
+                                                                   }
+                                                                   for(int i=0;i<barcodelist.size();i++){
+                                                                       strbarcode = barcodelist.get(i).toString();
+
+                                                                   }
+                                                                   for(int i=0;i<barcodelist.size();i++){
+                                                                       strbarcode = barcodelist.get(i).toString();
+
+                                                                   }
+                                                                   final String strWhereitemname = edt_toolbar_item_list.getText().toString();
+
+                                                                   // String selectquery = "SELECT am.order_code,am.item_code,e.item_name FROM  order_detail am left join item e on e.item_code = am.item_code where am.order_code='" + ordCode + "'  and am.item_code='" + strWhere + "' and e.item_name='" + strWhere + "'";
+                                                                   Order_Detail order_detail = Order_Detail.getOrder_DetailInv(getApplicationContext(), "where am.order_code='" + ordCode + "'  or am.item_code='" + strWhere + "' or e.item_name='" + strWhereitemname + "' or e.barcode='" + strbarcode + "'" , database);
+
+                                                                   //  Order_Detail order_detail = Order_Detail.getOrder_Detail(getApplicationContext(), "where order_code='" + ordCode + "' and item_code='" + strWhere + "'", database);
+                                                                   if (order_detail != null) {
+                                                                       strupdate = "";
+                                                                       item_code = order_detail.get_item_code();
+
+                                                                       String total;
+                                                                       Double linetotal = 0d;
+                                                                       Double totalQty = 0d;
+                                                                       try {
+                                                                           String strLineTotal = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_line_total()), decimal_check);
+                                                                           String strQty = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_quantity()), decimal_check);
+                                                                           String strRetnQty = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_return_quantity()), decimal_check);
+                                                                           try {
+                                                                               linetotal = Double.parseDouble(strLineTotal) / Double.parseDouble(strQty);
+                                                                           } catch (Exception ex) {
+                                                                           }
+
+                                                                           total = Globals.myNumberFormat2Price(linetotal, decimal_check);
+                                                                           resultp = Item.getItem(getApplicationContext(), "where item_code='" + item_code + "'", database, db);
+                                                                           edt_name.setText(resultp.get_item_name());
+                                                                           edt_itemcode.setText(item_code);
+                                                                           edt_price.setText(total);
+                                                                           edt_qty.setText("1");
+                                                                           edt_qty.requestFocus();
+                                                                           edt_qty.selectAll();
+                                                                           try {
+                                                                               totalQty = Double.parseDouble(strQty) - Double.parseDouble(strRetnQty);
+                                                                           } catch (Exception ex) {
+                                                                           }
+                                                                           edt_return_qty.setText(Globals.myNumberFormat2Price(totalQty, decimal_check));
+                                                                           edt_total_qty.setText(strQty);
+                                                                           edt_toolbar_item_list.setText("");
+                                                                       } catch (Exception e) {
+                                                                       }
+                                                                   } else {
+                                                                       edt_toolbar_item_list.selectAll();
+                                                                       Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_SHORT).show();
+                                                                   }
+                                                                 /*  pDialog = new ProgressDialog(InvReturnFinalActivity.this);
                                                                    pDialog.setCancelable(false);
                                                                    pDialog.setMessage(getString(R.string.Wait_msg));
                                                                    pDialog.show();
@@ -1055,10 +1478,10 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                                                                            }
                                                                        }
                                                                    };
-                                                                   timerThread.start();
+                                                                   timerThread.start();*/
+
 
                                                                }
-
                                                            }
                                                            return true;
                                                        }
@@ -1189,14 +1612,28 @@ public class InvReturnFinalActivity extends AppCompatActivity {
         }
         return succ;
     }
+    private void autocomplete(String strFilter) {
+        try {
+            strFilter = " AND ( e.item_code Like '%" + strFilter + "%'  OR e.item_name Like '%" + strFilter + "%' OR e.barcode Like '%" + strFilter + "%' )";
+            arrayList1 = Item.getAllItemforautocompleteinv(getApplicationContext(), " WHERE am.order_code = '" + ordCode + "'" + strFilter + " limit 10");
 
+            if (arrayList1.size() > 0) {
+                ArrayAdapter<String> adapter = new ArrayAdapter<String>
+                        (this, R.layout.items_spinner, arrayList1);
+                edt_toolbar_item_list.setThreshold(0);
+                edt_toolbar_item_list.setAdapter(adapter);
+            }
+        }catch (Exception e){
+
+        }
+    }
     private String getItemFromServer(String item_code) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos/index.php/api/invoice_return/get_item");
         ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
+        //nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.reg_code));
         nameValuePairs.add(new BasicNameValuePair("order_code", ordCode));
         nameValuePairs.add(new BasicNameValuePair("item_code", item_code));
         try {
@@ -1224,10 +1661,11 @@ public class InvReturnFinalActivity extends AppCompatActivity {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/invoice_return/update_return_quantity");
+
+                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/invoice_return/update_return_quantity");
         ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", cmpnyId));
-        nameValuePairs.add(new BasicNameValuePair("order_code", ordCode));
+        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.reg_code));
+        //  nameValuePairs.add(new BasicNameValuePair("order_code", ordCode));
         nameValuePairs.add(new BasicNameValuePair("data", data));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -1249,7 +1687,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
     }
 
     private String send_online_return() {
-        String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'");
+        String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'",liccustomerid,serial_no, android_id,myKey);
         return result;
     }
 
@@ -1588,7 +2026,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
             public void run() {
                 try {
                     for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
-                       // mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                        // mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                         Bitmap bitmap = StringToBitMap(settings.get_Logo());
                         if (bitmap != null) {
                             ByteArrayOutputStream stream = new ByteArrayOutputStream();
@@ -1596,7 +2034,7 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                             bitmap = getResizedBitmap(bitmap, 80, 120);
                             mIPosPrinterService.printBitmap(1, 6, bitmap, callbackPPT8555);
                         }
-                    //    Toast.makeText(getApplicationContext(),"ppt 855 printer"+ mIPosPrinterService,Toast.LENGTH_LONG).show();
+                        //    Toast.makeText(getApplicationContext(),"ppt 855 printer"+ mIPosPrinterService,Toast.LENGTH_LONG).show();
                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
@@ -1631,12 +2069,12 @@ public class InvReturnFinalActivity extends AppCompatActivity {
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
                         mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier+ ":"+user.get_name(), "ST", 24, callbackPPT8555);
 
-                       try {
-                           mIPosPrinterService.printSpecifiedTypeText("Customer" + ":" + contact.get_name(), "ST", 24, callbackPPT8555);
-                       }
-                       catch(Exception e){
+                        try {
+                            mIPosPrinterService.printSpecifiedTypeText("Customer" + ":" + contact.get_name(), "ST", 24, callbackPPT8555);
+                        }
+                        catch(Exception e){
 
-                       }
+                        }
 
                         /*   if (contact.get_gstin().length() > 0) {
                             mIPosPrinterService.printSpecifiedTypeText("Customer GST No."+ ":"+ contact.get_gstin(), "ST", 24, callbackPPT8555);
@@ -2449,5 +2887,114 @@ public class InvReturnFinalActivity extends AppCompatActivity {
         }
         Log.i(TAG, "#### printerStatus" + printerStatus);
         return printerStatus;
+    }
+
+    public void setTextView() {
+        try {
+
+
+            edt_price.setText("");
+            edt_name.setText("");
+            edt_qty.setText("");
+        } catch (Exception ex) {
+        }
+
+
+    }
+
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        MenuItem item = menu.findItem(R.id.action_qr);
+        item.setVisible(false);
+        return true;
+    }
+
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        getMenuInflater().inflate(R.menu.menu_retail, menu);
+        return true;
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            String strValue = edt_toolbar_item_list.getText().toString();
+            if (edt_toolbar_item_list.getText().toString().equals("\n") || edt_toolbar_item_list.getText().toString().equals("")) {
+                Toast.makeText(getApplicationContext(), "field vaccant", Toast.LENGTH_SHORT).show();
+                edt_toolbar_item_list.requestFocus();
+            } else {
+/*                String strWhere = "Where item_code = '" + strValue + "' or item_name ='" + strValue + "' or barcode= '" + strValue + "' or sku = '" + strValue + "'";
+                arrayListItem = Item.getAllItem(getApplicationContext(), strWhere, database);
+                if (arrayListItem.size() >= 1) {
+                    strupdate = "";
+                    resultp = arrayListItem.get(0);
+                    item_code = resultp.get_item_code();
+                    Item_Location item_location = Item_Location.getItem_Location(getApplicationContext(), "Where item_code = '" + item_code + "'", database);
+                    if (item_location == null) {
+                        sale_priceStr = "0";
+                    } else {
+                        sale_priceStr = item_location.get_selling_price();
+                    }
+                    String item_price;
+                    item_price = Globals.myNumberFormat2Price(Double.parseDouble(sale_priceStr), decimal_check);
+                    edt_name.setText(resultp.get_item_name());
+                    edt_price.setText(item_price);*/
+                Order_Detail order_detail = Order_Detail.getOrder_DetailInv(getApplicationContext(), "where am.order_code='" + ordCode + "'  or am.item_code='" + strValue + "' or e.item_name='" + strValue + "'or e.barcode='" + strValue + "'", database);
+                String strWhere = "Where item_code = '" + strValue + "' or item_name ='" + strValue + "' or barcode= '" + strValue + "' or sku = '" + strValue + "'";
+                arrayListItem = Item.getAllItem(getApplicationContext(), strWhere, database);
+                if (arrayListItem.size() >= 1) {
+                    strupdate = "";
+                    resultp = arrayListItem.get(0);
+                    item_code = resultp.get_item_code();
+               /*
+                if (order_detail != null) {
+                    strupdate = "";
+                    item_code = order_detail.get_item_code();*/
+
+
+                    String total;
+                    Double linetotal = 0d;
+                    Double totalQty = 0d;
+                    try {
+                        String strLineTotal = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_line_total()), decimal_check);
+                        String strQty = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_quantity()), decimal_check);
+                        String strRetnQty = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get_return_quantity()), decimal_check);
+                        try {
+                            linetotal = Double.parseDouble(strLineTotal) / Double.parseDouble(strQty);
+                        } catch (Exception ex) {
+                        }
+
+                        total = Globals.myNumberFormat2Price(linetotal, decimal_check);
+                        //resultp = Item.getItem(getApplicationContext(), "where item_code='" + item_code + "'", database, db);
+                        edt_name.setText(resultp.get_item_name());
+                        edt_itemcode.setText(resultp.get_item_code());
+                        edt_price.setText(total);
+                        edt_qty.setText("1");
+                        edt_qty.requestFocus();
+                        edt_qty.selectAll();
+                        try {
+                            totalQty = Double.parseDouble(strQty) - Double.parseDouble(strRetnQty);
+                        } catch (Exception ex) {
+                        }
+                        edt_return_qty.setText(Globals.myNumberFormat2Price(totalQty, decimal_check));
+                        edt_total_qty.setText(strQty);
+                        edt_toolbar_item_list.setText("");
+                    } catch (Exception ex) {
+                    }
+                    /*edt_qty.setText("1");
+                    edt_total_qty.setText("1.00");
+                    edt_return_qty.setText("1.00");
+*/
+                    closeKeyboard();
+                } else {
+                    edt_toolbar_item_list.selectAll();
+                    Toast.makeText(getApplicationContext(), "No Data Found", Toast.LENGTH_SHORT).show();
+                }
+
+            }
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

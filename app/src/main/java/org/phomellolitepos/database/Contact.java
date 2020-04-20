@@ -429,7 +429,7 @@ public class Contact {
 
 
 
-    public static String  sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry) {
+    public static String  sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1,String syscode3,String syscode4) {
 //        Database db = new Database(context);
 //        SQLiteDatabase database = db.getReadableDatabase();
         String strContactCode = "",conStr="0";
@@ -506,9 +506,10 @@ public class Contact {
                 row.put("contact_business_group", array_con_bg);
                 result.put(row);
                 sender.put("contact".toLowerCase(), result);
-                String serverData = send_item_json_on_server(sender.toString());
+                String serverData = send_item_json_on_server(sender.toString(),liccustomerid,syscode1,syscode3,syscode4);
                 final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                 final String strStatus = collection_jsonObject1.getString("status");
+                final String strmsg = collection_jsonObject1.getString("message");
                 if (strStatus.equals("true")) {
                     // Update This Item Group Push True
                     database.beginTransaction();
@@ -521,7 +522,13 @@ public class Contact {
                     }else {
                         database.endTransaction();
                     }
-                }else {
+                }
+                else if(strStatus.equals("false")){
+                    conStr="3";
+                    Globals.responsemessage=strmsg;
+                }
+
+                else {
                     database.endTransaction();
                 }
             }
@@ -533,16 +540,23 @@ public class Contact {
     }
 //            database.endTransaction();
 
-    private static String send_item_json_on_server(String JsonString) {
+    private static String send_item_json_on_server(String JsonString,String liccustomerid,String syscode1,String syscode3,String syscode4) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/contact/data");
 
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", syscode1));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", syscode3));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", syscode4));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+System.out.println("name value send contact"+nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         } catch (UnsupportedEncodingException e1) {

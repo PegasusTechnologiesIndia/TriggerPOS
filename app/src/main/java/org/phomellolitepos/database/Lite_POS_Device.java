@@ -32,9 +32,11 @@ public class Lite_POS_Device {
     private String license_key;
     private String license_type;
     private String Status;
+
     public Lite_POS_Device(Context context, String Id, String Device_Id,
                            String App_Type, String Device_Code, String Device_Name, String Expiry_Date, String Device_Symbol,
-                           String Location_Code, String Currency_Symbol, String Decimal_Place, String Currency_Place,String licensecustomerid,String licensecode,String licensekey,String licensetype,String Status) {
+                           String Location_Code, String Currency_Symbol, String Decimal_Place, String Currency_Place,String licensecustomerid,String licensecode,String licensekey,String licensetype,String Status
+                       ) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -55,7 +57,9 @@ public class Lite_POS_Device {
         this.setLicense_key(licensekey);
         this.setLicense_type(licensetype);
         this.setStatus(Status);
+
     }
+
 
 
     public String getStatus() {

@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
@@ -8,17 +9,22 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -67,6 +73,7 @@ import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item_Group;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Sys_Sycntime;
@@ -84,12 +91,15 @@ public class CategoryListActivity extends AppCompatActivity {
     ProgressDialog pDialog;
     Lite_POS_Registration lite_pos_registration;
     Database db;
+    Lite_POS_Device liteposdevice;
     SQLiteDatabase database;
     String succ_import, date;
     int id;
     Settings settings;
+    String liccustomerid;
     int PICKFILE_RESULT_CODE = 100;
-
+    String serial_no, android_id, myKey, device_id, imei_no;
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -127,13 +137,40 @@ public class CategoryListActivity extends AppCompatActivity {
             }
         });
 
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no = telephonyManager.getImei();
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         id = pref.getInt("id", 0);
         if (id == 0) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
+        }
+
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
         }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -268,6 +305,30 @@ public class CategoryListActivity extends AppCompatActivity {
                                                         String result = send_online_item_group();
                                                         String suss = getitemGroup();
                                                         pDialog.dismiss();
+
+                                                        if(result=="0"){
+
+                                                            try {
+                                                                if(Globals.responsemessage.equals("Device Not Found")){
+
+                                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                    lite_pos_device.setStatus("Out");
+                                                                    long ct = lite_pos_device.updateDevice("Id=?", new String[]{"1"}, database);
+                                                                    if (ct > 0) {
+
+                                                                        Intent intent_category = new Intent(CategoryListActivity.this, LoginActivity.class);
+                                                                        startActivity(intent_category);
+                                                                        finish();
+                                                                    }
+
+
+                                                                }
+
+                                                            }
+                                                            catch(Exception e){
+                                                                System.out.println("Device not found Exception "+ e.getMessage());
+                                                            }
+                                                        }
                                                         switch (suss) {
                                                             case "1":
                                                                 runOnUiThread(new Runnable() {
@@ -284,6 +345,27 @@ public class CategoryListActivity extends AppCompatActivity {
                                                                     public void run() {
                                                                         getCategoryList("");
                                                                         Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
+                                                                    }
+                                                                });
+                                                                break;
+
+                                                            case "3":
+                                                                runOnUiThread(new Runnable() {
+                                                                    public void run() {
+                                                                        if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                                                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                            lite_pos_device.setStatus("Out");
+                                                                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                            if (ct > 0) {
+
+                                                                                Intent intent_category = new Intent(CategoryListActivity.this, LoginActivity.class);
+                                                                                startActivity(intent_category);
+                                                                                finish();
+                                                                            }
+
+
+                                                                        }
                                                                     }
                                                                 });
                                                                 break;
@@ -486,7 +568,7 @@ public class CategoryListActivity extends AppCompatActivity {
 
     private String send_online_item_group() {
         Globals.reg_code = lite_pos_registration.getRegistration_Code();
-        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'");
+        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'",serial_no,"4",android_id,myKey,liccustomerid);
         return l;
     }
 
@@ -494,7 +576,9 @@ public class CategoryListActivity extends AppCompatActivity {
         String serverData;
         Sys_Sycntime sys_sycntime = Sys_Sycntime.getSys_Sycntime(getApplicationContext(), database, db, "WHERE table_name ='item_group'");
         String succ_bg = "0";
+
         // Call get item group api here
+        System.out.println("get sync date"+ sys_sycntime.get_datetime());
         database.beginTransaction();
         if (sys_sycntime == null) {
             serverData = get_item_gp_from_server("");
@@ -505,6 +589,7 @@ public class CategoryListActivity extends AppCompatActivity {
         try {
                 final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
+            final String strmessage= jsonObject_bg.getString("message");
             if (strStatus.equals("true")) {
                 JSONArray jsonArray_bg = jsonObject_bg.getJSONArray("result");
                 for (int i = 0; i < jsonArray_bg.length(); i++) {
@@ -533,7 +618,12 @@ public class CategoryListActivity extends AppCompatActivity {
                         }
                     }
                 }
-            } else {
+            } else if(strStatus.equals("false")) {
+
+                succ_bg = "3";
+                Globals.responsemessage=strmessage;
+
+
             }
 
             if (succ_bg.equals("1")) {
@@ -555,9 +645,16 @@ public class CategoryListActivity extends AppCompatActivity {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/item_group");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
-        nameValuePairs.add(new BasicNameValuePair("modified_data", datetime));
+        nameValuePairs.add(new BasicNameValuePair("modified_date", datetime));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+            System.out.println("namevalue get group"+ nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -569,6 +666,7 @@ public class CategoryListActivity extends AppCompatActivity {
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
             Log.d("response", serverData);
+            System.out.println("response get group "+serverData);
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();

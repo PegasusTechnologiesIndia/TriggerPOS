@@ -1,23 +1,28 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.FloatingActionButton;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.DefaultItemAnimator;
 import android.support.v7.widget.DividerItemDecoration;
 import android.support.v7.widget.LinearLayoutManager;
 import android.support.v7.widget.RecyclerView;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -62,6 +67,7 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Contact_Bussiness_Group;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Sys_Sycntime;
@@ -81,7 +87,9 @@ public class ContactListActivity extends AppCompatActivity {
     Lite_POS_Registration lite_pos_registration;
     Settings settings;
     private RecyclerView recyclerView;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
+    String serial_no, android_id, myKey, device_id,imei_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,13 +121,40 @@ public class ContactListActivity extends AppCompatActivity {
                 }
             }
         });
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
         if (id == 0) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
+        }
+
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
         }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
@@ -286,6 +321,30 @@ public class ContactListActivity extends AppCompatActivity {
                                                     public void run() {
                                                         //Get contact from server
                                                         String result = send_online_contact();
+
+                                                        if(result.equals("3")){
+
+                                                            runOnUiThread(new Runnable() {
+                                                                public void run() {
+
+                                                                    if(Globals.responsemessage.equals("Device Not Found")){
+
+                                                                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                        lite_pos_device.setStatus("Out");
+                                                                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                        if (ct > 0) {
+
+                                                                            Intent intent_category = new Intent(ContactListActivity.this, LoginActivity.class);
+                                                                            startActivity(intent_category);
+                                                                            finish();
+                                                                        }
+
+
+                                                                    }
+
+                                                                }
+                                                            });
+                                                        }
                                                         String suss = getContact();
                                                         pDialog.dismiss();
 
@@ -308,6 +367,29 @@ public class ContactListActivity extends AppCompatActivity {
                                                                     }
                                                                 });
                                                                 break;
+
+
+                                                            case "3":
+                                                                runOnUiThread(new Runnable() {
+                                                                    public void run() {
+                                                                        if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                                                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                            lite_pos_device.setStatus("Out");
+                                                                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                            if (ct > 0) {
+
+                                                                                Intent intent_category = new Intent(ContactListActivity.this, LoginActivity.class);
+                                                                                startActivity(intent_category);
+                                                                                finish();
+                                                                            }
+
+
+                                                                        }
+                                                                    }
+                                                                });
+                                                                break;
+
                                                             default:
                                                                 runOnUiThread(new Runnable() {
                                                                     public void run() {
@@ -439,7 +521,7 @@ public class ContactListActivity extends AppCompatActivity {
 
     private String send_online_contact() {
 
-        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'");
+        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,serial_no,android_id,myKey);
         return conList;
     }
 
@@ -459,6 +541,7 @@ public class ContactListActivity extends AppCompatActivity {
         try {
             final JSONObject jsonObject_contact = new JSONObject(serverData);
             final String strStatus = jsonObject_contact.getString("status");
+            final String strmsg = jsonObject_contact.getString("message");
             if (strStatus.equals("true")) {
 
                 JSONArray jsonArray_contact = jsonObject_contact.getJSONArray("result");
@@ -589,7 +672,17 @@ public class ContactListActivity extends AppCompatActivity {
                         }
                     }
                 }
-            } else {
+            }
+            else if (strStatus.equals("false")) {
+
+                      succ_bg="3";
+                    Globals.responsemessage=strmsg;
+                }
+
+
+
+
+            else {
                 succ_bg = "0";
             }
 
@@ -611,9 +704,15 @@ public class ContactListActivity extends AppCompatActivity {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/contact");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
-        nameValuePairs.add(new BasicNameValuePair("modified_data", datetime));
+        nameValuePairs.add(new BasicNameValuePair("modified_date", datetime));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

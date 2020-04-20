@@ -273,7 +273,7 @@ public class Pos_Balance {
     }
 
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry) {
+    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid) {
         //        Database db = new Database(context);
         //        SQLiteDatabase database = db.getReada,bleDatabase();
         String strZ_Code = "", resultStr = "0";
@@ -335,7 +335,7 @@ public class Pos_Balance {
                 sender.put("z_close", array_z_close);
                 sender.put("z_detail", array_z_detail);
 //                    sender.put("pos_balance".toLowerCase(), sender);
-                    String serverData = send_item_json_on_server(sender.toString());
+                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid);
                 final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                 final String strStatus = collection_jsonObject1.getString("status");
                 if (strStatus.equals("true")) {
@@ -364,15 +364,21 @@ public class Pos_Balance {
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString) {
+    private static String send_item_json_on_server(String JsonString,String liccustomerid) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/pos_balance/data");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

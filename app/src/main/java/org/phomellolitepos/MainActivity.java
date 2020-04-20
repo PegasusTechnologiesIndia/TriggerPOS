@@ -32,6 +32,7 @@ import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
 import android.support.design.widget.TabLayout;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
 import android.support.v4.view.MenuItemCompat;
@@ -232,6 +233,9 @@ public class MainActivity extends AppCompatActivity
     ZBarScannerView mScannerView;
     String serial_no, android_id, myKey, device_id, imei_no;
     Menu menu2;
+    String reg_code;
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     /**
      * 发送消息的回调
      */
@@ -426,6 +430,15 @@ public class MainActivity extends AppCompatActivity
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         final Intent intent = getIntent();
         listDialog2 = new Dialog(this);
 
@@ -545,7 +558,9 @@ public class MainActivity extends AppCompatActivity
             return;
         }
         device_id = telephonyManager.getDeviceId();
-        imei_no = telephonyManager.getImei();
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+            imei_no = telephonyManager.getImei();
+        }
         if (intent != null) {
             operation = intent.getStringExtra("operation");
             code_category = intent.getStringExtra("code");
@@ -704,7 +719,7 @@ public class MainActivity extends AppCompatActivity
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
         list_title = (TextView) findViewById(R.id.list_title);
-        fragList = new ArrayList<android.support.v4.app.Fragment>();
+        fragList = new ArrayList<Fragment>();
         if (!Globals.Industry_Type.equals("3")) {
             setupViewPager(viewPager, "Main", "", "", "");
             btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
@@ -1546,7 +1561,7 @@ public class MainActivity extends AppCompatActivity
                 locCode = "";
             }
             objOrder = Orders.getOrders(getApplicationContext(), database, "  WHERE order_code = '" + strOrderCode + "'");
-            objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderCode, objOrder.get_order_date(), Globals.strContact_Code,
+            objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), liccustomerid, locCode, Globals.strOrder_type_id, strOrderCode, objOrder.get_order_date(), Globals.strContact_Code,
                     "0", Globals.TotalItem + "", Globals.TotalQty + "",
                     Globals.TotalItemPrice + "", "0", "0", Globals.TotalItemPrice + "", "",
                     "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, objOrder.get_remarks(), Globals.strTable_Code, "");
@@ -1556,7 +1571,7 @@ public class MainActivity extends AppCompatActivity
                 long e = Order_Detail.delete_order_detail(getApplicationContext(), "order_detail", "order_code =?", new String[]{strOrderCode}, database);
                 for (int count = 0; count < myCart.size(); count++) {
                     ShoppingCart mCart = myCart.get(count);
-                    objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderCode,
+                    objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderCode,
                             "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                             mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
                     long o = objOrderDetail.insertOrder_Detail(database);
@@ -1597,7 +1612,7 @@ public class MainActivity extends AppCompatActivity
             } catch (Exception ex) {
                 locCode = "";
             }
-            objOrder = new Orders(getApplicationContext(), null, Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
+            objOrder = new Orders(getApplicationContext(), null, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
                     "0", Globals.TotalItem + "", Globals.TotalQty + "",
                     Globals.TotalItemPrice + "", "0", "0", Globals.TotalItemPrice + "", "",
                     "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, strRemarks, Globals.strTable_Code, "");
@@ -1607,7 +1622,7 @@ public class MainActivity extends AppCompatActivity
                 strFlag1 = "1";
                 for (int count = 0; count < myCart.size(); count++) {
                     ShoppingCart mCart = myCart.get(count);
-                    objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
+                    objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                             "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                             mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
                     long o = objOrderDetail.insertOrder_Detail(database);
@@ -2924,11 +2939,12 @@ public class MainActivity extends AppCompatActivity
 
             public void onClick(DialogInterface dialog, int which) {
 
-
+                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+           reg_code=lite_pos_registration.getRegistration_Code();
                 Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
 
                 String licensecustomerid= lite_pos_device.getLic_customer_license_id();
-                postDeviceInfo(email, password, Globals.isuse_logout, Globals.master_product_id, licensecustomerid, device_id, serial_no, "4", android_id, myKey);
+                postDeviceInfo(email, password, Globals.isuse_logout, Globals.master_product_id, licensecustomerid, Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
             }
         });
 
@@ -2948,7 +2964,7 @@ public class MainActivity extends AppCompatActivity
         AlertDialog alert = builder.create();
         alert.show();
     }
-    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4) {
+    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String regcode) {
 
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Logging Out....");
@@ -3002,7 +3018,7 @@ public class MainActivity extends AppCompatActivity
                                     // database.beginTransaction();
                                     Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
                                     lite_pos_device.setStatus("Out");
-                                    long ct = lite_pos_device.updateDevice("Id=?", new String[]{"1"}, database);
+                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
                                     if (ct > 0) {
                                        /* database.setTransactionSuccessful();
                                         database.endTransaction();*/
@@ -3118,7 +3134,7 @@ public class MainActivity extends AppCompatActivity
                 params.put("sys_code_2", syscode2);
                 params.put("sys_code_3", syscode3);
                 params.put("sys_code_4", syscode4);
-
+                params.put("reg_code", regcode);
                 return params;
             }
 

@@ -30,20 +30,25 @@
     <uses-permission android:name="com.pos.permission.CARD_READER_ICC" />
     <uses-permission android:name="com.pos.permission.CARD_READER_PICC" />
     <uses-permission android:name="com.pos.permission.CARD_READER_MAG" />
-    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" >
-    </uses-permission>
-    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" >
-    </uses-permission>
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE"></uses-permission>
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE"></uses-permission>
+
     <application
         android:name=".AppController"
         android:allowBackup="true"
+        android:hardwareAccelerated="false"
         android:icon="@drawable/app_icon_92"
         android:label="@string/app_name"
+        android:largeHeap="true"
         android:roundIcon="@mipmap/ic_launcher_round"
         android:supportsRtl="true"
-        android:theme="@style/AppTheme"
-        android:largeHeap="true"
-        android:hardwareAccelerated="false">
+        android:theme="@style/AppTheme">
+        <activity android:name=".InvReturnItemListActivity"
+
+            android:label="@string/title_activity_item"
+            android:theme="@style/AppTheme.NoActionBar" />
+
+
         <uses-library
             android:name="com.odm"
             android:required="false" />
@@ -290,19 +295,15 @@
         <activity
             android:name=".PaymentCollectionActivity"
             android:label="@string/title_activity_payment_collection"
-            android:theme="@style/AppTheme.NoActionBar" />
-
-<!--        <receiver-->
-<!--            android:name=".Util.BootStartUpReciever"-->
-<!--            android:enabled="true"-->
-<!--            android:exported="true">-->
-<!--            <intent-filter>-->
-<!--                <action android:name="android.intent.action.BOOT_COMPLETED" />-->
-
-<!--                <category android:name="android.intent.category.LAUNCHER" />-->
-<!--            </intent-filter>-->
-<!--        </receiver>-->
-
+            android:theme="@style/AppTheme.NoActionBar" /> <!-- <receiver -->
+        <!-- android:name=".Util.BootStartUpReciever" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.BOOT_COMPLETED" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
         <activity
             android:name=".PayCollectionListActivity"
             android:label="@string/title_activity_pay_collection_list"
@@ -406,7 +407,6 @@
             android:name=".TicketSolution.TicketActivity"
             android:label="@string/title_activity_login"
             android:theme="@style/AppTheme.NoActionBar" />
-
         <!--
      Add this activity to your manifest
      it comes with the Paytm SDK
@@ -486,7 +486,7 @@
         <activity
             android:name=".InvReturnFinalActivity"
             android:label="@string/title_activity_inv_return_final"
-            android:theme="@style/AppTheme.NoActionBar"></activity>
+            android:theme="@style/AppTheme.NoActionBar" />
     </application>
 
 </manifest>

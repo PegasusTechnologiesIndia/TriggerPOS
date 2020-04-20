@@ -17,12 +17,13 @@ public class Last_Code {
     private String last_order_code;
     private String last_pos_balance_code;
     private String last_z_close_code;
+    private String last_order_return_code;
 
     private Database db;
     private ContentValues value;
 
     public Last_Code(Context context, String id, String last_order_code,
-                     String last_pos_balance_code, String last_z_close_code) {
+                     String last_pos_balance_code, String last_z_close_code,String last_order_return_code) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -31,9 +32,17 @@ public class Last_Code {
         this.setlast_order_code(last_order_code);
         this.setlast_pos_balance_code(last_pos_balance_code);
         this.setlast_z_close_code(last_z_close_code);
-
+        this.setLast_order_return_code(last_order_return_code);
     }
 
+    public String getLast_order_return_code() {
+        return last_order_return_code;
+    }
+
+    public void setLast_order_return_code(String last_order_return_code) {
+        this.last_order_return_code = last_order_return_code;
+        value.put("last_order_return_code", last_order_return_code);
+    }
 
     public String getid() {
         return id;
@@ -109,7 +118,7 @@ public class Last_Code {
                 do {
                     master = new Last_Code(context, cursor.getString(0),
                             cursor.getString(1), cursor.getString(2),
-                            cursor.getString(3));
+                            cursor.getString(3),cursor.getString(4));
                 } while (cursor.moveToNext());
             }
             cursor.close();

@@ -3,36 +3,27 @@ package org.phomellolitepos.Adapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.BottomNavigationView;
 import android.view.LayoutInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 
-import java.util.ArrayList;
-
-import org.phomellolitepos.ContactActivity;
 import org.phomellolitepos.CusReturnHeaderActivity;
 import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.MainActivity;
-import org.phomellolitepos.PaymentCollectionActivity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.ReservationActivity;
 import org.phomellolitepos.TicketSolution.TicketPaymentActivity;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Settings;
 
+import java.util.ArrayList;
 
-/**
- * Created by Neeraj on 5/22/2017.
- */
+public class DialogContactAdapter extends BaseAdapter {
 
-public class DialogContactMainListAdapter extends BaseAdapter {
     Context context;
     LayoutInflater inflater;
     String result1;
@@ -42,7 +33,7 @@ public class DialogContactMainListAdapter extends BaseAdapter {
     SQLiteDatabase database;
     Settings settings;
 
-    public DialogContactMainListAdapter(Context context,
+    public DialogContactAdapter(Context context,
                                         ArrayList<Contact> list, Dialog listDialog) {
         this.context = context;
         data = list;
@@ -86,35 +77,15 @@ public class DialogContactMainListAdapter extends BaseAdapter {
             public void onClick(View arg0) {
                 Contact resultp = data.get(position);
                 String id = resultp.get_contact_code();
-                Globals.strContact_Code = id;
-                Globals.strResvContact_Code = id;
-                if (settings.get_Home_Layout().equals("0")) {
 
-                    try {
-                        ((MainActivity) context).change_customer_icon();
-                    } catch (Exception ex) {
-                    }
-                } else {
-                    try {
-                        ((Main2Activity) context).change_customer_icon();
-                    } catch (Exception ex) {
-                    }
-                }
-               /* try {
+
+
+                try {
                     ((CusReturnHeaderActivity) context).setCustomer(resultp.get_name(),resultp.get_contact_code());
 
                 } catch (Exception ex) {
-                }*/
-                try {
-                    ((ReservationActivity) context).setCustomer(resultp.get_name());
-
-                } catch (Exception ex) {
                 }
 
-                try {
-                    ((TicketPaymentActivity) context).setCustomer(resultp.get_name(),resultp.get_contact_1());
-                } catch (Exception ex) {
-                }
 
                 Globals.strContact_Name = resultp.get_name();
                 dialog.dismiss();

@@ -416,7 +416,8 @@ CREATE TABLE [last_code](
                [id] INTEGER PRIMARY KEY AUTOINCREMENT,
                [last_order_code] NVARCHAR(50),
                [last_pos_balance_code] NVARCHAR(50),
-               [last_z_close_code] NVARCHAR(50));
+               [last_z_close_code] NVARCHAR(50),
+               [last_order_return_code] NVARCHAR(50));
 
 CREATE TABLE [Lite_POS_Device](
     	[Id] INTEGER PRIMARY KEY AUTOINCREMENT,

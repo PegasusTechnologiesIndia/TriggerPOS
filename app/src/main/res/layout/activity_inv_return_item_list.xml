@@ -1,11 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.constraint.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".InvReturnFinalActivity">
-
+    tools:context=".InvReturnItemListActivity">
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
@@ -17,25 +16,28 @@
             android:layout_height="?attr/actionBarSize"
             android:background="?attr/colorPrimary"
             app:popupTheme="@style/AppTheme.PopupOverlay">
-            <AutoCompleteTextView
+           <!-- <EditText
                 android:id="@+id/edt_toolbar_item_list"
                 android:layout_width="match_parent"
-                android:textCursorDrawable="@drawable/edittext_cursor_color"
-                style="@style/AppTheme.ToolbarEditText"
-                />
+                android:layout_height="45dp"
+                android:background="#ffffff"
+                android:textColor="#000000"
+                android:paddingLeft="5dp"
+                android:hint="@string/Search"
+                android:textColorHint="#b9b8b8"
+                android:textCursorDrawable="@drawable/edittext_cursor_color"/>-->
         </android.support.v7.widget.Toolbar>
 
     </android.support.design.widget.AppBarLayout>
 
-    <include layout="@layout/content_inv_return_final" />
-    <android.support.design.widget.FloatingActionButton
+    <include layout="@layout/content_inv_return_list" />
+
+   <!-- <android.support.design.widget.FloatingActionButton
         android:id="@+id/fab"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="bottom|end"
-        android:layout_marginBottom="70dp"
-
+        android:layout_margin="@dimen/fab_margin"
         app:backgroundTint="#fb7c3e"
-        android:src="@drawable/ic_gf_preview" />
-
-</android.support.design.widget.CoordinatorLayout>
+        android:src="@drawable/plus_48" />-->
+</android.support.constraint.ConstraintLayout>

@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -21,6 +22,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.net.Uri;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
@@ -28,9 +30,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
@@ -143,7 +147,9 @@ public class PaymentSplitActivity extends AppCompatActivity {
     ArrayList<Order_Payment> order_payment_array;
     private static final String TAG = "PrinterTestDemo";
     Loyalty_Redeem loyalty_redeem;
-
+Lite_POS_Device liteposdevice;
+String liccustomerid;
+    String serial_no, android_id, myKey, device_id,imei_no;
     private ServiceConnection connService = new ServiceConnection() {
 
         @Override
@@ -254,6 +260,14 @@ public class PaymentSplitActivity extends AppCompatActivity {
 
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         Intent intent = getIntent();
         strAmount = intent.getStringExtra("Amount");
         opr = intent.getStringExtra("opr");
@@ -275,6 +289,26 @@ public class PaymentSplitActivity extends AppCompatActivity {
 
             decimal_check = "1";
         }
+
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         Globals.CouponTotal = Double.parseDouble(Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
         txt_amount.setText("Amount : " + Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
         edt_amount.setText(Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
@@ -694,7 +728,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                     }
 
 
-                    objOrder = new Orders(getApplicationContext(), orderId, Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
+                    objOrder = new Orders(getApplicationContext(), orderId, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
                             "0", Globals.TotalItem + "", Globals.TotalQty + "",
                             Globals.TotalItemPrice + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
                             changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description, Globals.strTable_Code, Globals.Inv_Delivery_Date);
@@ -704,7 +738,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                         strFlag = "1";
                         for (int count = 0; count < myCart.size(); count++) {
                             ShoppingCart mCart = myCart.get(count);
-                            objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
+                            objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                                     mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
                             long o = objOrderDetail.insertOrder_Detail(database);
@@ -757,10 +791,10 @@ public class PaymentSplitActivity extends AppCompatActivity {
                         int count = 1;
                         for (int i = 0; i < Globals.splitPsyMd.size(); i++) {
                             if (Globals.splitPsyMd.get(i).getPayment_Type().equals("6")) {
-                                objOrderPayment = new Order_Payment(getApplicationContext(), null, Globals.Device_Code, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
+                                objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
                                         Globals.splitPsyMd.get(i).getPayment_Type(), "", "", Globals.CardNo, "", "", "");
                             } else {
-                                objOrderPayment = new Order_Payment(getApplicationContext(), null, Globals.Device_Code, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
+                                objOrderPayment = new Order_Payment(getApplicationContext(), null,liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
                                         Globals.splitPsyMd.get(i).getPayment_Type(), "", "", "", "", "", "");
                             }
 
@@ -902,7 +936,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                     objOrder = Orders.getOrders(getApplicationContext(), database, " WHERE order_code = '" + strOrderNo + "'");
 
 
-                    objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), "0",
+                    objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), "0",
                             "0", Globals.TotalItem + "", Globals.TotalQty + "",
                             Globals.Sub_Total + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
                             changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description + "", Globals.strTable_Code, Globals.Inv_Delivery_Date);
@@ -913,7 +947,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                         long e = Order_Detail.delete_order_detail(getApplicationContext(), "order_detail", "order_code =?", new String[]{strOrderNo}, database);
                         for (int count = 0; count < myCart.size(); count++) {
                             ShoppingCart mCart = myCart.get(count);
-                            objOrderDetail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
+                            objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
                                     mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
 
@@ -968,7 +1002,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
 
 
                             long e5 = Order_Payment.delete_order_payment(getApplicationContext(), "order_payment", " order_code =? ", new String[]{strOrderNo}, database);
-                            objOrderPayment = new Order_Payment(getApplicationContext(), null, Globals.Device_Code, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
+                            objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
                                     Globals.splitPsyMd.get(i).getPayment_Type(), "", "", "", "", "", "");
 
                             long op = objOrderPayment.insertOrder_Payment(database);
@@ -1676,7 +1710,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
+                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
                     if (result_order.equals("1")) {
                         if (settings.get_Is_KOT_Print().equals("true")) {
                             if (PrinterType.equals("1")) {
@@ -3249,7 +3283,7 @@ public class PaymentSplitActivity extends AppCompatActivity {
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
+                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
 
                     if (result_order.equals("1")) {
                         runOnUiThread(new Runnable() {

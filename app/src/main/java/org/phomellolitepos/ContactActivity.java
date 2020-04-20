@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -9,13 +10,17 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.support.design.widget.TextInputLayout;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -53,6 +58,7 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Contact_Bussiness_Group;
 import org.phomellolitepos.database.Country;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Zone;
 
@@ -99,6 +105,9 @@ public class ContactActivity extends AppCompatActivity {
     boolean flag=false;
     MenuItem menuItem;
     Contact_Bussiness_Group  contact_bussiness_group;
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
+    String serial_no, android_id, myKey, device_id,imei_no;
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -119,6 +128,7 @@ public class ContactActivity extends AppCompatActivity {
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
         }
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -153,13 +163,39 @@ public class ContactActivity extends AppCompatActivity {
         myCalendar = Calendar.getInstance();
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         code = intent.getStringExtra("contact_code");
         operation = intent.getStringExtra("operation");
         if (operation == null) {
             operation = "Add";
             contact_id = null;
         }
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         edt_layout_contact_code = (TextInputLayout) findViewById(R.id.edt_layout_contact_code);
         edt_layout_contact_name = (TextInputLayout) findViewById(R.id.edt_layout_contact_name);
         edt_layout_dob = (TextInputLayout) findViewById(R.id.edt_layout_dob);
@@ -504,7 +540,7 @@ public class ContactActivity extends AppCompatActivity {
         String modified_by = Globals.user;
 
         if (operation.equals("Edit")) {
-            contact = new Contact(getApplicationContext(), contact_id, contact.get_device_code(), contact_code, str_title,
+            contact = new Contact(getApplicationContext(), contact_id, liccustomerid, contact_code, str_title,
                     contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode);
             database.beginTransaction();
             long l = contact.updateContact("contact_code=?", new String[]{code}, database);
@@ -532,7 +568,7 @@ public class ContactActivity extends AppCompatActivity {
                 }
                 long c=0;
                 if (!add_code.equals("")) {
-                    address_class = new Address(getApplicationContext(), add_id, Globals.Device_Code, contact_code, "AC-1",
+                    address_class = new Address(getApplicationContext(), add_id, liccustomerid, contact_code, "AC-1",
                             "0", address, "0", "0", "0", "0", "0", "1", modified_by, date, "N");
 
                     c = address_class.updateAddress("address_code=?", new String[]{add_code}, database);
@@ -572,7 +608,7 @@ public class ContactActivity extends AppCompatActivity {
 
             }
         } else {
-            contact = new Contact(getApplicationContext(), contact_id, Globals.Device_Code, contact_code, str_title,
+            contact = new Contact(getApplicationContext(), contact_id, liccustomerid, contact_code, str_title,
                     contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode);
             database.beginTransaction();
             long l = contact.insertContact(database);
@@ -582,11 +618,11 @@ public class ContactActivity extends AppCompatActivity {
                 long a1 = contact_bussiness_group.insertContact_Bussiness_Group(database);
                 if (a1 > 0) {
                 }
-                address_class = new Address(getApplicationContext(), null, Globals.Device_Code, contact_code, "AC-1",
+                address_class = new Address(getApplicationContext(), null, liccustomerid, contact_code, "AC-1",
                         "0", address, "0", "0", "0", "0", "0", "1", modified_by, date, "N");
                 long a = address_class.insertAddress(database);
                 if (a > 0) {
-                    address_lookup = new Address_Lookup(getApplicationContext(), null, Globals.Device_Code, contact_code, "1",
+                    address_lookup = new Address_Lookup(getApplicationContext(), null, liccustomerid, contact_code, "1",
                             contact_code, "N");
                     long b = address_lookup.insertAddress_Lookup(database);
 
@@ -689,7 +725,7 @@ public class ContactActivity extends AppCompatActivity {
             }
 
             if (ck_projct_type.equals("cloud")) {
-                con = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by from contact where is_push='N'");
+                con = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by from contact where is_push='N'",liccustomerid,serial_no,android_id,myKey);
             }
 
         } else {

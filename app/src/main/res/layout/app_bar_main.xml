@@ -9,7 +9,10 @@
     android:fitsSystemWindows="true"
     tools:context="org.phomellolitepos.MainActivity">
 
-    <include layout="@layout/content_main" />
+    <include
+        layout="@layout/content_main"
+        app:layout_anchor="@+id/viewpager"
+        app:layout_anchorGravity="center" />
 
     <android.support.design.widget.AppBarLayout
         android:layout_width="match_parent"

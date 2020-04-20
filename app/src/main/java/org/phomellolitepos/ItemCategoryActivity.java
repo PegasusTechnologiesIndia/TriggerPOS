@@ -53,6 +53,7 @@ import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 
@@ -87,7 +88,8 @@ public class ItemCategoryActivity extends AppCompatActivity {
     String flag = "0";
     private boolean isSpinnerInitial = true;
     MenuItem menuItem;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -103,6 +105,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
         }
+
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -138,7 +141,16 @@ public class ItemCategoryActivity extends AppCompatActivity {
         operation = intent.getStringExtra("operation");
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        System.out.println("lic data"+ liteposdevice);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+                System.out.println("lic data"+ liccustomerid);
+            }
+        } catch (Exception e) {
 
+        }
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
@@ -458,7 +470,9 @@ public class ItemCategoryActivity extends AppCompatActivity {
     private void Fill_Item_category(String item_category_name, String item_category_code) {
         String modified_by = Globals.user;
         database.beginTransaction();
-        item_group = new Item_Group(getApplicationContext(), null, Globals.Device_Code, item_category_code, spn_parent_code, item_category_name, "0", "1", modified_by, date, "N");
+        System.out.println("DATE String"+ date);
+        System.out.println("license customer id"+ liccustomerid);
+        item_group = new Item_Group(getApplicationContext(), null, liccustomerid, item_category_code, spn_parent_code, item_category_name, "0", "1", modified_by, date, "N");
         long l = item_group.insertItem_Group(database);
         if (l > 0) {
             database.setTransactionSuccessful();
@@ -576,9 +590,9 @@ public class ItemCategoryActivity extends AppCompatActivity {
                 Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "  order By item_group_id Desc LIMIT 1");
 
                 if (objIG1 == null) {
-                    strIGCode = "IG-" + 1;
+                    strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + 1;
                 } else {
-                    strIGCode = "IG-" + (Integer.parseInt(objIG1.get_item_group_id()) + 1);
+                    strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + (Integer.parseInt(objIG1.get_item_group_id()) + 1);
                 }
             } else {
 

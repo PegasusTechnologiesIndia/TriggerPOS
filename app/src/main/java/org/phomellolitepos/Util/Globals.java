@@ -100,7 +100,8 @@ public class Globals {
     public static ArrayList<Order_Item_Tax> order_item_tax = new ArrayList<Order_Item_Tax>();
     public static ArrayList<String> CMD_Images = new ArrayList<String>();
    // public static String App_IP = "192.168.1.72";
-    public static String App_IP = "104.238.86.46:85";
+   // public static String App_IP = "104.238.86.46:85";
+    public static String App_IP = "74.208.235.72:85";
     public static Cursor online_report_cursor = null;
     public static String Company_Id;
     public static int SRNO = 1;
@@ -113,6 +114,7 @@ public class Globals {
     public static String strContact_Code = "";
     public static String strResvContact_Code = "";
     public static String strContact_Name = "";
+    public static String stritem_name = "";
     public static String strIsBlueService = "";
     public static Bitmap logo1 = null;
     public static String logo = null;
@@ -141,7 +143,15 @@ public class Globals {
     public static String isuse="1";
     public static String master_product_id="670";
     public static String lic_customer_license_id="0";
+    public static String license_id="";
     public static String isuse_logout="0";
+    public static String serialno="";
+    public static String androidid="";
+    public static String mykey="";
+    public static String syscode2="4";
+    public static String responsemessage="";
+    public static String strvoucherno="";
+
     public static void setEmpty() {
         CouponTotal = 0;
         Globals.Param1 = "";

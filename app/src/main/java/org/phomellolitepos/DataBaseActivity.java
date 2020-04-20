@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -7,14 +8,19 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.Environment;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -65,11 +71,13 @@ import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Item_Supplier;
 import org.phomellolitepos.database.Last_Code;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Type_Tax;
 import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Payment;
 import org.phomellolitepos.database.Pos_Balance;
+import org.phomellolitepos.database.Returns;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Sys_Sycntime;
 import org.phomellolitepos.database.Table;
@@ -91,9 +99,13 @@ public class DataBaseActivity extends AppCompatActivity {
     ProgressDialog pDialog;
     String ck_project_type;
     User user;
+    Returns returns;
     Settings settings;
     LinearLayout linear_layout3, linear_layout7;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
+    String serial_no, android_id, myKey, device_id,imei_no;
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -169,10 +181,35 @@ public class DataBaseActivity extends AppCompatActivity {
         btn_all_sync = (Button) findViewById(R.id.btn_all_sync);
         linear_layout3 = (LinearLayout) findViewById(R.id.linear_layout3);
         linear_layout7 = (LinearLayout) findViewById(R.id.linear_layout7);
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
         ck_project_type = lite_pos_registration.getproject_id();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
 
+        }
         if (ck_project_type.equals("standalone")) {
             btn_database_clear.setEnabled(true);
             btn_all_sync.setEnabled(false);
@@ -312,7 +349,11 @@ public class DataBaseActivity extends AppCompatActivity {
                                     }
 
                                     try {
-                                        result = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
+                                        result = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
+
+
+
+
                                     } catch (Exception ex) {
                                     }
 
@@ -820,12 +861,31 @@ public class DataBaseActivity extends AppCompatActivity {
                                                           new Thread() {
                                                               @Override
                                                               public void run() {
-                                                                  String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'");
-                                                                  progressDialog.dismiss();
+                                                                  String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
+                                                                  String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'",liccustomerid,serial_no,android_id,myKey);
+
+                                                                 progressDialog.dismiss();
 
                                                                   if (result_order.equals("1")) {
                                                                       runOnUiThread(new Runnable() {
                                                                           public void run() {
+
+                                                                              Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
+                                                                          }
+                                                                      });
+                                                                  } else {
+                                                                      runOnUiThread(new Runnable() {
+                                                                          public void run() {
+                                                                              Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
+                                                                          }
+                                                                      });
+                                                                  }
+
+
+                                                                  if (result.equals("1")) {
+                                                                      runOnUiThread(new Runnable() {
+                                                                          public void run() {
+                                                                              String rsultPost = stock_post();
                                                                               Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
                                                                           }
                                                                       });
@@ -1115,6 +1175,7 @@ public class DataBaseActivity extends AppCompatActivity {
             last_code.setlast_z_close_code("0");
             last_code.setlast_pos_balance_code("0");
             last_code.setlast_order_code("0");
+            last_code.setLast_order_return_code("0");
             last_code.updateLast_Code("id=?", new String[]{"1"}, database);
 
             String sql = "update item_location set quantity = '0'";
@@ -1294,11 +1355,11 @@ public class DataBaseActivity extends AppCompatActivity {
                 String last_order_code = jsonObject.getString("last_order_code");
                 String last_pos_balance_code = jsonObject.getString("last_pos_balance_code");
                 String last_z_close_code = jsonObject.getString("last_z_close_code");
-
+                String last_order_return_code=jsonObject.getString("last_order_return_code");
                 long l = Last_Code.delete_Last_Code(getApplicationContext(), null, null, database);
 
 
-                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code);
+                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code,last_order_return_code);
 
                 long d = last_code.insertLast_Code(database);
 
@@ -1316,10 +1377,16 @@ public class DataBaseActivity extends AppCompatActivity {
     private String getLastCodeFromServer() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos/index.php/api/last_code");
+        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/last_code");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -1422,7 +1489,7 @@ public class DataBaseActivity extends AppCompatActivity {
     }
 
     private String send_online_item_group() {
-        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'");
+        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'",Globals.serialno,Globals.syscode2,Globals.androidid,Globals.mykey,liccustomerid);
         return l;
     }
 
@@ -1509,7 +1576,7 @@ public class DataBaseActivity extends AppCompatActivity {
 
     private String send_online_contact() {
 
-        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'");
+        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,serial_no,android_id,myKey);
         return conList;
     }
 
@@ -1706,7 +1773,7 @@ public class DataBaseActivity extends AppCompatActivity {
     }
 
     private String send_online_item() {
-        String result = Item.sendOnServer(getApplicationContext(), database, db, "Select device_code, item_code,parent_code,item_group_code,manufacture_code,item_name,description,sku,barcode,image,hsn_sac_code,item_type,unit_id,is_return_stockable,is_service,is_active,modified_by,is_inclusive_tax FROM item  WHERE is_push = 'N'");
+        String result = Item.sendOnServer(getApplicationContext(), database, db, "Select device_code, item_code,parent_code,item_group_code,manufacture_code,item_name,description,sku,barcode,image,hsn_sac_code,item_type,unit_id,is_return_stockable,is_service,is_active,modified_by,is_inclusive_tax FROM item  WHERE is_push = 'N'",liccustomerid);
         return result;
     }
 
@@ -2031,7 +2098,7 @@ public class DataBaseActivity extends AppCompatActivity {
     }
 
     private String send_online() {
-        String result = Pos_Balance.sendOnServer(getApplicationContext(), database, db, "SELECT device_code,z_code,date,total_amount,is_active,modified_by  FROM  z_close Where is_push = 'N'");
+        String result = Pos_Balance.sendOnServer(getApplicationContext(), database, db, "SELECT device_code,z_code,date,total_amount,is_active,modified_by  FROM  z_close Where is_push = 'N'",liccustomerid);
 
         return result;
     }
@@ -2108,5 +2175,16 @@ public class DataBaseActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
+    }
+
+    private String stock_post() {
+        String suc = "0";
+        returns = Returns.getReturns(getApplicationContext(), " where voucher_no ='" + Globals.strvoucherno + "' ", database);
+        returns.set_is_post("true");
+        long l = returns.updateReturns("voucher_no=?", new String[]{Globals.strvoucherno}, database);
+        if (l > 0) {
+            suc = "1";
+        }
+        return suc;
     }
 }

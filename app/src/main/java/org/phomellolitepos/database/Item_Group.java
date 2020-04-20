@@ -2,6 +2,7 @@ package org.phomellolitepos.database;
 
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
@@ -22,6 +23,8 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import org.phomellolitepos.CategoryListActivity;
+import org.phomellolitepos.LoginActivity;
 import org.phomellolitepos.Util.Globals;
 
 public class Item_Group {
@@ -281,7 +284,7 @@ public class Item_Group {
         return result;
     }
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry) {
+    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String syscode1,String syscode2,String sycode3,String syscode4, String liccustomerid) {
         String ig = "0";
 //        Database db = new Database(context);
 //        SQLiteDatabase database = db.getReadableDatabase();
@@ -300,9 +303,10 @@ public class Item_Group {
                 }
                 result.put(row);
                 sender.put("Item_Group".toLowerCase(), result);
-                String serverData = send_item_group_json_on_server(sender.toString());
+                String serverData = send_item_group_json_on_server(sender.toString(),syscode1,syscode2,sycode3,syscode4,liccustomerid);
                 final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                 final String strStatus = collection_jsonObject1.getString("status");
+                final String strmessage = collection_jsonObject1.getString("message");
                 if (strStatus.equals("true")) {
                     database.beginTransaction();
                     String Query = "Update  item_group Set is_push = 'Y' Where item_group_code = '" + strItemGroupCode + "'";
@@ -315,6 +319,12 @@ public class Item_Group {
                         database.endTransaction();
                     }
                 }
+               else if(strStatus.equals("false")){
+                database.endTransaction();
+                ig="0";
+               Globals.responsemessage= strmessage;
+
+                }
             }
             cursor.close();
         } catch (Exception ex) {
@@ -323,15 +333,22 @@ public class Item_Group {
         return ig;
     }
 
-    private static String send_item_group_json_on_server(String JsonString) {
+    private static String send_item_group_json_on_server(String JsonString,String syscode1,String syscode2,String syscode3,String syscode4,String liccustomerid) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/item_group/data");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.reg_code));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", syscode1));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", syscode3));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", syscode4));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+  System.out.println("namevalue send group"+ nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs, "UTF-8"));
         } catch (UnsupportedEncodingException e1) {
@@ -343,6 +360,7 @@ public class Item_Group {
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
             Log.d("response", serverData);
+            System.out.println("response send group"+ serverData);
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {

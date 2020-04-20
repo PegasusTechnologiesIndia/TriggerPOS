@@ -432,7 +432,7 @@ public class SplashScreen extends AppCompatActivity {
     }
 
     private void getLastCode() {
-        String serverData = getLastCodeFromServer();
+        String serverData = getLastCodeFromServer(Globals.license_id);
         if (serverData == null) {
             System.exit(0);
             runOnUiThread(new Runnable() {
@@ -455,13 +455,13 @@ public class SplashScreen extends AppCompatActivity {
                 String last_order_code = jsonObject.getString("last_order_code");
                 String last_pos_balance_code = jsonObject.getString("last_pos_balance_code");
                 String last_z_close_code = jsonObject.getString("last_z_close_code");
-
+                String last_order_return_code=jsonObject.getString("last_order_return_code");
                 long l = Last_Code.delete_Last_Code(getApplicationContext(), null, null, database);
                 if (l > 0) {
                 } else {
                 }
 
-                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code);
+                last_code = new Last_Code(getApplicationContext(), null, last_order_code, last_pos_balance_code, last_z_close_code,last_order_return_code);
 
                 long d = last_code.insertLast_Code(database);
 
@@ -476,13 +476,19 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private String getLastCodeFromServer() {
+    private String getLastCodeFromServer(String liccustomerid) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/last_code");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

@@ -63,6 +63,7 @@ import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Item_Supplier;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Manufacture;
 import org.phomellolitepos.database.Purchase_Payment;
@@ -104,7 +105,8 @@ public class ItemActivity extends AppCompatActivity {
     LinearLayout.LayoutParams lp;
     String tick;
     MenuItem menuItem;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -159,6 +161,14 @@ public class ItemActivity extends AppCompatActivity {
         getSupportActionBar().setTitle(getString(R.string.Item));
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         code = intent.getStringExtra("item_code");
         operation = intent.getStringExtra("operation");
         tick = intent.getStringExtra("Ticket");
@@ -506,9 +516,9 @@ public class ItemActivity extends AppCompatActivity {
             Item objIT1 = Item.getItem(getApplicationContext(), "  order By item_id Desc LIMIT 1", database, db);
 
             if (objIT1 == null) {
-                strITCode = "IT-" + 1;
+                strITCode = Globals.objLPD.getDevice_Symbol() + "IT-" + 1;
             } else {
-                strITCode = "IT-" + (Integer.parseInt(objIT1.get_item_id()) + 1);
+                strITCode = Globals.objLPD.getDevice_Symbol() + "IT-" + (Integer.parseInt(objIT1.get_item_id()) + 1);
             }
         } else {
             if (edt_item_code.getText().toString().contains(" ")) {
@@ -698,7 +708,7 @@ public class ItemActivity extends AppCompatActivity {
     private void Fill_Item(String item_Id, String item_item_name, final String item_code, String item_sales_price, String item_sku, String item_barcode, String item_description, String item_cost_price, String spn_code, String strStockable, String strService, String spn_manufacture_code, String item_type, String spn_unit_code, String hsn_code, final String strPIT, String logo) {
         String modified_by = Globals.user;
 
-        item = new Item(getApplicationContext(), item_Id, Globals.Device_Code, item_code, "0", spn_code, spn_manufacture_code,
+        item = new Item(getApplicationContext(), item_Id, liccustomerid, item_code, "0", spn_code, spn_manufacture_code,
                 item_item_name, item_description, item_sku, item_barcode, hsn_code, logo, item_type, spn_unit_code, strStockable, strService, "1", modified_by, date, "N", strPIT, logo);
 
         if (operation.equals("Edit")) {

@@ -1,13 +1,16 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
 import android.content.ComponentName;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -15,13 +18,18 @@ import android.graphics.Matrix;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.support.annotation.RequiresApi;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.ActivityCompat;
+import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -58,6 +66,7 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Location;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Return_detail;
@@ -90,6 +99,8 @@ public class CusReturnFinalActivity extends AppCompatActivity {
     String operation, str_voucher_no, str_date, str_remarks;
     Database db;
     SQLiteDatabase database;
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     ProgressDialog pDialog;
     BottomNavigationView bottomNavigationView;
     String[] invFlag = {};
@@ -118,7 +129,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
     ArrayList<Return_detail> return_details;
     private TimerCountTools timeTools;
     private HandlerUtils.MyHandler handlerPPT8555;
-
+    String serial_no, android_id, myKey, device_id,imei_no;
     /*定义打印机状态*/
     private final int PRINTER_NORMAL = 0;
     /*打印机当前状态*/
@@ -258,6 +269,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
     };
     BluetoothService mService = null;
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -290,13 +302,14 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                         try {
                             sleep(1000);
                             pDialog.dismiss();
+
                             Intent intent = new Intent(CusReturnFinalActivity.this, CusReturnHeaderActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.putExtra("operation", operation);
                             intent.putExtra("voucher_no", str_voucher_no);
                             intent.putExtra("date", str_date);
                             intent.putExtra("remarks", str_remarks);
-                            intent.putExtra("contact_code", cusCode);
+                            intent.putExtra("contact_code", "");
                             startActivity(intent);
                             finish();
                         } catch (InterruptedException e) {
@@ -323,6 +336,33 @@ public class CusReturnFinalActivity extends AppCompatActivity {
         date = format.format(d);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.retail_bottom_navigation);
         edt_toolbar_item_code = (AutoCompleteTextView) findViewById(R.id.edt_toolbar_item_code);
         edt_name = (EditText) findViewById(R.id.edt_name);
@@ -330,6 +370,40 @@ public class CusReturnFinalActivity extends AppCompatActivity {
         edt_price = (EditText) findViewById(R.id.edt_price);
         list = (ListView) findViewById(R.id.list);
         btn_add = (Button) findViewById(R.id.btn_add);
+        list.setOnItemLongClickListener(new AdapterView.OnItemLongClickListener() {
+            @Override
+            public boolean onItemLongClick(AdapterView<?> parent, View view, final int position, long id) {
+
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                alertDialog.setTitle(edt_name.getText().toString());
+                alertDialog.setMessage("Are you sure you want delete this?");
+                alertDialog.setIcon(R.drawable.delete);
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog,int which) {
+                        arraylist.remove(position);
+                        returnFinalListAdapter.notifyDataSetChanged();
+                        edt_name.setText("");
+                        edt_qty.setText("");
+                        edt_price.setText("");
+                    }
+                });
+
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+                return true;
+            }
+        });
 
         callback = new ICallback.Stub() {
 
@@ -473,12 +547,27 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                 MenuItem delete = menu.findItem(R.id.action_delete);
                 MenuItem post = menu.findItem(R.id.action_post);
                 MenuItem save = menu.findItem(R.id.action_save);
+             //  MenuItem print = menu.findItem(R.id.action_print);
                 cancel.setEnabled(false);
                 delete.setEnabled(false);
                 post.setEnabled(false);
                 save.setEnabled(false);
+
                 btn_add.setEnabled(false);
             }
+
+
+            if(returns.get_is_cancel().equals("true")){
+                Menu menu = bottomNavigationView.getMenu();
+                MenuItem print = menu.findItem(R.id.action_print);
+                print.setEnabled(false);
+            }
+
+           /* if(returns.get_is_post().equals("true")){
+                Menu menu = bottomNavigationView.getMenu();
+                MenuItem print = menu.findItem(R.id.action_print);
+                print.setEnabled(true);
+            }*/
         }
 
         final LongOperation tsk = new LongOperation();
@@ -637,7 +726,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                     Thread timerThread1 = new Thread() {
                                         public void run() {
                                             String result = stock_save();
-                                            pDialog.dismiss();
+
                                             if (result.equals("1")) {
                                                 if (lite_pos_registration.getproject_id().equals("standalone")) {
                                                     String rsultPost = stock_post();
@@ -649,17 +738,67 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                                         runOnUiThread(new Runnable() {
                                                             public void run() {
                                                                 try {
-                                                                    //  Toast.makeText(getApplicationContext(),"print start 1",Toast.LENGTH_LONG).show();
 
-                                                                    print_return();
+                                                                    if(PrinterType.equals("0")) {
+
+
+
+                                                                            Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                            Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                            startActivity(intent1);
+                                                                            finish();
+
+
+
+
+                                                                    }
+
+                                                                    else{
+
+
+                                                                        //  Toast.makeText(getApplicationContext(),"print start 1",Toast.LENGTH_LONG).show();
+                                                                        AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                                                                        alertDialog.setTitle("Customer Return");
+                                                                        alertDialog.setMessage("Do you want to print the Customer return?");
+                                                                        alertDialog.setIcon(R.drawable.delete);
+
+                                                                        alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                startActivity(intent1);
+                                                                                finish();
+                                                                                try {
+                                                                                    print_return();
+                                                                                } catch (Exception e) {
+
+                                                                                }
+                                                                            }
+                                                                        });
+
+
+                                                                        alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+
+                                                                                Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                startActivity(intent1);
+                                                                                finish();
+                                                                                dialog.cancel();
+                                                                            }
+                                                                        });
+
+                                                                        // Showing Alert Message
+                                                                        alertDialog.show();
+                                                                    }
+
                                                                 }catch (Exception ex) {
                                                                     Toast.makeText(getApplicationContext(),ex.getMessage(), Toast.LENGTH_LONG).show();
 
                                                                 }
-                                                                Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
-                                                                Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
-                                                                startActivity(intent1);
-                                                                finish();
+
                                                             }
                                                         });
 
@@ -675,6 +814,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                                 } else {
                                                     if (isNetworkStatusAvialable(getApplicationContext())) {
                                                         result = send_online_return();
+                                                        pDialog.dismiss();
                                                         if (result.equals("1")) {
                                                             String rsultPost = stock_post();
                                                             if (rsultPost.equals("1")) {
@@ -693,18 +833,55 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                                                     runOnUiThread(new Runnable() {
                                                                         public void run() {
                                                                             //  print_return();
-                                                                            try {
-                                                                                // Toast.makeText(getApplicationContext(),"print start 1",Toast.LENGTH_LONG).show();
 
-                                                                                print_return();
-                                                                            } catch (Exception ex) {
-                                                                                Toast.makeText(getApplicationContext(),ex.getMessage(), Toast.LENGTH_LONG).show();
+                                                                            if(PrinterType.equals("0")) {
+
+                                                                                    Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                    Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                    startActivity(intent1);
+                                                                                    finish();
 
                                                                             }
-                                                                            Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
-                                                                            Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
-                                                                            startActivity(intent1);
-                                                                            finish();
+                                                                            else{
+                                                                                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                                                                                alertDialog.setTitle("Customer Return");
+                                                                                alertDialog.setMessage("Do you want to print the Customer return?");
+                                                                                alertDialog.setIcon(R.drawable.delete);
+
+                                                                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                                    public void onClick(DialogInterface dialog, int which) {
+
+                                                                                        Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                                                                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                        startActivity(intent1);
+                                                                                        finish();
+                                                                                        try {
+                                                                                            print_return();
+                                                                                        } catch (Exception e) {
+
+                                                                                        }
+                                                                                    }
+                                                                                });
+
+
+                                                                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                                    public void onClick(DialogInterface dialog, int which) {
+                                                                                        Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+
+                                                                                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                                        startActivity(intent1);
+                                                                                        finish();
+                                                                                        dialog.cancel();
+                                                                                    }
+                                                                                });
+
+                                                                                // Showing Alert Message
+                                                                                alertDialog.show();
+                                                                            }
+
+
+
                                                                         }
                                                                     });
 
@@ -717,6 +894,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                                                         }
                                                                     });
                                                                     break;
+
                                                                 default:
                                                                     runOnUiThread(new Runnable() {
                                                                         public void run() {
@@ -725,7 +903,35 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                                                     });
                                                                     break;
                                                             }
-                                                        } else {
+                                                        }
+                                                        else if(result.equals("3")) {
+                                                            runOnUiThread(new Runnable() {
+                                                                public void run() {
+                                                                    if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                                                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                        lite_pos_device.setStatus("Out");
+                                                                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                        if (ct > 0) {
+
+                                                                            Intent intent_category = new Intent(CusReturnFinalActivity.this, LoginActivity.class);
+                                                                            startActivity(intent_category);
+                                                                            finish();
+                                                                        }
+
+
+                                                                    }
+                                                                }
+                                                            });
+                                                        }
+                                                        else if(result.equals("4")){
+                                                            runOnUiThread(new Runnable() {
+                                                                public void run() {
+                                                                    Toast.makeText(getApplicationContext(), Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                                                }
+                                                            });
+                                                        }
+                                                        else {
                                                             runOnUiThread(new Runnable() {
                                                                 public void run() {
                                                                     Toast.makeText(getApplicationContext(), "Record not post on server", Toast.LENGTH_SHORT).show();
@@ -774,10 +980,55 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                             if (result.equals("1")) {
                                                 runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
-                                                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
-                                                        startActivity(intent1);
-                                                        finish();
+                                                        if(PrinterType.equals("0")) {
+
+
+
+                                                            Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                            Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                            startActivity(intent1);
+                                                            finish();
+
+
+                                                        }
+                                                        else{
+                                                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                                                            alertDialog.setTitle("Customer Return");
+                                                            alertDialog.setMessage("Do you want to print the Customer return?");
+                                                            alertDialog.setIcon(R.drawable.delete);
+
+                                                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    try {
+                                                                        print_return();
+                                                                    } catch (Exception e) {
+
+                                                                    }
+                                                                }
+                                                            });
+
+
+                                                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                                    Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                    startActivity(intent1);
+                                                                    finish();
+                                                                    dialog.cancel();
+                                                                }
+                                                            });
+
+                                                            // Showing Alert Message
+                                                            alertDialog.show();
+                                                        }
+
                                                     }
                                                 });
 
@@ -794,6 +1045,10 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                     timerThread.start();
                                 }
                                 break;
+
+
+
+
                             case R.id.action_cancel:
                                 if (arraylist.size() == 0) {
                                     Toast.makeText(getApplicationContext(), "No item added", Toast.LENGTH_SHORT).show();
@@ -866,6 +1121,8 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                 }
                                 break;
 
+
+
                             case R.id.action_delete:
                                 if (arraylist.size() == 0) {
                                     Toast.makeText(getApplicationContext(), "No item added", Toast.LENGTH_SHORT).show();
@@ -909,6 +1166,33 @@ public class CusReturnFinalActivity extends AppCompatActivity {
                                         }
                                     };
                                     timerThread3.start();
+                                }
+                                break;
+
+                            case R.id.action_print:
+                                returns = Returns.getReturns(getApplicationContext(), " where voucher_no ='" + str_voucher_no + "' ", database);
+                                if (returns == null) {
+                                    Toast.makeText(getApplicationContext(), "New mode this operation will not work", Toast.LENGTH_SHORT).show();
+
+                                }
+
+                                else{
+                                    if(PrinterType.equals("0")){
+                                        Toast.makeText(getApplicationContext(), "Please check printer settings", Toast.LENGTH_SHORT).show();
+
+
+
+                                    }
+
+                                    else{
+                                        try{
+                                            print_return();
+                                        }
+                                        catch (Exception e){
+
+                                        }
+
+                                    }
                                 }
                                 break;
                         }
@@ -1689,7 +1973,7 @@ public class CusReturnFinalActivity extends AppCompatActivity {
 
 
     private String send_online_return() {
-        String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'");
+        String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'",liccustomerid,serial_no,android_id,myKey);
         return result;
     }
 
@@ -1738,6 +2022,216 @@ public class CusReturnFinalActivity extends AppCompatActivity {
         }
         return suc;
     }
+
+    public void onsavePost(){
+
+try {
+
+            if (PrinterType.equals("0")) {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                alertDialog.setTitle("Customer Return");
+                alertDialog.setMessage("Do you want to Post on server?");
+                alertDialog.setIcon(R.drawable.delete);
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                      String  result = send_online_return();
+                       // pDialog.dismiss();
+                        if (result.equals("1")) {
+
+                            String rsultPost = stock_post();
+                            if (rsultPost.equals("1")) {
+                                if (settings.get_Is_Stock_Manager().equals("true")) {
+                                    String rsultUpdate = stock_update();
+                                }
+
+                                if (PrinterType.equals("0")) {
+
+                                    Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                    Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                    startActivity(intent1);
+                                    finish();
+
+                                } else {
+                                    AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                                    alertDialog.setTitle("Customer Return");
+                                    alertDialog.setMessage("Do you want to print the Customer return?");
+                                    alertDialog.setIcon(R.drawable.delete);
+
+                                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+                                            Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            try {
+                                                print_return();
+                                            } catch (Exception e) {
+
+                                            }
+                                        }
+                                    });
+
+
+                                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+                                            Toast.makeText(getApplicationContext(), "Post successful", Toast.LENGTH_SHORT).show();
+
+                                            Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                            startActivity(intent1);
+                                            finish();
+                                            dialog.cancel();
+                                        }
+                                    });
+
+                                    // Showing Alert Message
+                                    alertDialog.show();
+
+                                }
+
+                                //print_return();
+
+                                                        /*                switch (rsultPost) {
+                                                                            case "1":
+                                                                                runOnUiThread(new Runnable() {
+                                                                                    public void run() {
+                                                                                        //  print_return();
+
+                                                                                        }
+
+
+
+                                                                                    }
+                                                                                });
+
+                                                                                break;
+
+                                                                            case "2":
+                                                                                runOnUiThread(new Runnable() {
+                                                                                    public void run() {
+                                                                                        Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
+                                                                                    }
+                                                                                });
+                                                                                break;
+
+                                                                            default:
+                                                                                runOnUiThread(new Runnable() {
+                                                                                    public void run() {
+                                                                                        Toast.makeText(getApplicationContext(), "Record not post", Toast.LENGTH_SHORT).show();
+                                                                                    }
+                                                                                });
+                                                                                break;
+                                                                        }
+                                                                    }*/
+                            }
+                        } else if (result.equals("3")) {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+
+                                    if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                        lite_pos_device.setStatus("Out");
+                                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                        if (ct > 0) {
+
+                                            Intent intent_category = new Intent(CusReturnFinalActivity.this, LoginActivity.class);
+                                            startActivity(intent_category);
+                                            finish();
+                                        }
+
+
+                                    }
+                                }
+                            });
+                        } else if (result.equals("4")) {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+
+                                    Toast.makeText(getApplicationContext(), Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    Toast.makeText(getApplicationContext(), "Record not post on server", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                });
+
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                        startActivity(intent1);
+                        finish();
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+
+
+                                                               /* Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                                                                Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                                                                startActivity(intent1);
+                                                                finish();
+*/
+
+            } else {
+                AlertDialog.Builder alertDialog = new AlertDialog.Builder(CusReturnFinalActivity.this);
+
+                alertDialog.setTitle("Customer Return");
+                alertDialog.setMessage("Do you want to print the Customer return?");
+                alertDialog.setIcon(R.drawable.delete);
+
+                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                        startActivity(intent1);
+                        finish();
+                        try {
+                            print_return();
+                        } catch (Exception e) {
+
+                        }
+                    }
+                });
+
+
+                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        Toast.makeText(getApplicationContext(), "Saved successful", Toast.LENGTH_SHORT).show();
+                        Intent intent1 = new Intent(CusReturnFinalActivity.this, CustomerReturnListActivity.class);
+                        startActivity(intent1);
+                        finish();
+                        dialog.cancel();
+                    }
+                });
+
+                // Showing Alert Message
+                alertDialog.show();
+            }
+        }
+        catch(Exception e){
+
+        }
+
+    }
+
+
 
     private String stock_save() {
         String suc = "0";
@@ -1799,13 +2293,15 @@ public class CusReturnFinalActivity extends AppCompatActivity {
         return suc;
     }
 
-    private void list_load(ArrayList<StockAdjectmentDetailList> arraylist) {
+    private void list_load(final ArrayList<StockAdjectmentDetailList> arraylist) {
         ListView list = (ListView) findViewById(R.id.list);
         if (arraylist.size() > 0) {
             returnFinalListAdapter = new CusReturnFinalListAdapter(CusReturnFinalActivity.this, arraylist);
             list.setVisibility(View.VISIBLE);
             list.setAdapter(returnFinalListAdapter);
             returnFinalListAdapter.notifyDataSetChanged();
+
+
         } else {
             list.setVisibility(View.GONE);
         }
@@ -1877,7 +2373,18 @@ public class CusReturnFinalActivity extends AppCompatActivity {
 
 
     }
+    public void setTextView() {
+        try {
 
+
+            edt_price.setText("");
+            edt_name.setText("");
+            edt_qty.setText("");
+        } catch (Exception ex) {
+        }
+
+
+    }
     @Override
     public void onBackPressed() {
         pDialog = new ProgressDialog(CusReturnFinalActivity.this);

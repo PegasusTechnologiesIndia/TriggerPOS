@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.Manifest;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.BroadcastReceiver;
@@ -10,17 +11,22 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.ServiceConnection;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Build;
 import android.os.Bundle;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
+import android.support.annotation.RequiresApi;
+import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
+import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
 import android.view.MotionEvent;
@@ -58,6 +64,7 @@ import org.phomellolitepos.database.Acc_Customer;
 import org.phomellolitepos.database.Acc_Customer_Credit;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.User;
@@ -99,11 +106,13 @@ public class AccountsActivity extends AppCompatActivity {
     private static final String TAG = "PrinterTestDemo";
     private String PrinterType = "";
     private TimerCountTools timeTools;
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     JSONObject printJson = new JSONObject();
     private PrinterListener printer_callback = new PrinterListener();
     public static PrinterBinder printer;
     BluetoothService mService = null;
-
+    String serial_no, android_id, myKey, device_id,imei_no;
     /*定义打印机状态*/
     private final int PRINTER_NORMAL = 0;
     /*打印机当前状态*/
@@ -250,6 +259,7 @@ public class AccountsActivity extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -260,6 +270,34 @@ public class AccountsActivity extends AppCompatActivity {
 
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
+
+        serial_no = Build.SERIAL;
+        android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
+
+        myKey = serial_no + android_id;
+
+        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+            return;
+        }
+        device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();
         modified_by = Globals.user;
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
@@ -1427,6 +1465,7 @@ public class AccountsActivity extends AppCompatActivity {
 
                     final JSONObject jsonObject_manufacture = new JSONObject(serverData);
                     final String strStatus = jsonObject_manufacture.getString("status");
+                    final String strmsg = jsonObject_manufacture.getString("message");
                     if (strStatus.equals("true")) {
                         JSONArray jsonArray = jsonObject_manufacture.getJSONArray("result");
                         for (int i = 0; i < jsonArray.length(); i++) {
@@ -1528,7 +1567,32 @@ public class AccountsActivity extends AppCompatActivity {
                             } catch (Exception ex) {
                             }
                         }
-                    } else {
+                    }
+                    else if(strStatus.equals("false")){
+
+                        try {
+                            if(strmsg.equals("Device Not Found")){
+
+                                Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                lite_pos_device.setStatus("Out");
+                                long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                if (ct > 0) {
+
+                                    Intent intent_category = new Intent(AccountsActivity.this, LoginActivity.class);
+                                    startActivity(intent_category);
+                                    finish();
+                                }
+
+
+                            }
+
+                        }
+                        catch(Exception e){
+                            System.out.println("Device not found Exception "+ e.getMessage());
+                        }
+                    }
+
+                    else {
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 Toast.makeText(getApplicationContext(), "No credit found", Toast.LENGTH_SHORT).show();
@@ -1555,7 +1619,7 @@ public class AccountsActivity extends AppCompatActivity {
         try {
             final JSONObject jsonObject_manufacture = new JSONObject(serverData);
             final String strStatus = jsonObject_manufacture.getString("status");
-
+            final String strmsg = jsonObject_manufacture.getString("message");
             if (strStatus.equals("true")) {
                 Double balance = Double.parseDouble(txt_cr_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString().trim());
                 String strBalance = Globals.myNumberFormat2Price(balance, decimal_check);
@@ -1564,7 +1628,33 @@ public class AccountsActivity extends AppCompatActivity {
                 if (l > 0) {
                     succ = "1";
                 }
-            } else {
+            }
+            else if(strStatus.equals("false")){
+
+                try {
+                    if(strmsg.equals("Device Not Found")){
+
+                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                        lite_pos_device.setStatus("Out");
+                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                        if (ct > 0) {
+
+                            Intent intent_category = new Intent(AccountsActivity.this, LoginActivity.class);
+                            startActivity(intent_category);
+                            finish();
+                        }
+
+
+                    }
+
+                }
+                catch(Exception e){
+                    System.out.println("Device not found Exception "+ e.getMessage());
+                }
+            }
+
+
+            else {
                 database.endTransaction();
             }
 
@@ -1582,12 +1672,19 @@ public class AccountsActivity extends AppCompatActivity {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/accounts");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
+
+                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts");
+        ArrayList nameValuePairs = new ArrayList(9);
+        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
         nameValuePairs.add(new BasicNameValuePair("contact_code", code));
         nameValuePairs.add(new BasicNameValuePair("type", "S"));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+        System.out.println("get accounts"+ nameValuePairs);
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -1599,6 +1696,7 @@ public class AccountsActivity extends AppCompatActivity {
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
             Log.d("response", serverData);
+            System.out.println("response get accounts"+ serverData);
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {
@@ -1611,13 +1709,19 @@ public class AccountsActivity extends AppCompatActivity {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/accounts/data");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
+                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts/data");
+        ArrayList nameValuePairs = new ArrayList(10);
+        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("contact_code", code));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
         nameValuePairs.add(new BasicNameValuePair("type", "S"));
         nameValuePairs.add(new BasicNameValuePair("amount", edt_pd_amt.getText().toString().trim()));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3",android_id));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+        System.out.println("send account "+ nameValuePairs);
 //        nameValuePairs.add(new BasicNameValuePair("modified_by", modified_by));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -1630,6 +1734,7 @@ public class AccountsActivity extends AppCompatActivity {
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
             Log.d("response", serverData);
+            System.out.println("response send account "+ nameValuePairs);
         } catch (ClientProtocolException e) {
             e.printStackTrace();
         } catch (IOException e) {

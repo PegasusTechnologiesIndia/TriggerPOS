@@ -26,6 +26,7 @@ import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Contact_Bussiness_Group;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Settings;
 
 /**
@@ -48,8 +49,9 @@ public class BussinessGroupCheckListActivity extends AppCompatActivity {
     ProgressDialog pDialog;
     MenuItem item_menu;
     boolean found = false;
+    Lite_POS_Device liteposdevice;
     Settings settings;
-
+    String liccustomerid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +80,14 @@ public class BussinessGroupCheckListActivity extends AppCompatActivity {
                 finish();
             }
         });
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         bg_ck_list = (ListView) findViewById(R.id.bg_ck_list);
         btn_finish = (Button) findViewById(R.id.btn_finish);
         btn_delete = (Button) findViewById(R.id.btn_delete);
@@ -327,7 +337,7 @@ public class BussinessGroupCheckListActivity extends AppCompatActivity {
 
     private String send_online_contact() {
 
-        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'");
+        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,"","","");
         return conList;
     }
 

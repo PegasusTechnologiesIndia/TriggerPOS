@@ -83,6 +83,7 @@ import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Item_Supplier;
+import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Tax;
 import org.phomellolitepos.database.Orders;
@@ -106,7 +107,8 @@ public class ItemListActivity extends AppCompatActivity {
     Orders orders;
     Settings settings;
     private RecyclerView recyclerView;
-
+    Lite_POS_Device liteposdevice;
+    String liccustomerid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -174,6 +176,14 @@ public class ItemListActivity extends AppCompatActivity {
             }
         });
 
+        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+        try {
+            if (liteposdevice != null) {
+                liccustomerid = liteposdevice.getLic_customer_license_id();
+            }
+        } catch (Exception e) {
+
+        }
         item_title = (TextView) findViewById(R.id.item_title);
         edt_toolbar_item_list = (EditText) findViewById(R.id.edt_toolbar_item_list);
 
@@ -430,6 +440,28 @@ public class ItemListActivity extends AppCompatActivity {
                                                                         }
                                                                     });
                                                                     break;
+                                                                case "3":
+                                                                    runOnUiThread(new Runnable() {
+                                                                        public void run() {
+                                                                            if(Globals.responsemessage.equals("Device Not Found")){
+
+                                                                                Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                                lite_pos_device.setStatus("Out");
+                                                                                long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                                if (ct > 0) {
+                                                                                    database.endTransaction();
+                                                                                    Intent intent_category = new Intent(ItemListActivity.this, LoginActivity.class);
+                                                                                    startActivity(intent_category);
+                                                                                    finish();
+                                                                                }
+
+
+                                                                            }
+                                                                        }
+                                                                    });
+                                                                    break;
+
+
                                                                 default:
                                                                     runOnUiThread(new Runnable() {
                                                                         public void run() {
@@ -801,10 +833,15 @@ public class ItemListActivity extends AppCompatActivity {
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
                 "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/item/location");
-        ArrayList nameValuePairs = new ArrayList(5);
+        ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",lite_pos_registration.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("location_id", Globals.objLPD.getLocation_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -825,7 +862,7 @@ public class ItemListActivity extends AppCompatActivity {
 
     private String send_online_item() {
         Globals.reg_code = lite_pos_registration.getRegistration_Code();
-        String result = Item.sendOnServer(getApplicationContext(), database, db, "Select device_code, item_code,parent_code,item_group_code,manufacture_code,item_name,description,sku,barcode,image,hsn_sac_code,item_type,unit_id,is_return_stockable,is_service,is_active,modified_by,is_inclusive_tax FROM item  WHERE is_push = 'N'");
+        String result = Item.sendOnServer(getApplicationContext(), database, db, "Select device_code, item_code,parent_code,item_group_code,manufacture_code,item_name,description,sku,barcode,image,hsn_sac_code,item_type,unit_id,is_return_stockable,is_service,is_active,modified_by,is_inclusive_tax FROM item  WHERE is_push = 'N'",liccustomerid);
         return result;
     }
 
@@ -844,6 +881,7 @@ public class ItemListActivity extends AppCompatActivity {
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
+            final String strmsg = jsonObject_bg.getString("message");
             if (strStatus.equals("true")) {
                 JSONArray jsonArray_bg = jsonObject_bg.getJSONArray("result");
                 for (int i = 0; i < jsonArray_bg.length(); i++) {
@@ -982,7 +1020,13 @@ public class ItemListActivity extends AppCompatActivity {
                     }
                 }
             }
+            else if(strStatus.equals("false")){
 
+succ_bg="3";
+            Globals.responsemessage=strmsg;
+
+
+            }
             if (succ_bg.equals("1")) {
                 database.setTransactionSuccessful();
                 database.endTransaction();
@@ -1009,6 +1053,12 @@ public class ItemListActivity extends AppCompatActivity {
         nameValuePairs.add(new BasicNameValuePair("modified_data", datetime));
         nameValuePairs.add(new BasicNameValuePair("location_id", Globals.objLPD.getLocation_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {

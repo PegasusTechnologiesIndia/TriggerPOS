@@ -168,12 +168,13 @@
         android:id="@+id/list"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:layout_below="@+id/btn_add"
-        android:layout_marginTop="12dp"
-        android:layout_marginBottom="55dp">
-    </ListView>
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginStart="-3dp"
+        android:layout_marginLeft="-3dp"
+        android:layout_marginTop="13dp"
+        android:layout_marginBottom="55dp"></ListView>
 
     <android.support.design.widget.BottomNavigationView
         android:id="@+id/retail_bottom_navigation"

@@ -236,6 +236,31 @@ public class Order_Detail {
         return master;
     }
 
+    public static Order_Detail getOrder_DetailInv(Context context, String WhereClasue, SQLiteDatabase database) {
+        String Query = "Select am.*,e.item_name, e.barcode FROM order_detail am left join item e on e.item_code = am.item_code " + WhereClasue;
+        Order_Detail master = null;
+//        Database db = new Database(context);
+//        SQLiteDatabase database = db.getReadableDatabase();
+        Cursor cursor = database.rawQuery(Query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                master = new Order_Detail(context, cursor.getString(0),
+                        cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4),
+                        cursor.getString(5), cursor.getString(6),
+                        cursor.getString(7), cursor.getString(8),
+                        cursor.getString(9), cursor.getString(10),
+                        cursor.getString(11),
+                        cursor.getString(12),
+                        cursor.getString(13)
+                       );
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+//        database.close();
+//        db.close();
+        return master;
+    }
     // Here Changed in function  need to update all classes
     public static ArrayList<Order_Detail> getAllOrder_Detail(Context context, String WhereClasue, SQLiteDatabase database) {
         String Query = "Select * FROM " + tableName + " " + WhereClasue;

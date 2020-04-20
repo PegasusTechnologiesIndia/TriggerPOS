@@ -745,4 +745,7 @@
     <string name="reset_settings">Reset Settings</string>
     <string name="Reset_Succ">Reset Successful!</string>
     <string name="scan_here">Scan Barcode Here...</string>
+    <string name="devicesymbolerror">Please Set Device Symbol on Server</string>
+    <string name="returnposterror">First Post your all pending returns</string>
+    <string name="sales_return">Sales Return</string>
 </resources>

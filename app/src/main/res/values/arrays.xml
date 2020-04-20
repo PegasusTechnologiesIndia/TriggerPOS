@@ -69,6 +69,7 @@
         <item>Bluetooth 100mm</item>
         <item>PHA-POS24</item>
         <item>PPT8527</item>
+        <item>PPT8555</item>
     </string-array>
 
     <string-array name="Printer_Lang">

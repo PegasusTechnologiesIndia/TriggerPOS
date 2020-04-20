@@ -4,7 +4,7 @@
     <item
         android:id="@+id/action_post"
         android:enabled="true"
-        android:title="@string/Post"
+        android:title="@string/Post1"
         android:icon="@drawable/bnav_post"
         app:showAsAction="ifRoom" />
     <item
@@ -13,6 +13,7 @@
         android:title="@string/save"
         android:icon="@drawable/save"
         app:showAsAction="ifRoom" />
+
     <item
         android:id="@+id/action_cancel"
         android:enabled="true"
@@ -26,4 +27,11 @@
         android:title="@string/delete"
         android:icon="@drawable/bnav_delete"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_print"
+        android:enabled="true"
+        android:title="@string/print"
+        android:icon="@drawable/printer"
+        app:showAsAction="ifRoom" />
+
 </menu>
