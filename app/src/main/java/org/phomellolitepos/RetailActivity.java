@@ -6,7 +6,11 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Address;
+import android.location.Geocoder;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
@@ -33,12 +37,18 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Collections;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 import org.phomellolitepos.Adapter.RetailListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
@@ -91,7 +101,7 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
     Settings settings;
     ZBarScannerView mScannerView;
     boolean flag_scan = false;
-
+    AppLocationService appLocationService;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -626,13 +636,52 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
+        try {
+            appLocationService = new AppLocationService(
+                    RetailActivity.this);
+        } catch (Exception e) {
+        }
         settings = Settings.getSettings(getApplicationContext(), database, "");
         txt_title = (TextView) findViewById(R.id.txt_title);
         edt_toolbar_retail = (AutoCompleteTextView) findViewById(R.id.edt_toolbar_retail);
         edt_toolbar_search = (EditText) findViewById(R.id.edt_toolbar_search);
         btn_retail_1 = (Button) findViewById(R.id.btn_retail_1);
         btn_retail_2 = (Button) findViewById(R.id.btn_retail_2);
+        try {
+            Calendar c = Calendar.getInstance();
+            System.out.println("Current time => " + c.getTime());
+            Date d = new Date();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            date = df.format(d);
 
+
+            if (appLocationService.canGetLocation()) {
+
+
+                double longitude = appLocationService.getLongitude();
+                double latitude = appLocationService.getLatitude();
+                Globals.latitude = String.valueOf(latitude);
+                Globals.longitude = String.valueOf(longitude);
+                getAddressFromLocation(latitude, longitude, getApplicationContext(), new GeocoderHandler());
+
+            } else {
+                if (Globals.gpsFlag == true) {
+                    appLocationService.showSettingsAlert();
+                }
+            }
+            try {
+                backgroundLocationJson();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        catch(Exception e){}
+
+        try {
+            Intent serviceIntent = new Intent(this, BackgroundApiService.class);
+            startService(serviceIntent);
+        } catch (Exception e) {
+        }
         mScannerView = new ZBarScannerView(RetailActivity.this);
         mScannerView.setResultHandler(RetailActivity.this);
         edt_toolbar_search.requestFocus();
@@ -1155,4 +1204,98 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
         };
         timerThread.start();
     }
+
+    public static void getAddressFromLocation(final double latitude, final double longitude,
+                                              final Context context, final Handler handler) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                String result = null;
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(
+                            latitude, longitude, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        Address address = addressList.get(0);
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+                            sb.append(address.getAddressLine(i)).append("\n");
+                        }
+                        sb.append(address.getLocality()).append("\n");
+                        sb.append(address.getPostalCode()).append("\n");
+                        sb.append(address.getCountryName());
+                        result = sb.toString();
+                    }
+                } catch (IOException e) {
+                    //Log.e(TAG, "Unable connect to Geocoder", e);
+                } finally {
+                    Message message = Message.obtain();
+                    message.setTarget(handler);
+                    if (result != null) {
+                        message.what = 1;
+                        Bundle bundle = new Bundle();
+                        result = "Latitude: " + latitude + " Longitude: " + longitude +
+                                "\n\nAddress:\n" + result;
+                        bundle.putString("address", result);
+                        Globals.locationddress = result;
+                        message.setData(bundle);
+                    } else {
+                        message.what = 1;
+                        Bundle bundle = new Bundle();
+                        result = "Latitude: " + latitude + " Longitude: " + longitude +
+                                "\n Unable to get address for this lat-long.";
+                        bundle.putString("address", result);
+                        message.setData(bundle);
+                    }
+                    message.sendToTarget();
+                }
+            }
+        };
+        thread.start();
+    }
+
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            String locationAddress;
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    Globals.locationddress = locationAddress;
+                    break;
+                default:
+                    locationAddress = null;
+            }
+
+            // Toast.makeText(getApplicationContext(), locationAddress.toString(), Toast.LENGTH_LONG).show();
+            //  tvAddress.setText(locationAddress);
+        }
+    }
+
+    public void backgroundLocationJson() throws JSONException {
+        JSONArray jsonArr = new JSONArray();
+
+        final JSONObject jsonObj1 = new JSONObject();
+        try {
+
+            JSONObject jsonObj = new JSONObject();
+            // Toast.makeText(getApplicationContext(), "size"+export.size(), Toast.LENGTH_SHORT).show();
+            jsonObj.put("latitude", Globals.latitude);
+            jsonObj.put("longitude", Globals.longitude);
+            jsonObj.put("address", Globals.locationddress);
+            jsonObj.put("datetime", date);
+
+            jsonArr.put(jsonObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        jsonObj1.put("result", jsonArr);
+        Globals.jsonArray_background = jsonObj1;
+
+
+    }
+
 }

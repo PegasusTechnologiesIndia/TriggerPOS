@@ -1,6 +1,6 @@
 <resources>
     <string name="app_name">Phomello-LitePOS</string>
-
+    <string name="app_modelname">Phomello LitePOS - Billing POS System(PHU-S01)</string>
     <string name="navigation_drawer_open">Open navigation drawer</string>
     <string name="navigation_drawer_close">Close navigation drawer</string>
     <string name="select_printer">Select Printer : </string>
@@ -164,7 +164,7 @@
     <string name="ItemCode">Item Code</string>
     <string name="ItemName">Item Name *</string>
     <string name="SKU">SKU</string>
-    <string name="Barcode">Barcode *</string>
+    <string name="Barcode">Barcode</string>
     <string name="Is_Rtrn_Stckble">Is Return Stockable</string>
     <string name="IsService">Is Service</string>
     <string name="ItemGroupCode">Item Group Code</string>
@@ -180,7 +180,7 @@
     <string name="Slct_Tax">Select Tax</string>
     <string name="Generate_Report">Generate Report</string>
     <string name="Name">Name</string>
-    <string name="UserCode">User Code</string>
+    <string name="UserCode">User Code or Email</string>
     <string name="Password">Password</string>
     <string name="Forgot_Password">Forgot your password?</string>
     <string name="Opening_Balance">Opening Balance</string>
@@ -721,7 +721,7 @@
     <string name="no">No</string>
     <string name="enter_password">Enter Password</string>
     <string name="BankDetailDnlding">Bank Detail Downloading</string>
-    <string name="Syncdataserver">Syncronizing data on server...</string>
+    <string name="Syncdataserver">Synchronizing data on server...</string>
     <string name="GettingData">Getting data...</string>
     <string name="Paymddownld">Payment method download successful</string>
     <string name="Paymethodsnotfound">Payment methods not found</string>
@@ -745,7 +745,49 @@
     <string name="reset_settings">Reset Settings</string>
     <string name="Reset_Succ">Reset Successful!</string>
     <string name="scan_here">Scan Barcode Here...</string>
-    <string name="devicesymbolerror">Please Set Device Symbol on Server</string>
+    <string name="devicesymbolerror">Please Set Location Name on Server</string>
     <string name="returnposterror">First Post your all pending returns</string>
     <string name="sales_return">Sales Return</string>
+    <string name="alerttitle">Are you sure?</string>
+
+    <string name="alertmsg">Do you want to clear user  </string>
+    <string name="alert_loginmsg">Do you want to logout from device no longer using?</string>
+    <string name="alert_loginseconddialog">Data will Lost..! Do yo want to continue ?</string>
+    <string name="alert_posbtn">YES</string>
+    <string name="alert_nobtn">NO</string>
+    <string name="somethingwentwrong">Something went wrong!</string>
+    <string name="register">Register</string>
+    <string name="acessperm">You need to allow access to All the permissions</string>
+    <string name="clear">Clear</string>
+    <string name="pass_pref">pass</string>
+    <string name="usercode_pref">user_code</string>
+    <string name="credentialcheck">Please check your credentials , something went wrong</string>
+    <string name="loggingin">Logging....</string>
+    <string name="Export_csv">Export CSV</string>
+    <string name="alert_sharemsg">Do you want to Share File?</string>
+    <string name="alert_impexpmsg">Do you want to Import and Export File?</string>
+    <string name="payment_detail">Payment Detail</string>
+    <string name="return_post">Return Post</string>
+    <string name="return_post_Alert">Post Return</string>
+    <string name="return_post_msg">Are you sure you want to Post your all Pending Returns</string>
+    <string name="downloadfiles">Download Files</string>
+    <string name="Item_notimport_successfully">Item not imported Successfully</string>
+    <string name="cancelorder">Cancel Orders</string>
+    <string name="cancelordermsg">Are you sure you want to Cancel Order?</string>
+    <string name="return_cash">Return (Cash)</string>
+    <string name="acc_cash">Account (Cash)</string>
+    <string name="acct_alertmsg">Do you want to print the Accounts?</string>
+    <string name="xtoz">X-Z</string>
+    <string name="xz_alertmsg">Do you want to print X-Z</string>
+    <string name="exp_alertmsg">Do you want to Print Expenses?</string>
+    <string name="exp_alert">Expenses</string>
+    <string name="post_alert">Post</string>
+    <string name="post_alertmsg">Do you want to Print Post?</string>
+    <string name="itemprice">Item Price</string>
+    <string name="itemalreadylist">Item Already In list</string>
+    <string name="alert_syncdata">Are you sure you want to Sync Data?</string>
+    <string name="gst_vat_register_report">Order Header Report</string>
+    <string name="order_item_vat_report">Order Item Report</string>
+    <string name="india_vat_report">VAT Report</string>
+    <string name="item_name_l">Item Name (L)</string>
 </resources>

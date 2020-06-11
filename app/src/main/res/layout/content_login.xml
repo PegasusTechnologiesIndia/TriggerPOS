@@ -34,6 +34,7 @@
         android:textSize="15sp"
         android:layout_marginTop="10dp"/>
 
+
     <EditText
         android:id="@+id/edt_username"
         android:layout_width="match_parent"
@@ -46,7 +47,6 @@
         android:singleLine="true"
         android:textColor="#ffffff"
         android:textColorHint="#f9f9f9" />
-
 
     <EditText
         android:id="@+id/edt_userpass"
@@ -66,7 +66,9 @@
     <LinearLayout
         style="@style/AppTheme.HorizontalButtonLayout"
         android:layout_below="@+id/edt_userpass"
-        android:layout_marginTop="15dp">
+        android:layout_marginTop="15dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
 
         <Button
             android:id="@+id/btn_login"
@@ -75,6 +77,19 @@
             android:background="#e8873a"
             android:text="@string/login"
             android:textAllCaps="false"
+            android:layout_margin="5dp"
+            android:textColor="#fffff2"
+            android:layout_weight=".5"
+            android:textSize="20sp" />
+        <Button
+            android:id="@+id/btn_clear"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="#e8873a"
+            android:text="@string/clear"
+            android:textAllCaps="false"
+            android:layout_weight=".5"
+            android:layout_margin="5dp"
             android:textColor="#fffff2"
             android:textSize="20sp" />
 

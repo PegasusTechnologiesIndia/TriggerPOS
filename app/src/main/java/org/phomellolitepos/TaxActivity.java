@@ -37,6 +37,7 @@ import java.util.Locale;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
@@ -68,7 +69,7 @@ public class TaxActivity extends AppCompatActivity {
     AlertDialog alert;
     LinearLayout.LayoutParams lp;
     MenuItem menuItem;
-
+String taxname;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -164,7 +165,11 @@ public class TaxActivity extends AppCompatActivity {
 
 
         if (operation.equals("Edit")) {
-            btn_tax_delete.setVisibility(View.VISIBLE);
+            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+
+                btn_tax_delete.setVisibility(View.VISIBLE);
+            }
+
             tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id = '" + tax_id + "'", database, db);
             edt_tax_name.setText(tax_master.get_tax_name());
             edt_value.setText(tax_master.get_rate());
@@ -509,8 +514,33 @@ public class TaxActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         sleep(1000);
+                        try {
+                            Tax_Master tax_master = Tax_Master.getTax_Master(getApplicationContext(), "Where tax_name = '" + edt_tax_name.getText().toString() + "'and tax_id!='"+tax_id+"'", database, db);
 
-                        Update_tax(tax_id, tax_name, tax_value, tax_comment, strType,strTaxGroup);
+                           // Tax_Master tax_obj = Tax_Master.getTax_Master(getApplicationContext(), database, db, "WHERE tax_name='" + edt_item_ct_name.getText().toString() + "' and  item_group_code != '"+  edt_item_ct_code.getText().toString() +"'");
+
+                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                            taxname = tax_master.get_tax_name();
+                        }
+                        catch(Exception e){
+
+                        }
+
+                        if(edt_tax_name.getText().toString().equals(taxname)){
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    pDialog.dismiss();
+                                    edt_tax_name.setText(tax_master.get_tax_name());
+                                    edt_tax_name.selectAll();
+                                    Toast.makeText(TaxActivity.this, "Tax already present", Toast.LENGTH_SHORT).show();
+//                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                        else {
+                            Update_tax(tax_id, tax_name, tax_value, tax_comment, strType, strTaxGroup);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 
@@ -549,8 +579,33 @@ public class TaxActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         sleep(1000);
+                        try {
+                            Tax_Master tax_master = Tax_Master.getTax_Master(getApplicationContext(), "Where tax_name = '" + edt_tax_name.getText().toString() + "'", database, db);
 
-                        Insert_tax(tax_name, value, comment, strType,strTaxGroup);
+                            // Tax_Master tax_obj = Tax_Master.getTax_Master(getApplicationContext(), database, db, "WHERE tax_name='" + edt_item_ct_name.getText().toString() + "' and  item_group_code != '"+  edt_item_ct_code.getText().toString() +"'");
+
+                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                            taxname = tax_master.get_tax_name();
+                        }
+                        catch(Exception e){
+
+                        }
+
+                        if(edt_tax_name.getText().toString().equals(taxname)){
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    pDialog.dismiss();
+                                    edt_tax_name.setText("");
+
+                                    Toast.makeText(TaxActivity.this, "Tax already present", Toast.LENGTH_SHORT).show();
+//                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                        else {
+                            Insert_tax(tax_name, value, comment, strType, strTaxGroup);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 

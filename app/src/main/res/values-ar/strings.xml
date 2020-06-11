@@ -733,12 +733,21 @@
 </string>
     <string name="categoryDeleteMessage">هذه الفئة تستخدم للعناصر الحالية ، هل ما زلت تريد حذفها؟ إذا كانت الإجابة بنعم في حالة إزالة هذه الفئة من العنصر ذي الصلة وتحتاج إلى إعادة تحديد فئة أخرى لتلك العناصر.
 </string>
-    <string name="test_email">البريد الإلكتروني اختبار
-</string>
-    <string name="test_sms">اختبار الرسائل القصيرة
-</string>
-    <string name="email_separator">Multiple email use \',\' for email separator</string>
-    <string name="reset_settings">Reset Settings</string>
-    <string name="Reset_Succ">Reset Successful!</string>
-    <string name="scan_here">Scan Barcode Here...</string>
+    <string name="test_email">البريد الإلكتروني اختبار</string>
+    <string name="test_sms">اختبار الرسائل القصيرة</string>
+    <string name="email_separator">استخدام بريد إلكتروني متعدد لفاصل البريد الإلكتروني</string>
+    <string name="reset_settings">اعادة الضبط</string>
+    <string name="Reset_Succ">تمت إعادة التعيين بنجاح!</string>
+    <string name="scan_here">مسح الباركود هنا ...</string>
+    <string name="devicesymbolerror">يرجى تعيين رمز الجهاز على الخادم</string>
+    <string name="returnposterror">أول مشاركة لجميع العائدات المعلقة</string>
+    <string name="sales_return">عائد المبيعات</string>
+    <string name="alerttitle">هل أنت واثق؟</string>
+    <string name="alert_loginmsg">هل تريد تسجيل الخروج من الجهاز الذي لم يعد يستخدم؟</string>
+    <string name="alert_loginseconddialog">ستفقد البيانات ..! هل تريد المتابعة؟</string>
+    <string name="alert_posbtn">نعم</string>
+    <string name="alert_nobtn">لا</string>
+    <string name="somethingwentwrong">هناك خطأ ما!</string>
+    <string name="register">تسجيل</string>
+    <string name="acessperm">تحتاج إلى السماح بالوصول إلى كافة الأذونات</string>
 </resources>

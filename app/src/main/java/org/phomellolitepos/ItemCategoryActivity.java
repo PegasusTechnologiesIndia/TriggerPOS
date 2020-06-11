@@ -90,6 +90,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
     MenuItem menuItem;
     Lite_POS_Device liteposdevice;
     String liccustomerid;
+    String itemgroup_name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -219,14 +220,17 @@ public class ItemCategoryActivity extends AppCompatActivity {
 
         if (operation.equals("Edit")) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            btn_delete.setVisibility(View.VISIBLE);
+            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+
+                btn_delete.setVisibility(View.VISIBLE);
+            }
             item_group = item_group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code = '" + code + "'");
 //            item_group=null;
 //            if (item_group == null) {
             if (item_group != null) {
                 edt_item_ct_name.setText(item_group.get_item_group_name());
                 edt_item_ct_code.setText(item_group.get_item_group_code());
-
+                edt_item_ct_code.setEnabled(false);
                 Item_Group item_group_parent = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code = '" + item_group.get_parent_code() + "'");
                 if (item_group_parent != null) {
                     String compare_parent_name;
@@ -472,6 +476,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
         database.beginTransaction();
         System.out.println("DATE String"+ date);
         System.out.println("license customer id"+ liccustomerid);
+
         item_group = new Item_Group(getApplicationContext(), null, liccustomerid, item_category_code, spn_parent_code, item_category_name, "0", "1", modified_by, date, "N");
         long l = item_group.insertItem_Group(database);
         if (l > 0) {
@@ -573,9 +578,31 @@ public class ItemCategoryActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         sleep(1000);
+                        try {
+                            Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_name='" + edt_item_ct_name.getText().toString() + "' and  item_group_code != '"+  edt_item_ct_code.getText().toString() +"'");
 
-                        Update_Item_category(code, Item_category_name, Item_category_code);
+                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                            itemgroup_name = objIG1.get_item_group_name();
+                        }
+                        catch(Exception e){
 
+                        }
+
+                        if(edt_item_ct_name.getText().toString().equals(itemgroup_name)){
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    pDialog.dismiss();
+                                   edt_item_ct_name.setText(item_group.get_item_group_name());
+                                   edt_item_ct_name.selectAll();
+                                    Toast.makeText(ItemCategoryActivity.this, "Item Group already present", Toast.LENGTH_SHORT).show();
+//                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                        else {
+                            Update_Item_category(code, Item_category_name, Item_category_code);
+                        }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 
@@ -622,13 +649,35 @@ public class ItemCategoryActivity extends AppCompatActivity {
                 public void run() {
                     try {
                         sleep(1000);
+                        try {
+                            Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_name='" + edt_item_ct_name.getText().toString() + "'");
 
-                        Fill_Item_category(Item_category_name, strIGCode);
+                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                            itemgroup_name = objIG1.get_item_group_name();
+                        }
+                        catch(Exception e){
+
+                        }
+
+
+                        if(edt_item_ct_name.getText().toString().equals(itemgroup_name)){
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    pDialog.dismiss();
+                                    edt_item_ct_name.setText("");
+                                    Toast.makeText(ItemCategoryActivity.this, "Item Group already present", Toast.LENGTH_SHORT).show();
+//                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+
+                        }
+                        else {
+                            Fill_Item_category(Item_category_name, strIGCode);
+                        }
 
                     } catch (InterruptedException e) {
                         e.printStackTrace();
 
-                    } finally {
                     }
                 }
             };

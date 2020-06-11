@@ -193,6 +193,9 @@ public class TaxListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_menu, menu);
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            menu.setGroupVisible(R.id.overFlowItemsToHide, false);
+        }
         return true;
     }
 

@@ -248,12 +248,30 @@ public class CategoryListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_menu, menu);
+
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            menu.setGroupVisible(R.id.overFlowItemsToHide, false);
+        }
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
+ /*       lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+        String ck_project_type = lite_pos_registration.getproject_id();
+        if(id==R.id.action_send){
+        if(ck_project_type.equals("standalone")){
+            item.setVisible(false);
+           // item.getItem(R.id.action_send).setVisible(false);
+        }
+        else{
+            item.setVisible(true);
+           // menu.getItem(R.id.action_send).setVisible(true);
+
+        }
+        }*/
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_category_list.getText().toString().trim();
             strFilter = " and ( item_group_code Like '%" + strFilter + "%'  Or item_group_name Like '%" + strFilter + "%' )";
@@ -399,146 +417,146 @@ public class CategoryListActivity extends AppCompatActivity {
                         }
                     });
 
-            alertDialog.setNeutralButton(R.string.Import_CSV,
-                    new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog,
-                                            int which) {
-                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(
-                                    CategoryListActivity.this);
-                            alertDialog.setTitle("");
-                            alertDialog
-                                    .setMessage(R.string.Imprt_csv_dilog_msg);
-                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
-                                    LinearLayout.LayoutParams.MATCH_PARENT,
-                                    LinearLayout.LayoutParams.MATCH_PARENT);
-                            alertDialog.setNegativeButton(R.string.Cancel,
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,
-                                                            int which) {
-                                        }
-                                    });
-                            alertDialog.setPositiveButton(R.string.Ok,
-                                    new DialogInterface.OnClickListener() {
-                                        public void onClick(DialogInterface dialog,
-                                                            int which) {
-
-//                                           String path= String.valueOf(Environment.getExternalStorageDirectory());
-//                                            File file = new File(path);
-//                                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
-//                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
-//                                            intent.setType("text/*");
-//                                            try {
-//                                                startActivityForResult(Intent.createChooser(intent, "Open CSV"), 100);
-//                                            } catch (ActivityNotFoundException e) {
+//            alertDialog.setNeutralButton(R.string.Import_CSV,
+//                    new DialogInterface.OnClickListener() {
+//                        public void onClick(DialogInterface dialog,
+//                                            int which) {
+//                            AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+//                                    CategoryListActivity.this);
+//                            alertDialog.setTitle("");
+//                            alertDialog
+//                                    .setMessage(R.string.Imprt_csv_dilog_msg);
+//                            LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
+//                                    LinearLayout.LayoutParams.MATCH_PARENT,
+//                                    LinearLayout.LayoutParams.MATCH_PARENT);
+//                            alertDialog.setNegativeButton(R.string.Cancel,
+//                                    new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog,
+//                                                            int which) {
+//                                        }
+//                                    });
+//                            alertDialog.setPositiveButton(R.string.Ok,
+//                                    new DialogInterface.OnClickListener() {
+//                                        public void onClick(DialogInterface dialog,
+//                                                            int which) {
 //
-//                                            }
-
-//                                            Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
-//                                            chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
-//                                            chooseFile.setType("*/*");
-//                                            startActivityForResult(chooseFile,0);
-//                                            succ_import = "0";
-                                            pDialog = new ProgressDialog(CategoryListActivity.this);
-                                            pDialog.setTitle("");
-                                            pDialog.setMessage(getString(R.string.Impting_itm_ctgry));
-                                            pDialog.setCancelable(false);
-                                            pDialog.show();
-                                            final Thread t = new Thread() {
-                                                @Override
-                                                public void run() {
-                                                    try {
-                                                        try {
-                                                            sleep(200);
-                                                            database.beginTransaction();
-                                                            String modified_by = Globals.user;
-                                                            File myFile = new File("/sdcard/itemgroup.csv");
-                                                            FileInputStream fIn = new FileInputStream(myFile);
-                                                            BufferedReader myReader = new BufferedReader(
-                                                                    new InputStreamReader(fIn));
-                                                            String aDataRow = "";
-                                                            String aBuffer = "";
-                                                            int count = 0;
-                                                            while ((aDataRow = myReader.readLine()) != null) {
-
-                                                                if (count==0){
-                                                                    count=1;
-                                                                }else {
-                                                                    List<String> myList = new ArrayList<String>(Arrays.asList(aDataRow.split(",")));
-                                                                    String item_group_code = myList.get(0);
-                                                                    item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + item_group_code + "'");
-                                                                    if (item_group == null) {
-                                                                        Item_Group item_group = new Item_Group(getApplicationContext(), null,
-                                                                                Globals.Device_Code, myList.get(0), "0", myList.get(1), "0",
-                                                                                "1", modified_by, date, "N");
-                                                                        long l = item_group.insertItem_Group(database);
-                                                                        if (l > 0) {
-                                                                            succ_import = "1";
-                                                                        } else {
-                                                                        }
-                                                                    } else {
-                                                                        item_group = new Item_Group(getApplicationContext(), item_group.get_item_group_id(),
-                                                                                Globals.Device_Code, myList.get(0), "0", myList.get(1), "0",
-                                                                                "1", modified_by, date, "N");
-                                                                        long l = item_group.updateItem_Group("item_group_code=?", new String[]{item_group_code}, database);
-                                                                        if (l > 0) {
-                                                                            succ_import = "1";
-                                                                        } else {
-                                                                        }
-                                                                    }
-                                                                }
-
-                                                            }
-                                                            myReader.close();
-                                                            if (succ_import.equals("1")) {
-                                                                database.setTransactionSuccessful();
-                                                                database.endTransaction();
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-                                                                        pDialog.dismiss();
-                                                                        getCategoryList("");
-                                                                        Toast.makeText(getBaseContext(), R.string.itm_catgy_imprt_succ,
-                                                                                Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-
-                                                            } else {
-                                                                database.endTransaction();
-                                                            }
-
-                                                        } catch (final Exception e) {
-                                                            database.endTransaction();
-                                                            runOnUiThread(new Runnable() {
-                                                                public void run() {
-                                                                    pDialog.dismiss();
-                                                                    Toast.makeText(getBaseContext(), e.getMessage(),
-                                                                            Toast.LENGTH_SHORT).show();
-                                                                }
-                                                            });
-                                                        }
-                                                    } catch (Exception ex) {
-                                                        database.endTransaction();
-                                                        runOnUiThread(new Runnable() {
-                                                            public void run() {
-                                                                pDialog.dismiss();
-                                                            }
-                                                        });
-                                                        // TODO Auto-generated catch block
-                                                        ex.printStackTrace();
-                                                    }
-                                                }
-                                            };
-                                            t.start();
-                                        }
-                                    });
-                            AlertDialog alert = alertDialog.create();
-                            alert.show();
-                            Button nbutton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
-                            nbutton.setTextColor(getResources().getColor(R.color.colorPrimary));
-                            Button pbutton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
-                            pbutton.setTextColor(getResources().getColor(R.color.colorPrimary));
-                        }
-                    });
+////                                           String path= String.valueOf(Environment.getExternalStorageDirectory());
+////                                            File file = new File(path);
+////                                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+////                                            Intent intent = new Intent(Intent.ACTION_GET_CONTENT);
+////                                            intent.addCategory(Intent.CATEGORY_OPENABLE);
+////                                            intent.setType("text/*");
+////                                            try {
+////                                                startActivityForResult(Intent.createChooser(intent, "Open CSV"), 100);
+////                                            } catch (ActivityNotFoundException e) {
+////
+////                                            }
+//
+////                                            Intent chooseFile = new Intent(Intent.ACTION_GET_CONTENT);
+////                                            chooseFile.addCategory(Intent.CATEGORY_OPENABLE);
+////                                            chooseFile.setType("*/*");
+////                                            startActivityForResult(chooseFile,0);
+////                                            succ_import = "0";
+//                                            pDialog = new ProgressDialog(CategoryListActivity.this);
+//                                            pDialog.setTitle("");
+//                                            pDialog.setMessage(getString(R.string.Impting_itm_ctgry));
+//                                            pDialog.setCancelable(false);
+//                                            pDialog.show();
+//                                            final Thread t = new Thread() {
+//                                                @Override
+//                                                public void run() {
+//                                                    try {
+//                                                        try {
+//                                                            sleep(200);
+//                                                            database.beginTransaction();
+//                                                            String modified_by = Globals.user;
+//                                                            File myFile = new File("/sdcard/itemgroup.csv");
+//                                                            FileInputStream fIn = new FileInputStream(myFile);
+//                                                            BufferedReader myReader = new BufferedReader(
+//                                                                    new InputStreamReader(fIn));
+//                                                            String aDataRow = "";
+//                                                            String aBuffer = "";
+//                                                            int count = 0;
+//                                                            while ((aDataRow = myReader.readLine()) != null) {
+//
+//                                                                if (count==0){
+//                                                                    count=1;
+//                                                                }else {
+//                                                                    List<String> myList = new ArrayList<String>(Arrays.asList(aDataRow.split(",")));
+//                                                                    String item_group_code = myList.get(0);
+//                                                                    item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + item_group_code + "'");
+//                                                                    if (item_group == null) {
+//                                                                        Item_Group item_group = new Item_Group(getApplicationContext(), null,
+//                                                                                Globals.Device_Code, myList.get(0), "0", myList.get(1), "0",
+//                                                                                "1", modified_by, date, "N");
+//                                                                        long l = item_group.insertItem_Group(database);
+//                                                                        if (l > 0) {
+//                                                                            succ_import = "1";
+//                                                                        } else {
+//                                                                        }
+//                                                                    } else {
+//                                                                        item_group = new Item_Group(getApplicationContext(), item_group.get_item_group_id(),
+//                                                                                Globals.Device_Code, myList.get(0), "0", myList.get(1), "0",
+//                                                                                "1", modified_by, date, "N");
+//                                                                        long l = item_group.updateItem_Group("item_group_code=?", new String[]{item_group_code}, database);
+//                                                                        if (l > 0) {
+//                                                                            succ_import = "1";
+//                                                                        } else {
+//                                                                        }
+//                                                                    }
+//                                                                }
+//
+//                                                            }
+//                                                            myReader.close();
+//                                                            if (succ_import.equals("1")) {
+//                                                                database.setTransactionSuccessful();
+//                                                                database.endTransaction();
+//                                                                runOnUiThread(new Runnable() {
+//                                                                    public void run() {
+//                                                                        pDialog.dismiss();
+//                                                                        getCategoryList("");
+//                                                                        Toast.makeText(getBaseContext(), R.string.itm_catgy_imprt_succ,
+//                                                                                Toast.LENGTH_SHORT).show();
+//                                                                    }
+//                                                                });
+//
+//                                                            } else {
+//                                                                database.endTransaction();
+//                                                            }
+//
+//                                                        } catch (final Exception e) {
+//                                                            database.endTransaction();
+//                                                            runOnUiThread(new Runnable() {
+//                                                                public void run() {
+//                                                                    pDialog.dismiss();
+//                                                                    Toast.makeText(getBaseContext(), e.getMessage(),
+//                                                                            Toast.LENGTH_SHORT).show();
+//                                                                }
+//                                                            });
+//                                                        }
+//                                                    } catch (Exception ex) {
+//                                                        database.endTransaction();
+//                                                        runOnUiThread(new Runnable() {
+//                                                            public void run() {
+//                                                                pDialog.dismiss();
+//                                                            }
+//                                                        });
+//                                                        // TODO Auto-generated catch block
+//                                                        ex.printStackTrace();
+//                                                    }
+//                                                }
+//                                            };
+//                                            t.start();
+//                                        }
+//                                    });
+//                            AlertDialog alert = alertDialog.create();
+//                            alert.show();
+//                            Button nbutton = alert.getButton(DialogInterface.BUTTON_NEGATIVE);
+//                            nbutton.setTextColor(getResources().getColor(R.color.colorPrimary));
+//                            Button pbutton = alert.getButton(DialogInterface.BUTTON_POSITIVE);
+//                            pbutton.setTextColor(getResources().getColor(R.color.colorPrimary));
+//                        }
+//                    });
             AlertDialog alert = alertDialog.create();
             alert.setOnShowListener(new DialogInterface.OnShowListener() {
 
@@ -568,7 +586,7 @@ public class CategoryListActivity extends AppCompatActivity {
 
     private String send_online_item_group() {
         Globals.reg_code = lite_pos_registration.getRegistration_Code();
-        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'",serial_no,"4",android_id,myKey,liccustomerid);
+        String l = Item_Group.sendOnServer(getApplicationContext(), database, db, "Select * From item_group  WHERE is_push = 'N'",serial_no,Globals.syscode2,android_id,myKey,liccustomerid);
         return l;
     }
 

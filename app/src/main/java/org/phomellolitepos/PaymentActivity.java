@@ -1609,7 +1609,7 @@ public class PaymentActivity extends AppCompatActivity {
     }
 
     private void create_customer_dialog(String strContact_Code) {
-        final String str = "13245";
+        final String str = Globals.str_userpassword;
         final Dialog listDialog2 = new Dialog(PaymentActivity.this);
         listDialog2.setTitle(R.string.Contact);
         LayoutInflater li1 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);

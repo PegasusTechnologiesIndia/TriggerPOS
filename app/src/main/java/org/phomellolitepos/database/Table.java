@@ -149,7 +149,26 @@ public class Table {
         return list;
     }
 
+    public void add_table(ArrayList<Table> list,SQLiteDatabase db) {
 
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Table table : list) {
+
+
+                values.put("table_code", table.get_table_code());
+                values.put("table_name", table.get_table_name());
+
+                db.insert(tableName, null, values);
+
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
     public static ArrayList<String> getAllItemforautocomplete(Context context, String WhereClasue) {
         String Query = "Select * FROM " + tableName + " " + WhereClasue;
         ArrayList<String> list = new ArrayList<String>();

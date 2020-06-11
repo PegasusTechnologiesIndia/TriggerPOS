@@ -178,7 +178,6 @@
             android:orientation="vertical">
 
 
-
             <LinearLayout
                 android:id="@+id/ll_summary"
                 android:layout_width="match_parent"
@@ -196,12 +195,12 @@
                 <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/summary_report"
                     android:textColor="#333333"
-                    android:textSize="17dp"
-                    android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"/>
+                    android:textSize="17dp" />
 
                 <Button
                     android:id="@+id/btn_daily_report"
@@ -209,8 +208,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/Daily_Sales_Report" />
 
                 <Button
@@ -219,8 +218,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/Monthly_Report" />
 
 
@@ -230,8 +229,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/Category_Sales_Report" />
 
                 <Button
@@ -240,8 +239,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/sales_by_item_report" />
 
                 <Button
@@ -250,8 +249,8 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/delivery_report" />
 
                 <Button
@@ -260,13 +259,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
                     android:text="@string/item_profit_report" />
 
 
             </LinearLayout>
-
 
             <LinearLayout
                 android:id="@+id/ll_header"
@@ -405,6 +403,7 @@
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
+                    android:visibility="gone"
                     android:layout_marginTop="10dp"
                     android:text="@string/customer_credit_collection_report" />
 
@@ -416,6 +415,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+
                     android:text="@string/customer_summery_report"
                     android:visibility="gone"/>
 
@@ -436,6 +436,7 @@
                 android:id="@+id/ll_purchase"
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:orientation="vertical">
 
                 <View
@@ -535,6 +536,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:text="@string/contact_group_report" />
 
                 <Button
@@ -595,6 +597,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:text="@string/low_stock_report" />
 
 
@@ -606,6 +609,7 @@
                     android:layout_marginLeft="10dp"
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
+                    android:visibility="gone"
                     android:text="@string/stock_report" />
 
 
@@ -652,6 +656,49 @@
                     android:layout_marginRight="10dp"
                     android:layout_marginTop="10dp"
                     android:text="@string/order_item_gst_report" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_vat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/india_vat_report"
+                    android:textColor="#333333"
+                    android:textSize="17dp" />
+
+                <Button
+                    android:id="@+id/btn_vat_sale_regis"
+                    style="@style/AppTheme.DatabaseButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/gst_vat_register_report" />
+
+                <Button
+                    android:id="@+id/btn_vat_item_wise"
+                    style="@style/AppTheme.DatabaseButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/order_item_vat_report" />
             </LinearLayout>
         </LinearLayout>
     </LinearLayout>

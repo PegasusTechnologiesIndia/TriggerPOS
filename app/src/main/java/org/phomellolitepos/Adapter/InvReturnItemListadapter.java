@@ -50,12 +50,14 @@ public class InvReturnItemListadapter extends BaseAdapter {
 
     public View getView(final int position, View convertView, ViewGroup parent) {
         TextView txt_qty, txt_temcode, txt_itemname, txt_total, txt_inv_no;
+        Returns returns;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
         View itemView = inflater.inflate(R.layout.inv_return_listitemcode,
                 parent, false);
         Order_Detail resultp = data.get(position);
+
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
         } catch (Exception ex) {
@@ -68,6 +70,8 @@ public class InvReturnItemListadapter extends BaseAdapter {
 
 
         try {
+
+
 
             txt_itemname.setText(item_name.get(position).toString());
 

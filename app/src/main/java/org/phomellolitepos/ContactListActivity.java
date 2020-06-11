@@ -261,6 +261,9 @@ public class ContactListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.list_menu, menu);
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            menu.setGroupVisible(R.id.overFlowItemsToHide, false);
+        }
         return true;
     }
 

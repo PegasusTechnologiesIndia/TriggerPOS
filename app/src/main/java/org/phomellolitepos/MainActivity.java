@@ -2,6 +2,7 @@ package org.phomellolitepos;
 
 import android.Manifest;
 import android.annotation.SuppressLint;
+import android.app.ActionBar;
 import android.app.Activity;
 import android.app.ActivityOptions;
 import android.app.AlertDialog;
@@ -10,6 +11,7 @@ import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.bluetooth.BluetoothDevice;
 import android.content.ComponentName;
+import android.content.ContentValues;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -17,9 +19,13 @@ import android.content.ServiceConnection;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.res.Configuration;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Address;
+import android.location.Geocoder;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
@@ -35,6 +41,7 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentStatePagerAdapter;
+import android.support.v4.content.FileProvider;
 import android.support.v4.view.MenuItemCompat;
 import android.support.v4.view.ViewPager;
 import android.support.v7.widget.SearchView;
@@ -82,19 +89,27 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
+import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileOutputStream;
+import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Locale;
 import java.util.Map;
 
@@ -143,6 +158,8 @@ import org.phomellolitepos.zbar.ZBarScannerView;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
+import au.com.bytecode.opencsv.CSVWriter;
+import in.gauriinfotech.commons.Commons;
 import me.srodrigo.androidhintspinner.HintAdapter;
 import me.srodrigo.androidhintspinner.HintSpinner;
 import sunmi.bean.SecondScreenData;
@@ -169,6 +186,7 @@ public class MainActivity extends AppCompatActivity
     Dialog listDialog2;
     Dialog listDialog_table;
     Item item;
+    SyncDialogCaller obj_syncdialog;
     String email,password;
     TextView list_title, my_company_name, my_company_email, txt_user_name, txt_version;
     Button btn_Item_Price, btn_Qty;
@@ -211,6 +229,9 @@ public class MainActivity extends AppCompatActivity
     JSONObject jsonObject;
     String displayTilte, line_total_af, line_total_bf;
     ProgressDialog pDialog;
+    String PathHolder;
+    boolean bValidate;
+    ProgressDialog progressDialog;
     Handler mHandler1;
     String path1 = Environment.getExternalStorageDirectory().getPath() + "/small.png";
     String path2 = Environment.getExternalStorageDirectory().getPath() + "/big.png";
@@ -236,6 +257,8 @@ public class MainActivity extends AppCompatActivity
     String reg_code;
     Lite_POS_Device liteposdevice;
     String liccustomerid;
+    AppLocationService appLocationService;
+    String company_email,company_password;
     /**
      * 发送消息的回调
      */
@@ -430,7 +453,11 @@ public class MainActivity extends AppCompatActivity
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
-
+        try {
+            appLocationService = new AppLocationService(
+                    MainActivity.this);
+        } catch (Exception e) {
+        }
         liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
         try {
             if (liteposdevice != null) {
@@ -438,6 +465,138 @@ public class MainActivity extends AppCompatActivity
             }
         } catch (Exception e) {
 
+        }
+
+
+        Globals.objLPR = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+        company_email= Globals.objLPR.getEmail();
+        company_password= Globals.objLPR.getPassword();
+
+        if(Globals.objLPR.getproject_id().equals("cloud")){
+
+            item = Item.getItem(getApplicationContext(), "", database, db);
+            if(item==null){
+                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(MainActivity.this);
+
+                builder.setTitle(getString(R.string.alerttitle));
+                builder.setMessage(getString(R.string.alert_syncdata));
+
+                builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        try {
+
+                            if (isNetworkStatusAvialable(getApplicationContext())) {
+                                progressDialog = new ProgressDialog(MainActivity.this);
+                                progressDialog.setTitle("");
+                                progressDialog.setMessage(getString(R.string.Syncdataserver));
+                                progressDialog.setCancelable(false);
+                                progressDialog.show();
+                                final Thread t = new Thread() {
+                                    @Override
+                                    public void run() {
+                                        try {
+                                            try {
+                                                sleep(200);
+                                                obj_syncdialog = new SyncDialogCaller(getApplicationContext(), database,db);
+                                              obj_syncdialog.sync_all(getApplicationContext(), database, serial_no, android_id, myKey, liccustomerid);
+
+                                                progressDialog.dismiss();
+
+                                                   runOnUiThread(new Runnable() {
+                                                       public void run() {
+
+                                                           Toast.makeText(getApplicationContext(), getString(R.string.Data_sync_succ), Toast.LENGTH_SHORT).show();
+                                                            finish();
+                                                            Intent i= new Intent(getApplicationContext(),MainActivity.class);
+                                                            startActivity(i);
+                                                       }
+                                                   });
+
+
+                                            } catch (final Exception e) {
+                                                progressDialog.dismiss();
+                                                runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        Toast.makeText(getApplicationContext(), R.string.somthing_wnt_wrng, Toast.LENGTH_SHORT).show();
+                                                    }
+                                                });
+                                            }
+                                        } catch (Exception ex) {
+                                            progressDialog.dismiss();
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), R.string.somthing_wnt_wrng, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    }
+                                };
+                                t.start();
+                            } else {
+                                Toast.makeText(getApplicationContext(), R.string.nointernet, Toast.LENGTH_SHORT).show();
+                            }
+
+                            //  postDeviceInfo(lite_pos_registration.getEmail(), lite_pos_registration.getPassword(), Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no,  Globals.syscode2, android_id, myKey,lite_pos_registration.getRegistration_Code(),"1");
+                        }
+                        catch(Exception e){
+
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+                builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // Do nothing
+                        dialog.dismiss();
+                    }
+                });
+
+                android.support.v7.app.AlertDialog alert = builder.create();
+                alert.show();
+
+
+            }
+        }
+
+        try {
+            Calendar c = Calendar.getInstance();
+            System.out.println("Current time => " + c.getTime());
+            Date d = new Date();
+            SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+            date = df.format(d);
+
+
+            if (appLocationService.canGetLocation()) {
+
+
+                double longitude = appLocationService.getLongitude();
+                double latitude = appLocationService.getLatitude();
+                Globals.latitude = String.valueOf(latitude);
+                Globals.longitude = String.valueOf(longitude);
+                getAddressFromLocation(latitude, longitude, getApplicationContext(), new GeocoderHandler());
+
+            } else {
+                if (Globals.gpsFlag == true) {
+                    appLocationService.showSettingsAlert();
+                }
+            }
+            try {
+                backgroundLocationJson();
+            } catch (JSONException e) {
+                e.printStackTrace();
+            }
+        }
+        catch(Exception e){}
+        try {
+            Intent serviceIntent = new Intent(this, BackgroundApiService.class);
+            startService(serviceIntent);
+        } catch (Exception e) {
         }
         final Intent intent = getIntent();
         listDialog2 = new Dialog(this);
@@ -737,7 +896,7 @@ public class MainActivity extends AppCompatActivity
         tabLayout.setOnTabSelectedListener(new TabLayout.OnTabSelectedListener() {
             @Override
             public void onTabSelected(TabLayout.Tab tab) {
-        }
+            }
 
             @Override
             public void onTabUnselected(TabLayout.Tab tab) {
@@ -767,15 +926,27 @@ public class MainActivity extends AppCompatActivity
         try {
             lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
             if (lite_pos_registration.getproject_id().equals("cloud")) {
-                nav_item = menu.findItem(R.id.nav_purchese);
-                nav_item.setVisible(false);
-                nav_item = menu.findItem(R.id.nav_stock_adjest);
+//                nav_item = menu.findItem(R.id.nav_purchese);
+//                nav_item.setVisible(false);
+//                nav_item = menu.findItem(R.id.nav_stock_adjest);
+//                nav_item.setVisible(false);
+                nav_item = menu.findItem(R.id.nav_get_file);
                 nav_item.setVisible(false);
             } else {
-                nav_item = menu.findItem(R.id.nav_purchese);
+                nav_item = menu.findItem(R.id.nav_return);
+                nav_item.setVisible(false);
+                nav_item = menu.findItem(R.id.nav_acc);
+                nav_item.setVisible(false);
+                nav_item = menu.findItem(R.id.nav_get_file);
                 nav_item.setVisible(false);
             }
         } catch (Exception ex) {}
+
+
+        nav_item = menu.findItem(R.id.nav_purchese);
+        nav_item.setVisible(false);
+        nav_item = menu.findItem(R.id.nav_stock_adjest);
+        nav_item.setVisible(false);
 
         // Industry_Type 3 for payment collection
         // Industry_Type 1 for restruant
@@ -836,6 +1007,7 @@ public class MainActivity extends AppCompatActivity
             nav_item.setVisible(false);
             nav_item = menu.findItem(R.id.nav_search_order);
             nav_item.setVisible(false);
+
         } else if (Globals.Industry_Type.equals("2")) {
 //            nav_item = menu.findItem(R.id.nav_resv);
 //            nav_item.setVisible(false);
@@ -948,10 +1120,14 @@ public class MainActivity extends AppCompatActivity
             nav_item1.setVisible(false);
             nav_item1 = menu1.findItem(R.id.nav_loyalty);
             nav_item1.setVisible(false);
+            nav_item1 = menu1.findItem(R.id.nav_get_file);
+            nav_item1.setVisible(false);
         } else {
             nav_item1 = menu1.findItem(R.id.nav_coupon);
             nav_item1.setVisible(false);
             nav_item1 = menu1.findItem(R.id.nav_loyalty);
+            nav_item1.setVisible(false);
+            nav_item1 = menu1.findItem(R.id.nav_get_file);
             nav_item1.setVisible(false);
         }
 //        if (lite_pos_registration.getproject_id().equals("cloud")) {
@@ -2000,7 +2176,280 @@ public class MainActivity extends AppCompatActivity
         if (id == R.id.table) {
             Table table = Table.getTable(getApplicationContext(), database, db, "");
             if (table == null) {
-                Toast.makeText(getApplicationContext(), R.string.No_Table_Fnd, Toast.LENGTH_SHORT).show();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                builder.setTitle(getString(R.string.alerttitle));
+                builder.setMessage(getString(R.string.alert_impexpmsg));
+
+                builder.setPositiveButton(getString(R.string.Import_CSV), new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+                        try {
+
+                            String[] mimeTypes = {"text/*"};
+                            // File file= new File(Environment.getExternalStorageDirectory()+"");
+                            Intent intent;
+
+                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
+                                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
+
+                                // intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
+                                if (mimeTypes.length > 0) {
+                                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
+                                    //   intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, mimeTypes);
+                                }
+                            } else {
+                                intent = new Intent(Intent.ACTION_GET_CONTENT);
+
+                                intent.addCategory(Intent.CATEGORY_OPENABLE);
+                                String mimeTypesStr = "";
+                                for (String mimeType : mimeTypes) {
+                                    mimeTypesStr += mimeType + "|";
+                                }
+                                intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
+                            }
+                            startActivityForResult(Intent.createChooser(intent, "ChooseFile"), 7);
+
+                            //  postDeviceInfo(lite_pos_registration.getEmail(), lite_pos_registration.getPassword(), Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no,  Globals.syscode2, android_id, myKey,lite_pos_registration.getRegistration_Code(),"1");
+                        } catch (Exception e) {
+
+                        }
+                        dialog.dismiss();
+                    }
+                });
+
+
+                builder.setNegativeButton(getString(R.string.Export_csv), new DialogInterface.OnClickListener() {
+
+                    @Override
+                    public void onClick(DialogInterface dialog, int which) {
+
+                        // Do nothing
+                        pDialog = new ProgressDialog(MainActivity.this);
+                        pDialog.setTitle("");
+                        pDialog.setMessage("Exporting data.....");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
+                        final Thread t = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    try {
+                                        // sleep(200);
+
+
+                                        String succ = export();
+
+                                        if (succ.equals("success")) {
+
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+
+                                                    try {
+                                                        File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export" + ".csv");
+
+                                                        //  Toast.makeText(getApplicationContext(), "CSV Exported Successfully " + fileWithinMyDir, Toast.LENGTH_LONG).show();
+                                                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                                                        builder.setTitle(getString(R.string.alerttitle));
+                                                        builder.setMessage(getString(R.string.alert_sharemsg));
+
+                                                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                // Do nothing but close the dialog
+
+                                                                try {
+                                                                    //  Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+                                                                    File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export.csv");
+
+                                                                    Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+
+                                                                    File f = new File(fileWithinMyDir.getAbsolutePath());
+
+                                                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                                                    shareIntent.setType("message/rfc822");
+                                                                    Uri fileUri = FileProvider.getUriForFile(getApplicationContext(), "com.org.phomellolitepos.myfileprovider", new File(fileWithinMyDir.getAbsolutePath()));
+                                                                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Phomello Litepos Table CSV");
+                                                                    shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                                                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hello, Please find attached  Table.csv");
+                                                                    startActivity(Intent.createChooser(shareIntent, f.getName()));
+
+                                                                } catch (Exception e) {
+                                                                    System.out.println(e.getMessage());
+                                                                }
+                                                            }
+                                                        });
+
+                                                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                                // Do nothing
+
+                                                                dialog.dismiss();
+
+                                                            }
+                                                        });
+
+                                                        AlertDialog alert = builder.create();
+                                                        alert.show();
+
+                                                        pDialog.dismiss();
+                                                    } catch (Exception e) {
+
+                                                    }
+
+
+                                                }
+                                            });
+
+                                        }
+                                    } catch (final Exception e) {
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                pDialog.dismiss();
+                                                Toast.makeText(getApplicationContext(), e.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                } catch (Exception ex) {
+
+
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pDialog.dismiss();
+                                        }
+                                    });
+                                    // TODO Auto-generated catch block
+                                    ex.printStackTrace();
+                                }
+                            }
+                        };
+                        t.start();
+                    }
+                });
+                builder.setNeutralButton(getString(R.string.downloadfiles), new DialogInterface.OnClickListener() {
+
+                    public void onClick(DialogInterface dialog, int which) {
+                        // Do nothing but close the dialog
+
+                        pDialog = new ProgressDialog(MainActivity.this);
+                        pDialog.setTitle("");
+                        pDialog.setMessage("Exporting data.....");
+                        pDialog.setCancelable(false);
+                        pDialog.show();
+                        final Thread t = new Thread() {
+                            @Override
+                            public void run() {
+                                try {
+                                    try {
+                                        // sleep(200);
+
+
+                                        String succ = Globals.export_sample();
+
+                                        if (succ.equals("success")) {
+
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+
+                                                    try {
+                                                        File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export_sample" + ".csv");
+
+                                                        //  Toast.makeText(getApplicationContext(), "CSV Exported Successfully " + fileWithinMyDir, Toast.LENGTH_LONG).show();
+                                                        AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
+
+                                                        builder.setTitle(getString(R.string.alerttitle));
+                                                        builder.setMessage(getString(R.string.alert_sharemsg));
+
+                                                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                                                            public void onClick(DialogInterface dialog, int which) {
+                                                                // Do nothing but close the dialog
+
+                                                                try {
+                                                                    //  Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+                                                                    File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export_sample.csv");
+
+                                                                    Intent intentShareFile = new Intent(Intent.ACTION_SEND);
+
+                                                                    File f = new File(fileWithinMyDir.getAbsolutePath());
+
+                                                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
+                                                                    shareIntent.setType("message/rfc822");
+                                                                    Uri fileUri = FileProvider.getUriForFile(getApplicationContext(), "com.org.phomellolitepos.myfileprovider", new File(fileWithinMyDir.getAbsolutePath()));
+                                                                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                                                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Phomello Litepos Item Sample CSV");
+                                                                    shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
+                                                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hello, Please find attached  item_export_sample.csv");
+                                                                    startActivity(Intent.createChooser(shareIntent, f.getName()));
+
+                                                                } catch (Exception e) {
+                                                                    System.out.println(e.getMessage());
+                                                                }
+                                                            }
+                                                        });
+
+                                                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                                                            @Override
+                                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                                // Do nothing
+
+                                                                dialog.dismiss();
+
+                                                            }
+                                                        });
+
+                                                        AlertDialog alert = builder.create();
+                                                        alert.show();
+
+                                                        pDialog.dismiss();
+                                                    } catch (Exception e) {
+
+                                                    }
+
+
+                                                }
+                                            });
+
+                                        }
+                                    } catch (final Exception e) {
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                pDialog.dismiss();
+                                                Toast.makeText(getApplicationContext(), e.getMessage(),
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+                                } catch (Exception ex) {
+
+
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pDialog.dismiss();
+                                        }
+                                    });
+                                    // TODO Auto-generated catch block
+                                    ex.printStackTrace();
+                                }
+                            }
+                        };
+                        t.start();
+                    }
+                });
+                AlertDialog alert = builder.create();
+                alert.show();
+                //Toast.makeText(getApplicationContext(), R.string.No_Table_Fnd, Toast.LENGTH_SHORT).show();
             } else {
                 showdialogTable();
             }
@@ -2198,7 +2647,7 @@ public class MainActivity extends AppCompatActivity
 
         } else if (id == R.id.nav_return) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(MainActivity.this, "Returns", ReturnOptionActivity.class);
+            Boolean result = userPermission.Permission(MainActivity.this, "Return", ReturnOptionActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(MainActivity.this, PayCollectionListActivity.class);
@@ -2575,7 +3024,143 @@ public class MainActivity extends AppCompatActivity
 
                     mService.connect(con_dev);
                 }
+
                 break;
+            case 7:
+                if (resultCode == RESULT_OK) {
+                    //   String displayName = null;
+                    PathHolder = data.getData().getPath();
+                    String fullPath = "";
+                    try {
+                        fullPath = Commons.getPath(data.getData(), getApplicationContext());
+                    } catch (Exception e) {
+                        System.out.println(e.getMessage());
+                    }
+
+                    pDialog = new ProgressDialog(MainActivity.this);
+                    pDialog.setTitle("");
+                    pDialog.setMessage("Importing data.....");
+                    pDialog.setCancelable(false);
+                    pDialog.show();
+
+
+                    final String finalFullPath = fullPath;
+                    final Thread t = new Thread() {
+                        @Override
+                        public void run() {
+                            try {
+                                try {
+                                    sleep(200);
+                                       /* String[] path_separation = PathHolder.split(":");
+                                        String filepath = path_separation[0];
+                                        String filename = path_separation[1];*/
+
+                                    File myFile = new File(finalFullPath);
+                                    FileInputStream fIn = new FileInputStream(myFile);
+                                    BufferedReader myReader = new BufferedReader(
+                                            new InputStreamReader(fIn));
+                                    String aDataRow = "";
+                                    String aBuffer = "";
+
+                                    db.executeDML("DROP table if Exists tables", database);
+
+                                    long u = db.executeDML(" CREATE TABLE [tables]([table_id] INTEGER PRIMARY KEY AUTOINCREMENT,[table_code] NVARCHAR(50),[table_name] NVARCHAR(50),CONSTRAINT [table_code_unique] UNIQUE([table_code]))", database);
+
+                                    //   long u = Product.delete_Product(getActivity(),"Products",database,"",new String []{});
+                                    int count = 0;
+                                    ContentValues contentValues = new ContentValues();
+                                    ArrayList<Table> plist = new ArrayList<Table>();
+                                    Table table = new Table(getApplicationContext(), null,"", "");
+
+                                    bValidate = true;
+                                    while (((aDataRow = myReader.readLine()) != null) && bValidate) {
+                                        if (count == 0) {
+                                            ArrayList<String> myList = new ArrayList<String>(Arrays.asList(aDataRow.split(",")));
+                                            String tablecode= myList.get(0).toString().replace("\"","");
+                                            String tablename= myList.get(1).toString().replace("\"","");
+                                            if (!tablecode.equals("table_code")) {
+                                                bValidate = false;
+                                            } else if (!tablename.equals("table_name")) {
+                                                bValidate = false;
+                                            } else {
+                                                bValidate = true;
+                                            }
+                                            count = 1;
+                                        } else {
+                                            try {
+                                                ArrayList<String> myList = new ArrayList<String>(Arrays.asList(aDataRow.split(",")));
+
+                                                String tablecode= myList.get(0).toString().replace("\"","");
+                                                String tablename= myList.get(1).toString().replace("\"","");
+                                                plist.add(new Table(getApplicationContext(),null,
+                                                        tablecode, tablename));
+
+
+                                            } catch (Exception ex) {
+                                                ex.getStackTrace();
+                                            }
+
+                                        }
+
+
+                                    }
+                                    try {
+                                        if (plist.size() > 0) {
+                                            table.add_table(plist, database);
+                                        }
+
+                                    } catch (Exception e) {
+
+                                    }
+                                    myReader.close();
+
+                                    //  if (succ_import.equals("1")) {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pDialog.dismiss();
+
+                                            if (bValidate) {
+                                                Toast.makeText(getApplicationContext(), "CSV imported Successfully !!",
+                                                        Toast.LENGTH_SHORT).show();
+                                            } else {
+                                                Toast.makeText(getApplicationContext(), "CSV Not imported Successfully !!",
+                                                        Toast.LENGTH_SHORT).show();
+                                            }
+                                        }
+                                    });
+
+
+                                } catch (final Exception e) {
+                                    pDialog.dismiss();
+                                  runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pDialog.dismiss();
+                                            Toast.makeText(getApplicationContext(), e.getMessage(),
+                                                    Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }
+
+                            } catch (Exception ex) {
+
+                                pDialog.dismiss();
+                               runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pDialog.dismiss();
+                                    }
+                                });
+                                // TODO Auto-generated catch block
+                                ex.printStackTrace();
+                            }
+                        }
+                    };
+                    t.start();
+
+                }
+
+
+                break;
+
         }
     }
 
@@ -2944,7 +3529,7 @@ public class MainActivity extends AppCompatActivity
                 Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
 
                 String licensecustomerid= lite_pos_device.getLic_customer_license_id();
-                postDeviceInfo(email, password, Globals.isuse_logout, Globals.master_product_id, licensecustomerid, Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
+                postDeviceInfo(company_email, company_password, Globals.isuse_logout, Globals.master_product_id, licensecustomerid, Globals.Device_Code, serial_no, Globals.syscode2, android_id, myKey,reg_code);
             }
         });
 
@@ -2969,7 +3554,7 @@ public class MainActivity extends AppCompatActivity
         pDialog = new ProgressDialog(MainActivity.this);
         pDialog.setMessage("Logging Out....");
         pDialog.show();
-        String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/database_detail/device_login";
+        String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/license_product_1/device_login";
         HttpsTrustManager.allowAllSSL();
         // String server_url =  Gloabls.server_url;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
@@ -3142,5 +3727,148 @@ public class MainActivity extends AppCompatActivity
         };
 
         AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+    public static void getAddressFromLocation(final double latitude, final double longitude,
+                                              final Context context, final Handler handler) {
+        Thread thread = new Thread() {
+            @Override
+            public void run() {
+                Geocoder geocoder = new Geocoder(context, Locale.getDefault());
+                String result = null;
+                try {
+                    List<Address> addressList = geocoder.getFromLocation(
+                            latitude, longitude, 1);
+                    if (addressList != null && addressList.size() > 0) {
+                        Address address = addressList.get(0);
+                        StringBuilder sb = new StringBuilder();
+                        for (int i = 0; i < address.getMaxAddressLineIndex(); i++) {
+                            sb.append(address.getAddressLine(i)).append("\n");
+                        }
+                        sb.append(address.getLocality()).append("\n");
+                        sb.append(address.getPostalCode()).append("\n");
+                        sb.append(address.getCountryName());
+                        result = sb.toString();
+                    }
+                } catch (IOException e) {
+                    //Log.e(TAG, "Unable connect to Geocoder", e);
+                } finally {
+                    Message message = Message.obtain();
+                    message.setTarget(handler);
+                    if (result != null) {
+                        message.what = 1;
+                        Bundle bundle = new Bundle();
+                        result = "Latitude: " + latitude + " Longitude: " + longitude +
+                                "\n\nAddress:\n" + result;
+                        bundle.putString("address", result);
+                        Globals.locationddress = result;
+                        message.setData(bundle);
+                    } else {
+                        message.what = 1;
+                        Bundle bundle = new Bundle();
+                        result = "Latitude: " + latitude + " Longitude: " + longitude +
+                                "\n Unable to get address for this lat-long.";
+                        bundle.putString("address", result);
+                        message.setData(bundle);
+                    }
+                    message.sendToTarget();
+                }
+            }
+        };
+        thread.start();
+    }
+
+    private class GeocoderHandler extends Handler {
+        @Override
+        public void handleMessage(Message message) {
+            String locationAddress;
+            switch (message.what) {
+                case 1:
+                    Bundle bundle = message.getData();
+                    locationAddress = bundle.getString("address");
+                    Globals.locationddress = locationAddress;
+                    break;
+                default:
+                    locationAddress = null;
+            }
+
+            // Toast.makeText(getApplicationContext(), locationAddress.toString(), Toast.LENGTH_LONG).show();
+            //  tvAddress.setText(locationAddress);
+        }
+    }
+
+    public void backgroundLocationJson() throws JSONException {
+        JSONArray jsonArr = new JSONArray();
+
+        final JSONObject jsonObj1 = new JSONObject();
+        try {
+
+            JSONObject jsonObj = new JSONObject();
+            // Toast.makeText(getApplicationContext(), "size"+export.size(), Toast.LENGTH_SHORT).show();
+            jsonObj.put("latitude", Globals.latitude);
+            jsonObj.put("longitude", Globals.longitude);
+            jsonObj.put("address", Globals.locationddress);
+            jsonObj.put("datetime", date);
+
+            jsonArr.put(jsonObj);
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+
+        jsonObj1.put("result", jsonArr);
+        Globals.jsonArray_background = jsonObj1;
+
+
+    }
+    private String export() {
+
+        String strResult = "";
+
+
+        SQLiteDatabase db1 = db.getWritableDatabase();
+        String selectQuery = "SELECT table_code,table_name from tables";
+
+        File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+        if (!exportDir.exists()) {
+            exportDir.mkdirs();
+        }
+        File file = new File(exportDir, "" + "table_export" + ".csv");
+        try {
+            file.createNewFile();
+            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+            //SQLiteDatabase sqlite = db.getReadableDatabase();
+
+            Cursor curCSV = db1.rawQuery(selectQuery, null);
+
+            csvWrite.writeNext(curCSV.getColumnNames());
+            while (curCSV.moveToNext()) {
+
+                ArrayList<String> stringArrayList = new ArrayList<String>();
+                int columncount = curCSV.getColumnCount();
+
+                for (int i = 0; i < columncount; i++) {
+
+                    stringArrayList.add(curCSV.getString(i));
+
+                }
+                //Which column you want to exprort
+                String[] stringArray = stringArrayList.toArray(new String[stringArrayList.size()]);
+
+                csvWrite.writeNext(stringArray);
+            }
+            csvWrite.close();
+            curCSV.close();
+            //csvWrite.close();
+            curCSV.close();
+            strResult = "success";
+
+            //Toast.makeText(getApplicationContext(), getString(R.string.exportedcsv), Toast.LENGTH_SHORT).show();
+        } catch (Exception sqlEx) {
+            Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+
+        }
+
+        return strResult;
+
     }
 }

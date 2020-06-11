@@ -422,7 +422,9 @@ public class Item {
             if (cursor.moveToFirst()) {
                 do {
                     String itemname=cursor.getString(cursor.getColumnIndex("item_name"));
+                    String itemcode=cursor.getString(cursor.getColumnIndex("item_code"));
                     list.add(itemname);
+                    list.add(itemcode);
                 } while (cursor.moveToNext());
             }
 

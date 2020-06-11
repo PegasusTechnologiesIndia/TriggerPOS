@@ -63,7 +63,11 @@ dependencies {
     implementation files('libs/zbardecoder.jar')
     provided files('extern_libs/classes.jar')
     implementation files('libs/bw_pos_sdk2.0.19.jar')
+    implementation 'org.jsoup:jsoup:1.8.3'
     implementation 'com.android.volley:volley:1.0.0'
+    implementation "commons-logging:commons-logging-api:1.1"
+    implementation 'in.gauriinfotech:commons:1.0.8'
+    implementation files('libs/opencsv-1.6.jar')
     implementation('me.dm7.barcodescanner:zxing:1.9.8') {
         exclude group: 'com.google.zxing'
     }

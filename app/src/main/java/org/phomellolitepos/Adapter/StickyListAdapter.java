@@ -285,11 +285,11 @@ public class StickyListAdapter extends BaseAdapter implements
 
     private void dialog_for_edit(final String strOrderCode, String strOrderStatus, final String strContactCode) {
 
-        AlertDialog.Builder alertDialog = new AlertDialog.Builder(
+        final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
                 activity);
-        alertDialog.setTitle("Orders");
+        alertDialog.setTitle(R.string.cancelorder);
         alertDialog
-                .setMessage("Select operation");
+                .setMessage(R.string.cancelordermsg);
         LinearLayout.LayoutParams lp = new LinearLayout.LayoutParams(
                 LinearLayout.LayoutParams.MATCH_PARENT,
                 LinearLayout.LayoutParams.MATCH_PARENT);
@@ -315,11 +315,11 @@ public class StickyListAdapter extends BaseAdapter implements
                     });
         }
 
-        alertDialog.setPositiveButton("Cancel Order",
+        alertDialog.setPositiveButton(R.string.alert_posbtn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
-                        String str = "13245";
+
 
                         final Dialog listDialog2 = new Dialog(activity);
                         LayoutInflater li1 = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
@@ -332,7 +332,7 @@ public class StickyListAdapter extends BaseAdapter implements
                         Window window = listDialog2.getWindow();
                         window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
                         edt_pass.setText("");
-                        final String finalStr = str;
+                        final String finalStr = Globals.str_userpassword;
                         btn_ok.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
@@ -378,11 +378,13 @@ public class StickyListAdapter extends BaseAdapter implements
                     }
                 });
 
-        alertDialog.setNeutralButton("Cancel",
+        alertDialog.setNeutralButton(R.string.alert_nobtn,
                 new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,
                                         int which) {
+                       dialog.dismiss();
                     }
+
                 });
 
         AlertDialog alert = alertDialog.create();

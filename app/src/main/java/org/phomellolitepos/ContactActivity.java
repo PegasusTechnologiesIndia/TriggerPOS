@@ -313,7 +313,11 @@ public class ContactActivity extends AppCompatActivity {
 
         if (operation.equals("Edit")) {
             getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            btn_contact_delete.setVisibility(View.VISIBLE);
+            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+
+                btn_contact_delete.setVisibility(View.VISIBLE);
+            }
+
             contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_code = '" + code + "'");
             String compare_title = contact.get_title();
 //            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, title);
@@ -358,6 +362,7 @@ public class ContactActivity extends AppCompatActivity {
 
 
             edt_contact_code.setText(contact.get_contact_code());
+
             edt_contact_name.setText(contact.get_name());
             edt_dob.setText(contact.get_dob());
             edt_gstn.setText(contact.get_gstin());

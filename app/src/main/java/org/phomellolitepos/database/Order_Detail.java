@@ -313,6 +313,29 @@ public class Order_Detail {
         return master;
     }
 
+
+    public static String getItemName_L(Context context, String WhereClasue)
+    {
+        String Query = "Select item.description FROM " + tableName + "  LEFT JOIN item ON item.item_code = order_detail.item_code  " + WhereClasue;
+
+        String master = null;
+        Database db = new Database(context);
+        SQLiteDatabase database = db.getReadableDatabase();
+        try {
+            Cursor cursor = database.rawQuery(Query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    master = cursor.getString(0);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+//            database.close();
+//            db.close();
+        } catch (Exception ex) {
+        }
+        return master;
+    }
+
     public static String getSubtotal(Context context, String WhereClasue, SQLiteDatabase database)
 
 

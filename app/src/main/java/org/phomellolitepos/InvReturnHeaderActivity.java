@@ -8,6 +8,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.os.Bundle;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
@@ -72,15 +74,19 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
     ArrayList<Object> itemcodelist;
     ArrayList<Object> barcodelist;
     ArrayList<Object> returnquantitylist;
-    String strPayMethod,PayId,cusCode;;
+    ArrayList<Object> quantitylist;
+    ArrayList<Returns> arraylistreturns;
+    String strPayMethod, PayId, cusCode;
+    ;
     Contact contact;
-    String db_contact,db_itemname;
+    String db_contact, db_itemname;
     Settings settings;
     Lite_POS_Registration lite_pos_registration;
     String projectid;
-    String itemname,barcode,itemcode,ordercode,returnquantity;
+    String itemname, barcode, itemcode, ordercode, returnquantity,quantity;
     String part2;
     String orderId = null;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -109,6 +115,7 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                         try {
                             sleep(1000);
                             pDialog.dismiss();
+                            Globals.strContact_Code="";
                             Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnListActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.putExtra("operation", operation);
@@ -144,11 +151,12 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         btn_next = (Button) findViewById(R.id.btn_next);
         spn_pay_method = (Spinner) findViewById(R.id.spn_pay_method);
         lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-        projectid=lite_pos_registration.getproject_id();
-        itemnamelist=new ArrayList<>();
-        itemcodelist=new ArrayList<>();
-        barcodelist=new ArrayList<>();
-        returnquantitylist=new ArrayList<>();
+        projectid = lite_pos_registration.getproject_id();
+        itemnamelist = new ArrayList<>();
+        itemcodelist = new ArrayList<>();
+        barcodelist = new ArrayList<>();
+        returnquantitylist = new ArrayList<>();
+        quantitylist= new ArrayList<>();
         settings = Settings.getSettings(getApplicationContext(), database, "");
         if (operation.equals("Edit")) {
             try {
@@ -160,23 +168,22 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 fill_spn_pay_method(returns.get_payment_id());
             } catch (Exception ex) {
             }
-        }
-        else{
-                    try {
-                                                    fill_spn_pay_method("");
-                                                    String myFormat = "yyyy-MM-dd"; //In which you need put here
-                                                    SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
-                                                    String date;
-                                                    try {
-                                                        date = sdf.format(myCalendar.getTime());
-                                                    } catch (Exception ex) {
-                                                        date = "";
-                                                    }
-                                                    edt_date.setText(date);
-                                                    btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
-                                                }catch(Exception e){
+        } else {
+            try {
+                fill_spn_pay_method("");
+                String myFormat = "yyyy-MM-dd"; //In which you need put here
+                SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
+                String date;
+                try {
+                    date = sdf.format(myCalendar.getTime());
+                } catch (Exception ex) {
+                    date = "";
+                }
+                edt_date.setText(date);
+                btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
+            } catch (Exception e) {
 
-                                                }
+            }
         }
 
 /*        edt_order_code.setOnKeyListener(new View.OnKeyListener() {
@@ -308,7 +315,6 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 }
 
 
-
             }
 
             @Override
@@ -344,22 +350,22 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
 
                 if (edt_voucher_no.getText().toString().trim().equals("")) {
                     Returns objVoucher = Returns.getReturns(getApplicationContext(), "order By id Desc LIMIT 1", database);
-                   // Returns objVoucher = Returns.getReturns(getApplicationContext(), "order By id Desc LIMIT 1", database);
+                    // Returns objVoucher = Returns.getReturns(getApplicationContext(), "order By id Desc LIMIT 1", database);
                     Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
 
                     if (last_code == null) {
                         if (objVoucher == null) {
-                            strVoucherNo = "R-" +Globals.objLPD.getDevice_Symbol() + "-" + 1;
+                            strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + 1;
                         } else {
-                            strVoucherNo ="R-"+ Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_id()) + 1);
+                            strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_id()) + 1);
                         }
                     } else {
                         if (last_code.getLast_order_return_code().equals("0")) {
 
                             if (objVoucher == null) {
-                                strVoucherNo = "R-" +Globals.objLPD.getDevice_Symbol() + "-" + 1;
+                                strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + 1;
                             } else {
-                                strVoucherNo = "R-"+ Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_id()) + 1);
+                                strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_id()) + 1);
                             }
                         } else {
                             if (objVoucher == null) {
@@ -367,9 +373,9 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                                 String[] strCode = code.split("-");
                                 part2 = strCode[2];
                                 orderId = (Integer.parseInt(part2) + 1) + "";
-                                strVoucherNo ="R-"+ Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(part2) + 1);
+                                strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(part2) + 1);
                             } else {
-                                strVoucherNo = "R-"+ Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_voucher_no().replace("R-"+Globals.objLPD.getDevice_Symbol() + "-" ,"")) + 1);
+                                strVoucherNo = "R-" + Globals.objLPD.getDevice_Symbol() + "-" + (Integer.parseInt(objVoucher.get_voucher_no().replace("R-" + Globals.objLPD.getDevice_Symbol() + "-", "")) + 1);
                             }
                         }
                     }
@@ -392,23 +398,31 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                     edt_date.setError("Date is required");
                     return;
                 }
+                if (!operation.equals("Edit")) {
+                    arraylistreturns = Returns.getAllReturns(getApplicationContext(), " where order_code ='" + edt_order_code.getText().toString() + "' and is_post='false' and is_cancel='false'", database);
+                    if (arraylistreturns.size() > 0) {
+                        Toast.makeText(getApplicationContext(), "Order No " + edt_order_code.getText().toString() + " already created return voucher!", Toast.LENGTH_SHORT).show();
+                        return;
+                    }
+                }
+                if (isNetworkStatusAvialable(getApplicationContext())) {
 
-                pDialog = new ProgressDialog(InvReturnHeaderActivity.this);
-                pDialog.setCancelable(false);
-                pDialog.setMessage(getString(R.string.Wait_msg));
-                pDialog.show();
+                    pDialog = new ProgressDialog(InvReturnHeaderActivity.this);
+                    pDialog.setCancelable(false);
+                    pDialog.setMessage(getString(R.string.Wait_msg));
+                    pDialog.show();
 
-                Thread timerThread = new Thread() {
-                    public void run() {
+                    Thread timerThread = new Thread() {
+                        public void run() {
 
-                        if(projectid.equals("cloud")) {
-                            try {
-                                sleep(1000);
-                                String relt = ValidInvoiceFromServer(edt_order_code.getText().toString().trim());
+                            if (projectid.equals("cloud")) {
+                                try {
+                                    sleep(1000);
+                                    String relt = ValidInvoiceFromServer(edt_order_code.getText().toString().trim());
 //                            String relt="1";
-                                pDialog.dismiss();
+                                    pDialog.dismiss();
 
-                                if (relt.equals("1")) {
+                                    if (relt.equals("1")) {
 
 /*    if (Globals.strContact_Code.isEmpty()) {
 
@@ -420,79 +434,94 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
             });
 
     } else {*/
+
+                                        try {
+                                            Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnFinalActivity.class);
+                                            intent.putExtra("operation", operation);
+                                            intent.putExtra("voucher_no", strVoucherNo);
+                                            intent.putExtra("date", edt_date.getText().toString().trim());
+                                            intent.putExtra("remarks", edt_remarks.getText().toString().trim());
+                                            intent.putExtra("contact_code", cusCode);
+                                            intent.putExtra("order_code", edt_order_code.getText().toString().trim());
+                                            intent.putExtra("item_code", itemcode);
+                                            intent.putExtra("barcode", barcode);
+                                            if (Globals.strContact_Code.equals("")) {
+                                                intent.putExtra("payment_id", "1");
+                                            } else {
+                                                intent.putExtra("payment_id", PayId);
+                                            }
+                                            Bundle args = new Bundle();
+                                            args.putSerializable("ARRAYLIST", (Serializable) itemnamelist);
+                                            args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
+                                            args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                                            args.putSerializable("ret_quantitylist", (Serializable) returnquantitylist);
+                                            args.putSerializable("quantitylist", (Serializable) quantitylist);
+                                            intent.putExtra("BUNDLE", args);
+
+
+                                            startActivity(intent);
+                                            finish();
+                                        } catch (Exception e) {
+
+                                        }
+                                        // }}
+
+
+                                    } else {
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                Toast.makeText(getApplicationContext(), "Invoice Not Valid!", Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+                                    }
+
+                                } catch (InterruptedException e) {
+                                    e.printStackTrace();
+                                    Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
+
+                                }
+                            } else {
+                                try {
+                                    contact = Contact.getContact(getApplicationContext(), database, db, " WHERE is_active ='1'");
+                                    cusCode = contact.get_contact_code();
+
+
+                                    //   String selectquery ="SELECT am.*,e.item_name FROM  order_detail am left join item e on e.item_code = am.item_code where order_code='A-2'";
                                     Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnFinalActivity.class);
                                     intent.putExtra("operation", operation);
                                     intent.putExtra("voucher_no", strVoucherNo);
                                     intent.putExtra("date", edt_date.getText().toString().trim());
                                     intent.putExtra("remarks", edt_remarks.getText().toString().trim());
                                     intent.putExtra("contact_code", cusCode);
+
+                                    Bundle args = new Bundle();
+                                    args.putSerializable("ARRAYLIST", (Serializable) itemnamelist);
+                                    args.putSerializable("ItemCodeList", (Serializable) "");
+                                    args.putSerializable("BarCodeList", (Serializable) "");
+                                    intent.putExtra("BUNDLE", args);
+
                                     intent.putExtra("order_code", edt_order_code.getText().toString().trim());
-                                    intent.putExtra("item_code", itemcode);
-                                    intent.putExtra("barcode", barcode);
-                                    if (Globals.strContact_Code.equals("")) {
+                                    if (cusCode.equals("")) {
                                         intent.putExtra("payment_id", "1");
                                     } else {
                                         intent.putExtra("payment_id", PayId);
                                     }
-                                    Bundle args = new Bundle();
-                                    args.putSerializable("ARRAYLIST", (Serializable) itemnamelist);
-                                    args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
-                                    args.putSerializable("BarCodeList", (Serializable) barcodelist);
-                                    args.putSerializable("ret_quantitylist", (Serializable) returnquantitylist);
-                                    intent.putExtra("BUNDLE", args);
-
-
                                     startActivity(intent);
                                     finish();
-   // }
+                                } catch (Exception e) {
 
-                                } else {
-                                    runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            Toast.makeText(getApplicationContext(), "Invoice Not Valid!", Toast.LENGTH_SHORT).show();
-                                        }
-                                    });
                                 }
-
-                            } catch (InterruptedException e) {
-                                e.printStackTrace();
-                                Toast.makeText(getApplicationContext(),e.getMessage(),Toast.LENGTH_LONG).show();
-
-                            }
-                        }
-                        else{
-                            contact = Contact.getContact(getApplicationContext(), database, db, " WHERE is_active ='1'");
-                            cusCode=contact.get_contact_code();
-
-
-                        //   String selectquery ="SELECT am.*,e.item_name FROM  order_detail am left join item e on e.item_code = am.item_code where order_code='A-2'";
-                            Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnFinalActivity.class);
-                            intent.putExtra("operation", operation);
-                            intent.putExtra("voucher_no", strVoucherNo);
-                            intent.putExtra("date", edt_date.getText().toString().trim());
-                            intent.putExtra("remarks", edt_remarks.getText().toString().trim());
-                            intent.putExtra("contact_code", cusCode);
-
-                            Bundle args = new Bundle();
-                            args.putSerializable("ARRAYLIST",(Serializable)itemnamelist);
-                            args.putSerializable("ItemCodeList",(Serializable)"");
-                            args.putSerializable("BarCodeList",(Serializable)"");
-                            intent.putExtra("BUNDLE",args);
-
-                            intent.putExtra("order_code", edt_order_code.getText().toString().trim());
-                            if (cusCode.equals("")) {
-                                intent.putExtra("payment_id", "1");
-                            } else {
-                                intent.putExtra("payment_id", PayId);
-                            }
-                            startActivity(intent);
-                            finish();
                             }
 
                         }
 
-                };
-                timerThread.start();
+                    };
+                    timerThread.start();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+
+                }
             }
         });
     }
@@ -506,30 +535,31 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
             if (strStatus.equals("true")) {
 
                 JSONObject myResult = jsonObject_bg.getJSONObject("result");
-                JSONArray jsonArray1=myResult.getJSONArray("order");
-                JSONArray jsonArray2=myResult.getJSONArray("order_detail");
-                for (int i=0;i<jsonArray1.length();i++){
-                    JSONObject jsonObject  = jsonArray1.getJSONObject(i);
+                JSONArray jsonArray1 = myResult.getJSONArray("order");
+                JSONArray jsonArray2 = myResult.getJSONArray("order_detail");
+                for (int i = 0; i < jsonArray1.length(); i++) {
+                    JSONObject jsonObject = jsonArray1.getJSONObject(i);
                     cusCode = jsonObject.getString("contact_code");
-                    Globals.strContact_Code=cusCode;
+                    Globals.strContact_Code = cusCode;
                 }
-                for (int i=0;i<jsonArray2.length();i++){
-                    JSONObject jsonObject  = jsonArray2.getJSONObject(i);
+                for (int i = 0; i < jsonArray2.length(); i++) {
+                    JSONObject jsonObject = jsonArray2.getJSONObject(i);
 
                     itemcode = jsonObject.getString("item_code");
                     itemname = jsonObject.getString("item_name");
                     ordercode = jsonObject.getString("order_code");
-                    barcode= jsonObject.getString("barcode");
-                    returnquantity= jsonObject.getString("return_quantity");
+                    barcode = jsonObject.getString("barcode");
+                    quantity=jsonObject.getString("quantity");
+                    returnquantity = jsonObject.getString("return_quantity");
                     itemnamelist.add(itemname);
                     itemcodelist.add(itemcode);
                     barcodelist.add(barcode);
                     returnquantitylist.add(returnquantity);
-                    String Query = "Update  order_detail Set return_quantity = '"+returnquantity+"' where item_code='"+jsonObject.getString("item_code")+"'";
+                    quantitylist.add(quantity);
+                    String Query = "Update  order_detail Set return_quantity = '" + returnquantity + "' where item_code='" + jsonObject.getString("item_code") + "'";
                     long result = db.executeDML(Query, database);
 
                     if (result > 0) {
-
 
 
                     } else {
@@ -561,13 +591,14 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 succ = "1";
 //
             }
-        } catch (JSONException e) {}
+        } catch (JSONException e) {
+        }
         return succ;
     }
 
     private String ValidInvoice(String invoiceNo) {
         String serverData = null;//
-       String registration_code= lite_pos_registration.getRegistration_Code();
+        String registration_code = lite_pos_registration.getRegistration_Code();
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
 
@@ -614,13 +645,13 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         } else {
             paymentArrayList = Payment.getAllPayment(getApplicationContext(), " WHERE is_active ='1'");
         }
-        PaymentListAdapter paymentListAdapter=null;
+        PaymentListAdapter paymentListAdapter = null;
 
         contact = Contact.getContact(getApplicationContext(), database, db, " WHERE is_active ='1'");
 
-        if(contact==null) {
+        if (contact == null) {
             paymentArrayList1 = Payment.getAllPayment(getApplicationContext(), " WHERE is_active ='1' and  payment_id=1");
-            for(int i=0;i<1;i++) {
+            for (int i = 0; i < 1; i++) {
                 paymentListAdapter = new PaymentListAdapter(getApplicationContext(), paymentArrayList1);
                 spn_pay_method.setAdapter(paymentListAdapter);
             }
@@ -635,8 +666,7 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 }
             }
 
-        }
-        else {
+        } else {
             paymentListAdapter = new PaymentListAdapter(getApplicationContext(), paymentArrayList);
             spn_pay_method.setAdapter(paymentListAdapter);
             if (!s.equals("")) {
@@ -665,6 +695,7 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 try {
                     sleep(1000);
                     pDialog.dismiss();
+                    Globals.strContact_Code="";
                     Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnListActivity.class);
                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                     intent.putExtra("operation", operation);
@@ -680,4 +711,19 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         };
         timerThread.start();
     }
+
+        private boolean isNetworkStatusAvialable(Context applicationContext) {
+            // TODO Auto-generated method stub
+            ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+            if (connectivityManager != null) {
+                NetworkInfo netInfos = connectivityManager.getActiveNetworkInfo();
+                if (netInfos != null)
+                    if (netInfos.isConnected())
+
+                        return true;
+
+            }
+
+            return false;
+        }
 }

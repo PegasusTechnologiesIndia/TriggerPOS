@@ -114,7 +114,7 @@ public class AboutActivity extends AppCompatActivity {
         pegasus_image.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                final String str = "13245";
+                final String str = Globals.str_userpassword;
 //                listDialog2.setTitle("");
                 LayoutInflater li1 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
                 View v1 = li1.inflate(R.layout.password_dialog, null, false);

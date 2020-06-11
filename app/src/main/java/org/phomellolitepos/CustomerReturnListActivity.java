@@ -174,7 +174,7 @@ public class CustomerReturnListActivity extends AppCompatActivity {
     }
 
     private void getStockList(String strFilter) {
-        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='CR'" + strFilter + " Order By lower(modified_date) desc limit "+Globals.ListLimit+"", database);
+        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='CR' and z_code='0'" + strFilter + " Order By lower(modified_date) desc limit "+Globals.ListLimit+"", database);
         returns = Returns.getReturns(getApplicationContext(), "", database);
 
         ListView category_list = (ListView) findViewById(R.id.item_list);

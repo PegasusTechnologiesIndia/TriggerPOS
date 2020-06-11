@@ -8,16 +8,21 @@ import android.graphics.Bitmap;
 import android.os.Build;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.util.Log;
 
 import java.io.File;
+import java.io.FileWriter;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 import java.util.concurrent.ExecutionException;
+
+import org.json.JSONObject;
 
 import org.phomellolitepos.StockAdjestment.StockAdjectmentDetailList;
 import org.phomellolitepos.database.Database;
@@ -34,6 +39,7 @@ import org.phomellolitepos.database.Tax_Master;
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
+import au.com.bytecode.opencsv.CSVWriter;
 import jxl.CellView;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
@@ -87,10 +93,12 @@ public class Globals {
     public static String CustomerResrv = "";
     public static int OrientValue;
     public static String ReportCondition = "";
+    public static String strReturn_Contact_Name="";
     public static boolean OrintFlagP = false;
     public static boolean OrintFlagL = false;
     public static String AccountBarcode = "0";
     public static String withItem = "1";
+    public static String str_date="";
     public static String onInvoice = "0";
     public static String spinner_code_value = "";
     public static ArrayList<Loyalty_Redeem> LoyaltyRedeem = new ArrayList<Loyalty_Redeem>();
@@ -100,7 +108,7 @@ public class Globals {
     public static ArrayList<Order_Item_Tax> order_item_tax = new ArrayList<Order_Item_Tax>();
     public static ArrayList<String> CMD_Images = new ArrayList<String>();
    // public static String App_IP = "192.168.1.72";
-   // public static String App_IP = "104.238.86.46:85";
+    //public static String App_IP = "104.238.86.46:85";
     public static String App_IP = "74.208.235.72:85";
     public static Cursor online_report_cursor = null;
     public static String Company_Id;
@@ -148,10 +156,15 @@ public class Globals {
     public static String serialno="";
     public static String androidid="";
     public static String mykey="";
-    public static String syscode2="4";
+    public static String syscode2="5";
     public static String responsemessage="";
     public static String strvoucherno="";
-
+    public static boolean gpsFlag = true;
+    public static String latitude="";
+    public static String longitude="";
+    public static String locationddress="";
+    public static String str_userpassword;
+    public static JSONObject jsonArray_background= new JSONObject();;
     public static void setEmpty() {
         CouponTotal = 0;
         Globals.Param1 = "";
@@ -787,5 +800,94 @@ public class Globals {
 
 
     }
+    public static String export_sample() {
 
+        String strResult = "";
+
+
+        //  item_code,item_group_code,manufacture_code,item_name,description,sku,barcode,unit_id,hsn_sac_code,is_inclusive_tax ";
+
+
+        File exportDir = new File(Environment.getExternalStorageDirectory(), "");
+        if (!exportDir.exists()) {
+            exportDir.mkdirs();
+        }
+        File file = new File(exportDir, "" + "table_export_sample" + ".csv");
+        try {
+            file.createNewFile();
+            CSVWriter csvWrite = new CSVWriter(new FileWriter(file));
+            //SQLiteDatabase sqlite = db.getReadableDatabase();
+
+            List<ListSampleTable> list_sampleitem = new ArrayList<>();
+            ListSampleTable listSampleItem = new ListSampleTable("table_code", "table_name");
+            list_sampleitem.add((listSampleItem));
+
+            listSampleItem = new ListSampleTable("T1", "Table1");
+            list_sampleitem.add((listSampleItem));
+            listSampleItem = new ListSampleTable("T2", "Table2");
+            list_sampleitem.add((listSampleItem));
+
+
+            int RowCount = 0;
+
+
+            //  csvWrite.writeNext(curCSV.getColumnNames());
+            while (RowCount < list_sampleitem.size()) {
+
+                ListSampleTable listSampleItem1 = list_sampleitem.get(RowCount);
+
+                ArrayList<String> stringArrayList = new ArrayList<String>();
+                int columncount = 13;
+
+                for (int i = 0; i < columncount; i++) {
+
+                    switch (i) {
+                        case 0:
+                            stringArrayList.add(listSampleItem1.table_code);
+                            break;
+                        case 1:
+                            stringArrayList.add(listSampleItem1.table_name);
+                            break;
+
+                    }
+
+
+                }
+                //Which column you want to exprort
+                String[] stringArray = stringArrayList.toArray(new String[stringArrayList.size()]);
+
+                csvWrite.writeNext(stringArray);
+                RowCount++;
+            }
+            csvWrite.close();
+
+            //csvWrite.close();
+
+            strResult = "success";
+
+            //Toast.makeText(getApplicationContext(), getString(R.string.exportedcsv), Toast.LENGTH_SHORT).show();
+        } catch (Exception sqlEx) {
+            Log.e("MainActivity", sqlEx.getMessage(), sqlEx);
+
+        }
+
+        return strResult;
+
+    }
+
+}
+
+class ListSampleTable{
+    public String table_code;
+    public String table_name;
+    // public String manufacture_code;
+
+//    public String tax3;
+
+    public ListSampleTable(String t1, String t2) {
+
+        this.table_code = t1;
+        this.table_name = t2;
+
+    }
 }

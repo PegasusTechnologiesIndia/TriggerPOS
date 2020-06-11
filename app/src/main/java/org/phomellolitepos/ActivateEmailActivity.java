@@ -3,6 +3,7 @@ package org.phomellolitepos;
 import android.Manifest;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
@@ -25,6 +26,17 @@ import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
@@ -40,6 +52,8 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -78,6 +92,7 @@ public class ActivateEmailActivity extends AppCompatActivity {
     Last_Code last_code;
     String licensecustomer;
     String registration_code;
+    ProgressDialog pDialog;
     String serial_no, android_id, myKey, device_id,imei_no;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
@@ -86,7 +101,7 @@ public class ActivateEmailActivity extends AppCompatActivity {
         setContentView(R.layout.activity_activate_email);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
-        getSupportActionBar().setTitle("");
+        getSupportActionBar().setTitle(getString(R.string.register));
         fill_user_permission();
         edt_email = (EditText) findViewById(R.id.edt_email);
         edt_regis_code = (EditText) findViewById(R.id.edt_regis_code);
@@ -159,93 +174,172 @@ public class ActivateEmailActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (edt_regis_code.getText().toString().trim().equals("")){
+                else if (edt_regis_code.getText().toString().trim().equals("")){
                     edt_regis_code.setError("Please enter registration code");
                     return;
                 }
+else {
+                    if (isNetworkStatusAvialable(getApplicationContext())) {
+                        progressDialog = new ProgressDialog(ActivateEmailActivity.this);
+                        progressDialog.setTitle(getString(R.string.Device_registration));
+                        progressDialog.setMessage(getString(R.string.Wait_msg));
+                        progressDialog.setCancelable(false);
+                        progressDialog.show();
+                        new Thread() {
+                            @Override
+                            public void run() {
 
-                if (isNetworkStatusAvialable(getApplicationContext())) {
-                    progressDialog = new ProgressDialog(ActivateEmailActivity.this);
-                    progressDialog.setTitle(getString(R.string.Device_registration));
-                    progressDialog.setMessage(getString(R.string.Wait_msg));
-                    progressDialog.setCancelable(false);
-                    progressDialog.show();
-                    new Thread() {
-                        @Override
-                        public void run() {
-                            String rslt = device_process();
+                                String rslt = device_process();
 
-                            progressDialog.dismiss();
-                            if (rslt.equals("1")) {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        try {
-                                            Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
-                                            if (last_code == null) {
-                                                new Thread() {
-                                                    @Override
-                                                    public void run() {
-                                                        Lite_POS_Device liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-                                                        Lite_POS_Registration  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                                                        getLastCode(Globals.license_id, Globals.reg_code);
-                                                    }
-                                                }.start();
+                                progressDialog.dismiss();
+                                if (rslt.equals("1")) {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            try {
+                                                Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
+                                                if (last_code == null) {
+                                                    new Thread() {
+                                                        @Override
+                                                        public void run() {
+                                                            Lite_POS_Device liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                            Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                                                            getLastCode(Globals.license_id, Globals.reg_code);
+                                                        }
+                                                    }.start();
+                                                }
+                                            } catch (Exception e) {
+
                                             }
+                                            Toast.makeText(getApplicationContext(), R.string.Activate_Successfully, Toast.LENGTH_SHORT).show();
+                                            Intent intent = new Intent(ActivateEmailActivity.this, LoginActivity.class);
+                                            startActivity(intent);
+                                            finish();
                                         }
-                                        catch(Exception e){
+                                    });
+                                } else if (rslt.equals("5")) {
 
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    progressDialog.dismiss();
+                                                    if (Globals.responsemessage.toString().equals("Purchase More Device")) {
+
+                                                        try {
+                                                            android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(ActivateEmailActivity.this);
+
+                                                            builder.setTitle(getString(R.string.alerttitle));
+                                                            builder.setMessage(getString(R.string.alert_loginmsg));
+
+                                                            builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                                                                public void onClick(DialogInterface dialog, int which) {
+                                                                    // Do nothing but close the dialog
+                                                                    getAlertclearTransactionDialog();
+
+                                                                }
+                                                            });
+
+                                                            builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                                                                @Override
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    // Do nothing
+                                                                    dialog.dismiss();
+                                                                }
+                                                            });
+
+                                                            android.support.v7.app.AlertDialog alert = builder.create();
+                                                            alert.show();
+
+                                                        } catch (Exception e) {
+
+                                                        }
+                                                    }
+                                                    else{
+                                                        Toast.makeText(getApplicationContext(),Globals.responsemessage.toString(), Toast.LENGTH_SHORT).show();
+
+                                                    }
+                                                    // Globals.showToast(getApplicationContext(), Globals.json_responsemessage, Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+                                                }
+                                            });
                                         }
-                                        Toast.makeText(getApplicationContext(), R.string.Activate_Successfully, Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(ActivateEmailActivity.this, LoginActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }
-                                });
-                            } else if (rslt.equals("2")) {
-
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), Globals.responsemessage, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
+                                    });
 
 //                                Intent intent = new Intent(ActivateEmailActivity.this, RegistrationActivity.class);
 //                                startActivity(intent);
 //                                finish();
-                            }
-                            else if (rslt.equals("4")) {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), R.string.devicesymbolerror, Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-
-                            else {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
+                                } else if (rslt.equals("4")) {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), R.string.devicesymbolerror, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                } else {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            Toast.makeText(getApplicationContext(), "Server Error", Toast.LENGTH_SHORT).show();
 //                                        Intent intent = new Intent(ActivateEmailActivity.this, RegistrationActivity.class);
 //                                        startActivity(intent);
 //                                        finish();
-                                    }
-                                });
+                                        }
+                                    });
+                                }
                             }
-                        }
-                    }.start();
-                } else {
-                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                        }.start();
+                    } else {
+                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                    }
                 }
             }
 
         });
     }
+    public void getAlertclearTransactionDialog(){
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(ActivateEmailActivity.this);
 
+        builder.setTitle(getString(R.string.alerttitle));
+        builder.setMessage(getString(R.string.alert_loginseconddialog));
+
+        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                try {
+                    postDeviceInfo(edt_email.getText().toString(), "", Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, Globals.syscode2, android_id, myKey,edt_regis_code.getText().toString(),"1");
+                }
+                catch(Exception e){
+
+                }
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+
+    }
     private String device_process() {
+
         String succ = "0";
         long u = 0;
         // Call device register api here
-        String serverData = device_on_server();
+
+            String serverData = device_on_server();
+
+
         if (serverData==null){
 
         }else {
@@ -258,151 +352,269 @@ public class ActivateEmailActivity extends AppCompatActivity {
                 if (strStatus.equals("true")) {
                     try {
                         JSONObject myResult = collection_jsonObject1.getJSONObject("result");
+
                         JSONObject jsonObject_device = myResult.optJSONObject("device");
-                        if (jsonObject_device.getString("device_symbol").length() == 0) {
-                            succ = "4";
-                        }
-                        else {
-                            lpd = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
-                                    jsonObject_device.getString("app_type"), jsonObject_device.getString("device_code"),
-                                    jsonObject_device.getString("device_name"), javaEncryption.encrypt(jsonObject_device.getString("expiry_date"), "12345678"),
-                                    jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
-                                    jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
-                                    jsonObject_device.getString("currency_place"), jsonObject_device.getString("lic_customer_license_id"), jsonObject_device.getString("lic_code"),
-                                    jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN");
+                        JSONObject jsonObject_company = myResult.optJSONObject("company");
 
-                           licensecustomer=jsonObject_device.getString("lic_customer_license_id");
-                            long d = lpd.insertDevice(database);
+                        if (jsonObject_company.getString("project_id").equals("cloud")){
 
-                            if (d > 0) {
-                                succ = "1";
-                                JSONObject jsonObject_company = myResult.optJSONObject("company");
-                                String company_id = jsonObject_company.getString("company_id");
-                                Globals.Company_Id = company_id;
-                                 registration_code = jsonObject_company.getString("registration_code");
-                                Globals.reg_code=registration_code;
-
-                                String company_name = jsonObject_company.getString("company_name");
-                                String license_no;
-                                try {
-                                    license_no = jsonObject_company.getString("license_no");
-                                } catch (Exception ex) {
-                                    license_no = "";
+                            if (jsonObject_device.getString("location_name") == null || jsonObject_device.getString("location_name").equals("null") || jsonObject_device.getString("location_name").length() == 0) {
+                                    succ = "4";
                                 }
 
-                                String logo = jsonObject_company.getString("logo");
-//                            String splash_screen = jsonObject_company.getString("splash_screen");
-                                String contact_person = jsonObject_company.getString("contact_person");
-                                String email = jsonObject_company.getString("email");
-                                String country_id = jsonObject_company.getString("country_id");
-                                String zone_id = jsonObject_company.getString("zone_id");
-                                String mobile_no = jsonObject_company.getString("mobile_no");
-                                String address = jsonObject_company.getString("address");
-                                String project_id = jsonObject_company.getString("project_id");
-                                String indus_type = jsonObject_company.getString("industry_type");
-                                String srvc_trf = jsonObject_company.getString("service_code_tariff");
 
-                                Settings settings = Settings.getSettings(getApplicationContext(), database, "");
-                                settings.set_Logo(logo);
-                                settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
+                            }
+                          if(!succ.equals("4"))  {
+                                lpd = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
+                                        jsonObject_device.getString("app_type"), jsonObject_device.getString("device_code"),
+                                        jsonObject_device.getString("device_name"), javaEncryption.encrypt(jsonObject_device.getString("expiry_date"), "12345678"),
+                                        jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
+                                        jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
+                                        jsonObject_device.getString("currency_place"), jsonObject_device.getString("lic_customer_license_id"), jsonObject_device.getString("lic_code"),
+                                        jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN");
 
-                                lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name,
-                                        contact_person, mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
-                                long r = lite_pos_registration.insertRegistration(database);
-                                if (r > 0) {
-                                    for (int i = 0; i < List.size(); i++) {
+                                licensecustomer = jsonObject_device.getString("lic_customer_license_id");
+                                long d = lpd.insertDevice(database);
 
-                                        String name = List.get(i);
-                                        if (strResult.equals("")) {
-                                            strResult = name;
-                                        }
-                                        strResult = strResult + "," + name;
-
-                                    }
+                                if (d > 0) {
                                     succ = "1";
-                                    JSONArray jsonArray = myResult.getJSONArray("company_user");
+                                    String company_id = jsonObject_company.getString("company_id");
+                                    Globals.Company_Id = company_id;
+                                    registration_code = jsonObject_company.getString("registration_code");
+                                    Globals.reg_code = registration_code;
 
-                                    for (int i = 0; i < jsonArray.length(); i++) {
-                                        JSONObject jsonObject_user = jsonArray.getJSONObject(i);
-                                        user = new User(getApplicationContext(), null,
-                                                jsonObject_user.getString("user_group_id"), jsonObject_user.getString("user_code"), jsonObject_user.getString("name"), jsonObject_user.getString("email"), jsonObject_user.getString("password"), jsonObject_user.getString("max_discount"), jsonObject_user.getString("image"), jsonObject_user.getString("is_active"), "0", "0", "N", strResult);
-                                        u = user.insertUser(database);
+                                    String company_name = jsonObject_company.getString("company_name");
+                                    String license_no;
+                                    try {
+                                        license_no = jsonObject_company.getString("license_no");
+                                    } catch (Exception ex) {
+                                        license_no = "";
                                     }
-                                    if (u > 0) {
+
+                                    String logo = jsonObject_company.getString("logo");
+//                            String splash_screen = jsonObject_company.getString("splash_screen");
+                                    String contact_person = jsonObject_company.getString("contact_person");
+                                    String email = jsonObject_company.getString("email");
+                                    String country_id = jsonObject_company.getString("country_id");
+                                    String zone_id = jsonObject_company.getString("zone_id");
+                                    String mobile_no = jsonObject_company.getString("phone");
+                                    String address = jsonObject_company.getString("address");
+                                    String project_id = jsonObject_company.getString("project_id");
+                                    String indus_type = jsonObject_company.getString("industry_type");
+                                    String srvc_trf = jsonObject_company.getString("service_code_tariff");
+                                    String password = jsonObject_company.getString("password");
+                                    Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+                                    settings.set_Logo(logo);
+                                    settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
+
+                                    lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name,
+                                            contact_person, mobile_no, country_id, zone_id, password, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                                    long r = lite_pos_registration.insertRegistration(database);
+                                    if (r > 0) {
+                                        for (int i = 0; i < List.size(); i++) {
+
+                                            String name = List.get(i);
+                                            if (strResult.equals("")) {
+                                                strResult = name;
+                                            }
+                                            strResult = strResult + "," + name;
+
+                                        }
                                         succ = "1";
-                                        SharedPreferences sharedpreferences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
-                                        SharedPreferences.Editor editor = sharedpreferences.edit();
-                                        editor.putString("pass", user.get_password()); // Storing string
-                                        editor.apply();
+                                        JSONArray jsonArray = myResult.getJSONArray("company_user");
+
+                                        for (int i = 0; i < jsonArray.length(); i++) {
+                                            JSONObject jsonObject_user = jsonArray.getJSONObject(i);
+                                            user = new User(getApplicationContext(), null,
+                                                    jsonObject_user.getString("user_group_id"), jsonObject_user.getString("user_code"), jsonObject_user.getString("name"), jsonObject_user.getString("email"), jsonObject_user.getString("password"), jsonObject_user.getString("max_discount"), jsonObject_user.getString("image"), jsonObject_user.getString("is_active"), "0", "0", "N", strResult);
+                                            u = user.insertUser(database);
+                                        }
+                                        if (u > 0) {
+                                            succ = "1";
+                                            SharedPreferences sharedpreferences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
+                                            SharedPreferences.Editor editor = sharedpreferences.edit();
+                                            editor.putString("pass", user.get_password()); // Storing string
+                                            editor.apply();
+                                        }
+                                    } else {
                                     }
                                 } else {
                                 }
-                            } else {
                             }
+                        } catch(JSONException jex){
+                            progressDialog.dismiss();
+                        } catch(Exception e){
+                            progressDialog.dismiss();
+                            e.printStackTrace();
                         }
-                    } catch (JSONException jex) {
-                        progressDialog.dismiss();
-                    } catch (Exception e) {
-                        progressDialog.dismiss();
-                        e.printStackTrace();
+
+                        if (succ.equals("1")) {
+                            Globals.license_id = licensecustomer;
+                            Globals.reg_code = registration_code;
+                       /* database.setTransactionSuccessful();
+                        database.endTransaction();*/
+                        } else {
+                       /* database.setTransactionSuccessful();
+                        database.endTransaction();*/
+                        }
+                    } else if (strStatus.equals("false")) {
+                        succ = "5";
+                        Globals.responsemessage = strMassage;
                     }
-                } else if (strStatus.equals("false")) {
-                    succ = "2";
-                   Globals.responsemessage=strMassage;
+
+
+                } catch(JSONException e){
+
+                    progressDialog.dismiss();
                 }
-
-                if (succ.equals("1")) {
-                    Globals.license_id=licensecustomer;
-                    Globals.reg_code=registration_code;
-                    database.setTransactionSuccessful();
-                    database.endTransaction();
-                } else {
-                    database.endTransaction();
-                }
-
-
-            } catch (JSONException e) {
-                progressDialog.dismiss();
             }
-        }
 
+        database.setTransactionSuccessful();
+        database.endTransaction();
         return succ;
     }
 
     private String device_on_server() {
-        String serverData = null;//
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/device/register");
-        ArrayList nameValuePairs = new ArrayList(7);
-        nameValuePairs.add(new BasicNameValuePair("email", edt_email.getText().toString().trim()));
-        nameValuePairs.add(new BasicNameValuePair("reg_code", edt_regis_code.getText().toString().trim()));
-        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+        String serverData = null;
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+          //
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(
+                    "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/device/register");
+            ArrayList nameValuePairs = new ArrayList(7);
+            nameValuePairs.add(new BasicNameValuePair("email", edt_email.getText().toString().trim()));
+            nameValuePairs.add(new BasicNameValuePair("reg_code", edt_regis_code.getText().toString().trim()));
+            nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                serverData = EntityUtils.toString(httpEntity);
+                Log.d("response", serverData);
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        catch (Exception e){
+            System.out.println(e.getMessage());
         }
         return serverData;
     }
+    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4,final String registration_code,final String defaultlogout) {
 
+        pDialog = new ProgressDialog(ActivateEmailActivity.this);
+        pDialog.setMessage(getString(R.string.loggingin));
+        pDialog.show();
+        String server_url = Globals.App_Lic_Base_URL + "/index.php?route=api/license_product_1/device_login";
+        HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            //  Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                            JSONObject responseObject = new JSONObject(response);
+
+
+                            String status = responseObject.getString("status");
+                            final String message = responseObject.getString("message");
+                            if (status.equals("true")) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pDialog.dismiss();
+                                        Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+                                       // Globals.showToast(getApplicationContext(),message.toString(), Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                                        //   Globals.showToast(getApplicationContext(), message.toString(), Globals.txtSize, "#ffffff", "#4ec536", "short", Gravity.TOP, 0, 200);
+                                    }
+                                });
+
+
+                                //  pDialog.dismiss();
+
+                            } else if (status.equals("false")) {
+                                pDialog.dismiss();
+                                Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+
+
+                            }
+
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                           // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                          //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                          //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("email", email);
+                params.put("password", password);
+                params.put("is_use", isuse);
+                params.put("master_product_id", masterproductid);
+                params.put("lic_customer_license_id", liccustomerlicenseid);
+                params.put("device_code", devicecode);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("reg_code", registration_code);
+                params.put("default_logout", defaultlogout);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
     private boolean isNetworkStatusAvialable(Context applicationContext) {
         ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
         if (connectivityManager != null) {
@@ -429,7 +641,7 @@ public class ActivateEmailActivity extends AppCompatActivity {
         List.add("Database");
         List.add("Update License");
         List.add("Profile");
-        List.add("Returns");
+        List.add("Return");
         List.add("Accounts");
         List.add("User");
     }

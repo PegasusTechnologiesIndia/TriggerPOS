@@ -108,7 +108,7 @@ public class CusReturnHeaderActivity extends AppCompatActivity implements ZBarSc
                         try {
                             sleep(1000);
                             pDialog.dismiss();
-
+                            Globals.strContact_Code="";
                             Intent intent = new Intent(CusReturnHeaderActivity.this, CustomerReturnListActivity.class);
                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
                             intent.putExtra("operation", operation);
@@ -148,7 +148,8 @@ public class CusReturnHeaderActivity extends AppCompatActivity implements ZBarSc
         lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
       projectid=lite_pos_registration.getproject_id();
         String date1 = new SimpleDateFormat("yyyy-MM-dd", Locale.getDefault()).format(new Date());
-                edt_date.setText(date1);
+        Globals.str_date= date1.toString();
+                edt_date.setText(Globals.str_date);
         spn_pay_method.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -214,8 +215,8 @@ public class CusReturnHeaderActivity extends AppCompatActivity implements ZBarSc
             }
         } else {
             fill_spn_pay_method("");
-            spn_cus.setText( "");
-
+            spn_cus.setText(Globals.strContact_Name);
+            cusCode=Globals.strContact_Code;
           //  fill_spinner_contact("");
             btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
         }
@@ -317,7 +318,7 @@ public class CusReturnHeaderActivity extends AppCompatActivity implements ZBarSc
                                     Intent intent = new Intent(CusReturnHeaderActivity.this, CusReturnFinalActivity.class);
                                     intent.putExtra("operation", operation);
                                     intent.putExtra("voucher_no", strVoucherNo);
-                                    intent.putExtra("date", edt_date.getText().toString().trim());
+                                    intent.putExtra("date", Globals.str_date);
                                     intent.putExtra("remarks", edt_remarks.getText().toString().trim());
                                     intent.putExtra("contact_code", cusCode);
                                     intent.putExtra("payment_id",PayId);
@@ -569,6 +570,7 @@ else {
         spn_cus.setText(name);
 try {
     cusCode = contactcode;
+    Globals.strContact_Code=contactcode;
     returns.set_contact_code(cusCode);
 }
 catch(Exception e ){

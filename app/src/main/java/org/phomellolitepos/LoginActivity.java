@@ -79,6 +79,10 @@ import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.jsoup.Jsoup;
+import org.jsoup.nodes.Document;
+import org.jsoup.nodes.Element;
+import org.jsoup.select.Elements;
 import org.phomellolitepos.TicketSolution.TicketActivity;
 import org.phomellolitepos.Util.AESHelper;
 import org.phomellolitepos.Util.DateUtill;
@@ -126,11 +130,15 @@ public class LoginActivity extends AppCompatActivity {
     LinearLayout.LayoutParams lp;
     AlertDialog alert;
     Button nbutton;
-    Button pbutton;
+    Button pbutton,btn_clear;
     Lite_POS_Registration lite_pos_registration;
     String status;
     String serial_no, android_id, myKey, device_id,imei_no;
     String email,password,reg_code;
+    SharedPreferences.Editor edtor_user;
+    SharedPreferences prefrences;
+    String user_name;
+    String company_email,company_password;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -155,7 +163,11 @@ public class LoginActivity extends AppCompatActivity {
         edt_username = (EditText) findViewById(R.id.edt_username);
         edt_userpass = (EditText) findViewById(R.id.edt_userpass);
         btn_login = (Button) findViewById(R.id.btn_login);
+        btn_clear = (Button) findViewById(R.id.btn_clear);
         tgl_btn_lang = (ToggleButton) findViewById(R.id.tgl_btn_lang);
+
+
+
         serial_no = Build.SERIAL;
         android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
@@ -206,13 +218,32 @@ public class LoginActivity extends AppCompatActivity {
         } catch (PackageManager.NameNotFoundException e) {
             e.printStackTrace();
         }
+try {
+    lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+    lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+}
+catch(Exception e){
 
-        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+}
         lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+
+
+        try {
+            if (lite_pos_device != null) {
+                status = lite_pos_device.getStatus();
+            }
+        } catch (Exception e) {
+
+        }
+company_email=lite_pos_registration.getEmail();
+company_password=lite_pos_registration.getPassword();
         Globals.Industry_Type = lite_pos_registration.getIndustry_Type();
         reg_code=lite_pos_registration.getRegistration_Code();
-        pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
+        pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS);
+        prefrences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
+// 0 - for private mode
         editor = pref.edit();
+        edtor_user = prefrences.edit();
         int id = pref.getInt("id", 0);
         if (id == 0) {
             tgl_btn_lang.setChecked(false);
@@ -246,8 +277,12 @@ public class LoginActivity extends AppCompatActivity {
             });
         }
 
-        showExpiry();
+        try {
+            showExpiry();
+        }
+        catch(Exception e){
 
+        }
         tgl_btn_lang.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
             @Override
             public void onCheckedChanged(CompoundButton compoundButton, boolean b) {
@@ -273,7 +308,7 @@ public class LoginActivity extends AppCompatActivity {
         listDialog2 = new Dialog(this);
         lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
         Globals.objLPD = lite_pos_device;
-        user = User.getUser(getApplicationContext(), " WHERE user_code = '" + pref.getString("user_code", null) + "' or name = '" + pref.getString("user_code", null) + "' and is_active ='1'", database);
+        user = User.getUser(getApplicationContext(), " WHERE user_code = '" + prefrences.getString(getString(R.string.usercode_pref), null) + "' or name = '" + prefrences.getString(getString(R.string.usercode_pref), null)+"' or email = '" + prefrences.getString(getString(R.string.usercode_pref), null) + "'  and is_active ='1'", database);
         if (user == null) {
             try {
                 edt_username.setText(user.get_user_code());
@@ -286,8 +321,10 @@ public class LoginActivity extends AppCompatActivity {
             try {
                 Globals.user = user.get_user_code();
                 Globals.UserCode = Globals.user;
-                edt_username.setText(pref.getString("user_code", null));
-                edt_userpass.setText(pref.getString("pass", null));
+                Globals.str_userpassword=user.get_password();
+                user_name= user.get_name();
+                edt_username.setText(prefrences.getString(getString(R.string.usercode_pref), null));
+                edt_userpass.setText(prefrences.getString(getString(R.string.pass_pref), null));
                 email=user.get_email();
                 password=user.get_password();
             } catch (Exception ex) {
@@ -308,221 +345,258 @@ public class LoginActivity extends AppCompatActivity {
         btn_login.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                user = User.getUser(getApplicationContext(), " WHERE (user_id ='" + edt_username.getText().toString().trim() + "'or email = '" + edt_username.getText().toString().trim() + "'or name = '" + edt_username.getText().toString().trim() + "') and password ='" + edt_userpass.getText().toString().trim() + "' and is_active= '1'", database);
+                if (user == null) {
+                    Toast.makeText(getApplicationContext(), getString(R.string.credentialcheck), Toast.LENGTH_SHORT).show();
+                  //  Globals.showToast(getApplicationContext(), getString(R.string.credentialcheck), Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
 
-                if (edt_username.getText().toString().equals("")) {
-                    edt_username.setError(getString(R.string.Usercode_is_required));
-                    edt_username.requestFocus();
-                    return;
+
                 } else {
-                    if (edt_username.getText().toString().contains(" ")) {
-                        edt_username.setError(getString(R.string.Cant_Enter_Space));
+                    if (edt_username.getText().toString().equals("")) {
+                        edt_username.setError(getString(R.string.Usercode_is_required));
                         edt_username.requestFocus();
                         return;
                     } else {
-                        user_id = edt_username.getText().toString();
+                        if (edt_username.getText().toString().contains(" ")) {
+                            edt_username.setError(getString(R.string.Cant_Enter_Space));
+                            edt_username.requestFocus();
+                            return;
+                        } else {
+                            user_id = edt_username.getText().toString();
+                        }
                     }
-                }
 
-                if (edt_userpass.getText().toString().equals("")) {
-                    edt_userpass.setError(getString(R.string.Password_is_required));
-                    edt_userpass.requestFocus();
-                    return;
-                } else {
-                    if (edt_userpass.getText().toString().contains(" ")) {
-                        edt_userpass.setError(getString(R.string.Cant_Enter_Space));
+                    if (edt_userpass.getText().toString().equals("")) {
+                        edt_userpass.setError(getString(R.string.Password_is_required));
                         edt_userpass.requestFocus();
                         return;
                     } else {
-                        user_pass = edt_userpass.getText().toString();
+                        if (edt_userpass.getText().toString().contains(" ")) {
+                            edt_userpass.setError(getString(R.string.Cant_Enter_Space));
+                            edt_userpass.requestFocus();
+                            return;
+                        } else {
+                            user_pass = edt_userpass.getText().toString();
+                        }
+
                     }
+                    pDialog = new ProgressDialog(LoginActivity.this);
+                    pDialog.setCancelable(false);
+                    pDialog.setMessage(getString(R.string.msg_dilog_login));
+                    pDialog.show();
 
-                }
-                pDialog = new ProgressDialog(LoginActivity.this);
-                pDialog.setCancelable(false);
-             pDialog.setMessage(getString(R.string.msg_dilog_login));
-                pDialog.show();
-
-                Thread timerThread = new Thread() {
-                    public void run() {
-                        try {
-                            sleep(2000);
-                            String strEx;
-                            String ex_date = null;
+                    Thread timerThread = new Thread() {
+                        public void run() {
                             try {
-                                ex_date = javaEncryption.decrypt(Globals.objLPD.getExpiry_Date(), "12345678");
-                            } catch (Exception e) {
+                                sleep(2000);
+                                String strEx;
+                                String ex_date = null;
                                 try {
-                                    lite_pos_device.setExpiry_Date(javaEncryption.encrypt(Globals.objLPD.getExpiry_Date(), "12345678"));
-                                    lite_pos_device.updateDevice("Device_Code=?", new String[]{Globals.objLPD.getDevice_Code()}, database);
                                     ex_date = javaEncryption.decrypt(Globals.objLPD.getExpiry_Date(), "12345678");
+                                } catch (Exception e) {
+                                    try {
+                                        lite_pos_device.setExpiry_Date(javaEncryption.encrypt(Globals.objLPD.getExpiry_Date(), "12345678"));
+                                        lite_pos_device.updateDevice("Device_Code=?", new String[]{Globals.objLPD.getDevice_Code()}, database);
+                                        ex_date = javaEncryption.decrypt(Globals.objLPD.getExpiry_Date(), "12345678");
 
-                                } catch (Exception e1) {
-                                    e1.printStackTrace();
+                                    } catch (Exception e1) {
+                                        e1.printStackTrace();
+                                    }
                                 }
-                            }
 
-                            strEx = ex_date.substring(0, 10);
+                                strEx = ex_date.substring(0, 10);
 
-                            String strDate = "";
-                            strDate = date.substring(0, 10);
+                                String strDate = "";
+                                strDate = date.substring(0, 10);
 
-                            int result = strDate.compareTo(strEx);
-                            String device_symbol = finalLite_pos_device.getDevice_Symbol();
-                            if (device_symbol.equals("") || device_symbol.equals("null")) {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        pDialog.dismiss();
-                                        Toast.makeText(getApplicationContext(), "Device symbol not present", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-
-                            } else if (lite_pos_device.getLocation_Code().equals("0")) {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        pDialog.dismiss();
-                                        Toast.makeText(getApplicationContext(), "Location not selected for this device", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            } else {
-                                if (result < 0) {
-                                    user = User.getUser(getApplicationContext(), "WHERE  password = '" + user_pass + "' And (user_code = '" + user_id + "' or  name = '" + user_id + "')", database);
-                                    if (user == null) {
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                pDialog.dismiss();
-                                                edt_username.setError(getString(R.string.usercode_passwd_incorrect));
-                                                edt_username.requestFocus();
-                                            }
-                                        });
-
-                                        return;
-                                    } else {
-                                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
-                                        SharedPreferences.Editor editor = pref.edit();
-                                        editor.putString("pass", edt_userpass.getText().toString());
-                                        editor.putString("user_code", edt_username.getText().toString());
-                                        editor.apply();
-                                        Globals.user = user.get_user_code();
-                                        Globals.UserCode = Globals.user;
-
-
-                                         lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-
-
-                                        try {
-                                            if (lite_pos_device != null) {
-                                                status = lite_pos_device.getStatus();
-                                            }
-                                        } catch (Exception e) {
-
-                                        }
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                pDialog.dismiss();
-                                                if(status.equals("IN")) {
-                                                    if (settings.get_Home_Layout().equals("0")) {
-                                                        Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                        pDialog.dismiss();
-                                                        Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
-                                                        startActivity(intent_category);
-                                                    } else if (settings.get_Home_Layout().equals("2")) {
-                                                        Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                        pDialog.dismiss();
-                                                        Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
-                                                        startActivity(intent_category);
-                                                    } else {
-                                                        Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                        pDialog.dismiss();
-                                                        Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
-                                                        startActivity(intent_category);
-                                                    }
-                                                }
-                                                else if(status.equals("Out")) {
-                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-
-                                                    String licensecustomerid= lite_pos_device.getLic_customer_license_id();
-                                                    postDeviceInfo(email, password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
-
-                                                }
-
-                                            }
-                                        });
-                                    }
-                                } else if (result == 0) {
-                                    user = User.getUser(getApplicationContext(), "WHERE  password = '" + user_pass + "' And (user_code = '" + user_id + "' or  name = '" + user_id + "')", database);
-                                    if (user == null) {
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                pDialog.dismiss();
-                                                edt_username.setError(getString(R.string.usercode_passwd_incorrect));
-                                                edt_username.requestFocus();
-                                            }
-                                        });
-
-                                        return;
-                                    } else {
-                                        SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
-                                        SharedPreferences.Editor editor = pref.edit();
-                                        editor.putString("pass", edt_userpass.getText().toString());
-                                        editor.putString("user_code", edt_username.getText().toString());// Storing string
-                                        editor.apply();
-
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                if(status.equals("IN")) {
-                                                if (settings.get_Home_Layout().equals("0")) {
-                                                    Globals.user = user.get_user_code();
-                                                    Globals.UserCode = Globals.user;
-                                                    Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                    pDialog.dismiss();
-                                                    Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
-                                                    startActivity(intent_category);
-                                                } else if (settings.get_Home_Layout().equals("2")) {
-                                                    Globals.user = user.get_user_code();
-                                                    Globals.UserCode = Globals.user;
-                                                    Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                    pDialog.dismiss();
-                                                    Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
-                                                    startActivity(intent_category);
-                                                } else {
-                                                    Globals.user = user.get_user_code();
-                                                    Globals.UserCode = Globals.user;
-                                                    Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
-                                                    pDialog.dismiss();
-                                                    Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
-                                                    startActivity(intent_category);
-                                                }
-                                                }
-                                                else if(status.equals("Out")) {
-                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-
-                                                    String licensecustomerid= lite_pos_device.getLic_customer_license_id();
-                                                    postDeviceInfo(email, password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, "4", android_id, myKey,reg_code);
-
-                                                }
-                                            }
-                                        });
-                                    }
-                                } else {
+                                int result = strDate.compareTo(strEx);
+                                String device_symbol = finalLite_pos_device.getDevice_Symbol();
+                                if (device_symbol.equals("") || device_symbol.equals("null")) {
                                     runOnUiThread(new Runnable() {
                                         public void run() {
                                             pDialog.dismiss();
-                                            Toast.makeText(getApplicationContext(), R.string.licence_expired_msg, Toast.LENGTH_SHORT).show();
+                                            Toast.makeText(getApplicationContext(), "Device symbol not present", Toast.LENGTH_SHORT).show();
                                         }
                                     });
 
-                                }
-                            }
+                                } /*else if (lite_pos_device.getLocation_Code().equals("0")) {
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            pDialog.dismiss();
+                                            Toast.makeText(getApplicationContext(), "Location not selected for this device", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                }*/ else {
+                                    if (result < 0) {
+                                        user = User.getUser(getApplicationContext(), "WHERE  (user_code = '" + user_id + "' or  name = '" + user_id + "' or email = '" + user_id + "' ) And password = '" + user_pass + "' And  is_active= '1'", database);
+                                        if (user == null) {
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    pDialog.dismiss();
+                                                    edt_username.setError(getString(R.string.usercode_passwd_incorrect));
+                                                    edt_username.requestFocus();
+                                                }
+                                            });
 
-                        } catch (
-                                InterruptedException e) {
-                            e.printStackTrace();
-                        } finally {
+                                            return;
+                                        } else {
+
+                                            edtor_user.putString(getString(R.string.pass_pref), edt_userpass.getText().toString());
+                                            edtor_user.putString(getString(R.string.usercode_pref), edt_username.getText().toString());
+                                            edtor_user.apply();
+                                            Globals.user = user.get_user_code();
+                                            Globals.UserCode = Globals.user;
+
+
+                                            pDialog.dismiss();
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+
+                                                    if (status.equals("IN")) {
+                                                        if (settings.get_Home_Layout().equals("0")) {
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
+                                                            startActivity(intent_category);
+                                                        } else if (settings.get_Home_Layout().equals("2")) {
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
+                                                            startActivity(intent_category);
+                                                        } else {
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
+                                                            startActivity(intent_category);
+                                                        }
+                                                    } else if (status.equals("Out")) {
+                                                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+
+                                                        String licensecustomerid = lite_pos_device.getLic_customer_license_id();
+                                                        postDeviceInfo(company_email, company_password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, Globals.syscode2, android_id, myKey, reg_code, "0");
+
+                                                    }
+
+                                                }
+                                            });
+                                        }
+                                    } else if (result == 0) {
+                                        user = User.getUser(getApplicationContext(), "WHERE  (user_code = '" + user_id + "' or  name = '" + user_id +  "' or email = '" + user_id + "' ) And password = '" + user_pass + "' And  is_active= '1'", database);
+                                        if (user == null) {
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    pDialog.dismiss();
+                                                    edt_username.setError(getString(R.string.usercode_passwd_incorrect));
+                                                    edt_username.requestFocus();
+                                                }
+                                            });
+
+                                            return;
+                                        } else {
+                                            prefrences = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_PRIVATE); // 0 - for private mode
+                                            edtor_user = prefrences.edit();
+                                            edtor_user.putString(getString(R.string.pass_pref), edt_userpass.getText().toString());
+                                            edtor_user.putString(getString(R.string.usercode_pref), edt_username.getText().toString());// Storing string
+                                            edtor_user.apply();
+
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    if (status.equals("IN")) {
+                                                        if (settings.get_Home_Layout().equals("0")) {
+                                                            Globals.user = user.get_user_code();
+                                                            Globals.UserCode = Globals.user;
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, MainActivity.class);
+                                                            startActivity(intent_category);
+                                                        } else if (settings.get_Home_Layout().equals("2")) {
+                                                            Globals.user = user.get_user_code();
+                                                            Globals.UserCode = Globals.user;
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, RetailActivity.class);
+                                                            startActivity(intent_category);
+                                                        } else {
+                                                            Globals.user = user.get_user_code();
+                                                            Globals.UserCode = Globals.user;
+                                                            Toast.makeText(getApplicationContext(), R.string.Login_Successfully, Toast.LENGTH_SHORT).show();
+                                                            pDialog.dismiss();
+                                                            Intent intent_category = new Intent(LoginActivity.this, Main2Activity.class);
+                                                            startActivity(intent_category);
+                                                        }
+                                                    } else if (status.equals("Out")) {
+                                                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+
+                                                        String licensecustomerid = lite_pos_device.getLic_customer_license_id();
+                                                        postDeviceInfo(company_email, company_password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, Globals.syscode2, android_id, myKey, reg_code, "0");
+
+                                                    }
+                                                }
+                                            });
+                                        }
+                                    } else {
+                                        runOnUiThread(new Runnable() {
+                                            public void run() {
+                                                pDialog.dismiss();
+                                                Toast.makeText(getApplicationContext(), R.string.licence_expired_msg, Toast.LENGTH_SHORT).show();
+                                            }
+                                        });
+
+                                    }
+                                }
+
+                            } catch (
+                                    InterruptedException e) {
+                                e.printStackTrace();
+                            } finally {
+                            }
                         }
-                    }
-                };
-                timerThread.start();
+                    };
+                    timerThread.start();
+                }
             }
+        });
+
+        btn_clear.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                try {
+                    android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(LoginActivity.this);
+
+                    builder.setTitle(getString(R.string.alerttitle));
+                    builder.setMessage(getString(R.string.alertmsg) + user_name);
+
+                    builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                        public void onClick(DialogInterface dialog, int which) {
+                            // Do nothing but close the dialog
+                            edtor_user.clear();
+                            edtor_user.commit();
+                            edt_username.setText(prefrences.getString(getString(R.string.pass_pref), ""));
+                            edt_userpass.setText(prefrences.getString(getString(R.string.usercode_pref), ""));
+                            dialog.dismiss();
+                        }
+                    });
+
+                    builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                        @Override
+                        public void onClick(DialogInterface dialog, int which) {
+
+                            // Do nothing
+                            dialog.dismiss();
+                        }
+                    });
+
+                    android.support.v7.app.AlertDialog alert = builder.create();
+                    alert.show();
+
+                } catch (Exception e) {
+
+                }
+
+            }
+
         });
     }
 
@@ -636,7 +710,12 @@ public class LoginActivity extends AppCompatActivity {
                         return;
                     }
                 }
-                send_email(strEmail);
+                try {
+                    send_email(strEmail);
+                }
+                catch (Exception e){
+
+                }
                 listDialog2.dismiss();
             }
         });
@@ -654,7 +733,12 @@ public class LoginActivity extends AppCompatActivity {
                 @Override
                 public void run() {
                     // Get item group from server
-                    send_email_server(strEmail, pDialog);
+                    try {
+                        send_email_server(strEmail, pDialog);
+                    }
+                    catch(Exception e){
+
+                    }
                 }
             }.start();
         } else {
@@ -665,7 +749,9 @@ public class LoginActivity extends AppCompatActivity {
     private void send_email_server(String strEmail, final ProgressDialog pDialog) {
         String msg = "";
         // Call get item group api here
-        String serverData = send_email_on_server(strEmail);
+
+            String serverData = send_email_on_server(strEmail);
+
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
@@ -699,29 +785,35 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private String send_email_on_server(String strEmail) {
-        String serverData = null;//
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/email");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
-        nameValuePairs.add(new BasicNameValuePair("email", strEmail));
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
 
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        String serverData = null;//
+        try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(
+                    "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/email");
+            ArrayList nameValuePairs = new ArrayList(5);
+            nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
+            nameValuePairs.add(new BasicNameValuePair("email", strEmail));
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                serverData = EntityUtils.toString(httpEntity);
+                Log.d("response", serverData);
+
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
+        }
+        catch(Exception e){
+
         }
         return serverData;
 
@@ -921,15 +1013,7 @@ public class LoginActivity extends AppCompatActivity {
         if (serverData == null) {
         } else {
             try {
-                final JSONObject jsonObject_bg = new JSONObject(serverData);
-                final String strStatus = jsonObject_bg.getString("status");
-                if (strStatus.equals("true")) {
 
-                    JSONArray jsonArray_bg = jsonObject_bg.getJSONArray("result");
-                    for (int i = 0; i < jsonArray_bg.length(); i++) {
-                        JSONObject jsonobject = jsonArray_bg.getJSONObject(i);
-                        ltversion = jsonobject.getString("version");
-                    }
 
                     PackageInfo pInfo = null;
                     try {
@@ -944,16 +1028,17 @@ public class LoginActivity extends AppCompatActivity {
                     final String appPackageName = getPackageName();
 
                     //check if we need to upgrade?
-                    Double playVersionCode = Double.parseDouble(ltversion);
-                    if (playVersionCode > Globals.Version_Code) {
+                    Double playVersionCode = Double.parseDouble(serverData);
+                    if (playVersionCode > Double.parseDouble(Globals.Version_Name)) {
                         showInDayOnce(appPackageName);
                         runOnUiThread(new Runnable() {
                             public void run() {
                             }
                         });
                     }
-                }
-            } catch (JSONException e) {
+
+            } catch (Exception e) {
+
             }
             return;
         }
@@ -961,31 +1046,30 @@ public class LoginActivity extends AppCompatActivity {
     }
 
     private String check_version_server() {
-        String serverData = null;//
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/version");
-        ArrayList nameValuePairs = new ArrayList(5);
-        nameValuePairs.add(new BasicNameValuePair("app_type", "ANDROID"));
+        String newVersion = null;
 
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
-        }
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
-
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
+            Document document = Jsoup.connect("https://play.google.com/store/apps/details?id=" + "org.pegasusqburst" + "&hl=en")
+                    .timeout(30000)
+                    .userAgent("Mozilla/5.0 (Windows; U; WindowsNT 5.1; en-US; rv1.8.1.6) Gecko/20070725 Firefox/2.0.0.6")
+                    .referrer("http://www.google.com")
+                    .get();
+            if (document != null) {
+                Elements element = document.getElementsContainingOwnText("Current Version");
+                for (Element ele : element) {
+                    if (ele.siblingElements() != null) {
+                        Elements sibElemets = ele.siblingElements();
+                        for (Element sibElemet : sibElemets) {
+                            newVersion = sibElemet.text();
+                        }
+                    }
+                }
+            }
         } catch (IOException e) {
             e.printStackTrace();
         }
-        return serverData;
+
+        return newVersion;
     }
 
     void showInDayOnce(final String appPackageName) {
@@ -1070,12 +1154,12 @@ public class LoginActivity extends AppCompatActivity {
             _prefsEditor.commit();
         }
     }
-    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String registrationcode) {
+    public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String registrationcode,final String defaultlogout) {
 
         pDialog = new ProgressDialog(LoginActivity.this);
         pDialog.setMessage("Logging In....");
         pDialog.show();
-        String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/database_detail/device_login";
+        String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/license_product_1/device_login";
         HttpsTrustManager.allowAllSSL();
         // String server_url =  Gloabls.server_url;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
@@ -1125,6 +1209,15 @@ public class LoginActivity extends AppCompatActivity {
 
                                 try {
                                     lite_pos_device.setStatus("IN");
+                                    lite_pos_device.setDevice_Id(lic_custid);
+                                    lite_pos_device.setLic_customer_license_id(lic_custid);
+                                    lite_pos_device.setDevice_Code(deviceCode);
+                                    lite_pos_device.setDevice_Symbol(deviceSymbol);
+                                    lite_pos_device.setDevice_Name(deviceName);
+                                    lite_pos_device.setLicense_type(licenseType);
+                                    lite_pos_device.setLicense_key(license_key);
+                                    lite_pos_device.setLic_code(lic_code);
+                                    lite_pos_device.setExpiry_Date(expiryDate);
                                     long ct = lite_pos_device.updateDevice("Status=?", new String[]{"Out"}, database);
                                     // long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
                                     if (ct > 0) {
@@ -1166,6 +1259,44 @@ public class LoginActivity extends AppCompatActivity {
 
                             } else if (status.equals("false")) {
                                 pDialog.dismiss();
+                                if(message.toString().equalsIgnoreCase("Purchase more device")){
+
+                                    try {
+                                        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(LoginActivity.this);
+
+                                        builder.setTitle(getString(R.string.alerttitle));
+                                        builder.setMessage(getString(R.string.alert_loginmsg));
+
+                                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                                            public void onClick(DialogInterface dialog, int which) {
+                                                // Do nothing but close the dialog
+                                                getAlertclearTransactionDialog();
+
+                                            }
+                                        });
+
+                                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                                            @Override
+                                            public void onClick(DialogInterface dialog, int which) {
+
+                                                // Do nothing
+                                                dialog.dismiss();
+                                            }
+                                        });
+
+                                        android.support.v7.app.AlertDialog alert = builder.create();
+                                        alert.show();
+
+                                    } catch (Exception e) {
+
+                                    }
+
+                                }
+                                else{
+                                     Toast.makeText(getApplicationContext(),message.toString(),Toast.LENGTH_SHORT).show();
+                                }
                                 Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
                             }
 
@@ -1179,22 +1310,16 @@ public class LoginActivity extends AppCompatActivity {
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                             Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
                         } else if (error instanceof AuthFailureError) {
                             Toast.makeText(getApplicationContext(), "Authentication issue", Toast.LENGTH_LONG).show();
                         } else if (error instanceof ServerError) {
                             Toast.makeText(getApplicationContext(), "Server not available", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                         } else if (error instanceof NetworkError) {
                             Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                         } else if (error instanceof ParseError) {
 
                         }
@@ -1215,6 +1340,7 @@ public class LoginActivity extends AppCompatActivity {
                 params.put("sys_code_3", syscode3);
                 params.put("sys_code_4", syscode4);
                 params.put("reg_code", registrationcode);
+                params.put("default_logout", defaultlogout);
                 System.out.println("params"+ params);
                 return params;
             }
@@ -1223,5 +1349,44 @@ public class LoginActivity extends AppCompatActivity {
         };
 
         AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public void getAlertclearTransactionDialog(){
+        android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(LoginActivity.this);
+
+        builder.setTitle(getString(R.string.alerttitle));
+        builder.setMessage(getString(R.string.alert_loginseconddialog));
+
+        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+            public void onClick(DialogInterface dialog, int which) {
+                // Do nothing but close the dialog
+                try {
+
+                    postDeviceInfo(company_email, company_password, Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no, Globals.syscode2, android_id, myKey,reg_code,"1");
+
+                  //  postDeviceInfo(lite_pos_registration.getEmail(), lite_pos_registration.getPassword(), Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no,  Globals.syscode2, android_id, myKey,lite_pos_registration.getRegistration_Code(),"1");
+                }
+                catch(Exception e){
+
+                }
+                dialog.dismiss();
+            }
+        });
+
+        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+
+                // Do nothing
+                dialog.dismiss();
+            }
+        });
+
+        android.support.v7.app.AlertDialog alert = builder.create();
+        alert.show();
+
+
     }
 }

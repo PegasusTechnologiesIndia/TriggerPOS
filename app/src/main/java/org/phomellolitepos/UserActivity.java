@@ -154,9 +154,14 @@ public class UserActivity extends AppCompatActivity {
         });
 
         if (operation.equals("Edit")) {
-            btn_item_delete.setVisibility(View.VISIBLE);
+            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+
+                btn_item_delete.setVisibility(View.VISIBLE);
+            }
+            //btn_item_delete.setVisibility(View.VISIBLE);
             user = User.getUser(getApplicationContext(), "WHERE user_code = '" + code + "'", database);
             edt_user_code.setText(user.get_user_code());
+            edt_user_code.setEnabled(false);
             edt_user_name.setText(user.get_name());
             edt_email.setText(user.get_email());
             edt_password.setText(user.get_password());

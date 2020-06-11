@@ -38,7 +38,13 @@ public class UserPermission {
 //                context.startActivity(item_intent);
             } else {
                 arrayList = new ArrayList<>();
-                String[] str = user.get_app_user_permission().split(",");
+                String  strAppPermission  = user.get_app_user_permission();
+                strAppPermission = strAppPermission.replace("[","");
+                strAppPermission = strAppPermission.replace("]","");
+                strAppPermission = strAppPermission.replace("\"","");
+
+
+                String[] str = strAppPermission.split(",");
                 for (int i = 0; i < str.length; i++) {
                     arrayList.add(str[i]);
                 }

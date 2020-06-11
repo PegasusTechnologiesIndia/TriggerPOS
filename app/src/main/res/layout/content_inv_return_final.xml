@@ -256,7 +256,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="2dp"
                 android:layout_weight="0.3"
-                android:text="@string/Total"
+                android:text="@string/itemprice"
                 android:textColor="#333333"
                 android:textSize="16sp" />
 

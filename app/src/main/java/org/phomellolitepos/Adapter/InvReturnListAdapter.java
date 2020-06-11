@@ -61,6 +61,7 @@ public class InvReturnListAdapter extends BaseAdapter{
         } catch (Exception ex) {
             decimal_check = "1";
         }
+
         txt_total = (TextView) itemView.findViewById(R.id.txt_total);
         txt_inv_no = (TextView) itemView.findViewById(R.id.txt_inv_no);
 
@@ -68,22 +69,25 @@ public class InvReturnListAdapter extends BaseAdapter{
         txt_remarks = (TextView) itemView.findViewById(R.id.txt_remarks);
 
         try {
-            txt_date = (TextView) itemView.findViewById(R.id.txt_date);
-            txt_voucher_no.setText(resultp.get_voucher_no());
-            txt_remarks.setText(resultp.get_remarks());
-            txt_date.setText(resultp.get_date().substring(0,10));
-            txt_inv_no.setText(resultp.get_order_code());
-            txt_total.setText(Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check));
-        }catch (Exception e){}
-        if(resultp.get_is_post().equals("false")) {
-            itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
-        }
-        if(resultp.get_is_cancel().equals("true")){
-            itemView.setBackgroundColor(Color.parseColor("#fb8951"));
-        }
-        if (resultp.get_is_post().equals("true")){
-            itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        }
+
+                txt_date = (TextView) itemView.findViewById(R.id.txt_date);
+                txt_voucher_no.setText(resultp.get_voucher_no());
+                txt_remarks.setText(resultp.get_remarks());
+                txt_date.setText(resultp.get_date().substring(0, 10));
+                txt_inv_no.setText(resultp.get_order_code());
+                txt_total.setText(Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check));
+            }catch(Exception e){
+            }
+            if (resultp.get_is_post().equals("false")) {
+                itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
+            }
+            if (resultp.get_is_cancel().equals("true")) {
+                itemView.setBackgroundColor(Color.parseColor("#fb8951"));
+            }
+            if (resultp.get_is_post().equals("true")) {
+                itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {

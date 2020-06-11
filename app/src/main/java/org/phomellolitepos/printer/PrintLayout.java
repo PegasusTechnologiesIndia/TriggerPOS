@@ -76,6 +76,7 @@ import org.phomellolitepos.ReceptDetailActivity;
 import org.phomellolitepos.RetailActivity;
 import org.phomellolitepos.Util.DateUtill;
 import org.phomellolitepos.Util.Globals;
+import org.phomellolitepos.X_ZActivity;
 import org.phomellolitepos.database.Bank;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
@@ -321,17 +322,17 @@ public class PrintLayout extends PrnDspA1088Activity {
 
             @Override
             public void onRunResult(final boolean isSuccess) throws RemoteException {
-                Log.i(TAG,"result:" + isSuccess + "\n");
+                Log.i(TAG, "result:" + isSuccess + "\n");
             }
 
             @Override
             public void onReturnString(final String value) throws RemoteException {
-                Log.i(TAG,"result:" + value + "\n");
+                Log.i(TAG, "result:" + value + "\n");
             }
         };
 
         //绑定服务
-        Intent intent=new Intent();
+        Intent intent = new Intent();
         intent.setPackage("com.iposprinter.iposprinterservice");
         intent.setAction("com.iposprinter.iposprinterservice.IPosPrintService");
 //        startService(intent);
@@ -346,7 +347,7 @@ public class PrintLayout extends PrnDspA1088Activity {
         printerStatusFilter.addAction(PRINTER_THP_NORMALTEMP_ACTION);
         printerStatusFilter.addAction(PRINTER_MOTOR_HIGHTEMP_ACTION);
         printerStatusFilter.addAction(PRINTER_BUSY_ACTION);
-        registerReceiver(IPosPrinterStatusListener,printerStatusFilter);
+        registerReceiver(IPosPrinterStatusListener, printerStatusFilter);
 
         final Button b = (Button) findViewById(R.id.button1);
 
@@ -516,7 +517,12 @@ public class PrintLayout extends PrnDspA1088Activity {
                             finish();
                         }
                     }
-                } else if (PrinterType.equals("1")) {
+                }
+                else if (PrinterType.equals("2")) {
+
+                }
+
+                else if (PrinterType.equals("1")) {
 
                     mobile_pos(orders, order_detail);
 
@@ -821,7 +827,3269 @@ public class PrintLayout extends PrnDspA1088Activity {
 
     private void ppt8555(final Orders orders, final ArrayList<Order_Detail> order_detail) {
 
-        if (opr.equals("PayCollection")) {
+        // Check Decimal
+        // Check Language
+        // Check Type
+
+
+        //
+        if (decimal_check.equals("2")) {
+            if (settings.get_Print_Lang().equals("0")) {
+                // English
+                if (settings.get_Print_Memo().equals("1")) {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                String Print_type = "0";
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Order : " + orders.get_order_code() + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                if (orders.get_table_code().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("Table : " + orders.get_table_code(), "ST", 24, callbackPPT8555);
+                                }
+
+                                ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                if (order_detail.size() > 0) {
+                                    Double total = 0d;
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    for (int i = 0; i < order_detail.size(); i++) {
+                                        total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8) + "X" + order_detail.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check), "ST", 24, callbackPPT8555);
+
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "ST", 24, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    //mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvNo + " : " + strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvDate + " : " + DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier + " : " + user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Qty       Price       Total\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+
+                                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "         " + sale_price + "      " + line_total + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Item       :" + orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Quantity    :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Subtotal      :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total : " + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Tax : " + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("Net Amt : " + net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Tender  : " + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Change  : " + change_amount + "\n", "ST", 24, callbackPPT8555);
+                                      /*  mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }*/
+
+                                    if (false) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            } else if (settings.get_Print_Lang().equals("1")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                String Print_type = "0";
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("Order : " + orders.get_order_code() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                if (orders.get_table_code().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("Table : " + orders.get_table_code(), "ST", 24, callbackPPT8555);
+                                }
+
+                                ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                if (order_detail.size() > 0) {
+                                    Double total = 0d;
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    for (int i = 0; i < order_detail.size(); i++) {
+                                        total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8) + "X" + order_detail.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check), "ST", 24, callbackPPT8555);
+
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "ST", 24, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    // For Both
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String strPOSNo = "لحم." + " ";
+                                    String strGSTNo = Globals.GSTLbl + " ";
+                                    String strOrderNum = "رقم الطلب" + "  ";
+                                    String strOrderDate = "تاريخ الطلب" + "  ";
+                                    String strCashier = "أمين الصندوق" + " ";
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(strGSTNo, "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+// need to update code here if it sav in arabic
+
+
+                                        String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(line_total + "         " + sale_price + "      " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("مجموع البند:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("البند الكمية:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("المجموع الفرعي:", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("مجموع:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("مجموع الضريبة:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("ليس مكتب:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("مناقصة:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("يتغيرون:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(change_amount + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    if (order_payment_array.size() > 0) {
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                            String name = "";
+                                            if (payment != null) {
+                                                name = payment.get_payment_name();
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    if (settings.get_Is_Accounts().equals("true")) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            } else {
+                if (settings.get_Print_Memo().equals("1")) {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                String Print_type = "0";
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Order : " + orders.get_order_code() + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                if (orders.get_table_code().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("Table : " + orders.get_table_code(), "ST", 24, callbackPPT8555);
+                                }
+
+                                ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                if (order_detail.size() > 0) {
+                                    Double total = 0d;
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    for (int i = 0; i < order_detail.size(); i++) {
+                                        total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8) + "X" + order_detail.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check), "ST", 24, callbackPPT8555);
+
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "ST", 24, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String strPOSNo = "Device ID/لحم." + " ";
+                                    String strGSTNo = Globals.GSTLbl + " ";
+                                    String strOrderNum = "Invoice Number/رقم الطلب" + "  ";
+                                    String strOrderDate = "Invoice Date/تاريخ الطلب" + "  ";
+                                    String strCashier = "Salesperson/أمين الصندوق" + " ";
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(strGSTNo, "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total       Price        Qty\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+
+                                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+                                        String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(line_total + "         " + sale_price + "      " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Item/مجموع البند:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Quantity/البند الكمية:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Subtotal/المجموع الفرعي:", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount/خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total/مجموع:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Tax/مجموع الضريبة:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("Net Amt/ليس مكتب:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Tender/مناقصة:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Change/يتغيرون:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(change_amount + "\n", "ST", 24, callbackPPT8555);
+                                   /*     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+*/
+                                    if (settings.get_Is_Accounts().equals("true")) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            }
+
+
+        } else {
+            if (settings.get_Print_Lang().equals("0")) {
+                // English
+                if (settings.get_Print_Memo().equals("1")) {
+
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    //  mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvNo + " : " + strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvDate + " : " + DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier + " : " + user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Qty       Price       Total\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                              /*          if (settings.get_Print_Lang().equals("0")) {
+                                            String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        } else if (settings.get_Print_Lang().equals("1")) {
+                                            String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+
+                                        } else {
+                                            String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                            String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        }*/
+                                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "         " + sale_price + "    " + line_total + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Item :" + orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Quantity :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Subtotal :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total : " + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Tax : " + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("Net Amt : " + net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Tender : " + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Change : " + change_amount + "\n", "ST", 24, callbackPPT8555);
+                             /*   mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                if (order_payment_array.size() > 0) {
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                        String name = "";
+                                        if (payment != null) {
+                                            name = payment.get_payment_name();
+                                            mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                }*/
+
+                                    if (settings.get_Is_Accounts().equals("true")) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    //mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvNo + " : " + strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvDate + " : " + DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier + " : " + user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Qty       Price       Total\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+
+                                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "         " + sale_price + "      " + line_total + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Item    :" + orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Quantity :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Subtotal      :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount : " + discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total : " + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Tax : " + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("Net Amt : " + net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Tender  : " + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Change  : " + change_amount + "\n", "ST", 24, callbackPPT8555);
+                                      /*  mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }*/
+
+                                    if (false) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            } else if (settings.get_Print_Lang().equals("1")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                String Print_type = "0";
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("Order : " + orders.get_order_code() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                if (orders.get_table_code().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("Table : " + orders.get_table_code(), "ST", 24, callbackPPT8555);
+                                }
+
+                                ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                if (order_detail.size() > 0) {
+                                    Double total = 0d;
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    for (int i = 0; i < order_detail.size(); i++) {
+                                        total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8) + "X" + order_detail.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check), "ST", 24, callbackPPT8555);
+
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "ST", 24, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    // For Both
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String strPOSNo = "لحم." + " ";
+                                    String strGSTNo = Globals.GSTLbl + " ";
+                                    String strOrderNum = "رقم الطلب" + "  ";
+                                    String strOrderDate = "تاريخ الطلب" + "  ";
+                                    String strCashier = "أمين الصندوق" + " ";
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                             mIPosPrinterService.PrintSpecFormatText("" +Globals.objLPR.getService_code_tariff() + "\n", "ST", 24,1, callbackPPT8555);
+
+                                           // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(strGSTNo, "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+// need to update code here if it sav in arabic
+
+
+                                        String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(line_total + "         " + sale_price + "      " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText( "مجموع البند"  + " :" + orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                 //   mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("البند الكمية" + " :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                   // mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("المجموع الفرعي" + " :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                   // mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("مجموع"  + " :" + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                  //  mIPosPrinterService.printSpecifiedTypeText(tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText( "مجموع الضريبة" + " :" + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                      //  mIPosPrinterService.printSpecifiedTypeText(total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("ليس مكتب" + " :" +net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                 //   mIPosPrinterService.printSpecifiedTypeText(net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("مناقصة" + " :" + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                 //   mIPosPrinterService.printSpecifiedTypeText(tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("يتغيرون" + " :" + change_amount + "\n", "ST", 24, callbackPPT8555);
+                                   // mIPosPrinterService.printSpecifiedTypeText(change_amount + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                   /* order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    if (order_payment_array.size() > 0) {
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                            String name = "";
+                                            if (payment != null) {
+                                                name = payment.get_payment_name();
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }*/
+
+                                    if (settings.get_Is_Accounts().equals("true")) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                  //  mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                }
+            } else {
+                if (settings.get_Print_Memo().equals("1")) {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                String Print_type = "0";
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Order : " + orders.get_order_code() + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                if (orders.get_table_code().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("Table : " + orders.get_table_code(), "ST", 24, callbackPPT8555);
+                                }
+
+                                ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                if (order_detail.size() > 0) {
+                                    Double total = 0d;
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    for (int i = 0; i < order_detail.size(); i++) {
+                                        total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8) + "X" + order_detail.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check), "ST", 24, callbackPPT8555);
+
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "ST", 24, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+                        }
+                    });
+                } else {
+                    ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                        @Override
+                        public void run() {
+                            try {
+                                for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                    String strPOSNo = "Device ID/لحم." + " ";
+                                    String strGSTNo = Globals.GSTLbl + " ";
+                                    String strOrderNum = "Invoice Number/رقم الطلب" + "  ";
+                                    String strOrderDate = "Invoice Date/تاريخ الطلب" + "  ";
+                                    String strCashier = "Salesperson/أمين الصندوق" + " ";
+                                    String Print_type = "0";
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                    if (bitmap != null) {
+                                        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                        bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                        bitmap = getResizedBitmap(bitmap, 80, 120);
+                                        mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1, callbackPPT8555);
+                                    try {
+                                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1, callbackPPT8555);
+
+                                            // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } catch (Exception ex) {
+                                    }
+                                    if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText(strGSTNo, "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(), "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.PrintOrder + "\n", "ST", 24, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                    ArrayList<String> arrayList = new ArrayList<String>();
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (order_payment_array.size() > 0) {
+
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            arrayList.add(order_payment_array.get(i).get_payment_id());
+                                        }
+
+                                        if (arrayList.contains("1") && arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            if (arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else if (arrayList.contains("1")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID + " : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                    mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (Globals.ModeResrv.equals("Resv")) {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    } else {
+                                        if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                        } else {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total       Price        Qty\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    int count = 0;
+                                    Double itemFinalTax = 0d;
+                                    while (count < order_detail.size()) {
+
+                                        String strItemCode = order_detail.get(count).get_item_code();
+
+                                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+                                        String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                        String sale_price;
+                                        Double dDisAfterSalePrice = 0d;
+                                        Double dDisAfter = 0d;
+                                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                        String line_total;
+                                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
+
+                                        Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                        String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText(line_total + "         " + sale_price + "      " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String discnt = "";
+                                        String disLbl = "";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                        } else {
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                disLbl = "Dis :";
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText(disLbl + " : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (settings.get_HSN_print().equals("true")) {
+                                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                            Tax_Master tax_master = null;
+                                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                itemFinalTax += valueFinal;
+                                                mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        count++;
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total Item/مجموع البند:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Item Quantity/البند الكمية:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    String subtotal = "";
+                                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                    Tax_Master tax_master;
+                                    while (cursor1.moveToNext()) {
+                                        subtotal = cursor1.getString(0);
+                                    }
+
+                                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText("Subtotal/المجموع الفرعي:", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                        while (cursor1.moveToNext()) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name() + " : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    String discount = "0";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                    } else {
+                                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Discount/خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(discount + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Total/مجموع:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                    String total_tax;
+                                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                    if (Double.parseDouble(total_tax) > 0d) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Tax/مجموع الضريبة:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(total_tax + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                        String name = "", value = "";
+                                        if (cursor.moveToFirst()) {
+                                            do {
+                                                name = cursor.getString(0);
+                                                value = cursor.getString(1);
+                                                mIPosPrinterService.printSpecifiedTypeText(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            } while (cursor.moveToNext());
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    String net_amount;
+                                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                    String strCurrency;
+                                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                        strCurrency = "";
+                                    } else {
+                                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("Net Amt/ليس مكتب:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String tender;
+                                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Tender/مناقصة:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                    String change_amount;
+                                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                    mIPosPrinterService.printSpecifiedTypeText("Change/يتغيرون:\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText(change_amount + "\n", "ST", 24, callbackPPT8555);
+                                   /*     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+*/
+                                    if (settings.get_Is_Accounts().equals("true")) {
+                                        if (ck_project_type.equals("standalone")) {
+                                            JSONObject jsonObject = new JSONObject();
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                Double showAmount = 0d;
+//
+                                                try {
+                                                    String strCreditAmt = "", strDeditAmount = "";
+                                                    Double creditAmount = 0d,
+                                                            debitAmount = 0d;
+                                                    Cursor cursor = null;
+
+                                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                    cursor = database.rawQuery(strQry1, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strCreditAmt = cursor.getString(0);
+
+                                                    }
+                                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                    cursor = database.rawQuery(strQry2, null);
+                                                    while (cursor.moveToNext()) {
+                                                        strDeditAmount = cursor.getString(0);
+
+                                                    }
+                                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                                    showAmount = debitAmount + creditAmount;
+                                                } catch (Exception ex) {
+                                                }
+                                                double abs1 = Math.abs(showAmount);
+                                                if (showAmount > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                }
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = cursor1.getString(0);
+
+                                                    }
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            }
+                                        } else {
+
+                                            JSONObject jsonObject = new JSONObject();
+
+                                            if (Globals.strContact_Code.equals("")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("**", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                String curAmount = "";
+                                                try {
+                                                    strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+                                                    if (cursor1.moveToFirst()) {
+                                                        do {
+                                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        } while (cursor1.moveToNext());
+                                                    }
+                                                } catch (Exception ex) {
+                                                    curAmount = "0";
+                                                }
+                                                double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Old Amt :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Old Amt", abs1 + "");
+                                                } catch (Exception ex) {
+                                                }
+                                                String strCur = "";
+
+                                                try {
+                                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                                    while (cursor1.moveToNext()) {
+                                                        strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    }
+
+                                                } catch (Exception ex) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+                                                if (strCur.equals("")) {
+                                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Amt :" + strCur, "ST", 24, callbackPPT8555);
+                                                }
+
+                                                try {
+                                                    jsonObject.put("Current Amt", strCur + "");
+                                                } catch (Exception ex) {
+
+                                                }
+
+                                                Double strBalance = ab + Double.parseDouble(strCur);
+                                                try {
+                                                    jsonObject.put("Balance Amt", strBalance + "");
+                                                } catch (Exception ex) {
+
+                                                }
+                                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                db.executeDML(strUpdatePayment, database);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("Balance Amt :" + Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    if (!settings.get_Footer_Text().equals("")) {
+                                        mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                    bitmapRecycle(bitmap);
+                                    mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                }
+                                Globals.strContact_Code = "";
+                                Globals.strResvContact_Code = "";
+                                Globals.DiscountPer = "";
+                                Globals.strOldCrAmt = "0";
+                                Globals.setEmpty();
+                            } catch (RemoteException e) {
+                                e.printStackTrace();
+                            }
+
+                        }
+                    });
+                }
+            }
+
+        }
+
+        //
+
+        /*if (opr.equals("PayCollection")) {
             final Pay_Collection pay_collection = Pay_Collection.getPay_Collection(getApplicationContext(), " WHERE id = '" + id + "'", database);
             ThreadPoolManager.getInstance().executeTask(new Runnable() {
                 @Override
@@ -1008,6 +4276,7 @@ public class PrintLayout extends PrnDspA1088Activity {
         } else {
             if (decimal_check.equals("2")) {
                 if (settings.get_Print_Lang().equals("0")){
+                    // English
                     if (settings.get_Print_Memo().equals("1")) {
                         ThreadPoolManager.getInstance().executeTask(new Runnable() {
                             @Override
@@ -1074,15 +4343,21 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         try {
                                             if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
                                             } else {
-                                                mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24,1, callbackPPT8555);
+
+                                               // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
                                             }
                                         } catch (Exception ex) {}
                                         if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
                                         } else {
                                             mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo+":"+ Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
                                         }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        //mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
                                         ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                         ArrayList<String> arrayList = new ArrayList<String>();
                                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
@@ -1124,7 +4399,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
 
                                             } else {
-                                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
                                                 mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
                                                 if (contact.get_gstin().length() > 0) {
                                                     mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
@@ -1247,7 +4522,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                                 do {
                                                     name = cursor.getString(0);
                                                     value = cursor.getString(1);
-                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 32, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
                                                 } while (cursor.moveToNext());
                                             }
                                         }
@@ -1267,7 +4542,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         String change_amount;
                                         change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
                                         mIPosPrinterService.printSpecifiedTypeText( "Change  : " + change_amount+ "\n", "ST", 24, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                      *//**//*  mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                         order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                         if (order_payment_array.size() > 0) {
                                             for (int i = 0; i < order_payment_array.size(); i++) {
@@ -1279,9 +4554,9 @@ public class PrintLayout extends PrnDspA1088Activity {
                                                 }
                                             }
                                             mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-                                        }
+                                        }*//**//*
 
-                                        if (settings.get_Is_Accounts().equals("true")) {
+                                        if (false) {
                                             if (ck_project_type.equals("standalone")) {
                                                 JSONObject jsonObject = new JSONObject();
                                                 if (Globals.strContact_Code.equals("")) {
@@ -1438,7 +4713,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
                                             mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         }
-
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
@@ -1503,6 +4778,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                             }
                         });
                     } else {
+                        // For Both
                         ThreadPoolManager.getInstance().executeTask(new Runnable() {
                             @Override
                             public void run() {
@@ -1527,9 +4803,12 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
                                         mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1,callbackPPT8555);
                                         mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24,1, callbackPPT8555);
+
                                         try {
                                             if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
                                             } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24,1, callbackPPT8555);
+
                                                 mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
                                             }
                                         } catch (Exception ex) {}
@@ -1538,8 +4817,12 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             mIPosPrinterService.printSpecifiedTypeText(strGSTNo,"ST",24,callbackPPT8555);
                                             mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
                                         }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
                                         ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                         ArrayList<String> arrayList = new ArrayList<String>();
                                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
@@ -1604,9 +4887,14 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         while (count < order_detail.size()) {
 
                                             String strItemCode = order_detail.get(count).get_item_code();
+// need to update code here if it sav in arabic
 
-                                            String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
-                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                                String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                        + strItemCode + "'  GROUP By order_detail.item_Code");
+
+
+
 
                                             String sale_price;
                                             Double dDisAfterSalePrice = 0d;
@@ -1907,7 +5195,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
                                             mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         }
-
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
@@ -1998,7 +5286,9 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         try {
                                             if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
                                             } else {
-                                                mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1,callbackPPT8555);
+
+                                               // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
                                             }
                                         } catch (Exception ex) {}
                                         if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
@@ -2006,8 +5296,12 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             mIPosPrinterService.printSpecifiedTypeText(strGSTNo,"ST",24,callbackPPT8555);
                                             mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
                                         }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.PrintOrder + "\n", "ST", 24, 1,callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
                                         ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                         ArrayList<String> arrayList = new ArrayList<String>();
                                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
@@ -2080,6 +5374,8 @@ public class PrintLayout extends PrnDspA1088Activity {
 
                                             String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
                                                     + strItemCode + "'  GROUP By order_detail.item_Code");
+                                            String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
 
                                             String sale_price;
                                             Double dDisAfterSalePrice = 0d;
@@ -2091,6 +5387,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             String line_total;
                                             line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
                                             mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
 
                                             Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
                                             String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
@@ -2186,7 +5483,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                                 do {
                                                     name = cursor.getString(0);
                                                     value = cursor.getString(1);
-                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 32, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
                                                 } while (cursor.moveToNext());
                                             }
                                         }
@@ -2208,6 +5505,1611 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         String change_amount;
                                         change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
                                         mIPosPrinterService.printSpecifiedTypeText( "Change/يتغيرون:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( change_amount+ "\n", "ST", 24, callbackPPT8555);
+                                   *//**//*     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+*//**//*
+                                        if (settings.get_Is_Accounts().equals("true")) {
+                                            if (ck_project_type.equals("standalone")) {
+                                                JSONObject jsonObject = new JSONObject();
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    Double showAmount = 0d;
+//
+                                                    try {
+                                                        String strCreditAmt = "", strDeditAmount = "";
+                                                        Double creditAmount = 0d,
+                                                                debitAmount = 0d;
+                                                        Cursor cursor = null;
+
+                                                        String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                        cursor = database.rawQuery(strQry1, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strCreditAmt = cursor.getString(0);
+
+                                                        }
+                                                        creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                        String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                        cursor = database.rawQuery(strQry2, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strDeditAmount = cursor.getString(0);
+
+                                                        }
+                                                        debitAmount = Double.parseDouble(strDeditAmount);
+                                                        showAmount = debitAmount + creditAmount;
+                                                    } catch (Exception ex) {
+                                                    }
+                                                    double abs1 = Math.abs(showAmount);
+                                                    if (showAmount > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"DR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    }
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = cursor1.getString(0);
+
+                                                        }
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                                }
+                                            } else {
+
+                                                JSONObject jsonObject = new JSONObject();
+
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    String curAmount = "";
+                                                    try {
+                                                        strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+                                                        if (cursor1.moveToFirst()) {
+                                                            do {
+                                                                curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                            } while (cursor1.moveToNext());
+                                                        }
+                                                    } catch (Exception ex) {
+                                                        curAmount = "0";
+                                                    }
+                                                    double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                    double abs1 = Math.abs(ab);
+                                                    if (ab > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR", "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {}
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        }
+
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+                                                    if (strCur.equals("")) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+
+                                                    Double strBalance = ab + Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        if (!settings.get_Footer_Text().equals("")) {
+                                            mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        bitmapRecycle(bitmap);
+                                        mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                    }
+                                    Globals.strContact_Code = "";
+                                    Globals.strResvContact_Code = "";
+                                    Globals.DiscountPer = "";
+                                    Globals.strOldCrAmt = "0";
+                                    Globals.setEmpty();
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                    }
+                }
+
+
+
+            } else {
+                ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                    @Override
+                    public void run() {
+                        try {
+                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                String Print_type = "0";
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                if (bitmap != null) {
+                                    ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                    bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                    bitmap = getResizedBitmap(bitmap, 80, 120);
+                                    mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24,1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1,callbackPPT8555);
+                                try {
+                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1,callbackPPT8555);
+
+                                       // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                    }
+                                } catch (Exception ex) {}
+                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo+":"+ Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
+                                }
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1,callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                              //  mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                ArrayList<String> arrayList = new ArrayList<String>();
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                if (order_payment_array.size() > 0) {
+
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        arrayList.add(order_payment_array.get(i).get_payment_id());
+                                    }
+
+                                    if (arrayList.contains("1") && arrayList.contains("5")) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                    } else {
+                                        if (arrayList.contains("5")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit\n", "ST", 24, callbackPPT8555);
+                                        } else if (arrayList.contains("1")) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                }
+
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                if (Globals.strIsBarcodePrint.equals("true")) {
+                                    mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvNo+" : " + strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvDate+" : " + DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID+" : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier+" : " + user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                if (Globals.ModeResrv.equals("Resv")) {
+                                    Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                    mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                    if (contact.get_gstin().length() > 0) {
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                    }
+                                } else {
+                                    if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                    } else {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (contact.get_gstin().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+
+                                        }
+                                    }
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Qty       Price       Total\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                int count = 0;
+                                Double itemFinalTax = 0d;
+                                while (count < order_detail.size()) {
+
+                                    String strItemCode = order_detail.get(count).get_item_code();
+                                    String sale_price;
+                                    Double dDisAfterSalePrice = 0d;
+                                    Double dDisAfter = 0d;
+                                    dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                    dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                    sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                    String line_total;
+                                    line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                   if(settings.get_Print_Lang().equals("0")) {
+                                       String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                   }
+                                   else if(settings.get_Print_Lang().equals("1")){
+                                       String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+
+                                   }
+
+                                   else{
+                                       String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
+
+                                   }
+
+                                    Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                    String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                    mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check)+ "         "+sale_price+"    "+ line_total + "\n", "ST", 24, callbackPPT8555);
+                                    String discnt = "";
+                                    String disLbl = "";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                    } else {
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                            discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                            disLbl = "Dis :";
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText(disLbl+" : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                    if (settings.get_HSN_print().equals("true")) {
+                                        item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                    }
+                                    if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                        Tax_Master tax_master = null;
+                                        ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                        for (int i = 0; i < order_detail_tax.size(); i++) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                            double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                            itemFinalTax += valueFinal;
+                                            mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name()+" :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    count++;
+                                }
+
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Total Item :" +  orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Item Quantity :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                String subtotal = "";
+                                String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                Tax_Master tax_master;
+                                while (cursor1.moveToNext()) {
+                                    subtotal = cursor1.getString(0);
+                                }
+
+                                subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                mIPosPrinterService.printSpecifiedTypeText("Subtotal :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                    strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                            "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                            "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                    while (cursor1.moveToNext()) {
+                                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                        mIPosPrinterService.printSpecifiedTypeText( tax_master.get_tax_name()+" : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                }
+
+                                String discount = "0";
+                                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                } else {
+                                    discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                    if (Globals.strIsDiscountPrint.equals("true")) {
+                                        mIPosPrinterService.printSpecifiedTypeText( "Discount : " + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Discount : " + discount + "\n", "ST", 24, callbackPPT8555);
+                                    }
+                                }
+                                String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                mIPosPrinterService.printSpecifiedTypeText( "Total : " + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                String total_tax;
+                                total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                if (Double.parseDouble(total_tax) > 0d) {
+                                    mIPosPrinterService.printSpecifiedTypeText( "Total Tax : " + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                    Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                    String name = "", value = "";
+                                    if (cursor.moveToFirst()) {
+                                        do {
+                                            name = cursor.getString(0);
+                                            value = cursor.getString(1);
+                                            mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        } while (cursor.moveToNext());
+                                    }
+                                }
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                String net_amount;
+                                net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                String strCurrency;
+                                if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                    strCurrency = "";
+                                } else {
+                                    strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                }
+                                mIPosPrinterService.printSpecifiedTypeText( "Net Amt : " + net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                String tender;
+                                tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                mIPosPrinterService.printSpecifiedTypeText( "Tender : " + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                String change_amount;
+                                change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                mIPosPrinterService.printSpecifiedTypeText( "Change : " + change_amount+ "\n", "ST", 24, callbackPPT8555);
+                             *//**//*   mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                if (order_payment_array.size() > 0) {
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                        String name = "";
+                                        if (payment != null) {
+                                            name = payment.get_payment_name();
+                                            mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                }*//**//*
+
+                                if (settings.get_Is_Accounts().equals("true")) {
+                                    if (ck_project_type.equals("standalone")) {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            Double showAmount = 0d;
+//
+                                            try {
+                                                String strCreditAmt = "", strDeditAmount = "";
+                                                Double creditAmount = 0d,
+                                                        debitAmount = 0d;
+                                                Cursor cursor = null;
+
+                                                String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                cursor = database.rawQuery(strQry1, null);
+                                                while (cursor.moveToNext()) {
+                                                    strCreditAmt = cursor.getString(0);
+
+                                                }
+                                                creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                cursor = database.rawQuery(strQry2, null);
+                                                while (cursor.moveToNext()) {
+                                                    strDeditAmount = cursor.getString(0);
+
+                                                }
+                                                debitAmount = Double.parseDouble(strDeditAmount);
+                                                showAmount = debitAmount + creditAmount;
+                                            } catch (Exception ex) {
+                                            }
+                                            double abs1 = Math.abs(showAmount);
+                                            if (showAmount > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"DR", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = cursor1.getString(0);
+
+                                                }
+                                                mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                            }
+
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            Double strBalance = abs1 - Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        }
+                                    } else {
+
+                                        JSONObject jsonObject = new JSONObject();
+
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                        } else {
+                                            String curAmount = "";
+                                            try {
+                                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+                                                if (cursor1.moveToFirst()) {
+                                                    do {
+                                                        curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                    } while (cursor1.moveToNext());
+                                                }
+                                            } catch (Exception ex) {
+                                                curAmount = "0";
+                                            }
+                                            double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR", "ST", 24, callbackPPT8555);
+                                            }
+
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {}
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                }
+
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                            }
+
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+
+                                            Double strBalance = ab + Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+                                    }
+                                }
+
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                if (!settings.get_Footer_Text().equals("")) {
+                                    mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                }
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                bitmapRecycle(bitmap);
+                                mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                            }
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.DiscountPer = "";
+                            Globals.strOldCrAmt = "0";
+                            Globals.setEmpty();
+                        } catch (RemoteException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                });
+            }*//*
+        }*/
+    }
+
+
+    private void ppt8555_demo(final Orders orders, final ArrayList<Order_Detail> order_detail) {
+
+
+        if (decimal_check.equals("2")) {
+            if (settings.get_Print_Lang().equals("0")) {
+                // English
+
+            } else if (settings.get_Print_Lang().equals("1")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                } else {
+                }
+            } else {
+                if (settings.get_Print_Memo().equals("1")) {
+                } else {
+                }
+            }
+
+
+        } else {
+            if (settings.get_Print_Lang().equals("0")) {
+                // English
+                if (settings.get_Print_Memo().equals("1")) {
+                } else {
+                }
+            } else if (settings.get_Print_Lang().equals("1")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                } else {
+                }
+            } else {
+                if (settings.get_Print_Memo().equals("1")) {
+                } else {
+                }
+            }
+
+        }
+
+        //
+
+        /*if (opr.equals("PayCollection")) {
+            final Pay_Collection pay_collection = Pay_Collection.getPay_Collection(getApplicationContext(), " WHERE id = '" + id + "'", database);
+            ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                            String Print_type = "0";
+                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                            Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                            if (bitmap != null) {
+                                ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+
+                                bitmap = getResizedBitmap(bitmap, 80, 120);
+                                mIPosPrinterService.printBitmap(1, 6, bitmap, callbackPPT8555);
+                            }
+
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("Receipt Voucher", "ST", 30, callbackPPT8555);
+                            mIPosPrinterService.setPrinterPrintFontSize(26, callbackPPT8555);
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+
+
+                            mIPosPrinterService.printColumnsText(new String[]{"Receipt No.", ":", pay_collection.get_collection_code()}, new int[]{11, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"Date", ":", pay_collection.get_collection_date()}, new int[]{11, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            String amount;
+                            amount = Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check);
+                            mIPosPrinterService.printColumnsText(new String[]{"Amount", ":", amount}, new int[]{11, 1, 40}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            String[] str = amount.split("\\.");
+                            if (str.length == 1) {
+                                mIPosPrinterService.printColumnsText(new String[]{"In Words", ":", Globals.convert(Integer.parseInt(str[0].toString())) + " Only "}, new int[]{8, 1, 40}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            } else if (str.length == 2) {
+                                if (Integer.parseInt(str[1].toString()) == 0) {
+                                    mIPosPrinterService.printColumnsText(new String[]{"In Words", ":", Globals.convert(Integer.parseInt(str[0].toString())) + " KD  Only "}, new int[]{8, 1, 40}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+
+                                } else {
+                                    mIPosPrinterService.printColumnsText(new String[]{"In Words", ":", Globals.convert(Integer.parseInt(str[0].toString())) + " KD " + Globals.convert(Integer.parseInt(str[1].toString())) + " Fills Only "}, new int[]{8, 1, 40}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                }
+
+                            }
+
+                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + pay_collection.get_contact_code() + "'");
+                            mIPosPrinterService.printColumnsText(new String[]{"Received From", ":", contact.get_name()}, new int[]{13, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"Cash/Cheque", ":", pay_collection.get_payment_mode()}, new int[]{13, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"On Account", ":", pay_collection.get_on_account()}, new int[]{13, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"Remarks", ":", pay_collection.get_remarks()}, new int[]{13, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+
+                            if (pay_collection.get_payment_mode().equals("CHEQUE")) {
+                                Bank bank = Bank.getBank(getApplicationContext(), " WHERE bank_code='" + pay_collection.get_ref_type() + "'", database);
+                                mIPosPrinterService.printColumnsText(new String[]{"Bank Name", ":", bank.get_bank_name()}, new int[]{10, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                mIPosPrinterService.printColumnsText(new String[]{"Cheque No", ":", pay_collection.get_ref_no()}, new int[]{13, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+
+                            }
+
+                            ArrayList<Pay_Collection_Detail> pay_collection_detail = Pay_Collection_Detail.getAllPay_Collection_Detail(getApplicationContext(), " WHERE collection_code='" + pay_collection.get_collection_code() + "'");
+                            if (pay_collection_detail.size() > 0) {
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.printColumnsText(new String[]{"Order No", "Amount"}, new int[]{13, 13}, new int[]{0, 0}, 0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                for (int i = 0; i < pay_collection_detail.size(); i++) {
+                                    mIPosPrinterService.printColumnsText(new String[]{pay_collection_detail.get(i).get_invoice_no(), Globals.myNumberFormat2QtyDecimal(Double.parseDouble(pay_collection_detail.get(i).get_amount()), qty_decimal_check)}, new int[]{13, 13}, new int[]{0, 0}, 0, callbackPPT8555);
+                                }
+                            }
+                            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                            mIPosPrinterService.printColumnsText(new String[]{"Cashier", ":", user.get_name()}, new int[]{10, 1, 20}, new int[]{0, 0, 0},0, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("Receiver Signature", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                            mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                        }
+                        Globals.strContact_Code = "";
+                        Globals.strResvContact_Code = "";
+                        Globals.DiscountPer = "";
+                        Globals.strOldCrAmt = "0";
+                        Globals.setEmpty();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+        } else if (lite_pos_registration.getIndustry_Type().equals("4")) {
+
+            ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                @Override
+                public void run() {
+                    try {
+                        for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                            String Print_type = "0";
+                            mIPosPrinterService.setPrinterPrintFontSize(35, callbackPPT8555);
+                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("RECEIPT \n", "ST", 35, callbackPPT8555);
+                            try {
+                                if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                } else {
+                                    mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 35, callbackPPT8555);
+                                }
+                            } catch (Exception ex) {
+
+                            }
+                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 35, 1,callbackPPT8555);
+                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 35,1, callbackPPT8555);
+                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 35,1, callbackPPT8555);
+                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+
+                            mIPosPrinterService.printColumnsText(new String[]{Globals.PrintDeviceID, ":", Globals.objLPD.getDevice_Name()}, new int[]{10, 1, 20}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+//                            woyouService.printColumnsText(new String[]{"Cashier", ":", user.get_name()}, new int[]{10, 1, 20}, new int[]{0, 0, 0}, callback);
+                            mIPosPrinterService.printColumnsText(new String[]{Globals.PrintCashier, ":", user.get_name()}, new int[]{12, 1, 18}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"RECEIPT NO.", ":", strOrderNo}, new int[]{12, 1, 16}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            if (Globals.strIsBarcodePrint.equals("true")) {
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                mIPosPrinterService.printBarCode(strOrderNo, 8, 80, 150, 0, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                            }
+                            mIPosPrinterService.printColumnsText(new String[]{"IN DT", ":", DateUtill.PaternDatePrintDate(orders.get_order_date())}, new int[]{5, 1, 22}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.printColumnsText(new String[]{"IN TM", ":", DateUtill.PaternDatePrintTime(orders.get_order_date())}, new int[]{5, 1, 22}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                            int count = 0;
+                            Double itemFinalTax = 0d;
+                            while (count < order_detail.size()) {
+
+                                String strItemCode = order_detail.get(count).get_item_code();
+
+                                String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                        + strItemCode + "'  GROUP By order_detail.item_Code");
+                                int len = 12;
+                                if (strItemName.length() > len) {
+                                    strItemName = strItemName.substring(0, len);
+                                } else {
+                                    for (int sLen = strItemName.length(); sLen < len; sLen++) {
+                                        strItemName = strItemName + " ";
+                                    }
+                                }
+
+                                String sale_price;
+                                Double dDisAfterSalePrice = 0d;
+
+                                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                sale_price = Globals.myNumberFormat2Price((Double.parseDouble(dDisAfterSalePrice + "") * Double.parseDouble(order_detail.get(count).get_quantity() + "")), decimal_check);
+                                //sale_price = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_sale_price()), decimal_check);
+                                String line_total;
+                                mIPosPrinterService.printSpecifiedTypeText("VEHICLE TYPE: \n", "ST", 30, callbackPPT8555);
+                                line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                mIPosPrinterService.printColumnsText(new String[]{strItemName, " Rs." + sale_price}, new int[]{11, 9}, new int[]{0, 0}, 0, callbackPPT8555);
+
+                                count++;
+                            }
+
+                            mIPosPrinterService.printColumnsText(new String[]{"V.NO : ", orders.get_remarks()}, new int[]{8, 20}, new int[]{0, 0}, 0, callbackPPT8555);
+                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+
+                            if (!settings.get_Footer_Text().equals("")) {
+                                mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text() + "\n", "ST", 35, callbackPPT8555);
+                            }
+                            mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 35, callbackPPT8555);
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                            mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                        }
+                        Globals.strContact_Code = "";
+                        Globals.strResvContact_Code = "";
+                        Globals.DiscountPer = "";
+                        Globals.strOldCrAmt = "0";
+                        Globals.setEmpty();
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                }
+            });
+
+        } else {
+            if (decimal_check.equals("2")) {
+                if (settings.get_Print_Lang().equals("0")){
+                    // English
+                    if (settings.get_Print_Memo().equals("1")) {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                    String Print_type = "0";
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Order : " + orders.get_order_code() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                    if (orders.get_table_code().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText("Table : "+orders.get_table_code(),"ST",24, callbackPPT8555);
+                                    }
+
+                                    ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                    if (order_detail.size() > 0) {
+                                        Double total = 0d;
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total","ST",24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        for (int i = 0; i < order_detail.size(); i++) {
+                                            total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                            Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8)+"X"+order_detail.get(i).get_quantity()+"     "+Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check),"ST",24, callbackPPT8555);
+
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Amount : "+Globals.myNumberFormat2Price(total, decimal_check),"ST",24, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                        if (bitmap != null) {
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                            bitmap = getResizedBitmap(bitmap, 80, 120);
+                                            mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1,callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24,1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24,1, callbackPPT8555);
+
+                                               // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } catch (Exception ex) {}
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo+":"+ Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        //mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        ArrayList<String> arrayList = new ArrayList<String>();
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (order_payment_array.size() > 0) {
+
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                arrayList.add(order_payment_array.get(i).get_payment_id());
+                                            }
+
+                                            if (arrayList.contains("1") && arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                if (arrayList.contains("5")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit\n", "ST", 24, callbackPPT8555);
+                                                } else if (arrayList.contains("1")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (Globals.strIsBarcodePrint.equals("true")) {
+                                            mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvNo+" : " + strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintInvDate+" : " + DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID+" : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                        user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintCashier+" : " + user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (Globals.ModeResrv.equals("Resv")) {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } else {
+                                            if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                            } else {
+                                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                                if (contact.get_gstin().length() > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Qty       Price       Total\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        int count = 0;
+                                        Double itemFinalTax = 0d;
+                                        while (count < order_detail.size()) {
+
+                                            String strItemCode = order_detail.get(count).get_item_code();
+
+                                            String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                            String sale_price;
+                                            Double dDisAfterSalePrice = 0d;
+                                            Double dDisAfter = 0d;
+                                            dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                            dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                            sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                            String line_total;
+                                            line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                            Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                            String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                            mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check)+ "         "+sale_price+"      "+ line_total + "\n", "ST", 24, callbackPPT8555);
+                                            String discnt = "";
+                                            String disLbl = "";
+                                            if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                            } else {
+                                                if (Globals.strIsDiscountPrint.equals("true")) {
+                                                    Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                    discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                    disLbl = "Dis :";
+                                                }
+                                                mIPosPrinterService.printSpecifiedTypeText(disLbl+" : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                            }
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                            if (settings.get_HSN_print().equals("true")) {
+                                                item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                                Tax_Master tax_master = null;
+                                                ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                                for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                    tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                    double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                    itemFinalTax += valueFinal;
+                                                    mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name()+" :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            count++;
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Item    :" +  orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Item Quantity :" + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String subtotal = "";
+                                        String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                        Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                        Tax_Master tax_master;
+                                        while (cursor1.moveToNext()) {
+                                            subtotal = cursor1.getString(0);
+                                        }
+
+                                        subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Subtotal      :" + subtotal + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                            strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                    "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                    "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                            cursor1 = database.rawQuery(strTableQry, null);
+
+                                            while (cursor1.moveToNext()) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText( tax_master.get_tax_name()+" : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        String discount = "0";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                        } else {
+                                            discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Discount : " + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText( "Discount : " + discount + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                        String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Total : " + tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                        String total_tax;
+                                        total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                        if (Double.parseDouble(total_tax) > 0d) {
+                                            mIPosPrinterService.printSpecifiedTypeText( "Total Tax : " + total_tax + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                            String name = "", value = "";
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                    name = cursor.getString(0);
+                                                    value = cursor.getString(1);
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                                } while (cursor.moveToNext());
+                                            }
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        String net_amount;
+                                        net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                        String strCurrency;
+                                        if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                            strCurrency = "";
+                                        } else {
+                                            strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText( "Net Amt : " + net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String tender;
+                                        tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Tender  : " + tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String change_amount;
+                                        change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Change  : " + change_amount+ "\n", "ST", 24, callbackPPT8555);
+                                      *//**//*  mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }*//**//*
+
+                                        if (false) {
+                                            if (ck_project_type.equals("standalone")) {
+                                                JSONObject jsonObject = new JSONObject();
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    Double showAmount = 0d;
+//
+                                                    try {
+                                                        String strCreditAmt = "", strDeditAmount = "";
+                                                        Double creditAmount = 0d,
+                                                                debitAmount = 0d;
+                                                        Cursor cursor = null;
+
+                                                        String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                        cursor = database.rawQuery(strQry1, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strCreditAmt = cursor.getString(0);
+
+                                                        }
+                                                        creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                        String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                        cursor = database.rawQuery(strQry2, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strDeditAmount = cursor.getString(0);
+
+                                                        }
+                                                        debitAmount = Double.parseDouble(strDeditAmount);
+                                                        showAmount = debitAmount + creditAmount;
+                                                    } catch (Exception ex) {
+                                                    }
+                                                    double abs1 = Math.abs(showAmount);
+                                                    if (showAmount > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"DR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    }
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = cursor1.getString(0);
+
+                                                        }
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                                }
+                                            } else {
+
+                                                JSONObject jsonObject = new JSONObject();
+
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    String curAmount = "";
+                                                    try {
+                                                        strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+                                                        if (cursor1.moveToFirst()) {
+                                                            do {
+                                                                curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                            } while (cursor1.moveToNext());
+                                                        }
+                                                    } catch (Exception ex) {
+                                                        curAmount = "0";
+                                                    }
+                                                    double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                    double abs1 = Math.abs(ab);
+                                                    if (ab > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR", "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {}
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        }
+
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+                                                    if (strCur.equals("")) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+
+                                                    Double strBalance = ab + Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        if (!settings.get_Footer_Text().equals("")) {
+                                            mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        bitmapRecycle(bitmap);
+                                        mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                    }
+                                    Globals.strContact_Code = "";
+                                    Globals.strResvContact_Code = "";
+                                    Globals.DiscountPer = "";
+                                    Globals.strOldCrAmt = "0";
+                                    Globals.setEmpty();
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+
+                            }
+                        });
+                    }
+                }else if (settings.get_Print_Lang().equals("1")){
+                    if (settings.get_Print_Memo().equals("1")) {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                    String Print_type = "0";
+
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("Order : " + orders.get_order_code() + "\n", "ST", 24,1, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                    if (orders.get_table_code().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText("Table : "+orders.get_table_code(),"ST",24, callbackPPT8555);
+                                    }
+
+                                    ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                    if (order_detail.size() > 0) {
+                                        Double total = 0d;
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total","ST",24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        for (int i = 0; i < order_detail.size(); i++) {
+                                            total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                            Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8)+"X"+order_detail.get(i).get_quantity()+"     "+Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check),"ST",24, callbackPPT8555);
+
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Amount : "+Globals.myNumberFormat2Price(total, decimal_check),"ST",24, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else {
+                        // For Both
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String strPOSNo = "Device ID/لحم." + " ";
+                                        String strGSTNo = Globals.GSTLbl + " ";
+                                        String strOrderNum = "Invoice Number/رقم الطلب" + "  ";
+                                        String strOrderDate = "Invoice Date/تاريخ الطلب" + "  ";
+                                        String strCashier = "Salesperson/أمين الصندوق" + " ";
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                        if (bitmap != null) {
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                            bitmap = getResizedBitmap(bitmap, 80, 120);
+                                            mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24, 1,callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24,1, callbackPPT8555);
+
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24,1, callbackPPT8555);
+
+                                                mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } catch (Exception ex) {}
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.printSpecifiedTypeText(strGSTNo,"ST",24,callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        ArrayList<String> arrayList = new ArrayList<String>();
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (order_payment_array.size() > 0) {
+
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                arrayList.add(order_payment_array.get(i).get_payment_id());
+                                            }
+
+                                            if (arrayList.contains("1") && arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                if (arrayList.contains("5")) {
+
+                                                    mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                                } else if (arrayList.contains("1")) {
+
+                                                    mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (Globals.strIsBarcodePrint.equals("true")) {
+                                            mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID+" : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                        user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (Globals.ModeResrv.equals("Resv")) {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } else {
+                                            if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                            } else {
+                                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                                mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                                if (contact.get_gstin().length() > 0) {
+                                                    //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        int count = 0;
+                                        Double itemFinalTax = 0d;
+                                        while (count < order_detail.size()) {
+
+                                            String strItemCode = order_detail.get(count).get_item_code();
+// need to update code here if it sav in arabic
+
+
+                                                String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                        + strItemCode + "'  GROUP By order_detail.item_Code");
+
+
+
+
+                                            String sale_price;
+                                            Double dDisAfterSalePrice = 0d;
+                                            Double dDisAfter = 0d;
+                                            dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                            dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                            sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                            String line_total;
+                                            line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                            Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                            String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                            mIPosPrinterService.printSpecifiedTypeText(line_total+ "         "+sale_price+"      "+ Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            String discnt = "";
+                                            String disLbl = "";
+                                            if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                            } else {
+                                                if (Globals.strIsDiscountPrint.equals("true")) {
+                                                    Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                    discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                    disLbl = "Dis :";
+                                                }
+                                                mIPosPrinterService.printSpecifiedTypeText(disLbl+" : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                            }
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                            if (settings.get_HSN_print().equals("true")) {
+                                                item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                                Tax_Master tax_master = null;
+                                                ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                                for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                    tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                    double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                    itemFinalTax += valueFinal;
+                                                    mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name()+" :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            count++;
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("مجموع البند:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("البند الكمية:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String subtotal = "";
+                                        String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                        Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                        Tax_Master tax_master;
+                                        while (cursor1.moveToNext()) {
+                                            subtotal = cursor1.getString(0);
+                                        }
+
+                                        subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("المجموع الفرعي:", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                            strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                    "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                    "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                            cursor1 = database.rawQuery(strTableQry, null);
+
+                                            while (cursor1.moveToNext()) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText( tax_master.get_tax_name()+" : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        String discount = "0";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                        } else {
+                                            discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                mIPosPrinterService.printSpecifiedTypeText( "خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText( discount + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                        String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "مجموع:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                        String total_tax;
+                                        total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                        if (Double.parseDouble(total_tax) > 0d) {
+                                            mIPosPrinterService.printSpecifiedTypeText( "مجموع الضريبة:\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText( total_tax + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                            String name = "", value = "";
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                    name = cursor.getString(0);
+                                                    value = cursor.getString(1);
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 32, callbackPPT8555);
+                                                } while (cursor.moveToNext());
+                                            }
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        String net_amount;
+                                        net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                        String strCurrency;
+                                        if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                            strCurrency = "";
+                                        } else {
+                                            strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText( "ليس مكتب:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String tender;
+                                        tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "مناقصة:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String change_amount;
+                                        change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "يتغيرون:\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.printSpecifiedTypeText( change_amount+ "\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                         order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
@@ -2380,7 +7282,489 @@ public class PrintLayout extends PrnDspA1088Activity {
                                             mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
                                             mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         }
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        bitmapRecycle(bitmap);
+                                        mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                    }
+                                    Globals.strContact_Code = "";
+                                    Globals.strResvContact_Code = "";
+                                    Globals.DiscountPer = "";
+                                    Globals.strOldCrAmt = "0";
+                                    Globals.setEmpty();
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    }
+                }else {
+                    if (settings.get_Print_Memo().equals("1")) {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    Orders orders = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                                    String Print_type = "0";
 
+                                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("Order : " + orders.get_order_code() + "\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                    if (orders.get_table_code().equals("")) {
+                                    } else {
+                                        mIPosPrinterService.printSpecifiedTypeText("Table : "+orders.get_table_code(),"ST",24, callbackPPT8555);
+                                    }
+
+                                    ArrayList<Order_Detail> order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                                    if (order_detail.size() > 0) {
+                                        Double total = 0d;
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Name         Qty   Price  Total","ST",24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        for (int i = 0; i < order_detail.size(); i++) {
+                                            total = total + Double.parseDouble(order_detail.get(i).get_line_total());
+                                            Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail.get(i).get_item_code() + "'", database, db);
+                                            mIPosPrinterService.printSpecifiedTypeText(item.get_item_name().substring(0, 8)+"X"+order_detail.get(i).get_quantity()+"     "+Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(i).get_sale_price()), decimal_check),"ST",24, callbackPPT8555);
+
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Amount : "+Globals.myNumberFormat2Price(total, decimal_check),"ST",24, callbackPPT8555);
+                                    }
+
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printSpecifiedTypeText("\n", "ST", 24, callbackPPT8555);
+                                    mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String strPOSNo = "Device ID/لحم." + " ";
+                                        String strGSTNo = Globals.GSTLbl + " ";
+                                        String strOrderNum = "Invoice Number/رقم الطلب" + "  ";
+                                        String strOrderDate = "Invoice Date/تاريخ الطلب" + "  ";
+                                        String strCashier = "Salesperson/أمين الصندوق" + " ";
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        Bitmap bitmap = StringToBitMap(settings.get_Logo());
+                                        if (bitmap != null) {
+                                            ByteArrayOutputStream stream = new ByteArrayOutputStream();
+                                            bitmap.compress(Bitmap.CompressFormat.PNG, 50, stream);
+                                            bitmap = getResizedBitmap(bitmap, 80, 120);
+                                            mIPosPrinterService.printBitmap(1, 12, bitmap, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "ST", 24,1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "ST", 24, 1,callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1,callbackPPT8555);
+
+                                               // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } catch (Exception ex) {}
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            mIPosPrinterService.printSpecifiedTypeText(strGSTNo,"ST",24,callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.PrintOrder + "\n", "ST", 24, 1,callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                        ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        ArrayList<String> arrayList = new ArrayList<String>();
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (order_payment_array.size() > 0) {
+
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                arrayList.add(order_payment_array.get(i).get_payment_id());
+                                            }
+
+                                            if (arrayList.contains("1") && arrayList.contains("5")) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                            } else {
+                                                if (arrayList.contains("5")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Credit/Cash\n", "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: الائتمان / النقدية\n", "ST", 24, callbackPPT8555);
+                                                } else if (arrayList.contains("1")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Invoice Type: Cash\n", "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("نوع الفاتورة: النقدية\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        if (Globals.strIsBarcodePrint.equals("true")) {
+                                            mIPosPrinterService.printBarCode(strOrderNo, 8, 60, 120, 0, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderNum + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderNo + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(strOrderDate + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(DateUtill.PaternDate1(orders.get_order_date()) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.PrintDeviceID+" : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
+                                        user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        mIPosPrinterService.printSpecifiedTypeText(strCashier + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                        if (Globals.ModeResrv.equals("Resv")) {
+                                            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                            if (contact.get_gstin().length() > 0) {
+                                                //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        } else {
+                                            if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
+
+                                            } else {
+                                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                                mIPosPrinterService.printSpecifiedTypeText("Customer/زبون\n" + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText(contact.get_name() + "\n", "ST", 24, callbackPPT8555);
+                                                if (contact.get_gstin().length() > 0) {
+                                                    //mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Item Name\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("اسم العنصر\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total       Price        Qty\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("الكمية       السعر       مجموع", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        int count = 0;
+                                        Double itemFinalTax = 0d;
+                                        while (count < order_detail.size()) {
+
+                                            String strItemCode = order_detail.get(count).get_item_code();
+
+                                            String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+                                            String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                                    + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                            String sale_price;
+                                            Double dDisAfterSalePrice = 0d;
+                                            Double dDisAfter = 0d;
+                                            dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                            dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                            sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                            String line_total;
+                                            line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
+
+                                            Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
+                                            String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
+
+                                            mIPosPrinterService.printSpecifiedTypeText(line_total+ "         "+sale_price+"      "+ Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            String discnt = "";
+                                            String disLbl = "";
+                                            if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                            } else {
+                                                if (Globals.strIsDiscountPrint.equals("true")) {
+                                                    Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                                    discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                                    disLbl = "Dis :";
+                                                }
+                                                mIPosPrinterService.printSpecifiedTypeText(disLbl+" : " + discnt + "\n", "ST", 24, callbackPPT8555);
+                                            }
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                            if (settings.get_HSN_print().equals("true")) {
+                                                item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText("HSN Code :" + item.get_hsn_sac_code() + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                                Tax_Master tax_master = null;
+                                                ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                                for (int i = 0; i < order_detail_tax.size(); i++) {
+                                                    tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                                    double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                                    itemFinalTax += valueFinal;
+                                                    mIPosPrinterService.printSpecifiedTypeText(tax_master.get_tax_name()+" :" + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            count++;
+                                        }
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Total Item/مجموع البند:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(orders.get_total_item() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("Item Quantity/البند الكمية:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                        String subtotal = "";
+                                        String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                        Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                        Tax_Master tax_master;
+                                        while (cursor1.moveToNext()) {
+                                            subtotal = cursor1.getString(0);
+                                        }
+
+                                        subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Subtotal/المجموع الفرعي:", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(subtotal + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                            strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                                    "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                                    "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                            cursor1 = database.rawQuery(strTableQry, null);
+
+                                            while (cursor1.moveToNext()) {
+                                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                                mIPosPrinterService.printSpecifiedTypeText( tax_master.get_tax_name()+" : " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+
+                                        String discount = "0";
+                                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                        } else {
+                                            discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                                mIPosPrinterService.printSpecifiedTypeText( "Discount/خصم" + Globals.DiscountPer + "%" + "\n", "ST", 24, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText( discount + "\n", "ST", 24, callbackPPT8555);
+                                            }
+                                        }
+                                        String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                        String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Total/مجموع:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( tatalAftrDis + "\n", "ST", 24, callbackPPT8555);
+                                        String total_tax;
+                                        total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                        if (Double.parseDouble(total_tax) > 0d) {
+                                            mIPosPrinterService.printSpecifiedTypeText( "Total Tax/مجموع الضريبة:\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText( total_tax + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                            String name = "", value = "";
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                    name = cursor.getString(0);
+                                                    value = cursor.getString(1);
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+                                                } while (cursor.moveToNext());
+                                            }
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        String net_amount;
+                                        net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                        String strCurrency;
+                                        if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                            strCurrency = "";
+                                        } else {
+                                            strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText( "Net Amt/ليس مكتب:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( net_amount + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String tender;
+                                        tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Tender/مناقصة:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( tender + "" + strCurrency + "\n", "ST", 24, callbackPPT8555);
+                                        String change_amount;
+                                        change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                        mIPosPrinterService.printSpecifiedTypeText( "Change/يتغيرون:\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText( change_amount+ "\n", "ST", 24, callbackPPT8555);
+                                   *//**//*     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                        if (order_payment_array.size() > 0) {
+                                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                                String name = "";
+                                                if (payment != null) {
+                                                    name = payment.get_payment_name();
+                                                    mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)+ "\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        }
+*//**//*
+                                        if (settings.get_Is_Accounts().equals("true")) {
+                                            if (ck_project_type.equals("standalone")) {
+                                                JSONObject jsonObject = new JSONObject();
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    Double showAmount = 0d;
+//
+                                                    try {
+                                                        String strCreditAmt = "", strDeditAmount = "";
+                                                        Double creditAmount = 0d,
+                                                                debitAmount = 0d;
+                                                        Cursor cursor = null;
+
+                                                        String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                        cursor = database.rawQuery(strQry1, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strCreditAmt = cursor.getString(0);
+
+                                                        }
+                                                        creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                        String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                        cursor = database.rawQuery(strQry2, null);
+                                                        while (cursor.moveToNext()) {
+                                                            strDeditAmount = cursor.getString(0);
+
+                                                        }
+                                                        debitAmount = Double.parseDouble(strDeditAmount);
+                                                        showAmount = debitAmount + creditAmount;
+                                                    } catch (Exception ex) {
+                                                    }
+                                                    double abs1 = Math.abs(showAmount);
+                                                    if (showAmount > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"DR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    }
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = cursor1.getString(0);
+
+                                                        }
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+Globals.myNumberFormat2Price(Double.parseDouble(strCur), decimal_check), "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    Double strBalance = abs1 - Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                                }
+                                            } else {
+
+                                                JSONObject jsonObject = new JSONObject();
+
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    mIPosPrinterService.printSpecifiedTypeText( "**", "ST", 24, callbackPPT8555);
+                                                } else {
+                                                    String curAmount = "";
+                                                    try {
+                                                        strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+                                                        if (cursor1.moveToFirst()) {
+                                                            do {
+                                                                curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                            } while (cursor1.moveToNext());
+                                                        }
+                                                    } catch (Exception ex) {
+                                                        curAmount = "0";
+                                                    }
+                                                    double ab = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                                    double abs1 = Math.abs(ab);
+                                                    if (ab > 0) {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+"CR", "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Old Amt :"+Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR", "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Old Amt", abs1 + "");
+                                                    } catch (Exception ex) {}
+                                                    String strCur = "";
+
+                                                    try {
+                                                        strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                        cursor1 = database.rawQuery(strTableQry, null);
+
+                                                        while (cursor1.moveToNext()) {
+                                                            strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                                        }
+
+                                                    } catch (Exception ex) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+                                                    if (strCur.equals("")) {
+                                                        strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    } else {
+                                                        mIPosPrinterService.printSpecifiedTypeText( "Current Amt :"+strCur, "ST", 24, callbackPPT8555);
+                                                    }
+
+                                                    try {
+                                                        jsonObject.put("Current Amt", strCur + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+
+                                                    Double strBalance = ab + Double.parseDouble(strCur);
+                                                    try {
+                                                        jsonObject.put("Balance Amt", strBalance + "");
+                                                    } catch (Exception ex) {
+
+                                                    }
+                                                    String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                                    db.executeDML(strUpdatePayment, database);
+
+                                                    mIPosPrinterService.printSpecifiedTypeText( "Balance Amt :"+Globals.myNumberFormat2Price(strBalance, decimal_check), "ST", 24, callbackPPT8555);
+                                                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                                }
+                                            }
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        if (!settings.get_Footer_Text().equals("")) {
+                                            mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
@@ -2427,15 +7811,21 @@ public class PrintLayout extends PrnDspA1088Activity {
                                 try {
                                     if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
                                     } else {
-                                        mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, 1,callbackPPT8555);
+
+                                       // mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "ST", 24, callbackPPT8555);
                                     }
                                 } catch (Exception ex) {}
                                 if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
                                 } else {
                                     mIPosPrinterService.printSpecifiedTypeText(Globals.GSTNo+":"+ Globals.objLPR.getLicense_No(),"ST",24,callbackPPT8555);
                                 }
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                 mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.PrintSpecFormatText(Globals.PrintOrder + "\n", "ST", 24, 1,callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                              //  mIPosPrinterService.printSpecifiedTypeText(Globals.PrintOrder + "\n", "ST", 24, callbackPPT8555);
                                 ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                 ArrayList<String> arrayList = new ArrayList<String>();
                                 mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
@@ -2477,7 +7867,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                     if (Globals.strContact_Code.equals("") || Globals.strContact_Code.equals("0")) {
 
                                     } else {
-                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
                                         mIPosPrinterService.printSpecifiedTypeText("Customer : " + contact.get_name() + "\n", "ST", 24, callbackPPT8555);
                                         if (contact.get_gstin().length() > 0) {
                                             mIPosPrinterService.printSpecifiedTypeText("Customer GST No. : " + contact.get_gstin() + "\n", "ST", 24, callbackPPT8555);
@@ -2496,10 +7886,6 @@ public class PrintLayout extends PrnDspA1088Activity {
                                 while (count < order_detail.size()) {
 
                                     String strItemCode = order_detail.get(count).get_item_code();
-
-                                    String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
-                                            + strItemCode + "'  GROUP By order_detail.item_Code");
-
                                     String sale_price;
                                     Double dDisAfterSalePrice = 0d;
                                     Double dDisAfter = 0d;
@@ -2509,7 +7895,32 @@ public class PrintLayout extends PrnDspA1088Activity {
 
                                     String line_total;
                                     line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
-                                    mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                   if(settings.get_Print_Lang().equals("0")) {
+                                       String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+                                   }
+                                   else if(settings.get_Print_Lang().equals("1")){
+                                       String strItemName = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+
+
+                                   }
+
+                                   else{
+                                       String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                                       String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                                               + strItemCode + "'  GROUP By order_detail.item_Code");
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName + "\n", "ST", 24, callbackPPT8555);
+                                       mIPosPrinterService.printSpecifiedTypeText(strItemName_l + "\n", "ST", 24, callbackPPT8555);
+
+                                   }
 
                                     Double disTemp = Double.parseDouble(order_detail.get(count).get_sale_price());
                                     String discntTemp = Globals.myNumberFormat2Price(disTemp, decimal_check);
@@ -2600,7 +8011,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         do {
                                             name = cursor.getString(0);
                                             value = cursor.getString(1);
-                                            mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 32, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText( name+" : " + Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check) + "\n", "ST", 24, callbackPPT8555);
                                         } while (cursor.moveToNext());
                                     }
                                 }
@@ -2620,7 +8031,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                 String change_amount;
                                 change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
                                 mIPosPrinterService.printSpecifiedTypeText( "Change : " + change_amount+ "\n", "ST", 24, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                             *//**//*   mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                                 order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
                                 if (order_payment_array.size() > 0) {
                                     for (int i = 0; i < order_payment_array.size(); i++) {
@@ -2632,7 +8043,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                         }
                                     }
                                     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-                                }
+                                }*//**//*
 
                                 if (settings.get_Is_Accounts().equals("true")) {
                                     if (ck_project_type.equals("standalone")) {
@@ -2791,7 +8202,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                                     mIPosPrinterService.printSpecifiedTypeText(settings.get_Footer_Text(), "ST", 24, callbackPPT8555);
                                     mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                 }
-
+                                mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                 mIPosPrinterService.printSpecifiedTypeText("" + settings.get_Copy_Right() + "\n", "ST", 24, callbackPPT8555);
                                 mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
                                 mIPosPrinterService.printBlankLines(1, 1, callbackPPT8555);
@@ -2809,8 +8220,8 @@ public class PrintLayout extends PrnDspA1088Activity {
                         }
                     }
                 });
-            }
-        }
+            }*//*
+        }*/
     }
 
     private String bluetooth_100(Orders orders, ArrayList<Order_Detail> order_detail) {
@@ -3378,7 +8789,912 @@ public class PrintLayout extends PrnDspA1088Activity {
         cmd[0] = 0x1b;
         cmd[1] = 0x21;
 
-        if (opr.equals("PayCollection")) {
+        if (decimal_check.equals("2")) {
+            if (settings.get_Print_Lang().equals("0")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    try {
+                        byte[] ab;
+                        Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                        String Print_type = "0";
+
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
+                        mService.sendMessage("Order : " + ordersobj.get_order_code() + "\n", "GBK");
+
+                        if (ordersobj.get_table_code().equals("")) {
+                        } else {
+                            mService.sendMessage("Table : " + ordersobj.get_table_code(), "GBK");
+                        }
+
+                        ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                        if (order_detail_obj.size() > 0) {
+                            Double total = 0d;
+
+                            mService.sendMessage("Name         Qty   Price  Total", "GBK");
+                            mService.sendMessage("-------------------------------------------\n", "GBK");
+
+                            for (int i = 0; i < order_detail_obj.size(); i++) {
+                                total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                                Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                                mService.sendMessage(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check), "GBK");
+
+                            }
+                            mService.sendMessage("-------------------------------------------\n", "GBK");
+                            mService.sendMessage("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "GBK");
+                        }
+
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        byte[] ab;
+                        if (mService.isAvailable() == false) {
+                        } else {
+                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                //printImage();
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+
+                                try {
+                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    } else {
+                                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                        ab = BytesUtil.setAlignCenter(0);
+                                        mService.write(ab);
+                                    }
+                                } catch (Exception ex) {
+                                }
+
+
+                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                } else {
+                                    mService.sendMessage(Globals.GSTNo + " : " + Globals.objLPR.getLicense_No(), "GBK");
+                                    ab = BytesUtil.setAlignCenter(1);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("-----------------------------------------", "GBK");
+                                mService.sendMessage(Globals.PrintOrder, "GBK");
+                                mService.sendMessage("-----------------------------------------", "GBK");
+
+                                if (Globals.strIsBarcodePrint.equals("null") || Globals.strIsBarcodePrint.equals("")) {
+
+                                } else {
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        byte[] sendData;
+                                        sendData = BytesUtil.getPrintQRCode(strOrderNo, 1, 0);
+                                        mService.write(sendData);
+                                    }
+                                    ab = BytesUtil.setAlignCenter(0);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(0);
+                                mService.write(ab);
+                                ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                ArrayList<String> arrayList = new ArrayList<String>();
+
+                                if (order_payment_array.size() > 0) {
+
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        arrayList.add(order_payment_array.get(i).get_payment_id());
+                                    }
+                                    if (arrayList.contains("1") && arrayList.contains("5")) {
+                                        mService.sendMessage("Invoice Type: Credit/Cash", "GBK");
+                                    } else {
+                                        if (arrayList.contains("5")) {
+                                            mService.sendMessage("Invoice Type: Credit", "GBK");
+
+                                        } else if (arrayList.contains("1")) {
+                                            mService.sendMessage("Invoice Type: Cash", "GBK");
+                                        }
+                                    }
+                                }
+                                mService.sendMessage(Globals.PrintInvNo + ":" + strOrderNo, "GBK");
+                                mService.sendMessage(Globals.PrintInvDate + ":" + DateUtill.PaternDate1(orders.get_order_date()), "GBK");
+                                mService.sendMessage(Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name(), "GBK");
+                                user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                mService.sendMessage(Globals.PrintCashier + ":" + user.get_name(), "GBK");
+
+                                if (Globals.ModeResrv.equals("Resv")) {
+                                    Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                    mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                    if (contact.get_gstin().length() > 0) {
+                                        mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                    }
+                                } else {
+                                    if (Globals.strContact_Code.equals("")) {
+                                    } else {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                        mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                        if (contact.get_gstin().length() > 0) {
+                                            mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                        }
+                                    }
+                                }
+
+                                mService.sendMessage("............................................", "GBK");
+                                mService.sendMessage("Item Name", "GBK");
+                                mService.sendMessage("Qty        Price      Total", "GBK");
+                                mService.sendMessage("............................................", "GBK");
+
+                                int count = 0;
+                                Double itemFinalTax = 0d;
+                                while (count < order_detail.size()) {
+
+                                    String strItemCode = order_detail.get(count).get_item_code();
+                                    String strItemName = Order_Detail.getItemName(getApplicationContext(), "WHERE order_detail.item_Code  = '"
+                                            + strItemCode + "'  GROUP By order_detail.item_code");
+                                    String sale_price;
+                                    Double dDisAfterSalePrice = 0d;
+//                                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+//                                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfterSalePrice + ""), decimal_check);
+
+                                    Double dDisAfter = 0d;
+                                    dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                    dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                    sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                    String line_total;
+                                    line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                    mService.sendMessage("" + strItemName, "GBK");
+                                    mService.sendMessage("" + order_detail.get(count).get_quantity() + "  " + sale_price + "  " + line_total, "GBK");
+
+                                    String discnt = "";
+                                    String disLbl = "";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                    } else {
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                            discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                            disLbl = "Dis :";
+                                        }
+                                        mService.sendMessage("" + disLbl + " " + discnt, "GBK");
+                                    }
+
+                                    if (settings.get_HSN_print().equals("true")) {
+                                        item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                        mService.sendMessage("HSN Code :" + item.get_hsn_sac_code() + "", "GBK");
+                                    }
+
+                                    if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                        Tax_Master tax_master = null;
+                                        ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                        for (int i = 0; i < order_detail_tax.size(); i++) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                            double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                            itemFinalTax += valueFinal;
+                                            //woyouService.printColumnsText(new String[]{tax_master.get_tax_name(), Globals.myNumberFormat2Price(valueFinal, decimal_check)}, new int[]{15, 6}, new int[]{0, 0}, callback);
+                                            mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "", "GBK");
+                                        }
+                                    }
+                                    count++;
+                                }
+
+                                mService.sendMessage("............................................", "GBK");
+                                mService.sendMessage("Total Item     : " + orders.get_total_item(), "GBK");
+                                mService.sendMessage("Item Quantity  : " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check), "GBK");
+                                String subtotal = "";
+                                String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                Tax_Master tax_master = null;
+                                while (cursor1.moveToNext()) {
+                                    subtotal = cursor1.getString(0);
+                                }
+                                subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                mService.sendMessage("Subtotal  : " + subtotal, "GBK");
+                                mService.sendMessage("............................................", "GBK");
+                                if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                    strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                            "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                            "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                    while (cursor1.moveToNext()) {
+                                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                        mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "", "GBK");
+                                    }
+                                    mService.sendMessage("............................................", "GBK");
+                                }
+
+                                String discount = "0";
+                                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                } else {
+                                    discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                    if (Globals.strIsDiscountPrint.equals("true")) {
+                                        mService.sendMessage("Discount  : " + Globals.DiscountPer + "%", "GBK");
+                                        mService.sendMessage("Discount  :" + discount, "GBK");
+                                    }
+                                }
+                                String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                mService.sendMessage("Total  :" + tatalAftrDis, "GBK");
+
+                                String total_tax;
+                                total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                if (Double.parseDouble(total_tax) > 0d) {
+                                    mService.sendMessage("Total Tax  :" + total_tax, "GBK");
+                                    mService.sendMessage("....................................", "GBK");
+                                    Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                    String name = "", value = "";
+                                    if (cursor.moveToFirst()) {
+                                        do {
+                                            name = cursor.getString(0);
+                                            value = cursor.getString(1);
+                                            mService.sendMessage(name + ":" + total_tax, "GBK");
+                                        } while (cursor.moveToNext());
+                                    }
+                                }
+                                mService.sendMessage("........................................", "GBK");
+
+                                String net_amount;
+                                net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                String strCurrency;
+                                if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                    strCurrency = "";
+                                } else {
+                                    strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                }
+                                mService.sendMessage("Net Amt    :" + net_amount + "" + strCurrency, "GBK");
+                                String tender;
+                                tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                mService.sendMessage("Tender     :" + tender, "GBK");
+                                String change_amount;
+                                change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                mService.sendMessage("Change     :" + change_amount, "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                mService.sendMessage("............................................", "GBK");
+                   /*     order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                        if (order_payment_array.size() > 0) {
+                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                String name = "";
+                                if (payment != null) {
+                                    name = payment.get_payment_name();
+                                    mService.sendMessage(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "" + "\n", "GBK");
+//                                    woyouService.printColumnsText(new String[]{name, ":", Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)}, new int[]{9, 1, 20}, new int[]{0, 0, 0}, callback);
+                                }
+                            }
+                            mService.sendMessage("................................", "GBK");
+                        }*/
+                                if (settings.get_Is_Accounts().equals("true")) {
+                                    if (ck_project_type.equals("standalone")) {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            Double showAmount = 0d;
+//                                    String curAmount = "";
+                                            try {
+                                                String strCreditAmt = "", strDeditAmount = "";
+                                                Double creditAmount = 0d,
+                                                        debitAmount = 0d;
+                                                Cursor cursor = null;
+
+                                                String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                cursor = database.rawQuery(strQry1, null);
+                                                while (cursor.moveToNext()) {
+                                                    strCreditAmt = cursor.getString(0);
+
+                                                }
+                                                creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                cursor = database.rawQuery(strQry2, null);
+                                                while (cursor.moveToNext()) {
+                                                    strDeditAmount = cursor.getString(0);
+                                                }
+                                                debitAmount = Double.parseDouble(strDeditAmount);
+                                                showAmount = debitAmount + creditAmount;
+                                            } catch (Exception ex) {
+                                            }
+
+                                            double abs1 = Math.abs(showAmount);
+                                            if (showAmount > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            Double strBalance = abs1 - Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+                                            }
+
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    } else {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            String curAmount = "";
+                                            try {
+                                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+                                                if (cursor1.moveToFirst()) {
+                                                    do {
+                                                        curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    } while (cursor1.moveToNext());
+                                                }
+                                            } catch (Exception ex) {
+                                                curAmount = "0";
+                                            }
+                                            double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                            double abs1 = Math.abs(ab1);
+                                            if (ab1 > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", curAmount + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            Double strBalance = ab1 + Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    }
+                                }
+
+                                if (!settings.get_Footer_Text().equals("")) {
+                                    mService.sendMessage(settings.get_Footer_Text(), "GBK");
+                                }
+                                mService.sendMessage("      " + settings.get_Copy_Right() + "\n\n", "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                byte[] print = {0x1b, 0x0c};
+                                mService.write(print);
+
+                            }
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.DiscountPer = "";
+                            Globals.strOldCrAmt = "0";
+
+                            flag = "1";
+                            Globals.setEmpty();
+                        }
+                    } catch (Exception ex) {
+                        String ab = ex.getMessage();
+                        ab = ab;
+                    }
+                }
+            }
+
+        } else {
+
+            if (settings.get_Print_Lang().equals("0")) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    try {
+                        byte[] ab;
+                        Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                        String Print_type = "0";
+
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
+                        mService.sendMessage("Order : " + ordersobj.get_order_code() + "\n", "GBK");
+
+                        if (ordersobj.get_table_code().equals("")) {
+                        } else {
+                            mService.sendMessage("Table : " + ordersobj.get_table_code(), "GBK");
+                        }
+
+                        ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                        if (order_detail_obj.size() > 0) {
+                            Double total = 0d;
+
+                            mService.sendMessage("Name         Qty   Price  Total", "GBK");
+                            mService.sendMessage("--------------------------------------------\n", "GBK");
+
+                            for (int i = 0; i < order_detail_obj.size(); i++) {
+                                total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                                Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                                mService.sendMessage(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check), "GBK");
+
+                            }
+                            mService.sendMessage("-------------------------------------------\n", "GBK");
+                            mService.sendMessage("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "GBK");
+                        }
+
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        byte[] ab;
+                        if (mService.isAvailable() == false) {
+                        } else {
+                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                //printImage();
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+
+                                try {
+                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    } else {
+                                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                        ab = BytesUtil.setAlignCenter(0);
+                                        mService.write(ab);
+                                    }
+                                } catch (Exception ex) {
+                                }
+
+
+                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                } else {
+                                    mService.sendMessage(Globals.GSTNo + " : " + Globals.objLPR.getLicense_No(), "GBK");
+                                    ab = BytesUtil.setAlignCenter(1);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("-------------------------------------------", "GBK");
+                                mService.sendMessage(Globals.PrintOrder, "GBK");
+                                mService.sendMessage("-------------------------------------------", "GBK");
+
+                                if (Globals.strIsBarcodePrint.equals("null") || Globals.strIsBarcodePrint.equals("")) {
+
+                                } else {
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        byte[] sendData;
+                                        sendData = BytesUtil.getPrintQRCode(strOrderNo, 1, 0);
+                                        mService.write(sendData);
+                                    }
+                                    ab = BytesUtil.setAlignCenter(0);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(0);
+                                mService.write(ab);
+                                ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                ArrayList<String> arrayList = new ArrayList<String>();
+
+                                if (order_payment_array.size() > 0) {
+
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        arrayList.add(order_payment_array.get(i).get_payment_id());
+                                    }
+                                    if (arrayList.contains("1") && arrayList.contains("5")) {
+                                        mService.sendMessage("Invoice Type: Credit/Cash", "GBK");
+                                    } else {
+                                        if (arrayList.contains("5")) {
+                                            mService.sendMessage("Invoice Type: Credit", "GBK");
+
+                                        } else if (arrayList.contains("1")) {
+                                            mService.sendMessage("Invoice Type: Cash", "GBK");
+                                        }
+                                    }
+                                }
+                                mService.sendMessage(Globals.PrintInvNo + ":" + strOrderNo, "GBK");
+                                mService.sendMessage(Globals.PrintInvDate + ":" + DateUtill.PaternDate1(orders.get_order_date()), "GBK");
+                                mService.sendMessage(Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name(), "GBK");
+                                user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                mService.sendMessage(Globals.PrintCashier + ":" + user.get_name(), "GBK");
+
+                                if (Globals.ModeResrv.equals("Resv")) {
+                                    Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                    mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                    if (contact.get_gstin().length() > 0) {
+                                        mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                    }
+                                } else {
+                                    if (Globals.strContact_Code.equals("")) {
+                                    } else {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                        mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                        if (contact.get_gstin().length() > 0) {
+                                            mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                        }
+                                    }
+                                }
+
+                                mService.sendMessage("...............................................", "GBK");
+                                mService.sendMessage("Item Name", "GBK");
+                                mService.sendMessage("Qty        Price      Total", "GBK");
+                                mService.sendMessage("...............................................", "GBK");
+
+                                int count = 0;
+                                Double itemFinalTax = 0d;
+                                while (count < order_detail.size()) {
+
+                                    String strItemCode = order_detail.get(count).get_item_code();
+                                    String strItemName = Order_Detail.getItemName(getApplicationContext(), "WHERE order_detail.item_Code  = '"
+                                            + strItemCode + "'  GROUP By order_detail.item_code");
+                                    String sale_price;
+                                    Double dDisAfterSalePrice = 0d;
+//                                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+//                                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfterSalePrice + ""), decimal_check);
+
+                                    Double dDisAfter = 0d;
+                                    dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                    dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                    sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                    String line_total;
+                                    line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                    mService.sendMessage("" + strItemName, "GBK");
+                                    mService.sendMessage("" + order_detail.get(count).get_quantity() + "  " + sale_price + "  " + line_total, "GBK");
+
+                                    String discnt = "";
+                                    String disLbl = "";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                    } else {
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                            discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                            disLbl = "Dis :";
+                                        }
+                                        mService.sendMessage("" + disLbl + " " + discnt, "GBK");
+                                    }
+
+                                    if (settings.get_HSN_print().equals("true")) {
+                                        item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                        mService.sendMessage("HSN Code :" + item.get_hsn_sac_code() + "", "GBK");
+                                    }
+
+                                    if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                        Tax_Master tax_master = null;
+                                        ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                        for (int i = 0; i < order_detail_tax.size(); i++) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                            double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                            itemFinalTax += valueFinal;
+                                            //woyouService.printColumnsText(new String[]{tax_master.get_tax_name(), Globals.myNumberFormat2Price(valueFinal, decimal_check)}, new int[]{15, 6}, new int[]{0, 0}, callback);
+                                            mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "", "GBK");
+                                        }
+                                    }
+                                    count++;
+                                }
+
+                                mService.sendMessage("...............................................", "GBK");
+                                mService.sendMessage("Total Item  : " + orders.get_total_item(), "GBK");
+                                mService.sendMessage("Item Quantity  : " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check), "GBK");
+                                String subtotal = "";
+                                String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                Tax_Master tax_master = null;
+                                while (cursor1.moveToNext()) {
+                                    subtotal = cursor1.getString(0);
+                                }
+                                subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                mService.sendMessage("Subtotal  : " + subtotal, "GBK");
+                                mService.sendMessage("...............................................", "GBK");
+                                if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                    strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                            "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                            "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                    while (cursor1.moveToNext()) {
+                                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                        mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "", "GBK");
+                                    }
+                                    mService.sendMessage("...............................................", "GBK");
+                                }
+
+                                String discount = "0";
+                                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                } else {
+                                    discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                    if (Globals.strIsDiscountPrint.equals("true")) {
+                                        mService.sendMessage("Discount  : " + Globals.DiscountPer + "%", "GBK");
+                                        mService.sendMessage("Discount  :" + discount, "GBK");
+                                    }
+                                }
+                                String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                mService.sendMessage("Total  :" + tatalAftrDis, "GBK");
+
+                                String total_tax;
+                                total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                if (Double.parseDouble(total_tax) > 0d) {
+                                    mService.sendMessage("Total Tax  :" + total_tax, "GBK");
+                                    mService.sendMessage("...............................................", "GBK");
+                                    Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                    String name = "", value = "";
+                                    if (cursor.moveToFirst()) {
+                                        do {
+                                            name = cursor.getString(0);
+                                            value = cursor.getString(1);
+                                            mService.sendMessage(name + ":" + total_tax, "GBK");
+                                        } while (cursor.moveToNext());
+                                    }
+                                }
+                                mService.sendMessage("...............................................", "GBK");
+
+                                String net_amount;
+                                net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                String strCurrency;
+                                if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                    strCurrency = "";
+                                } else {
+                                    strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                }
+                                mService.sendMessage("Net Amt  :" + net_amount + "" + strCurrency, "GBK");
+                                String tender;
+                                tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                mService.sendMessage("Tender  :" + tender, "GBK");
+                                String change_amount;
+                                change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                mService.sendMessage("Change  :" + change_amount, "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                mService.sendMessage("...............................................", "GBK");
+                        order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                     /*   if (order_payment_array.size() > 0) {
+                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                String name = "";
+                                if (payment != null) {
+                                    name = payment.get_payment_name();
+                                    mService.sendMessage(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "" + "\n", "GBK");
+//                                    woyouService.printColumnsText(new String[]{name, ":", Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)}, new int[]{9, 1, 20}, new int[]{0, 0, 0}, callback);
+                                }
+                            }
+                            mService.sendMessage("................................", "GBK");
+                        }*/
+                                if (settings.get_Is_Accounts().equals("true")) {
+                                    if (ck_project_type.equals("standalone")) {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            Double showAmount = 0d;
+//                                    String curAmount = "";
+                                            try {
+                                                String strCreditAmt = "", strDeditAmount = "";
+                                                Double creditAmount = 0d,
+                                                        debitAmount = 0d;
+                                                Cursor cursor = null;
+
+                                                String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                cursor = database.rawQuery(strQry1, null);
+                                                while (cursor.moveToNext()) {
+                                                    strCreditAmt = cursor.getString(0);
+
+                                                }
+                                                creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                cursor = database.rawQuery(strQry2, null);
+                                                while (cursor.moveToNext()) {
+                                                    strDeditAmount = cursor.getString(0);
+                                                }
+                                                debitAmount = Double.parseDouble(strDeditAmount);
+                                                showAmount = debitAmount + creditAmount;
+                                            } catch (Exception ex) {
+                                            }
+
+                                            double abs1 = Math.abs(showAmount);
+                                            if (showAmount > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            Double strBalance = abs1 - Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+                                            }
+
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+
+                                            mService.sendMessage("...............................", "GBK");
+                                        }
+                                    } else {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            String curAmount = "";
+                                            try {
+                                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+                                                if (cursor1.moveToFirst()) {
+                                                    do {
+                                                        curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    } while (cursor1.moveToNext());
+                                                }
+                                            } catch (Exception ex) {
+                                                curAmount = "0";
+                                            }
+                                            double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                            double abs1 = Math.abs(ab1);
+                                            if (ab1 > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", curAmount + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            Double strBalance = ab1 + Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    }
+                                }
+
+                                if (!settings.get_Footer_Text().equals("")) {
+                                    mService.sendMessage(settings.get_Footer_Text(), "GBK");
+                                }
+                                mService.sendMessage("      " + settings.get_Copy_Right() + "\n\n", "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                byte[] print = {0x1b, 0x0c};
+                                mService.write(print);
+
+                            }
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.DiscountPer = "";
+                            Globals.strOldCrAmt = "0";
+
+                            flag = "1";
+                            Globals.setEmpty();
+                        }
+                    } catch (Exception ex) {
+                        String ab = ex.getMessage();
+                        ab = ab;
+                    }
+                }
+            }
+
+        }
+
+       /* if (opr.equals("PayCollection")) {
 
             if (mService.isAvailable() == false) {
 
@@ -3931,7 +10247,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                     String ab = ex.getMessage();
                 }
             }
-        }
+        }*/
         return flag;
     }
 
@@ -4630,8 +10946,911 @@ public class PrintLayout extends PrnDspA1088Activity {
         final byte[] cmd = new byte[3];
         cmd[0] = 0x1b;
         cmd[1] = 0x21;
+        if (decimal_check.equals("2")) {
+            if ((lang.compareTo("en")) == 0) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    try {
+                        byte[] ab;
+                        Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                        String Print_type = "0";
 
-        if (opr.equals("PayCollection")) {
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
+                        mService.sendMessage("Order : " + ordersobj.get_order_code() + "\n", "GBK");
+
+                        if (ordersobj.get_table_code().equals("")) {
+                        } else {
+                            mService.sendMessage("Table : " + ordersobj.get_table_code(), "GBK");
+                        }
+
+                        ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                        if (order_detail_obj.size() > 0) {
+                            Double total = 0d;
+
+                            mService.sendMessage("Name         Qty   Price  Total", "GBK");
+                            mService.sendMessage("--------------------------------\n", "GBK");
+
+                            for (int i = 0; i < order_detail_obj.size(); i++) {
+                                total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                                Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                                mService.sendMessage(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check), "GBK");
+
+                            }
+                            mService.sendMessage("--------------------------------\n", "GBK");
+                            mService.sendMessage("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "GBK");
+                        }
+
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        byte[] ab;
+                        if (mService.isAvailable() == false) {
+                        } else {
+                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                //printImage();
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+
+                                try {
+                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    } else {
+                                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                        ab = BytesUtil.setAlignCenter(0);
+                                        mService.write(ab);
+                                    }
+                                } catch (Exception ex) {
+                                }
+
+
+                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                } else {
+                                    mService.sendMessage(Globals.GSTNo + " : " + Globals.objLPR.getLicense_No(), "GBK");
+                                    ab = BytesUtil.setAlignCenter(1);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("--------------------------------", "GBK");
+                                mService.sendMessage(Globals.PrintOrder, "GBK");
+                                mService.sendMessage("--------------------------------", "GBK");
+
+                                if (Globals.strIsBarcodePrint.equals("null") || Globals.strIsBarcodePrint.equals("")) {
+
+                                } else {
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        byte[] sendData;
+                                        sendData = BytesUtil.getPrintQRCode(strOrderNo, 1, 0);
+                                        mService.write(sendData);
+                                    }
+                                    ab = BytesUtil.setAlignCenter(0);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(0);
+                                mService.write(ab);
+                                ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                ArrayList<String> arrayList = new ArrayList<String>();
+
+                                if (order_payment_array.size() > 0) {
+
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        arrayList.add(order_payment_array.get(i).get_payment_id());
+                                    }
+                                    if (arrayList.contains("1") && arrayList.contains("5")) {
+                                        mService.sendMessage("Invoice Type: Credit/Cash", "GBK");
+                                    } else {
+                                        if (arrayList.contains("5")) {
+                                            mService.sendMessage("Invoice Type: Credit", "GBK");
+
+                                        } else if (arrayList.contains("1")) {
+                                            mService.sendMessage("Invoice Type: Cash", "GBK");
+                                        }
+                                    }
+                                }
+                                mService.sendMessage(Globals.PrintInvNo + ":" + strOrderNo, "GBK");
+                                mService.sendMessage(Globals.PrintInvDate + ":" + DateUtill.PaternDate1(orders.get_order_date()), "GBK");
+                                mService.sendMessage(Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name(), "GBK");
+                                user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                mService.sendMessage(Globals.PrintCashier + ":" + user.get_name(), "GBK");
+
+                                if (Globals.ModeResrv.equals("Resv")) {
+                                    Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                    mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                    if (contact.get_gstin().length() > 0) {
+                                        mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                    }
+                                } else {
+                                    if (Globals.strContact_Code.equals("")) {
+                                    } else {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                        mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                        if (contact.get_gstin().length() > 0) {
+                                            mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                        }
+                                    }
+                                }
+
+                                mService.sendMessage("................................", "GBK");
+                                mService.sendMessage("Item Name", "GBK");
+                                mService.sendMessage("Qty        Price      Total", "GBK");
+                                mService.sendMessage("................................", "GBK");
+
+                                int count = 0;
+                                Double itemFinalTax = 0d;
+                                while (count < order_detail.size()) {
+
+                                    String strItemCode = order_detail.get(count).get_item_code();
+                                    String strItemName = Order_Detail.getItemName(getApplicationContext(), "WHERE order_detail.item_Code  = '"
+                                            + strItemCode + "'  GROUP By order_detail.item_code");
+                                    String sale_price;
+                                    Double dDisAfterSalePrice = 0d;
+//                                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+//                                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfterSalePrice + ""), decimal_check);
+
+                                    Double dDisAfter = 0d;
+                                    dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                    dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                    sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                    String line_total;
+                                    line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                    mService.sendMessage("" + strItemName, "GBK");
+                                    mService.sendMessage("" + order_detail.get(count).get_quantity() + "  " + sale_price + "  " + line_total, "GBK");
+
+                                    String discnt = "";
+                                    String disLbl = "";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                    } else {
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                            discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                            disLbl = "Dis :";
+                                        }
+                                        mService.sendMessage("" + disLbl + " " + discnt, "GBK");
+                                    }
+
+                                    if (settings.get_HSN_print().equals("true")) {
+                                        item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                        mService.sendMessage("HSN Code :" + item.get_hsn_sac_code() + "", "GBK");
+                                    }
+
+                                    if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                        Tax_Master tax_master = null;
+                                        ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                        for (int i = 0; i < order_detail_tax.size(); i++) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                            double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                            itemFinalTax += valueFinal;
+                                            //woyouService.printColumnsText(new String[]{tax_master.get_tax_name(), Globals.myNumberFormat2Price(valueFinal, decimal_check)}, new int[]{15, 6}, new int[]{0, 0}, callback);
+                                            mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "", "GBK");
+                                        }
+                                    }
+                                    count++;
+                                }
+
+                                mService.sendMessage("................................", "GBK");
+                                mService.sendMessage("Total Item  : " + orders.get_total_item(), "GBK");
+                                mService.sendMessage("Item Quantity  : " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check), "GBK");
+                                String subtotal = "";
+                                String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                Tax_Master tax_master = null;
+                                while (cursor1.moveToNext()) {
+                                    subtotal = cursor1.getString(0);
+                                }
+                                subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                mService.sendMessage("Subtotal  : " + subtotal, "GBK");
+                                mService.sendMessage("................................", "GBK");
+                                if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                    strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                            "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                            "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                    while (cursor1.moveToNext()) {
+                                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                        mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "", "GBK");
+                                    }
+                                    mService.sendMessage("................................", "GBK");
+                                }
+
+                                String discount = "0";
+                                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                } else {
+                                    discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                    if (Globals.strIsDiscountPrint.equals("true")) {
+                                        mService.sendMessage("Discount  : " + Globals.DiscountPer + "%", "GBK");
+                                        mService.sendMessage("Discount  :" + discount, "GBK");
+                                    }
+                                }
+                                String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                mService.sendMessage("Total  :" + tatalAftrDis, "GBK");
+
+                                String total_tax;
+                                total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                if (Double.parseDouble(total_tax) > 0d) {
+                                    mService.sendMessage("Total Tax  :" + total_tax, "GBK");
+                                    mService.sendMessage("................................", "GBK");
+                                    Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                    String name = "", value = "";
+                                    if (cursor.moveToFirst()) {
+                                        do {
+                                            name = cursor.getString(0);
+                                            value = cursor.getString(1);
+                                            mService.sendMessage(name + ":" + total_tax, "GBK");
+                                        } while (cursor.moveToNext());
+                                    }
+                                }
+                                mService.sendMessage("................................", "GBK");
+
+                                String net_amount;
+                                net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                String strCurrency;
+                                if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                    strCurrency = "";
+                                } else {
+                                    strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                }
+                                mService.sendMessage("Net Amt  :" + net_amount + "" + strCurrency, "GBK");
+                                String tender;
+                                tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                mService.sendMessage("Tender  :" + tender, "GBK");
+                                String change_amount;
+                                change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                mService.sendMessage("Change  :" + change_amount, "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                mService.sendMessage("................................", "GBK");
+                   /*     order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                        if (order_payment_array.size() > 0) {
+                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                String name = "";
+                                if (payment != null) {
+                                    name = payment.get_payment_name();
+                                    mService.sendMessage(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "" + "\n", "GBK");
+//                                    woyouService.printColumnsText(new String[]{name, ":", Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)}, new int[]{9, 1, 20}, new int[]{0, 0, 0}, callback);
+                                }
+                            }
+                            mService.sendMessage("................................", "GBK");
+                        }*/
+                                if (settings.get_Is_Accounts().equals("true")) {
+                                    if (ck_project_type.equals("standalone")) {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            Double showAmount = 0d;
+//                                    String curAmount = "";
+                                            try {
+                                                String strCreditAmt = "", strDeditAmount = "";
+                                                Double creditAmount = 0d,
+                                                        debitAmount = 0d;
+                                                Cursor cursor = null;
+
+                                                String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                cursor = database.rawQuery(strQry1, null);
+                                                while (cursor.moveToNext()) {
+                                                    strCreditAmt = cursor.getString(0);
+
+                                                }
+                                                creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                cursor = database.rawQuery(strQry2, null);
+                                                while (cursor.moveToNext()) {
+                                                    strDeditAmount = cursor.getString(0);
+                                                }
+                                                debitAmount = Double.parseDouble(strDeditAmount);
+                                                showAmount = debitAmount + creditAmount;
+                                            } catch (Exception ex) {
+                                            }
+
+                                            double abs1 = Math.abs(showAmount);
+                                            if (showAmount > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            Double strBalance = abs1 - Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+                                            }
+
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    } else {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            String curAmount = "";
+                                            try {
+                                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+                                                if (cursor1.moveToFirst()) {
+                                                    do {
+                                                        curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    } while (cursor1.moveToNext());
+                                                }
+                                            } catch (Exception ex) {
+                                                curAmount = "0";
+                                            }
+                                            double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                            double abs1 = Math.abs(ab1);
+                                            if (ab1 > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", curAmount + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            Double strBalance = ab1 + Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    }
+                                }
+
+                                if (!settings.get_Footer_Text().equals("")) {
+                                    mService.sendMessage(settings.get_Footer_Text(), "GBK");
+                                }
+                                mService.sendMessage("      " + settings.get_Copy_Right() + "\n\n", "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                byte[] print = {0x1b, 0x0c};
+                                mService.write(print);
+
+                            }
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.DiscountPer = "";
+                            Globals.strOldCrAmt = "0";
+
+                            flag = "1";
+                            Globals.setEmpty();
+                        }
+                    } catch (Exception ex) {
+                        String ab = ex.getMessage();
+                        ab = ab;
+                    }
+                }
+            }
+
+        } else {
+
+            if ((lang.compareTo("en")) == 0) {
+                if (settings.get_Print_Memo().equals("1")) {
+                    try {
+                        byte[] ab;
+                        Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                        String Print_type = "0";
+
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
+                        mService.sendMessage("Order : " + ordersobj.get_order_code() + "\n", "GBK");
+
+                        if (ordersobj.get_table_code().equals("")) {
+                        } else {
+                            mService.sendMessage("Table : " + ordersobj.get_table_code(), "GBK");
+                        }
+
+                        ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                        if (order_detail_obj.size() > 0) {
+                            Double total = 0d;
+
+                            mService.sendMessage("Name         Qty   Price  Total", "GBK");
+                            mService.sendMessage("--------------------------------\n", "GBK");
+
+                            for (int i = 0; i < order_detail_obj.size(); i++) {
+                                total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                                Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                                mService.sendMessage(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check), "GBK");
+
+                            }
+                            mService.sendMessage("--------------------------------\n", "GBK");
+                            mService.sendMessage("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check), "GBK");
+                        }
+
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                    } catch (RemoteException e) {
+                        e.printStackTrace();
+                    }
+                } else {
+                    try {
+                        byte[] ab;
+                        if (mService.isAvailable() == false) {
+                        } else {
+                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                //printImage();
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                                mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+
+                                try {
+                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    } else {
+                                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                        ab = BytesUtil.setAlignCenter(0);
+                                        mService.write(ab);
+                                    }
+                                } catch (Exception ex) {
+                                }
+
+
+                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                } else {
+                                    mService.sendMessage(Globals.GSTNo + " : " + Globals.objLPR.getLicense_No(), "GBK");
+                                    ab = BytesUtil.setAlignCenter(1);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                                mService.sendMessage("--------------------------------", "GBK");
+                                mService.sendMessage(Globals.PrintOrder, "GBK");
+                                mService.sendMessage("--------------------------------", "GBK");
+
+                                if (Globals.strIsBarcodePrint.equals("null") || Globals.strIsBarcodePrint.equals("")) {
+
+                                } else {
+                                    if (Globals.strIsBarcodePrint.equals("true")) {
+                                        byte[] sendData;
+                                        sendData = BytesUtil.getPrintQRCode(strOrderNo, 1, 0);
+                                        mService.write(sendData);
+                                    }
+                                    ab = BytesUtil.setAlignCenter(0);
+                                    mService.write(ab);
+                                }
+                                ab = BytesUtil.setAlignCenter(0);
+                                mService.write(ab);
+                                ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                                ArrayList<String> arrayList = new ArrayList<String>();
+
+                                if (order_payment_array.size() > 0) {
+
+                                    for (int i = 0; i < order_payment_array.size(); i++) {
+                                        arrayList.add(order_payment_array.get(i).get_payment_id());
+                                    }
+                                    if (arrayList.contains("1") && arrayList.contains("5")) {
+                                        mService.sendMessage("Invoice Type: Credit/Cash", "GBK");
+                                    } else {
+                                        if (arrayList.contains("5")) {
+                                            mService.sendMessage("Invoice Type: Credit", "GBK");
+
+                                        } else if (arrayList.contains("1")) {
+                                            mService.sendMessage("Invoice Type: Cash", "GBK");
+                                        }
+                                    }
+                                }
+                                mService.sendMessage(Globals.PrintInvNo + ":" + strOrderNo, "GBK");
+                                mService.sendMessage(Globals.PrintInvDate + ":" + DateUtill.PaternDate1(orders.get_order_date()), "GBK");
+                                mService.sendMessage(Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name(), "GBK");
+                                user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                mService.sendMessage(Globals.PrintCashier + ":" + user.get_name(), "GBK");
+
+                                if (Globals.ModeResrv.equals("Resv")) {
+                                    Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                                    mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                    if (contact.get_gstin().length() > 0) {
+                                        mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                    }
+                                } else {
+                                    if (Globals.strContact_Code.equals("")) {
+                                    } else {
+                                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                                        mService.sendMessage("Customer     :" + contact.get_name(), "GBK");
+                                        if (contact.get_gstin().length() > 0) {
+                                            mService.sendMessage("Customer GST No. :" + contact.get_gstin(), "GBK");
+                                        }
+                                    }
+                                }
+
+                                mService.sendMessage("................................", "GBK");
+                                mService.sendMessage("Item Name", "GBK");
+                                mService.sendMessage("Qty        Price      Total", "GBK");
+                                mService.sendMessage("................................", "GBK");
+
+                                int count = 0;
+                                Double itemFinalTax = 0d;
+                                while (count < order_detail.size()) {
+
+                                    String strItemCode = order_detail.get(count).get_item_code();
+                                    String strItemName = Order_Detail.getItemName(getApplicationContext(), "WHERE order_detail.item_Code  = '"
+                                            + strItemCode + "'  GROUP By order_detail.item_code");
+                                    String sale_price;
+                                    Double dDisAfterSalePrice = 0d;
+//                                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+//                                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfterSalePrice + ""), decimal_check);
+
+                                    Double dDisAfter = 0d;
+                                    dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                                    dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                                    sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                                    String line_total;
+                                    line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+                                    mService.sendMessage("" + strItemName, "GBK");
+                                    mService.sendMessage("" + order_detail.get(count).get_quantity() + "  " + sale_price + "  " + line_total, "GBK");
+
+                                    String discnt = "";
+                                    String disLbl = "";
+                                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                                    } else {
+                                        if (Globals.strIsDiscountPrint.equals("true")) {
+                                            Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                            discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                            disLbl = "Dis :";
+                                        }
+                                        mService.sendMessage("" + disLbl + " " + discnt, "GBK");
+                                    }
+
+                                    if (settings.get_HSN_print().equals("true")) {
+                                        item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                                        mService.sendMessage("HSN Code :" + item.get_hsn_sac_code() + "", "GBK");
+                                    }
+
+                                    if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                                        Tax_Master tax_master = null;
+                                        ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                                        for (int i = 0; i < order_detail_tax.size(); i++) {
+                                            tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+                                            double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                            itemFinalTax += valueFinal;
+                                            //woyouService.printColumnsText(new String[]{tax_master.get_tax_name(), Globals.myNumberFormat2Price(valueFinal, decimal_check)}, new int[]{15, 6}, new int[]{0, 0}, callback);
+                                            mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(valueFinal, decimal_check) + "", "GBK");
+                                        }
+                                    }
+                                    count++;
+                                }
+
+                                mService.sendMessage("................................", "GBK");
+                                mService.sendMessage("Total Item  : " + orders.get_total_item(), "GBK");
+                                mService.sendMessage("Item Quantity  : " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check), "GBK");
+                                String subtotal = "";
+                                String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                                Cursor cursor1 = database.rawQuery(strTableQry, null);
+                                Tax_Master tax_master = null;
+                                while (cursor1.moveToNext()) {
+                                    subtotal = cursor1.getString(0);
+                                }
+                                subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+                                mService.sendMessage("Subtotal  : " + subtotal, "GBK");
+                                mService.sendMessage("................................", "GBK");
+                                if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                                    strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax \n" +
+                                            "inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code\n" +
+                                            "where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+
+                                    while (cursor1.moveToNext()) {
+                                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+                                        mService.sendMessage("" + tax_master.get_tax_name() + "    " + Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check) + "", "GBK");
+                                    }
+                                    mService.sendMessage("................................", "GBK");
+                                }
+
+                                String discount = "0";
+                                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                                } else {
+                                    discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                                    if (Globals.strIsDiscountPrint.equals("true")) {
+                                        mService.sendMessage("Discount  : " + Globals.DiscountPer + "%", "GBK");
+                                        mService.sendMessage("Discount  :" + discount, "GBK");
+                                    }
+                                }
+                                String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                                String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+                                mService.sendMessage("Total  :" + tatalAftrDis, "GBK");
+
+                                String total_tax;
+                                total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                                if (Double.parseDouble(total_tax) > 0d) {
+                                    mService.sendMessage("Total Tax  :" + total_tax, "GBK");
+                                    mService.sendMessage("................................", "GBK");
+                                    Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                                    String name = "", value = "";
+                                    if (cursor.moveToFirst()) {
+                                        do {
+                                            name = cursor.getString(0);
+                                            value = cursor.getString(1);
+                                            mService.sendMessage(name + ":" + total_tax, "GBK");
+                                        } while (cursor.moveToNext());
+                                    }
+                                }
+                                mService.sendMessage("................................", "GBK");
+
+                                String net_amount;
+                                net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+                                String strCurrency;
+                                if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                                    strCurrency = "";
+                                } else {
+                                    strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                                }
+                                mService.sendMessage("Net Amt  :" + net_amount + "" + strCurrency, "GBK");
+                                String tender;
+                                tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+                                mService.sendMessage("Tender  :" + tender, "GBK");
+                                String change_amount;
+                                change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+                                mService.sendMessage("Change  :" + change_amount, "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                mService.sendMessage("................................", "GBK");
+                   /*     order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                        if (order_payment_array.size() > 0) {
+                            for (int i = 0; i < order_payment_array.size(); i++) {
+                                Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                                String name = "";
+                                if (payment != null) {
+                                    name = payment.get_payment_name();
+                                    mService.sendMessage(name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check) + "" + "\n", "GBK");
+//                                    woyouService.printColumnsText(new String[]{name, ":", Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check)}, new int[]{9, 1, 20}, new int[]{0, 0, 0}, callback);
+                                }
+                            }
+                            mService.sendMessage("................................", "GBK");
+                        }*/
+                                if (settings.get_Is_Accounts().equals("true")) {
+                                    if (ck_project_type.equals("standalone")) {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            Double showAmount = 0d;
+//                                    String curAmount = "";
+                                            try {
+                                                String strCreditAmt = "", strDeditAmount = "";
+                                                Double creditAmount = 0d,
+                                                        debitAmount = 0d;
+                                                Cursor cursor = null;
+
+                                                String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                                cursor = database.rawQuery(strQry1, null);
+                                                while (cursor.moveToNext()) {
+                                                    strCreditAmt = cursor.getString(0);
+
+                                                }
+                                                creditAmount = Double.parseDouble(strCreditAmt);
+
+                                                String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                                cursor = database.rawQuery(strQry2, null);
+                                                while (cursor.moveToNext()) {
+                                                    strDeditAmount = cursor.getString(0);
+                                                }
+                                                debitAmount = Double.parseDouble(strDeditAmount);
+                                                showAmount = debitAmount + creditAmount;
+                                            } catch (Exception ex) {
+                                            }
+
+                                            double abs1 = Math.abs(showAmount);
+                                            if (showAmount > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", abs1 + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "" + "\n", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+                                            }
+                                            Double strBalance = abs1 - Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+                                            }
+
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    } else {
+                                        JSONObject jsonObject = new JSONObject();
+                                        if (Globals.strContact_Code.equals("")) {
+                                            mService.sendMessage("**\n", "GBK");
+                                        } else {
+                                            String curAmount = "";
+                                            try {
+                                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+                                                if (cursor1.moveToFirst()) {
+                                                    do {
+                                                        curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    } while (cursor1.moveToNext());
+                                                }
+                                            } catch (Exception ex) {
+                                                curAmount = "0";
+                                            }
+                                            double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                            double abs1 = Math.abs(ab1);
+                                            if (ab1 > 0) {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+                                            } else {
+                                                mService.sendMessage("Old Amt  :" + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Old Amt", curAmount + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strCur = "";
+
+                                            try {
+                                                strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                                cursor1 = database.rawQuery(strTableQry, null);
+
+                                                while (cursor1.moveToNext()) {
+                                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                                    mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                                }
+                                            } catch (Exception ex) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            if (strCur.equals("")) {
+                                                strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                                mService.sendMessage("Current Amt  :" + strCur + "", "GBK");
+                                            }
+                                            try {
+                                                jsonObject.put("Current Amt", strCur + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            Double strBalance = ab1 + Double.parseDouble(strCur);
+                                            try {
+                                                jsonObject.put("Balance Amt", strBalance + "");
+                                            } catch (Exception ex) {
+
+                                            }
+                                            String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                            db.executeDML(strUpdatePayment, database);
+
+                                            mService.sendMessage("Balance Amount  :" + Globals.myNumberFormat2Price(strBalance, decimal_check) + "" + "\n", "GBK");
+                                            mService.sendMessage("................................", "GBK");
+                                        }
+                                    }
+                                }
+
+                                if (!settings.get_Footer_Text().equals("")) {
+                                    mService.sendMessage(settings.get_Footer_Text(), "GBK");
+                                }
+                                mService.sendMessage("      " + settings.get_Copy_Right() + "\n\n", "GBK");
+                                cmd[2] &= 0xEF;
+                                mService.write(cmd);
+                                byte[] print = {0x1b, 0x0c};
+                                mService.write(print);
+
+                            }
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.DiscountPer = "";
+                            Globals.strOldCrAmt = "0";
+
+                            flag = "1";
+                            Globals.setEmpty();
+                        }
+                    } catch (Exception ex) {
+                        String ab = ex.getMessage();
+                        ab = ab;
+                    }
+                }
+            }
+
+        }
+       /* if (opr.equals("PayCollection")) {
 
             if (mService.isAvailable() == false) {
 
@@ -5191,7 +12410,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                     ab = ab;
                 }
             }
-        }
+        }*/
         return flag;
     }
 
@@ -7668,123 +14887,55 @@ public class PrintLayout extends PrnDspA1088Activity {
         }
     }
 
-    private ArrayList<String> getlist(Orders orders, ArrayList<Order_Detail> order_detail) {
+    /*private ArrayList<String> getlist(Orders orders, ArrayList<Order_Detail> order_detail) {
         ArrayList<String> mylist = new ArrayList<String>();
-        if (opr.equals("PayCollection")) {
-            final Pay_Collection pay_collection = Pay_Collection.getPay_Collection(getApplicationContext(), " WHERE id = '" + id + "'", database);
-
-            String tt = "", tt1 = "";
-            mylist.add("\n" + "        Receipt Voucher");
-            mylist.add("\nReceipt No.     :    " + pay_collection.get_collection_code());
-            mylist.add("\nDate    :    " + pay_collection.get_collection_date());
-            mylist.add("\nAmount  :" + Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check));
-            String[] str = Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check).split("\\.");
-            if (str.length == 1) {
-                mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " Only ");
-            } else if (str.length == 2) {
-                if (Integer.parseInt(str[1].toString()) == 0) {
-                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD  Only ");
-
-                } else {
-                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD " + Globals.convert(Integer.parseInt(str[1].toString())) + " Fills Only ");
-                }
-            }
-
-            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + pay_collection.get_contact_code() + "'");
-            mylist.add("\nReceived From :    " + contact.get_name());
-            mylist.add("\nCash/Cheque   :    " + pay_collection.get_payment_mode());
-            mylist.add("\nOn Account :    " + pay_collection.get_on_account());
-            mylist.add("\nRemarks :    " + pay_collection.get_remarks());
-
-            if (pay_collection.get_payment_mode().equals("CHEQUE")) {
-                Bank bank = Bank.getBank(getApplicationContext(), " WHERE bank_code='" + pay_collection.get_ref_type() + "'", database);
-                mylist.add("\nBank Name :    " + bank.get_bank_name());
-                mylist.add("\nCheque No :    " + pay_collection.get_ref_no());
-            }
-
-            ArrayList<Pay_Collection_Detail> pay_collection_detail = Pay_Collection_Detail.getAllPay_Collection_Detail(getApplicationContext(), " WHERE collection_code='" + pay_collection.get_collection_code() + "'");
-            if (pay_collection_detail.size() > 0) {
-                mylist.add("\n-----------------------------------------------");
-                mylist.add("\n  Order No          Amount");
-                mylist.add("\n-----------------------------------------------");
-                for (int i = 0; i < pay_collection_detail.size(); i++) {
-                    mylist.add("\n" + "     " + pay_collection_detail.get(i).get_invoice_no() + "               " + pay_collection_detail.get(i).get_amount());
-                }
-
-            }
-
-            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-            mylist.add("\n" + "Cashier     :" + user.get_name());
-            mylist.add("\n" + "Receiver Signature" + "");
-            mylist.add("\n");
-            mylist.add("\n");
-            mylist.add("\n");
-            mylist.add("\n");
-        } else if (lite_pos_registration.getIndustry_Type().equals("4")) {
-            String tt = "", tt1 = "";
-            mylist.add("\n" + "            RECEIPT");
+if(decimal_check.equals("2")) {
+    if(settings.get_Print_Lang().equals("0")) {
+        if (settings.get_Print_Memo().equals("1")) {
             try {
-                if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
 
+                Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                String Print_type = "0";
+
+
+                mylist.add("" + Globals.objLPR.getCompany_Name() + "\n");
+                mylist.add("Order : " + ordersobj.get_order_code() + "\n");
+
+                if (ordersobj.get_table_code().equals("")) {
                 } else {
-                    mylist.add("\n            " + Globals.objLPR.getService_code_tariff());
+                    mylist.add("Table : " + ordersobj.get_table_code());
                 }
-            } catch (Exception ex) {
 
-            }
-            mylist.add("\n            " + Globals.objLPR.getCompany_Name());
-            mylist.add("\n            " + Globals.objLPR.getAddress());
-            mylist.add("\n            " + Globals.objLPR.getMobile_No());
-            mylist.add("\n" + Globals.PrintDeviceID + "   :   " + Globals.objLPD.getDevice_Name());
+                ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                if (order_detail_obj.size() > 0) {
+                    Double total = 0d;
 
-            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-            mylist.add("\n" + Globals.PrintCashier + "    :    " + user.get_name());
-            mylist.add("\nRECEIPT NO.    :    " + Globals.objLPD.getDevice_Name());
-            if (Globals.strIsBarcodePrint.equals("true")) {
-                BytesUtil.getPrintBarCode(orders.get_order_code(), 1, 60, 120, 1);
-            }
-            mylist.add("\nIN DT  :    " + DateUtill.PaternDatePrintDate(orders.get_order_date()));
-            mylist.add("\nIN TM  :    " + DateUtill.PaternDatePrintTime(orders.get_order_date()));
+                    mylist.add("Name         Qty   Price  Total");
+                    mylist.add("--------------------------------\n");
 
-            int count = 0;
-            while (count < order_detail.size()) {
+                    for (int i = 0; i < order_detail_obj.size(); i++) {
+                        total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                        mylist.add(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check));
 
-                String strItemCode = order_detail.get(count).get_item_code();
-
-                String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
-                        + strItemCode + "'  GROUP By order_detail.item_Code");
-                int len = 12;
-                if (strItemName.length() > len) {
-                    strItemName = strItemName.substring(0, len);
-                } else {
-                    for (int sLen = strItemName.length(); sLen < len; sLen++) {
-                        strItemName = strItemName + " ";
                     }
+                    mylist.add("--------------------------------\n");
+                    mylist.add("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check));
                 }
 
-                String sale_price;
-                Double dDisAfterSalePrice = 0d;
+                mylist.add("\n");
+                mylist.add("\n");
 
-                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
-                sale_price = Globals.myNumberFormat2Price((Double.parseDouble(dDisAfterSalePrice + "") * Double.parseDouble(order_detail.get(count).get_quantity() + "")), decimal_check);
-                String line_total;
-                mylist.add("\nVEHICLE TYPE :" + DateUtill.PaternDatePrintTime(orders.get_order_date()));
-                mylist.add("\n" + "     " + strItemName + "  Rs. " + sale_price);
-                count++;
-            }
-            mylist.add("\n" + "V.NO :" + orders.get_remarks());
 
-            if (!settings.get_Footer_Text().equals("")) {
-                mylist.add("\n    " + settings.get_Footer_Text());
+
+            } catch (Exception e) {
+                e.printStackTrace();
             }
-            mylist.add("\n            " + settings.get_Copy_Right());
-            mylist.add("\n");
-            mylist.add("\n");
 
         } else {
             String lbl;
             String tt = "", tt1 = "";
-            mylist.add("\n-----------------------------------------------");
+
             lbl = LableCentre(Globals.objLPR.getCompany_Name());
             mylist.add("\n" + lbl);
             lbl = LableCentre(Globals.objLPR.getAddress());
@@ -7793,7 +14944,7 @@ public class PrintLayout extends PrnDspA1088Activity {
             mylist.add("\n" + lbl);
 
             try {
-                if (Globals.objLPR.getService_code_tariff().equals("null")) {
+                if (Globals.objLPR.getService_code_tariff().equals("null")||Globals.objLPR.getService_code_tariff().equals("")) {
 
                 } else {
                     lbl = LableCentre(Globals.objLPR.getService_code_tariff());
@@ -7803,34 +14954,34 @@ public class PrintLayout extends PrnDspA1088Activity {
             } catch (Exception ex) {
 
             }
-            if (Globals.objLPR.getLicense_No().equals("null")) {
+            if (Globals.objLPR.getLicense_No().equals("null")||Globals.objLPR.getLicense_No().equals("")) {
             } else {
                 mylist.add("\n" + Globals.GSTNo + ":" + Globals.objLPR.getLicense_No());
             }
-
+            mylist.add("\n---------------------------------------------------------------------");
             lbl = LableCentre(Globals.PrintOrder);
+            mylist.add("\n---------------------------------------------------------------------");
             mylist.add("\n" + lbl);
-            mylist.add("\n");
-            mylist.add("\n" + Globals.PrintInvNo + ":" + orders.get_order_code());
-            mylist.add("\n" + Globals.PrintInvDate + ":" + orders.get_order_date());
-            mylist.add("\n" + Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name());
+            mylist.add("" + Globals.PrintInvNo + ":" + orders.get_order_code());
+            mylist.add("" + Globals.PrintInvDate + ":" + orders.get_order_date());
+            mylist.add("" + Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name());
 
             user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
             mylist.add("\n" + Globals.PrintCashier + ":" + user.get_name());
 
             if (Globals.ModeResrv.equals("Resv")) {
-                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.CustomerResrv + "'");
+                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
                 mylist.add("\n" + "Customer   : " + contact.get_name());
                 if (contact.get_gstin().length() > 0) {
                     mylist.add("\n" + "Customer GST No.: " + contact.get_gstin());
                 }
                 Globals.strContact_Name = contact.get_name();
             } else {
-                if (Globals.strContact_Code.equals("")) {
+                if (orders.get_contact_code().equals("")) {
                     Globals.strContact_Name = "";
                 } else {
                     try {
-                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + Globals.strContact_Code + "'");
+                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
                         mylist.add("\n" + "Customer   : " + contact.get_name());
                         if (contact.get_gstin().length() > 0) {
                             mylist.add("\n" + "Customer GST No.: " + contact.get_gstin());
@@ -7843,9 +14994,10 @@ public class PrintLayout extends PrnDspA1088Activity {
                 }
             }
 
-            mylist.add("\n-----------------------------------------------");
-            mylist.add("\nItem                    Qty     Price   Total");
-            mylist.add("\n-----------------------------------------------\n");
+            mylist.add("\n---------------------------------------------------------------------");
+            mylist.add("\nItem Name");
+            mylist.add("Qty        Price        Total");
+            mylist.add("\n---------------------------------------------------------------------\n");
             Double itemFinalTax = 0d;
             int count = 0;
             while (count < order_detail.size()) {
@@ -7867,7 +15019,8 @@ public class PrintLayout extends PrnDspA1088Activity {
 
                         tt = tt + nm[k];
                     }
-                    tt = tt + " ";
+                    //tt = tt + " ";
+                    tt = "\n";
                 } else {
                     char[] nm = strItemName.toUpperCase()
                             .toCharArray();
@@ -7879,6 +15032,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                     for (int v = 0; v < space; v++) {
 
                         tt = tt + " ";
+                        tt = "\n";
                     }
                 }
 
@@ -8055,7 +15209,7 @@ public class PrintLayout extends PrnDspA1088Activity {
                 count++;
             }
 
-            mylist.add("\n-----------------------------------------------");
+            mylist.add("\n---------------------------------------------------------------------");
 
             mylist.add("\nTotal Item :  " + orders.get_total_item());
             mylist.add("\nItem Quantity:  " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check));
@@ -8149,7 +15303,7 @@ public class PrintLayout extends PrnDspA1088Activity {
 
                     cursor1.close();
                 }
-                mylist.add("\n-----------------------------------------------");
+                mylist.add("\n----------------------------------------------------------------");
             }
 
 
@@ -8238,7 +15392,7 @@ public class PrintLayout extends PrnDspA1088Activity {
 
             }
 
-            mylist.add("\n-----------------------------------------------");
+            mylist.add("\n---------------------------------------------------------------------");
 
             String net_amount;
 
@@ -8505,10 +15659,2547 @@ public class PrintLayout extends PrnDspA1088Activity {
             mylist.add("\n");
 
         }
+    }
+    else if(settings.get_Print_Lang().equals("1")){
+
+        if (settings.get_Print_Memo().equals("1")) {
+            try {
+
+                Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                String Print_type = "0";
+
+
+                mylist.add("" + Globals.objLPR.getCompany_Name() + "\n");
+                mylist.add("Order : " + ordersobj.get_order_code() + "\n");
+
+                if (ordersobj.get_table_code().equals("")) {
+                } else {
+                    mylist.add("Table : " + ordersobj.get_table_code());
+                }
+
+                ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                if (order_detail_obj.size() > 0) {
+                    Double total = 0d;
+
+                    mylist.add("Name         Qty   Price  Total");
+                    mylist.add("--------------------------------\n");
+
+                    for (int i = 0; i < order_detail_obj.size(); i++) {
+                        total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                        mylist.add(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check));
+
+                    }
+                    mylist.add("--------------------------------\n");
+                    mylist.add("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check));
+                }
+
+                mylist.add("\n");
+                mylist.add("\n");
+
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            String lbl;
+            String tt = "", tt1 = "";
+
+            lbl = LableCentre(Globals.objLPR.getCompany_Name());
+            mylist.add("\n" + lbl);
+            lbl = LableCentre(Globals.objLPR.getAddress());
+            mylist.add("\n" + lbl);
+            lbl = LableCentre(Globals.objLPR.getMobile_No());
+            mylist.add("\n" + lbl);
+
+            try {
+                if (Globals.objLPR.getService_code_tariff().equals("null")||Globals.objLPR.getService_code_tariff().equals("")) {
+
+                } else {
+                    lbl = LableCentre(Globals.objLPR.getService_code_tariff());
+                    mylist.add("\n" + lbl);
+//                    mylist.add("\n" + "Tariff Code");
+                }
+            } catch (Exception ex) {
+
+            }
+            if (Globals.objLPR.getLicense_No().equals("null")||Globals.objLPR.getLicense_No().equals("null")) {
+            } else {
+                mylist.add("\n" + Globals.GSTNo + ":" + Globals.objLPR.getLicense_No());
+            }
+            mylist.add("\n---------------------------------------------------------------------");
+            lbl = LableCentre("فاتورة ضريبية");
+            mylist.add("---------------------------------------------------------------------");
+            mylist.add("\n" + lbl);
+            mylist.add("" + Globals.PrintInvNo + ":" + orders.get_order_code());
+            mylist.add("" + Globals.PrintInvDate + ":" + orders.get_order_date());
+            mylist.add("" + Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name());
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + Globals.PrintCashier + ":" + user.get_name());
+
+            if (Globals.ModeResrv.equals("Resv")) {
+                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                mylist.add("\n" + "الزبون   : " + contact.get_name());
+                if (contact.get_gstin().length() > 0) {
+                    mylist.add("\n" + "رقم ضريبة السلع والخدمات للعملاء.: " + contact.get_gstin());
+                }
+                Globals.strContact_Name = contact.get_name();
+            } else {
+                if (orders.get_contact_code().equals("")) {
+                    Globals.strContact_Name = "";
+                } else {
+                    try {
+                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                        mylist.add("\n" + "الزبون   : " + contact.get_name());
+                        if (contact.get_gstin().length() > 0) {
+                            mylist.add("\n" + "رقم ضريبة السلع والخدمات للعملاء: " + contact.get_gstin());
+                        }
+                        Globals.strContact_Name = contact.get_name();
+                    } catch (Exception ex) {
+
+                    }
+
+                }
+            }
+
+            mylist.add("---------------------------------------------------------------------");
+            mylist.add("اسم العنصر");
+            mylist.add("الكمية        السعر        مجموع");
+            mylist.add("\n---------------------------------------------------------------------\n");
+            Double itemFinalTax = 0d;
+            int count = 0;
+            while (count < order_detail.size()) {
+
+                String strItemCode = order_detail.get(count).get_item_code();
+
+                String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_code  = '"
+                        + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                String line_total;
+                line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+
+                //item name
+                int l1 = strItemName_l.length();
+                if (l1 > 24) {
+
+                    char[] nm = strItemName_l.toUpperCase().toCharArray();
+                    for (int k = 0; k < 24; k++) {
+
+                        tt = tt + nm[k];
+                    }
+                    //tt = tt + " ";
+                    tt = "\n";
+                } else {
+                    char[] nm = strItemName_l.toUpperCase()
+                            .toCharArray();
+                    for (int k = 0; k < l1; k++) {
+
+                        tt = tt + nm[k];
+                    }
+                    int space = 24 - l1;
+                    for (int v = 0; v < space; v++) {
+
+                        tt = tt + " ";
+                        tt = "\n";
+                    }
+                }
+
+                //quantity
+                int l2 = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).length();
+                if (l2 > 8) {
+                    char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                    for (int k = 0; k < 8; k++) {
+                        tt = tt + qt[k];
+                    }
+                    tt = tt + " ";
+                } else {
+                    char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                    for (int k = 0; k < l2; k++) {
+
+                        tt = tt + qt[k];
+                    }
+                    int space = 8 - l2;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                }
+
+                String sale_price;
+
+                Double dDisAfterSalePrice = 0d;
+                Double dDisAfter = 0d;
+                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                //price
+                int l12 = sale_price.length();
+                if (l12 > 6) {
+                    char[] qt = sale_price.toCharArray();
+                    for (int k = 0; k < 6; k++) {
+                        tt = tt + qt[k];
+                    }
+                    tt = tt + " ";
+
+                } else {
+                    char[] qt = sale_price.toCharArray();
+                    for (int k = 0; k < l12; k++) {
+
+                        tt = tt + qt[k];
+                    }
+                    int space = 6 - l12;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                }
+
+                //total
+                int l3 = line_total.length();
+                if (l3 > 7) {
+                    char[] r = String.valueOf(line_total).toCharArray();
+                    for (int k = 0; k < 3; k++) {
+
+                        tt = tt + r[k];
+                    }
+
+                    mylist.add(tt);
+                    tt = "\n";
+                } else {
+                    int space = 7 - l3;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    char[] r = String.valueOf(line_total).toCharArray();
+                    for (int k = 0; k < l3; k++) {
+                        tt = tt + r[k];
+                    }
+                    mylist.add(tt);
+                    tt = "\n";
+
+                }
+
+
+                mylist.add(tt);
+
+                String strHSNLbl = "", HSNValue = "", strLBlDis = "";
+                if (settings.get_HSN_print().equals("true")) {
+                    item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                    HSNValue = item.get_hsn_sac_code();
+                    strHSNLbl = "HSN Code :";
+
+                }
+
+
+                String discnt = "";
+
+                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                    strLBlDis = "";
+                } else {
+                    if (Globals.strIsDiscountPrint.equals("true")) {
+                        Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                        discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                        strLBlDis = "Discount : ";
+                    } else {
+                        strLBlDis = "";
+                    }
+
+                }
+                if (Globals.strIsDiscountPrint.equals("false") && settings.get_HSN_print().equals("false")) {
+
+                } else {
+                    mylist.add(strHSNLbl + HSNValue + "  " + strLBlDis + " " + discnt);
+                }
+
+
+                if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                    Tax_Master tax_master = null;
+                    ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                    for (int i = 0; i < order_detail_tax.size(); i++) {
+                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+
+                        int a = tax_master.get_tax_name().length();
+                        if (a > 10) {
+
+                            char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                            for (int k = 0; k < 10; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            tt = tt + " ";
+                        } else {
+                            char[] nm = tax_master.get_tax_name().toUpperCase()
+                                    .toCharArray();
+                            for (int k = 0; k < a; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            int space1 = 10 - a;
+                            for (int v = 0; v < space1; v++) {
+
+                                tt = tt + " ";
+                            }
+                        }
+
+                        String tax_rate;
+//                        tax_rate = Globals.myNumberFormat2Price(Double.parseDouble(order_detail_tax.get(i).get_tax_value()), decimal_check);
+                        double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                        tax_rate = valueFinal + "";
+                        itemFinalTax += valueFinal;
+                        int b = tax_rate.length();
+
+                        if (b > 7) {
+                            char[] r2 = String.valueOf(tax_rate).toCharArray();
+                            for (int k = 0; k < 7; k++) {
+
+                                tt = tt + r2[k];
+                            }
+
+                            mylist.add(tt);
+                            tt = "\n";
+                        } else {
+
+                            int space1 = 7 - b;
+                            for (int v = 0; v < space1; v++) {
+                                tt = tt + " ";
+                            }
+                            char[] r2 = String.valueOf(tax_rate).toCharArray();
+                            for (int k = 0; k < b; k++) {
+                                tt = tt + r2[k];
+                            }
+
+                            mylist.add(tt);
+                            tt = "\n";
+                        }
+                    }
+                    mylist.add(tt);
+                }
+
+                count++;
+            }
+
+            mylist.add("\n---------------------------------------------------------------------");
+
+            mylist.add("إجمالي البن :  " + orders.get_total_item());
+            mylist.add("البند الكمية:  " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check));
+            String subtotal = "";
+            String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+            Cursor cursor1 = database.rawQuery(strTableQry, null);
+            Tax_Master tax_master = null;
+            while (cursor1.moveToNext()) {
+                subtotal = cursor1.getString(0);
+
+            }
+            subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+
+            tt = "";
+            int ln = 0;
+            ln = subtotal.length();
+            int space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + subtotal;
+            mylist.add("\nSubtotal    :  " + tt);
+            mylist.add("\n-----------------------------------------------");
+            if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax " +
+                        " inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code " +
+                        " where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+
+                cursor1 = database.rawQuery(strTableQry, null);
+
+                if (cursor1.moveToFirst()) {
+                    do {
+                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+
+                        tt = "";
+                        int c = tax_master.get_tax_name().length();
+                        if (c > 10) {
+
+                            char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                            for (int k = 0; k < 10; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            tt = tt + " ";
+                        } else {
+                            char[] nm = tax_master.get_tax_name().toUpperCase()
+                                    .toCharArray();
+                            for (int k = 0; k < c; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            int space1 = 10 - c;
+                            for (int v = 0; v < space1; v++) {
+
+                                tt = tt + " ";
+                            }
+                        }
+
+                        String tax_value;
+                        tax_value = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check);
+                        int d = tax_value.length();
+                        tt1 = "";
+                        if (d > 7) {
+                            char[] r1 = String.valueOf(tax_value).toCharArray();
+                            for (int k = 0; k < 7; k++) {
+
+                                tt1 = tt1 + r1[k];
+                            }
+
+
+                            tt1 = "\n";
+                        } else {
+                            int space1 = 7 - d;
+                            for (int v = 0; v < space1; v++) {
+                                tt1 = tt1 + " ";
+                            }
+                            char[] r1 = String.valueOf(tax_value).toCharArray();
+                            for (int k = 0; k < d; k++) {
+                                tt1 = tt1 + r1[k];
+                            }
+
+
+                        }
+                        mylist.add("\n" + tt + "   :  " + tt1);
+                    } while (cursor1.moveToNext());
+
+
+                    tt = "\n";
+
+                    cursor1.close();
+                }
+                mylist.add("\n----------------------------------------------------------------");
+            }
+
+
+            String discount = "0";
+            if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+            } else {
+                discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                if (Globals.strIsDiscountPrint.equals("true")) {
+                    tt = "";
+                    ln = 0;
+                    ln = discount.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + discount;
+                    mylist.add("\nDiscount    :  " + Globals.DiscountPer + "%");
+                    mylist.add("\nDiscount    :  " + tt);
+                }
+            }
+
+            String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+            String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+
+
+            tt = "";
+            ln = 0;
+            ln = tatalAftrDis.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + tatalAftrDis;
+            mylist.add("\nTotal       :  " + tt);
+
+            String total_tax;
+
+            total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+            if (Double.parseDouble(total_tax) > 0d) {
+
+                tt = "";
+                ln = 0;
+                ln = total_tax.length();
+                space = 9 - ln;
+                for (int v = 0; v < space; v++) {
+                    tt = tt + " ";
+                }
+                tt = tt + total_tax;
+                mylist.add("\nTotal Tax   :  " + tt);
+
+
+                mylist.add("\n-----------------------------------------------");
+
+
+                Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                String name = "", value = "";
+                if (cursor.moveToFirst()) {
+                    do {
+                        name = cursor.getString(0);
+                        value = cursor.getString(1);
+
+                        String tax_value;
+                        tax_value = Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check);
+
+                        tt1 = "";
+                        ln = 0;
+                        ln = name.length();
+                        space = 4 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt1 = tt1 + " ";
+                        }
+                        tt1 = tt1 + name;
+
+                        tt = "";
+                        ln = 0;
+                        ln = tax_value.length();
+                        space = 7 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + tax_value;
+                        mylist.add("\n" + tt1 + "   :  " + tt);
+                    } while (cursor.moveToNext());
+                }
+
+            }
+
+            mylist.add("\n---------------------------------------------------------------------");
+
+            String net_amount;
+
+            net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+
+            tt = "";
+            ln = 0;
+            ln = net_amount.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + net_amount;
+
+            String strCurrency;
+            if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                strCurrency = "";
+            } else {
+                strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+            }
+            mylist.add("\nصافي صافي  :  " + tt + strCurrency);
+
+            String tender;
+//        if (decimal_check.equals("3")) {
+//            tender = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_tender()));
+//        } else {
+            tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+//        }
+
+            tt = "";
+            ln = 0;
+            ln = tender.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + tender;
+            mylist.add("\nمناقصة      :  " + tt);
+
+
+            String change_amount;
+//        if (decimal_check.equals("3")) {
+//            change_amount = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_change_amount()));
+//        } else {
+            change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+//        }
+
+            tt = "";
+            ln = 0;
+            ln = change_amount.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + change_amount;
+            mylist.add("\nيتغيرون      :  " + tt);
+            mylist.add("\n-----------------------------------------------");
+
+            ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+            *//*if (order_payment_array.size() > 0) {
+                for (int i = 0; i < order_payment_array.size(); i++) {
+                    Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                    String name = "";
+                    if (payment != null) {
+                        name = payment.get_payment_name();
+                        mylist.add("\n" + name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check));
+                    }
+                }
+                mylist.add("\n-----------------------------------------------");
+            }*//*
+            if (settings.get_Is_Accounts().equals("true")) {
+                if (ck_project_type.equals("standalone")) {
+                    JSONObject jsonObject = new JSONObject();
+                    if (Globals.strContact_Code.equals("")) {
+                        mylist.add("\n**");
+                    } else {
+                        Double showAmount = 0d;
+                        try {
+                            String strCreditAmt = "", strDeditAmount = "";
+                            Double creditAmount = 0d,
+                                    debitAmount = 0d;
+                            Cursor cursor = null;
+
+                            String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                            cursor = database.rawQuery(strQry1, null);
+                            while (cursor.moveToNext()) {
+                                strCreditAmt = cursor.getString(0);
+
+                            }
+                            creditAmount = Double.parseDouble(strCreditAmt);
+
+                            String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                            cursor = database.rawQuery(strQry2, null);
+                            while (cursor.moveToNext()) {
+                                strDeditAmount = cursor.getString(0);
+                            }
+                            debitAmount = Double.parseDouble(strDeditAmount);
+                            showAmount = debitAmount + creditAmount;
+                        } catch (Exception ex) {
+                        }
+
+                        double abs1 = Math.abs(showAmount);
+                        if (showAmount > 0) {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                        } else {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                        }
+                        try {
+                            jsonObject.put("Old Amt", abs1 + "");
+                        } catch (Exception ex) {
+
+                        }
+                        String strCur = "";
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        try {
+                            strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        if (strCur.equals("")) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        try {
+                            jsonObject.put("Current Amt", strCur + "");
+                        } catch (Exception ex) {
+
+                        }
+
+                        Double strBalance = abs1 - Double.parseDouble(strCur);
+                        try {
+                            jsonObject.put("Balance Amt", strBalance + "");
+                        } catch (Exception ex) {
+
+                        }
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                        db.executeDML(strUpdatePayment, database);
+
+                        mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                    }
+                } else {
+                    JSONObject jsonObject = new JSONObject();
+                    if (Globals.strContact_Code.equals("")) {
+                        mylist.add("\n**");
+                    } else {
+                        double abs2 = 0d;
+                        String curAmount = "";
+                        strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                        try {
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            curAmount = "0";
+                        }
+
+                        double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                        double abs1 = Math.abs(ab1);
+                        if (ab1 > 0) {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                        } else {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                        }
+                        try {
+                            jsonObject.put("Old Amt", abs1 + "");
+                        } catch (Exception ex) {
+
+                        }
+
+                        String strCur = "";
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        try {
+                            strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        if (strCur.equals("")) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+                        try {
+                            jsonObject.put("Current Amt", strCur + "");
+                        } catch (Exception ex) {
+
+                        }
+                        Double strBalance = abs1 + abs2 + Double.parseDouble(strCur);
+                        try {
+                            jsonObject.put("Balance Amt", strBalance + "");
+                        } catch (Exception ex) {
+
+                        }
+//                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+//                        db.executeDML(strUpdatePayment, database);
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                        db.executeDML(strUpdatePayment, database);
+
+                        mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                    }
+                }
+            }
+
+            if (!settings.get_Footer_Text().equals("")) {
+                mylist.add("\n    " + settings.get_Footer_Text());
+            }
+            mylist.add("\n            " + settings.get_Copy_Right());
+            mylist.add("\n");
+            mylist.add("\n");
+
+        }
+    }
+    else{
+
+        if (settings.get_Print_Memo().equals("1")) {
+            try {
+
+                Orders ordersobj = Orders.getOrders(getApplicationContext(), database, " where order_code='" + strOrderNo + "'");
+                String Print_type = "0";
+
+
+                mylist.add("" + Globals.objLPR.getCompany_Name() + "\n");
+                mylist.add("Order : " + ordersobj.get_order_code() + "\n");
+
+                if (ordersobj.get_table_code().equals("")) {
+                } else {
+                    mylist.add("Table : " + ordersobj.get_table_code());
+                }
+
+                ArrayList<Order_Detail> order_detail_obj = Order_Detail.getAllOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderNo + "'", database);
+                if (order_detail_obj.size() > 0) {
+                    Double total = 0d;
+
+                    mylist.add("Name         Qty   Price  Total");
+                    mylist.add("--------------------------------\n");
+
+                    for (int i = 0; i < order_detail_obj.size(); i++) {
+                        total = total + Double.parseDouble(order_detail_obj.get(i).get_line_total());
+                        Item item = Item.getItem(getApplicationContext(), " WHERE item_code='" + order_detail_obj.get(i).get_item_code() + "'", database, db);
+                        mylist.add(item.get_item_name().substring(0, 8) + "X" + order_detail_obj.get(i).get_quantity() + "     " + Globals.myNumberFormat2Price(Double.parseDouble(order_detail_obj.get(i).get_sale_price()), decimal_check));
+
+                    }
+                    mylist.add("--------------------------------\n");
+                    mylist.add("Total Amount : " + Globals.myNumberFormat2Price(total, decimal_check));
+                }
+
+                mylist.add("\n");
+                mylist.add("\n");
+
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+
+        } else {
+            String lbl;
+            String tt = "", tt1 = "";
+
+            lbl = LableCentre(Globals.objLPR.getCompany_Name());
+            mylist.add("\n" + lbl);
+            lbl = LableCentre(Globals.objLPR.getAddress());
+            mylist.add("\n" + lbl);
+            lbl = LableCentre(Globals.objLPR.getMobile_No());
+            mylist.add("\n" + lbl);
+
+            try {
+                if (Globals.objLPR.getService_code_tariff().equals("null")||Globals.objLPR.getService_code_tariff().equals("")) {
+
+                } else {
+                    lbl = LableCentre(Globals.objLPR.getService_code_tariff());
+                    mylist.add("\n" + lbl);
+//                    mylist.add("\n" + "Tariff Code");
+                }
+            } catch (Exception ex) {
+
+            }
+            if (Globals.objLPR.getLicense_No().equals("null")||Globals.objLPR.getLicense_No().equals("null")) {
+            } else {
+                mylist.add("\n" + Globals.GSTNo + ":" + Globals.objLPR.getLicense_No());
+            }
+            mylist.add("---------------------------------------------------------------------");
+            lbl = LableCentre("Tax Invoice/فاتورة ضريبية");
+            mylist.add("---------------------------------------------------------------------");
+            mylist.add("\n" + lbl);
+            mylist.add("" + Globals.PrintInvNo + ":" + orders.get_order_code());
+            mylist.add("" + Globals.PrintInvDate + ":" + orders.get_order_date());
+            mylist.add("" + Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name());
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + Globals.PrintCashier + ":" + user.get_name());
+
+            if (Globals.ModeResrv.equals("Resv")) {
+                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                mylist.add("\n" + "Customer/الزبون   : " + contact.get_name());
+                if (contact.get_gstin().length() > 0) {
+                    mylist.add("\n" + "Customer GST No./رقم ضريبة السلع والخدمات للعملاء: " + contact.get_gstin());
+                }
+                Globals.strContact_Name = contact.get_name();
+            } else {
+                if (orders.get_contact_code().equals("")) {
+                    Globals.strContact_Name = "";
+                } else {
+                    try {
+                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                        mylist.add("\n" + "Customer/الزبون   : " + contact.get_name());
+                        if (contact.get_gstin().length() > 0) {
+                            mylist.add("\n" + "Customer GST No./رقم ضريبة السلع والخدمات للعملاء: " + contact.get_gstin());
+                        }
+                        Globals.strContact_Name = contact.get_name();
+                    } catch (Exception ex) {
+
+                    }
+
+                }
+            }
+
+            mylist.add("------------------------------------------------------------------------");
+            mylist.add("Item Name");
+            mylist.add("اسم العنصر");
+            mylist.add("Qty        Price        Total");
+            mylist.add("الكمية        السعر        مجموع");
+            mylist.add("----------------------------------------------------------------------\n");
+            Double itemFinalTax = 0d;
+            int count = 0;
+            while (count < order_detail.size()) {
+
+                String strItemCode = order_detail.get(count).get_item_code();
+
+                String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_code  = '"
+                        + strItemCode + "'  GROUP By order_detail.item_Code");
+                String strItemName_l = Order_Detail.getItemName_L(getApplicationContext(), " WHERE order_detail.item_code  = '"
+                        + strItemCode + "'  GROUP By order_detail.item_Code");
+                String line_total;
+                line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+
+                //item name
+                int l1 = strItemName.length();
+                if (l1 > 24) {
+
+                    char[] nm = strItemName.toUpperCase().toCharArray();
+                    for (int k = 0; k < 24; k++) {
+
+                        tt = tt + nm[k];
+                    }
+                    //tt = tt + " ";
+                    tt = "\n";
+                } else {
+                    char[] nm = strItemName.toUpperCase()
+                            .toCharArray();
+                    for (int k = 0; k < l1; k++) {
+
+                        tt = tt + nm[k];
+                    }
+                    int space = 24 - l1;
+                    for (int v = 0; v < space; v++) {
+
+                        tt = tt + " ";
+                        tt = "\n";
+                    }
+                }
+
+                // item name in arabic
+
+                int l1_ar = strItemName_l.length();
+                if (l1_ar > 24) {
+
+                    char[] nm_ar = strItemName_l.toUpperCase().toCharArray();
+                    for (int k = 0; k < 24; k++) {
+
+                        tt = tt + nm_ar[k];
+                    }
+                    //tt = tt + " ";
+                    tt = "\n";
+                } else {
+                    char[] nm_ar = strItemName_l.toUpperCase()
+                            .toCharArray();
+                    for (int k = 0; k < l1; k++) {
+
+                        tt = tt + nm_ar[k];
+                    }
+                    int space = 24 - l1;
+                    for (int v = 0; v < space; v++) {
+
+                        tt = tt + " ";
+                        tt = "\n";
+                    }
+                }
+                //quantity
+                int l2 = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).length();
+                if (l2 > 8) {
+                    char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                    for (int k = 0; k < 8; k++) {
+                        tt = tt + qt[k];
+                    }
+                    tt = tt + " ";
+                } else {
+                    char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                    for (int k = 0; k < l2; k++) {
+
+                        tt = tt + qt[k];
+                    }
+                    int space = 8 - l2;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                }
+
+                String sale_price;
+
+                Double dDisAfterSalePrice = 0d;
+                Double dDisAfter = 0d;
+                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                //price
+                int l12 = sale_price.length();
+                if (l12 > 6) {
+                    char[] qt = sale_price.toCharArray();
+                    for (int k = 0; k < 6; k++) {
+                        tt = tt + qt[k];
+                    }
+                    tt = tt + " ";
+
+                } else {
+                    char[] qt = sale_price.toCharArray();
+                    for (int k = 0; k < l12; k++) {
+
+                        tt = tt + qt[k];
+                    }
+                    int space = 6 - l12;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                }
+
+                //total
+                int l3 = line_total.length();
+                if (l3 > 7) {
+                    char[] r = String.valueOf(line_total).toCharArray();
+                    for (int k = 0; k < 3; k++) {
+
+                        tt = tt + r[k];
+                    }
+
+                    mylist.add(tt);
+                    tt = "\n";
+                } else {
+                    int space = 7 - l3;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    char[] r = String.valueOf(line_total).toCharArray();
+                    for (int k = 0; k < l3; k++) {
+                        tt = tt + r[k];
+                    }
+                    mylist.add(tt);
+                    tt = "\n";
+
+                }
+
+
+                mylist.add(tt);
+
+                String strHSNLbl = "", HSNValue = "", strLBlDis = "";
+                if (settings.get_HSN_print().equals("true")) {
+                    item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                    HSNValue = item.get_hsn_sac_code();
+                    strHSNLbl = "HSN Code :";
+
+                }
+
+
+                String discnt = "";
+
+                if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                    strLBlDis = "";
+                } else {
+                    if (Globals.strIsDiscountPrint.equals("true")) {
+                        Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                        discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                        strLBlDis = "Discount : ";
+                    } else {
+                        strLBlDis = "";
+                    }
+
+                }
+                if (Globals.strIsDiscountPrint.equals("false") && settings.get_HSN_print().equals("false")) {
+
+                } else {
+                    mylist.add(strHSNLbl + HSNValue + "  " + strLBlDis + " " + discnt);
+                }
+
+
+                if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                    Tax_Master tax_master = null;
+                    ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                    for (int i = 0; i < order_detail_tax.size(); i++) {
+                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+
+                        int a = tax_master.get_tax_name().length();
+                        if (a > 10) {
+
+                            char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                            for (int k = 0; k < 10; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            tt = tt + " ";
+                        } else {
+                            char[] nm = tax_master.get_tax_name().toUpperCase()
+                                    .toCharArray();
+                            for (int k = 0; k < a; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            int space1 = 10 - a;
+                            for (int v = 0; v < space1; v++) {
+
+                                tt = tt + " ";
+                            }
+                        }
+
+                        String tax_rate;
+//                        tax_rate = Globals.myNumberFormat2Price(Double.parseDouble(order_detail_tax.get(i).get_tax_value()), decimal_check);
+                        double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                        tax_rate = valueFinal + "";
+                        itemFinalTax += valueFinal;
+                        int b = tax_rate.length();
+
+                        if (b > 7) {
+                            char[] r2 = String.valueOf(tax_rate).toCharArray();
+                            for (int k = 0; k < 7; k++) {
+
+                                tt = tt + r2[k];
+                            }
+
+                            mylist.add(tt);
+                            tt = "\n";
+                        } else {
+
+                            int space1 = 7 - b;
+                            for (int v = 0; v < space1; v++) {
+                                tt = tt + " ";
+                            }
+                            char[] r2 = String.valueOf(tax_rate).toCharArray();
+                            for (int k = 0; k < b; k++) {
+                                tt = tt + r2[k];
+                            }
+
+                            mylist.add(tt);
+                            tt = "\n";
+                        }
+                    }
+                    mylist.add(tt);
+                }
+
+                count++;
+            }
+
+            mylist.add("---------------------------------------------------------------------");
+
+            mylist.add("Total Item/إجمالي البند    :  " + orders.get_total_item());
+            mylist.add("Item Quantity/البند الكمية     :  " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check));
+            String subtotal = "";
+            String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+            Cursor cursor1 = database.rawQuery(strTableQry, null);
+            Tax_Master tax_master = null;
+            while (cursor1.moveToNext()) {
+                subtotal = cursor1.getString(0);
+
+            }
+            subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+
+            tt = "";
+            int ln = 0;
+            ln = subtotal.length();
+            int space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + subtotal;
+            mylist.add("\nSubtotal    :  " + tt);
+            mylist.add("\n-----------------------------------------------");
+            if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax " +
+                        " inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code " +
+                        " where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+
+                cursor1 = database.rawQuery(strTableQry, null);
+
+                if (cursor1.moveToFirst()) {
+                    do {
+                        tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+
+                        tt = "";
+                        int c = tax_master.get_tax_name().length();
+                        if (c > 10) {
+
+                            char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                            for (int k = 0; k < 10; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            tt = tt + " ";
+                        } else {
+                            char[] nm = tax_master.get_tax_name().toUpperCase()
+                                    .toCharArray();
+                            for (int k = 0; k < c; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            int space1 = 10 - c;
+                            for (int v = 0; v < space1; v++) {
+
+                                tt = tt + " ";
+                            }
+                        }
+
+                        String tax_value;
+                        tax_value = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check);
+                        int d = tax_value.length();
+                        tt1 = "";
+                        if (d > 7) {
+                            char[] r1 = String.valueOf(tax_value).toCharArray();
+                            for (int k = 0; k < 7; k++) {
+
+                                tt1 = tt1 + r1[k];
+                            }
+
+
+                            tt1 = "\n";
+                        } else {
+                            int space1 = 7 - d;
+                            for (int v = 0; v < space1; v++) {
+                                tt1 = tt1 + " ";
+                            }
+                            char[] r1 = String.valueOf(tax_value).toCharArray();
+                            for (int k = 0; k < d; k++) {
+                                tt1 = tt1 + r1[k];
+                            }
+
+
+                        }
+                        mylist.add("\n" + tt + "   :  " + tt1);
+                    } while (cursor1.moveToNext());
+
+
+                    tt = "\n";
+
+                    cursor1.close();
+                }
+                mylist.add("\n----------------------------------------------------------------");
+            }
+
+
+            String discount = "0";
+            if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+            } else {
+                discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                if (Globals.strIsDiscountPrint.equals("true")) {
+                    tt = "";
+                    ln = 0;
+                    ln = discount.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + discount;
+                    mylist.add("\nDiscount    :  " + Globals.DiscountPer + "%");
+                    mylist.add("\nDiscount    :  " + tt);
+                }
+            }
+
+            String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+            String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+
+
+            tt = "";
+            ln = 0;
+            ln = tatalAftrDis.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + tatalAftrDis;
+            mylist.add("\nTotal       :  " + tt);
+
+            String total_tax;
+
+            total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+            if (Double.parseDouble(total_tax) > 0d) {
+
+                tt = "";
+                ln = 0;
+                ln = total_tax.length();
+                space = 9 - ln;
+                for (int v = 0; v < space; v++) {
+                    tt = tt + " ";
+                }
+                tt = tt + total_tax;
+                mylist.add("Total Tax/مجموع الضريبة   :  " + tt);
+
+
+                mylist.add("--------------------------------------------------------------------");
+
+
+                Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                String name = "", value = "";
+                if (cursor.moveToFirst()) {
+                    do {
+                        name = cursor.getString(0);
+                        value = cursor.getString(1);
+
+                        String tax_value;
+                        tax_value = Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check);
+
+                        tt1 = "";
+                        ln = 0;
+                        ln = name.length();
+                        space = 4 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt1 = tt1 + " ";
+                        }
+                        tt1 = tt1 + name;
+
+                        tt = "";
+                        ln = 0;
+                        ln = tax_value.length();
+                        space = 7 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + tax_value;
+                        mylist.add("\n" + tt1 + "   :  " + tt);
+                    } while (cursor.moveToNext());
+                }
+
+            }
+
+            mylist.add("\n---------------------------------------------------------------------");
+
+            String net_amount;
+
+            net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+
+            tt = "";
+            ln = 0;
+            ln = net_amount.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + net_amount;
+
+            String strCurrency;
+            if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                strCurrency = "";
+            } else {
+                strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+            }
+            mylist.add("Net Amount/صافي صافي  :  " + tt + strCurrency);
+
+            String tender;
+//        if (decimal_check.equals("3")) {
+//            tender = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_tender()));
+//        } else {
+            tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+//        }
+
+            tt = "";
+            ln = 0;
+            ln = tender.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + tender;
+            mylist.add("\nTender      :  " + tt);
+
+
+            String change_amount;
+//        if (decimal_check.equals("3")) {
+//            change_amount = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_change_amount()));
+//        } else {
+            change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+//        }
+
+            tt = "";
+            ln = 0;
+            ln = change_amount.length();
+            space = 9 - ln;
+            for (int v = 0; v < space; v++) {
+                tt = tt + " ";
+            }
+            tt = tt + change_amount;
+            mylist.add("Change/يتغيرون      :  " + tt);
+            mylist.add("-------------------------------------------------------------------------");
+
+            ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+            if (order_payment_array.size() > 0) {
+                for (int i = 0; i < order_payment_array.size(); i++) {
+                    Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                    String name = "";
+                    if (payment != null) {
+                        name = payment.get_payment_name();
+                        mylist.add("\n" + name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check));
+                    }
+                }
+                mylist.add("\n------------------------------------------------------------------");
+            }
+            if (settings.get_Is_Accounts().equals("true")) {
+                if (ck_project_type.equals("standalone")) {
+                    JSONObject jsonObject = new JSONObject();
+                    if (Globals.strContact_Code.equals("")) {
+                        mylist.add("\n**");
+                    } else {
+                        Double showAmount = 0d;
+                        try {
+                            String strCreditAmt = "", strDeditAmount = "";
+                            Double creditAmount = 0d,
+                                    debitAmount = 0d;
+                            Cursor cursor = null;
+
+                            String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                            cursor = database.rawQuery(strQry1, null);
+                            while (cursor.moveToNext()) {
+                                strCreditAmt = cursor.getString(0);
+
+                            }
+                            creditAmount = Double.parseDouble(strCreditAmt);
+
+                            String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                            cursor = database.rawQuery(strQry2, null);
+                            while (cursor.moveToNext()) {
+                                strDeditAmount = cursor.getString(0);
+                            }
+                            debitAmount = Double.parseDouble(strDeditAmount);
+                            showAmount = debitAmount + creditAmount;
+                        } catch (Exception ex) {
+                        }
+
+                        double abs1 = Math.abs(showAmount);
+                        if (showAmount > 0) {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                        } else {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                        }
+                        try {
+                            jsonObject.put("Old Amt", abs1 + "");
+                        } catch (Exception ex) {
+
+                        }
+                        String strCur = "";
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        try {
+                            strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        if (strCur.equals("")) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        try {
+                            jsonObject.put("Current Amt", strCur + "");
+                        } catch (Exception ex) {
+
+                        }
+
+                        Double strBalance = abs1 - Double.parseDouble(strCur);
+                        try {
+                            jsonObject.put("Balance Amt", strBalance + "");
+                        } catch (Exception ex) {
+
+                        }
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                        db.executeDML(strUpdatePayment, database);
+
+                        mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                    }
+                } else {
+                    JSONObject jsonObject = new JSONObject();
+                    if (Globals.strContact_Code.equals("")) {
+                        mylist.add("\n**");
+                    } else {
+                        double abs2 = 0d;
+                        String curAmount = "";
+                        strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                        try {
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            curAmount = "0";
+                        }
+
+                        double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                        double abs1 = Math.abs(ab1);
+                        if (ab1 > 0) {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                        } else {
+                            mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                        }
+                        try {
+                            jsonObject.put("Old Amt", abs1 + "");
+                        } catch (Exception ex) {
+
+                        }
+
+                        String strCur = "";
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        try {
+                            strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                            cursor1 = database.rawQuery(strTableQry, null);
+                            if (cursor1.moveToFirst()) {
+                                do {
+                                    strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                } while (cursor1.moveToNext());
+                            }
+                        } catch (Exception ex) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+
+                        if (strCur.equals("")) {
+                            strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                            mylist.add("\nCurrent Amount      :  " + strCur);
+                        }
+                        try {
+                            jsonObject.put("Current Amt", strCur + "");
+                        } catch (Exception ex) {
+
+                        }
+                        Double strBalance = abs1 + abs2 + Double.parseDouble(strCur);
+                        try {
+                            jsonObject.put("Balance Amt", strBalance + "");
+                        } catch (Exception ex) {
+
+                        }
+//                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+//                        db.executeDML(strUpdatePayment, database);
+                        tt = "";
+                        ln = 0;
+                        ln = change_amount.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + change_amount;
+
+                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                        db.executeDML(strUpdatePayment, database);
+
+                        mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                    }
+                }
+            }
+
+            if (!settings.get_Footer_Text().equals("")) {
+                mylist.add("\n    " + settings.get_Footer_Text());
+            }
+            mylist.add("\n            " + settings.get_Copy_Right());
+            mylist.add("\n");
+            mylist.add("\n");
+
+        }
+
+    }
+}
+
+else{
+
+
+}
+*//*
+
+        if (opr.equals("PayCollection")) {
+            final Pay_Collection pay_collection = Pay_Collection.getPay_Collection(getApplicationContext(), " WHERE id = '" + id + "'", database);
+
+            String tt = "", tt1 = "";
+            mylist.add("\n" + "        Receipt Voucher");
+            mylist.add("\nReceipt No.     :    " + pay_collection.get_collection_code());
+            mylist.add("\nDate    :    " + pay_collection.get_collection_date());
+            mylist.add("\nAmount  :" + Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check));
+            String[] str = Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check).split("\\.");
+            if (str.length == 1) {
+                mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " Only ");
+            } else if (str.length == 2) {
+                if (Integer.parseInt(str[1].toString()) == 0) {
+                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD  Only ");
+
+                } else {
+                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD " + Globals.convert(Integer.parseInt(str[1].toString())) + " Fills Only ");
+                }
+            }
+
+            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + pay_collection.get_contact_code() + "'");
+            mylist.add("\nReceived From :    " + contact.get_name());
+            mylist.add("\nCash/Cheque   :    " + pay_collection.get_payment_mode());
+            mylist.add("\nOn Account :    " + pay_collection.get_on_account());
+            mylist.add("\nRemarks :    " + pay_collection.get_remarks());
+
+            if (pay_collection.get_payment_mode().equals("CHEQUE")) {
+                Bank bank = Bank.getBank(getApplicationContext(), " WHERE bank_code='" + pay_collection.get_ref_type() + "'", database);
+                mylist.add("\nBank Name :    " + bank.get_bank_name());
+                mylist.add("\nCheque No :    " + pay_collection.get_ref_no());
+            }
+
+            ArrayList<Pay_Collection_Detail> pay_collection_detail = Pay_Collection_Detail.getAllPay_Collection_Detail(getApplicationContext(), " WHERE collection_code='" + pay_collection.get_collection_code() + "'");
+            if (pay_collection_detail.size() > 0) {
+                mylist.add("\n-----------------------------------------------");
+                mylist.add("\n  Order No          Amount");
+                mylist.add("\n-----------------------------------------------");
+                for (int i = 0; i < pay_collection_detail.size(); i++) {
+                    mylist.add("\n" + "     " + pay_collection_detail.get(i).get_invoice_no() + "               " + pay_collection_detail.get(i).get_amount());
+                }
+
+            }
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + "Cashier     :" + user.get_name());
+            mylist.add("\n" + "Receiver Signature" + "");
+            mylist.add("\n");
+            mylist.add("\n");
+            mylist.add("\n");
+            mylist.add("\n");
+        } else if (lite_pos_registration.getIndustry_Type().equals("4")) {
+            String tt = "", tt1 = "";
+            mylist.add("\n" + "            RECEIPT");
+            try {
+                if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                } else {
+                    mylist.add("\n            " + Globals.objLPR.getService_code_tariff());
+                }
+            } catch (Exception ex) {
+
+            }
+            mylist.add("\n            " + Globals.objLPR.getCompany_Name());
+            mylist.add("\n            " + Globals.objLPR.getAddress());
+            mylist.add("\n            " + Globals.objLPR.getMobile_No());
+            mylist.add("\n" + Globals.PrintDeviceID + "   :   " + Globals.objLPD.getDevice_Name());
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + Globals.PrintCashier + "    :    " + user.get_name());
+            mylist.add("\nRECEIPT NO.    :    " + Globals.objLPD.getDevice_Name());
+            if (Globals.strIsBarcodePrint.equals("true")) {
+                BytesUtil.getPrintBarCode(orders.get_order_code(), 1, 60, 120, 1);
+            }
+            mylist.add("\nIN DT  :    " + DateUtill.PaternDatePrintDate(orders.get_order_date()));
+            mylist.add("\nIN TM  :    " + DateUtill.PaternDatePrintTime(orders.get_order_date()));
+
+            int count = 0;
+            while (count < order_detail.size()) {
+
+                String strItemCode = order_detail.get(count).get_item_code();
+
+                String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                        + strItemCode + "'  GROUP By order_detail.item_Code");
+                int len = 12;
+                if (strItemName.length() > len) {
+                    strItemName = strItemName.substring(0, len);
+                } else {
+                    for (int sLen = strItemName.length(); sLen < len; sLen++) {
+                        strItemName = strItemName + " ";
+                    }
+                }
+
+                String sale_price;
+                Double dDisAfterSalePrice = 0d;
+
+                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                sale_price = Globals.myNumberFormat2Price((Double.parseDouble(dDisAfterSalePrice + "") * Double.parseDouble(order_detail.get(count).get_quantity() + "")), decimal_check);
+                String line_total;
+                mylist.add("\nVEHICLE TYPE :" + DateUtill.PaternDatePrintTime(orders.get_order_date()));
+                mylist.add("\n" + "     " + strItemName + "  Rs. " + sale_price);
+                count++;
+            }
+            mylist.add("\n" + "V.NO :" + orders.get_remarks());
+
+            if (!settings.get_Footer_Text().equals("")) {
+                mylist.add("\n    " + settings.get_Footer_Text());
+            }
+            mylist.add("\n            " + settings.get_Copy_Right());
+            mylist.add("\n");
+            mylist.add("\n");
+
+        }*//*
+        return mylist;
+    }*/
+
+    private ArrayList<String> getlist(Orders orders, ArrayList<Order_Detail> order_detail) {
+        ArrayList<String> mylist = new ArrayList<String>();
+
+                    String lbl;
+                    String tt = "", tt1 = "";
+
+                    lbl = LableCentre(Globals.objLPR.getCompany_Name());
+                    mylist.add("\n" + lbl);
+                    lbl = LableCentre(Globals.objLPR.getAddress());
+                    mylist.add("\n" + lbl);
+                    lbl = LableCentre(Globals.objLPR.getMobile_No());
+                    mylist.add("\n" + lbl);
+
+                    try {
+                        if (Globals.objLPR.getService_code_tariff().equals("null")||Globals.objLPR.getService_code_tariff().equals("")) {
+
+                        } else {
+                            lbl = LableCentre(Globals.objLPR.getService_code_tariff());
+                            mylist.add("\n" + lbl);
+//                    mylist.add("\n" + "Tariff Code");
+                        }
+                    } catch (Exception ex) {
+
+                    }
+                    if (Globals.objLPR.getLicense_No().equals("null")||Globals.objLPR.getLicense_No().equals("")) {
+                    } else {
+                        mylist.add("\n" + Globals.GSTNo + ":" + Globals.objLPR.getLicense_No());
+                    }
+                    mylist.add("\n-------------------------------------------------");
+                    lbl = LableCentre(Globals.PrintOrder);
+                    mylist.add("\n---------------------------------------------------------------------");
+                    mylist.add("\n" + lbl);
+                    mylist.add("" + Globals.PrintInvNo + ":" + orders.get_order_code());
+                    mylist.add("" + Globals.PrintInvDate + ":" + orders.get_order_date());
+                    mylist.add("" + Globals.PrintDeviceID + ":" + Globals.objLPD.getDevice_Name());
+
+                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                    mylist.add("\n" + Globals.PrintCashier + ":" + user.get_name());
+
+                    if (Globals.ModeResrv.equals("Resv")) {
+                        Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                        mylist.add("\n" + "Customer   : " + contact.get_name());
+                        if (contact.get_gstin().length() > 0) {
+                            mylist.add("\n" + "Customer GST No.: " + contact.get_gstin());
+                        }
+                        Globals.strContact_Name = contact.get_name();
+                    } else {
+                        if (orders.get_contact_code().equals("")) {
+                            Globals.strContact_Name = "";
+                        } else {
+                            try {
+                                Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + orders.get_contact_code() + "'");
+                                mylist.add("\n" + "Customer   : " + contact.get_name());
+                                if (contact.get_gstin().length() > 0) {
+                                    mylist.add("\n" + "Customer GST No.: " + contact.get_gstin());
+                                }
+                                Globals.strContact_Name = contact.get_name();
+                            } catch (Exception ex) {
+
+                            }
+
+                        }
+                    }
+
+                    mylist.add("\n---------------------------------------------------------------------");
+                    mylist.add("\nItem Name");
+                    mylist.add("Qty        Price        Total");
+                    mylist.add("\n---------------------------------------------------------------------\n");
+                    Double itemFinalTax = 0d;
+                    int count = 0;
+                    while (count < order_detail.size()) {
+
+                        String strItemCode = order_detail.get(count).get_item_code();
+
+                        String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_code  = '"
+                                + strItemCode + "'  GROUP By order_detail.item_Code");
+
+                        String line_total;
+                        line_total = Globals.myNumberFormat2Price(Double.parseDouble(order_detail.get(count).get_line_total()), decimal_check);
+
+                        //item name
+                        int l1 = strItemName.length();
+                        if (l1 > 24) {
+
+                            char[] nm = strItemName.toUpperCase().toCharArray();
+                            for (int k = 0; k < 24; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            //tt = tt + " ";
+                            tt = "\n";
+                        } else {
+                            char[] nm = strItemName.toUpperCase()
+                                    .toCharArray();
+                            for (int k = 0; k < l1; k++) {
+
+                                tt = tt + nm[k];
+                            }
+                            int space = 24 - l1;
+                            for (int v = 0; v < space; v++) {
+
+                                tt = tt + " ";
+                                tt = "\n";
+                            }
+                        }
+
+                        //quantity
+                        int l2 = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).length();
+                        if (l2 > 8) {
+                            char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                            for (int k = 0; k < 8; k++) {
+                                tt = tt + qt[k];
+                            }
+                            tt = tt + " ";
+                        } else {
+                            char[] qt = Globals.myNumberFormat2QtyDecimal(Double.parseDouble(order_detail.get(count).get_quantity()), qty_decimal_check).toCharArray();
+                            for (int k = 0; k < l2; k++) {
+
+                                tt = tt + qt[k];
+                            }
+                            int space = 8 - l2;
+                            for (int v = 0; v < space; v++) {
+                                tt = tt + " ";
+                            }
+                        }
+
+                        String sale_price;
+
+                        Double dDisAfterSalePrice = 0d;
+                        Double dDisAfter = 0d;
+                        dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                        dDisAfter = (Double.parseDouble(order_detail.get(count).get_sale_price()));
+                        sale_price = Globals.myNumberFormat2Price(Double.parseDouble(dDisAfter + ""), decimal_check);
+
+                        //price
+                        int l12 = sale_price.length();
+                        if (l12 > 6) {
+                            char[] qt = sale_price.toCharArray();
+                            for (int k = 0; k < 6; k++) {
+                                tt = tt + qt[k];
+                            }
+                            tt = tt + " ";
+
+                        } else {
+                            char[] qt = sale_price.toCharArray();
+                            for (int k = 0; k < l12; k++) {
+
+                                tt = tt + qt[k];
+                            }
+                            int space = 6 - l12;
+                            for (int v = 0; v < space; v++) {
+                                tt = tt + " ";
+                            }
+                        }
+
+                        //total
+                        int l3 = line_total.length();
+                        if (l3 > 7) {
+                            char[] r = String.valueOf(line_total).toCharArray();
+                            for (int k = 0; k < 3; k++) {
+
+                                tt = tt + r[k];
+                            }
+
+                            mylist.add(tt);
+                            tt = "\n";
+                        } else {
+                            int space = 7 - l3;
+                            for (int v = 0; v < space; v++) {
+                                tt = tt + " ";
+                            }
+                            char[] r = String.valueOf(line_total).toCharArray();
+                            for (int k = 0; k < l3; k++) {
+                                tt = tt + r[k];
+                            }
+                            mylist.add(tt);
+                            tt = "\n";
+
+                        }
+
+
+                        mylist.add(tt);
+
+                        String strHSNLbl = "", HSNValue = "", strLBlDis = "";
+                        if (settings.get_HSN_print().equals("true")) {
+                            item = Item.getItem(getApplicationContext(), "WHERE item_code = '" + order_detail.get(count).get_item_code() + "'", database, db);
+                            HSNValue = item.get_hsn_sac_code();
+                            strHSNLbl = "HSN Code :";
+
+                        }
+
+
+                        String discnt = "";
+
+                        if (Double.parseDouble(orders.get_total_discount()) == 0) {
+                            strLBlDis = "";
+                        } else {
+                            if (Globals.strIsDiscountPrint.equals("true")) {
+                                Double dis = Double.parseDouble(order_detail.get(count).get_sale_price()) - dDisAfterSalePrice;
+                                discnt = Globals.myNumberFormat2Price(dis, decimal_check);
+                                strLBlDis = "Discount : ";
+                            } else {
+                                strLBlDis = "";
+                            }
+
+                        }
+                        if (Globals.strIsDiscountPrint.equals("false") && settings.get_HSN_print().equals("false")) {
+
+                        } else {
+                            mylist.add(strHSNLbl + HSNValue + "  " + strLBlDis + " " + discnt);
+                        }
+
+
+                        if (settings.get_ItemTax().equals("1") || settings.get_ItemTax().equals("3")) {
+                            Tax_Master tax_master = null;
+                            ArrayList<Order_Detail_Tax> order_detail_tax = Order_Detail_Tax.getAllOrder_Detail_Tax(getApplicationContext(), "WHERE item_code='" + order_detail.get(count).get_item_code() + "' And order_code = '" + order_detail.get(count).get_order_code() + "'", database);
+                            for (int i = 0; i < order_detail_tax.size(); i++) {
+                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + order_detail_tax.get(i).get_tax_id() + "'", database, db);
+
+                                int a = tax_master.get_tax_name().length();
+                                if (a > 10) {
+
+                                    char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                                    for (int k = 0; k < 10; k++) {
+
+                                        tt = tt + nm[k];
+                                    }
+                                    tt = tt + " ";
+                                } else {
+                                    char[] nm = tax_master.get_tax_name().toUpperCase()
+                                            .toCharArray();
+                                    for (int k = 0; k < a; k++) {
+
+                                        tt = tt + nm[k];
+                                    }
+                                    int space1 = 10 - a;
+                                    for (int v = 0; v < space1; v++) {
+
+                                        tt = tt + " ";
+                                    }
+                                }
+
+                                String tax_rate;
+//                        tax_rate = Globals.myNumberFormat2Price(Double.parseDouble(order_detail_tax.get(i).get_tax_value()), decimal_check);
+                                double valueFinal = Double.parseDouble(order_detail_tax.get(i).get_tax_value()) * (Double.parseDouble(order_detail.get(count).get_quantity()));
+                                tax_rate = valueFinal + "";
+                                itemFinalTax += valueFinal;
+                                int b = tax_rate.length();
+
+                                if (b > 7) {
+                                    char[] r2 = String.valueOf(tax_rate).toCharArray();
+                                    for (int k = 0; k < 7; k++) {
+
+                                        tt = tt + r2[k];
+                                    }
+
+                                    mylist.add(tt);
+                                    tt = "\n";
+                                } else {
+
+                                    int space1 = 7 - b;
+                                    for (int v = 0; v < space1; v++) {
+                                        tt = tt + " ";
+                                    }
+                                    char[] r2 = String.valueOf(tax_rate).toCharArray();
+                                    for (int k = 0; k < b; k++) {
+                                        tt = tt + r2[k];
+                                    }
+
+                                    mylist.add(tt);
+                                    tt = "\n";
+                                }
+                            }
+                            mylist.add(tt);
+                        }
+
+                        count++;
+                    }
+
+                    mylist.add("\n---------------------------------------------------------------------");
+
+                    mylist.add("\nTotal Item :  " + orders.get_total_item());
+                    mylist.add("\nItem Quantity:  " + Globals.myNumberFormat2QtyDecimal(Double.parseDouble(orders.get_total_quantity()), qty_decimal_check));
+                    String subtotal = "";
+                    String strTableQry = "Select SUM(order_detail.sale_price*order_detail.quantity) From order_detail where order_detail.order_code ='" + strOrderNo + "' ";
+                    Cursor cursor1 = database.rawQuery(strTableQry, null);
+                    Tax_Master tax_master = null;
+                    while (cursor1.moveToNext()) {
+                        subtotal = cursor1.getString(0);
+
+                    }
+                    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)) - Double.parseDouble(orders.get_total_discount()), decimal_check);
+
+
+                    tt = "";
+                    int ln = 0;
+                    ln = subtotal.length();
+                    int space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + subtotal;
+                    mylist.add("\nSubtotal    :  " + tt);
+                    mylist.add("\n-----------------------------------------------");
+                    if (settings.get_ItemTax().equals("2") || settings.get_ItemTax().equals("3")) {
+
+                        strTableQry = "select order_detail_tax.tax_id,SUM(order_detail_tax.tax_value * order_detail.quantity) As Amt from order_detail_tax " +
+                                " inner join order_detail on order_detail.order_code = order_detail_tax.order_code and  order_detail.item_code = order_detail_tax.item_code " +
+                                " where order_detail.order_code ='" + strOrderNo + "' group by  order_detail_tax.tax_id";
+
+                        cursor1 = database.rawQuery(strTableQry, null);
+
+                        if (cursor1.moveToFirst()) {
+                            do {
+                                tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id='" + cursor1.getString(0) + "'", database, db);
+
+                                tt = "";
+                                int c = tax_master.get_tax_name().length();
+                                if (c > 10) {
+
+                                    char[] nm = tax_master.get_tax_name().toUpperCase().toCharArray();
+                                    for (int k = 0; k < 10; k++) {
+
+                                        tt = tt + nm[k];
+                                    }
+                                    tt = tt + " ";
+                                } else {
+                                    char[] nm = tax_master.get_tax_name().toUpperCase()
+                                            .toCharArray();
+                                    for (int k = 0; k < c; k++) {
+
+                                        tt = tt + nm[k];
+                                    }
+                                    int space1 = 10 - c;
+                                    for (int v = 0; v < space1; v++) {
+
+                                        tt = tt + " ";
+                                    }
+                                }
+
+                                String tax_value;
+                                tax_value = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(1)), decimal_check);
+                                int d = tax_value.length();
+                                tt1 = "";
+                                if (d > 7) {
+                                    char[] r1 = String.valueOf(tax_value).toCharArray();
+                                    for (int k = 0; k < 7; k++) {
+
+                                        tt1 = tt1 + r1[k];
+                                    }
+
+
+                                    tt1 = "\n";
+                                } else {
+                                    int space1 = 7 - d;
+                                    for (int v = 0; v < space1; v++) {
+                                        tt1 = tt1 + " ";
+                                    }
+                                    char[] r1 = String.valueOf(tax_value).toCharArray();
+                                    for (int k = 0; k < d; k++) {
+                                        tt1 = tt1 + r1[k];
+                                    }
+
+
+                                }
+                                mylist.add("\n" + tt + "   :  " + tt1);
+                            } while (cursor1.moveToNext());
+
+
+                            tt = "\n";
+
+                            cursor1.close();
+                        }
+                        mylist.add("\n----------------------------------------------------------------");
+                    }
+
+
+                    String discount = "0";
+                    if (Double.parseDouble(orders.get_total_discount()) == 0) {
+
+                    } else {
+                        discount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_discount()), decimal_check);
+                        if (Globals.strIsDiscountPrint.equals("true")) {
+                            tt = "";
+                            ln = 0;
+                            ln = discount.length();
+                            space = 9 - ln;
+                            for (int v = 0; v < space; v++) {
+                                tt = tt + " ";
+                            }
+                            tt = tt + discount;
+                            mylist.add("\nDiscount    :  " + Globals.DiscountPer + "%");
+                            mylist.add("\nDiscount    :  " + tt);
+                        }
+                    }
+
+                    String ttl_aftr_dis = (Double.parseDouble(subtotal) + itemFinalTax) + "";
+                    String tatalAftrDis = Globals.myNumberFormat2Price(Double.parseDouble(ttl_aftr_dis), decimal_check);
+
+
+                    tt = "";
+                    ln = 0;
+                    ln = tatalAftrDis.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + tatalAftrDis;
+                    mylist.add("\nTotal       :  " + tt);
+
+                    String total_tax;
+
+                    total_tax = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total_tax()), decimal_check);
+                    if (Double.parseDouble(total_tax) > 0d) {
+
+                        tt = "";
+                        ln = 0;
+                        ln = total_tax.length();
+                        space = 9 - ln;
+                        for (int v = 0; v < space; v++) {
+                            tt = tt + " ";
+                        }
+                        tt = tt + total_tax;
+                        mylist.add("\nTotal Tax   :  " + tt);
+
+
+                        mylist.add("\n-----------------------------------------------");
+
+
+                        Cursor cursor = Order_Tax.getOrderTaxValue(getApplicationContext(), " Where order_tax.order_code = '" + strOrderNo + "'");
+                        String name = "", value = "";
+                        if (cursor.moveToFirst()) {
+                            do {
+                                name = cursor.getString(0);
+                                value = cursor.getString(1);
+
+                                String tax_value;
+                                tax_value = Globals.myNumberFormat2Price(Double.parseDouble(value), decimal_check);
+
+                                tt1 = "";
+                                ln = 0;
+                                ln = name.length();
+                                space = 4 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt1 = tt1 + " ";
+                                }
+                                tt1 = tt1 + name;
+
+                                tt = "";
+                                ln = 0;
+                                ln = tax_value.length();
+                                space = 7 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt = tt + " ";
+                                }
+                                tt = tt + tax_value;
+                                mylist.add("\n" + tt1 + "   :  " + tt);
+                            } while (cursor.moveToNext());
+                        }
+
+                    }
+
+                    mylist.add("\n---------------------------------------------------------------------");
+
+                    String net_amount;
+
+                    net_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_total()), decimal_check);
+
+                    tt = "";
+                    ln = 0;
+                    ln = net_amount.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + net_amount;
+
+                    String strCurrency;
+                    if (Globals.objLPD.getCurreny_Symbol().equals("")) {
+                        strCurrency = "";
+                    } else {
+                        strCurrency = "(" + Globals.objLPD.getCurreny_Symbol() + ")";
+                    }
+                    mylist.add("\nNet Amount  :  " + tt + strCurrency);
+
+                    String tender;
+//        if (decimal_check.equals("3")) {
+//            tender = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_tender()));
+//        } else {
+                    tender = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_tender()), decimal_check);
+//        }
+
+                    tt = "";
+                    ln = 0;
+                    ln = tender.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + tender;
+                    mylist.add("\nTender      :  " + tt);
+
+
+                    String change_amount;
+//        if (decimal_check.equals("3")) {
+//            change_amount = Globals.myNumberFormat3Price(Double.parseDouble(orders.get_change_amount()));
+//        } else {
+                    change_amount = Globals.myNumberFormat2Price(Double.parseDouble(orders.get_change_amount()), decimal_check);
+//        }
+
+                    tt = "";
+                    ln = 0;
+                    ln = change_amount.length();
+                    space = 9 - ln;
+                    for (int v = 0; v < space; v++) {
+                        tt = tt + " ";
+                    }
+                    tt = tt + change_amount;
+                    mylist.add("\nChange      :  " + tt);
+                    mylist.add("\n-----------------------------------------------");
+
+                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(getApplicationContext(), " where order_code='" + strOrderNo + "'");
+                    if (order_payment_array.size() > 0) {
+                        for (int i = 0; i < order_payment_array.size(); i++) {
+                            Payment payment = Payment.getPayment(getApplicationContext(), " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+                            String name = "";
+                            if (payment != null) {
+                                name = payment.get_payment_name();
+                                mylist.add("\n" + name + " : " + Globals.myNumberFormat2Price(Double.parseDouble(order_payment_array.get(i).get_pay_amount()), decimal_check));
+                            }
+                        }
+                        mylist.add("\n-----------------------------------------------");
+                    }
+                    if (settings.get_Is_Accounts().equals("true")) {
+                        if (ck_project_type.equals("standalone")) {
+                            JSONObject jsonObject = new JSONObject();
+                            if (Globals.strContact_Code.equals("")) {
+                                mylist.add("\n**");
+                            } else {
+                                Double showAmount = 0d;
+                                try {
+                                    String strCreditAmt = "", strDeditAmount = "";
+                                    Double creditAmount = 0d,
+                                            debitAmount = 0d;
+                                    Cursor cursor = null;
+
+                                    String strQry1 = "Select SUM(paid_amount - cr_amount) FROM Acc_Customer_Credit where contact_code ='" + Globals.strContact_Code + "'";
+                                    cursor = database.rawQuery(strQry1, null);
+                                    while (cursor.moveToNext()) {
+                                        strCreditAmt = cursor.getString(0);
+
+                                    }
+                                    creditAmount = Double.parseDouble(strCreditAmt);
+
+                                    String strQry2 = "Select SUM(amount) from acc_customer_dedit Where order_code IN (Select Order_code from orders where contact_code ='" + Globals.strContact_Code + "')";
+                                    cursor = database.rawQuery(strQry2, null);
+                                    while (cursor.moveToNext()) {
+                                        strDeditAmount = cursor.getString(0);
+                                    }
+                                    debitAmount = Double.parseDouble(strDeditAmount);
+                                    showAmount = debitAmount + creditAmount;
+                                } catch (Exception ex) {
+                                }
+
+                                double abs1 = Math.abs(showAmount);
+                                if (showAmount > 0) {
+                                    mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                                } else {
+                                    mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                                }
+                                try {
+                                    jsonObject.put("Old Amt", abs1 + "");
+                                } catch (Exception ex) {
+
+                                }
+                                String strCur = "";
+                                tt = "";
+                                ln = 0;
+                                ln = change_amount.length();
+                                space = 9 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt = tt + " ";
+                                }
+                                tt = tt + change_amount;
+
+                                try {
+                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+                                    if (cursor1.moveToFirst()) {
+                                        do {
+                                            strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                            mylist.add("\nCurrent Amount      :  " + strCur);
+                                        } while (cursor1.moveToNext());
+                                    }
+                                } catch (Exception ex) {
+                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                }
+
+                                if (strCur.equals("")) {
+                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                }
+
+                                try {
+                                    jsonObject.put("Current Amt", strCur + "");
+                                } catch (Exception ex) {
+
+                                }
+
+                                Double strBalance = abs1 - Double.parseDouble(strCur);
+                                try {
+                                    jsonObject.put("Balance Amt", strBalance + "");
+                                } catch (Exception ex) {
+
+                                }
+                                tt = "";
+                                ln = 0;
+                                ln = change_amount.length();
+                                space = 9 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt = tt + " ";
+                                }
+                                tt = tt + change_amount;
+
+                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                db.executeDML(strUpdatePayment, database);
+
+                                mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                            }
+                        } else {
+                            JSONObject jsonObject = new JSONObject();
+                            if (Globals.strContact_Code.equals("")) {
+                                mylist.add("\n**");
+                            } else {
+                                double abs2 = 0d;
+                                String curAmount = "";
+                                strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + Globals.strContact_Code + "' and orders.z_code='0' and orders.order_code !='" + strOrderNo + "') and order_payment.payment_id='5'";
+                                try {
+                                    cursor1 = database.rawQuery(strTableQry, null);
+                                    if (cursor1.moveToFirst()) {
+                                        do {
+                                            curAmount = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+
+                                        } while (cursor1.moveToNext());
+                                    }
+                                } catch (Exception ex) {
+                                    curAmount = "0";
+                                }
+
+                                double ab1 = Double.parseDouble(Globals.strOldCrAmt) + Double.parseDouble(curAmount);
+                                double abs1 = Math.abs(ab1);
+                                if (ab1 > 0) {
+                                    mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR");
+                                } else {
+                                    mylist.add("\nOld Amount      :  " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR");
+                                }
+                                try {
+                                    jsonObject.put("Old Amt", abs1 + "");
+                                } catch (Exception ex) {
+
+                                }
+
+                                String strCur = "";
+                                tt = "";
+                                ln = 0;
+                                ln = change_amount.length();
+                                space = 9 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt = tt + " ";
+                                }
+                                tt = tt + change_amount;
+
+                                try {
+                                    strTableQry = "Select pay_amount from order_payment where order_code = '" + strOrderNo + "' and payment_id='5'";
+                                    cursor1 = database.rawQuery(strTableQry, null);
+                                    if (cursor1.moveToFirst()) {
+                                        do {
+                                            strCur = Globals.myNumberFormat2Price(Double.parseDouble(cursor1.getString(0)), decimal_check);
+                                            mylist.add("\nCurrent Amount      :  " + strCur);
+                                        } while (cursor1.moveToNext());
+                                    }
+                                } catch (Exception ex) {
+                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                }
+
+                                if (strCur.equals("")) {
+                                    strCur = Globals.myNumberFormat2Price(0, decimal_check);
+                                    mylist.add("\nCurrent Amount      :  " + strCur);
+                                }
+                                try {
+                                    jsonObject.put("Current Amt", strCur + "");
+                                } catch (Exception ex) {
+
+                                }
+                                Double strBalance = abs1 + abs2 + Double.parseDouble(strCur);
+                                try {
+                                    jsonObject.put("Balance Amt", strBalance + "");
+                                } catch (Exception ex) {
+
+                                }
+//                        String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+//                        db.executeDML(strUpdatePayment, database);
+                                tt = "";
+                                ln = 0;
+                                ln = change_amount.length();
+                                space = 9 - ln;
+                                for (int v = 0; v < space; v++) {
+                                    tt = tt + " ";
+                                }
+                                tt = tt + change_amount;
+
+                                String strUpdatePayment = " Update order_payment set field2 = '" + jsonObject.toString() + "' where order_payment_id = '" + order_payment_array.get(0).get_order_payment_id() + "'";
+                                db.executeDML(strUpdatePayment, database);
+
+                                mylist.add("\nBalance Amount      :  " + Globals.myNumberFormat2Price(strBalance, decimal_check));
+                            }
+                        }
+                    }
+
+                    if (!settings.get_Footer_Text().equals("")) {
+                        mylist.add("\n    " + settings.get_Footer_Text());
+                    }
+                    mylist.add("\n            " + settings.get_Copy_Right());
+                    mylist.add("\n");
+                    mylist.add("\n");
+
+
+/*
+
+        if (opr.equals("PayCollection")) {
+            final Pay_Collection pay_collection = Pay_Collection.getPay_Collection(getApplicationContext(), " WHERE id = '" + id + "'", database);
+
+            String tt = "", tt1 = "";
+            mylist.add("\n" + "        Receipt Voucher");
+            mylist.add("\nReceipt No.     :    " + pay_collection.get_collection_code());
+            mylist.add("\nDate    :    " + pay_collection.get_collection_date());
+            mylist.add("\nAmount  :" + Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check));
+            String[] str = Globals.myNumberFormat2Price(Double.parseDouble(pay_collection.get_amount()), decimal_check).split("\\.");
+            if (str.length == 1) {
+                mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " Only ");
+            } else if (str.length == 2) {
+                if (Integer.parseInt(str[1].toString()) == 0) {
+                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD  Only ");
+
+                } else {
+                    mylist.add("\nIn Words:" + Globals.convert(Integer.parseInt(str[0].toString())) + " KD " + Globals.convert(Integer.parseInt(str[1].toString())) + " Fills Only ");
+                }
+            }
+
+            Contact contact = Contact.getContact(getApplicationContext(), database, db, " WHERE contact_code='" + pay_collection.get_contact_code() + "'");
+            mylist.add("\nReceived From :    " + contact.get_name());
+            mylist.add("\nCash/Cheque   :    " + pay_collection.get_payment_mode());
+            mylist.add("\nOn Account :    " + pay_collection.get_on_account());
+            mylist.add("\nRemarks :    " + pay_collection.get_remarks());
+
+            if (pay_collection.get_payment_mode().equals("CHEQUE")) {
+                Bank bank = Bank.getBank(getApplicationContext(), " WHERE bank_code='" + pay_collection.get_ref_type() + "'", database);
+                mylist.add("\nBank Name :    " + bank.get_bank_name());
+                mylist.add("\nCheque No :    " + pay_collection.get_ref_no());
+            }
+
+            ArrayList<Pay_Collection_Detail> pay_collection_detail = Pay_Collection_Detail.getAllPay_Collection_Detail(getApplicationContext(), " WHERE collection_code='" + pay_collection.get_collection_code() + "'");
+            if (pay_collection_detail.size() > 0) {
+                mylist.add("\n-----------------------------------------------");
+                mylist.add("\n  Order No          Amount");
+                mylist.add("\n-----------------------------------------------");
+                for (int i = 0; i < pay_collection_detail.size(); i++) {
+                    mylist.add("\n" + "     " + pay_collection_detail.get(i).get_invoice_no() + "               " + pay_collection_detail.get(i).get_amount());
+                }
+
+            }
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + "Cashier     :" + user.get_name());
+            mylist.add("\n" + "Receiver Signature" + "");
+            mylist.add("\n");
+            mylist.add("\n");
+            mylist.add("\n");
+            mylist.add("\n");
+        } else if (lite_pos_registration.getIndustry_Type().equals("4")) {
+            String tt = "", tt1 = "";
+            mylist.add("\n" + "            RECEIPT");
+            try {
+                if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                } else {
+                    mylist.add("\n            " + Globals.objLPR.getService_code_tariff());
+                }
+            } catch (Exception ex) {
+
+            }
+            mylist.add("\n            " + Globals.objLPR.getCompany_Name());
+            mylist.add("\n            " + Globals.objLPR.getAddress());
+            mylist.add("\n            " + Globals.objLPR.getMobile_No());
+            mylist.add("\n" + Globals.PrintDeviceID + "   :   " + Globals.objLPD.getDevice_Name());
+
+            user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+            mylist.add("\n" + Globals.PrintCashier + "    :    " + user.get_name());
+            mylist.add("\nRECEIPT NO.    :    " + Globals.objLPD.getDevice_Name());
+            if (Globals.strIsBarcodePrint.equals("true")) {
+                BytesUtil.getPrintBarCode(orders.get_order_code(), 1, 60, 120, 1);
+            }
+            mylist.add("\nIN DT  :    " + DateUtill.PaternDatePrintDate(orders.get_order_date()));
+            mylist.add("\nIN TM  :    " + DateUtill.PaternDatePrintTime(orders.get_order_date()));
+
+            int count = 0;
+            while (count < order_detail.size()) {
+
+                String strItemCode = order_detail.get(count).get_item_code();
+
+                String strItemName = Order_Detail.getItemName(getApplicationContext(), " WHERE order_detail.item_Code  = '"
+                        + strItemCode + "'  GROUP By order_detail.item_Code");
+                int len = 12;
+                if (strItemName.length() > len) {
+                    strItemName = strItemName.substring(0, len);
+                } else {
+                    for (int sLen = strItemName.length(); sLen < len; sLen++) {
+                        strItemName = strItemName + " ";
+                    }
+                }
+
+                String sale_price;
+                Double dDisAfterSalePrice = 0d;
+
+                dDisAfterSalePrice = (((Double.parseDouble(order_detail.get(count).get_line_total()) / Double.parseDouble(order_detail.get(count).get_quantity()))) - Double.parseDouble(order_detail.get(count).get_tax()));
+                sale_price = Globals.myNumberFormat2Price((Double.parseDouble(dDisAfterSalePrice + "") * Double.parseDouble(order_detail.get(count).get_quantity() + "")), decimal_check);
+                String line_total;
+                mylist.add("\nVEHICLE TYPE :" + DateUtill.PaternDatePrintTime(orders.get_order_date()));
+                mylist.add("\n" + "     " + strItemName + "  Rs. " + sale_price);
+                count++;
+            }
+            mylist.add("\n" + "V.NO :" + orders.get_remarks());
+
+            if (!settings.get_Footer_Text().equals("")) {
+                mylist.add("\n    " + settings.get_Footer_Text());
+            }
+            mylist.add("\n            " + settings.get_Copy_Right());
+            mylist.add("\n");
+            mylist.add("\n");
+
+        }*/
         return mylist;
     }
-
-
     private void DisplayError(int nError) {
         AlertDialog.Builder b = new AlertDialog.Builder(this);
         b.setTitle("Information");
@@ -8936,10 +18627,8 @@ public class PrintLayout extends PrnDspA1088Activity {
     }
 
     /*加快bitmap回收，减少内存占用*/
-    public static void bitmapRecycle(Bitmap bitmap)
-    {
-        if (bitmap != null && !bitmap.isRecycled())
-        {
+    public static void bitmapRecycle(Bitmap bitmap) {
+        if (bitmap != null && !bitmap.isRecycled()) {
             bitmap.recycle();
         }
     }

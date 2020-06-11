@@ -42,7 +42,8 @@ CREATE TABLE [acc_customer_dedit](
                     [z_no] NVARCHAR(50),
                     [is_active] [BOOLEAN],
                     [modified_by] NVARCHAR(50),
-                    [modified_date] [DATETIME]);
+                    [modified_date] [DATETIME],
+                    [voucher_no] NVARCHAR(50));
 
 CREATE TABLE [purchase](
                   [id] INTEGER PRIMARY KEY AUTOINCREMENT,

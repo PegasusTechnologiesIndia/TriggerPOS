@@ -48,12 +48,11 @@
             android:layout_marginTop="20dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
-
             <Button
-                android:id="@+id/btn_push_order"
+                android:id="@+id/btn_initialize"
                 style="@style/AppTheme.DatabaseButton"
-
-                android:text="@string/Pushorders" />
+                android:text="@string/initialize"
+                />
 
             <Button
                 android:id="@+id/btn_import_table"
@@ -74,10 +73,11 @@
 
 
             <Button
-                android:id="@+id/btn_initialize"
+                android:id="@+id/btn_push_order"
                 style="@style/AppTheme.DatabaseButton"
-                android:text="@string/initialize"
-                />
+
+                android:text="@string/Pushorders" />
+
 
             <Button
                 android:id="@+id/btn_all_sync"
@@ -111,6 +111,7 @@
             <Button
                 android:id="@+id/btn_payment"
                 style="@style/AppTheme.DatabaseButton"
+                android:visibility="gone"
                 android:text="@string/get_payment_methods"
                 />
 

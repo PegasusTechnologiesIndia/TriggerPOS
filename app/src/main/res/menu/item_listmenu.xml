@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto">
+    <item
+        android:id="@+id/action_settings"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+        android:icon="@drawable/ic_search_white_24dp"/>
+    <group android:id="@+id/grp_file">
+    <item
+        android:id="@+id/action_file"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+
+        android:icon="@drawable/get_file"/>
+    </group>
+    <group android:id="@+id/overFlowItemsToHide">
+    <item
+        android:id="@+id/action_send"
+        android:orderInCategory="100"
+        android:title="@string/action_settings"
+        app:showAsAction="always"
+        android:icon="@drawable/cloud"/>
+    </group>
+</menu>

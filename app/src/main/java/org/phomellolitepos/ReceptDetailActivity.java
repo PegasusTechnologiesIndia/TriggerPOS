@@ -21,6 +21,7 @@ import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -35,6 +36,7 @@ import java.util.Random;
 import org.phomellolitepos.Adapter.ReceiptDetailListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
+import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Order_Detail_Tax;
@@ -50,7 +52,7 @@ import woyou.aidlservice.jiuiv5.ICallback;
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
 public class ReceptDetailActivity extends AppCompatActivity {
-    TextView txt_order_no, txt_date, txt_total, txt_tender, txt_change, txt_tax, txt_subtotal, txt_discount, txt_ttl_aftr_dis, txt_item_tax;
+    TextView txt_order_no, txt_date, txt_total, txt_tender, txt_change, txt_tax, txt_subtotal, txt_discount, txt_ttl_aftr_dis, txt_item_tax,txt_customername;
     ReceiptDetailListAdapter receiptDetailListAdapter;
     ArrayList<Order_Detail> arrayList;
     String order_code;
@@ -68,8 +70,11 @@ public class ReceptDetailActivity extends AppCompatActivity {
     private String PrinterType = "";
     BluetoothService mService = null;
     private Settings settings;
+    Contact contact;
     ProgressDialog progressDialog;
+    String customername;
     TableLayout tl;
+    LinearLayout layout_customer;
     //    PrintDirect printDirect = new PrintDirect();
     private ServiceConnection connService = new ServiceConnection() {
 
@@ -125,6 +130,8 @@ public class ReceptDetailActivity extends AppCompatActivity {
         txt_discount = (TextView) findViewById(R.id.txt_discount);
         txt_ttl_aftr_dis = (TextView) findViewById(R.id.txt_ttl_aftr_dis);
         txt_item_tax = (TextView) findViewById(R.id.txt_item_tax);
+        txt_customername = (TextView) findViewById(R.id.txt_customername);
+        layout_customer = (LinearLayout) findViewById(R.id.Layout3);
         tl = (TableLayout) findViewById(R.id.tl);
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
@@ -259,6 +266,21 @@ public class ReceptDetailActivity extends AppCompatActivity {
 
         txt_order_no.setText(objOrder.get_order_code());
         txt_date.setText(objOrder.get_order_date());
+        try {
+            contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_code='" + objOrder.get_contact_code() + "'");
+           if(contact==null){
+               txt_customername.setVisibility(View.GONE);
+               layout_customer.setVisibility(View.GONE);
+           }
+           else {
+               customername = contact.get_name();
+               layout_customer.setVisibility(View.VISIBLE);
+               txt_customername.setText(customername);
+           }
+        }
+        catch(Exception e){
+
+        }
         String strNetAmount = String.valueOf(objOrder.get_total());
         if (strNetAmount.equals("null")) {
             txt_total.setText("");

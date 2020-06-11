@@ -273,7 +273,7 @@ public class Pos_Balance {
     }
 
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid) {
+    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String serialno,String androidid,String mykey) {
         //        Database db = new Database(context);
         //        SQLiteDatabase database = db.getReada,bleDatabase();
         String strZ_Code = "", resultStr = "0";
@@ -291,7 +291,8 @@ public class Pos_Balance {
             JSONObject z_close_row = new JSONObject();
             JSONArray array_z_detail = new JSONArray();
             JSONObject z_detail_row = new JSONObject();
-
+            JSONArray array_acc_detail = new JSONArray();
+            JSONObject acc_detail_row = new JSONObject();
 
             int columnCount_z_close = cursor_z_close.getColumnCount();
             while (cursor_z_close.moveToNext()) {
@@ -330,12 +331,25 @@ public class Pos_Balance {
                 }
                 cursor_z_detail.close();
 
+                String acc_detail_qry = "SELECT voucher_no FROM  Acc_Customer_Credit Where z_no = '" + strZ_Code + "'";
+                Cursor cursor_acc_detail = database.rawQuery(acc_detail_qry, null);
+
+                int columnCount_acc_detail = cursor_acc_detail.getColumnCount();
+                while (cursor_acc_detail.moveToNext()) {
+                    acc_detail_row = new JSONObject();
+                    for (int index = 0; index < columnCount_acc_detail; index++) {
+                        acc_detail_row.put(cursor_acc_detail.getColumnName(index).toLowerCase(), cursor_acc_detail.getString(index));
+                    }
+                    array_acc_detail.put(acc_detail_row);
+                }
+                cursor_acc_detail.close();
 
                 sender.put("pos_balance", array_pos_balance);
                 sender.put("z_close", array_z_close);
                 sender.put("z_detail", array_z_detail);
+               sender.put("account_detail", array_acc_detail);
 //                    sender.put("pos_balance".toLowerCase(), sender);
-                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid);
+                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid,serialno,androidid,mykey);
                 final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                 final String strStatus = collection_jsonObject1.getString("status");
                 if (strStatus.equals("true")) {
@@ -364,7 +378,7 @@ public class Pos_Balance {
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString,String liccustomerid) {
+    private static String send_item_json_on_server(String JsonString,String liccustomerid,String serialno,String androidid,String mykey) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
@@ -373,10 +387,10 @@ public class Pos_Balance {
         ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_1", serialno));
         nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_3", androidid));
+        nameValuePairs.add(new BasicNameValuePair("sys_code_4", mykey));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
         nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
         try {

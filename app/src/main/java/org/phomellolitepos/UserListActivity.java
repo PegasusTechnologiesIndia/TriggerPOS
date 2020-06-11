@@ -183,8 +183,12 @@ public class UserListActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.list_menu, menu);
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            menu.setGroupVisible(R.id.overFlowItemsToHide, false);
+        }
         return true;
     }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -338,7 +342,7 @@ public class UserListActivity extends AppCompatActivity {
                     } else {
 
                         user = new User(getApplicationContext(), bg_id, jsonObject_bg1.getString("user_group_id"), jsonObject_bg1.getString("user_code"), jsonObject_bg1.getString("name"), jsonObject_bg1.getString("email"), jsonObject_bg1.getString("password"), jsonObject_bg1.getString("max_discount"), jsonObject_bg1.getString("image"), jsonObject_bg1.getString("is_active"), "0", "0", "N", jsonObject_bg1.getString("app_user_permission"));
-                        long l = user.updateUser("user_code=? And user_id=? ", database, new String[]{bg_code, bg_id});
+                        long l = user.updateUser("user_code=? And user_id=?", database, new String[]{bg_code, bg_id});
                         if (l > 0) {
                             succ_manu = "2";
 
@@ -354,7 +358,11 @@ public class UserListActivity extends AppCompatActivity {
             if (succ_manu.equals("1")) {
                 database.setTransactionSuccessful();
                 database.endTransaction();
-            } else {
+            } else if (succ_manu.equals("2")) {
+                database.setTransactionSuccessful();
+                database.endTransaction();
+            }
+            else{
                 database.endTransaction();
             }
         } catch (JSONException e) {

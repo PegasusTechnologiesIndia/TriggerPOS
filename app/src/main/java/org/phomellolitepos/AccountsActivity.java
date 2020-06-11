@@ -39,6 +39,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.android.volley.toolbox.JsonObjectRequest;
 import com.basewin.aidl.OnPrinterListener;
 import com.basewin.define.FontsType;
 import com.basewin.services.PrinterBinder;
@@ -105,6 +106,7 @@ public class AccountsActivity extends AppCompatActivity {
     String strCRAmount;
     private static final String TAG = "PrinterTestDemo";
     private String PrinterType = "";
+    private String is_directPrint = "";
     private TimerCountTools timeTools;
     Lite_POS_Device liteposdevice;
     String liccustomerid;
@@ -112,7 +114,7 @@ public class AccountsActivity extends AppCompatActivity {
     private PrinterListener printer_callback = new PrinterListener();
     public static PrinterBinder printer;
     BluetoothService mService = null;
-    String serial_no, android_id, myKey, device_id,imei_no;
+    String serial_no, android_id, myKey, device_id, imei_no;
     /*定义打印机状态*/
     private final int PRINTER_NORMAL = 0;
     /*打印机当前状态*/
@@ -297,7 +299,7 @@ public class AccountsActivity extends AppCompatActivity {
             return;
         }
         device_id = telephonyManager.getDeviceId();
-        imei_no=telephonyManager.getImei();
+        imei_no = telephonyManager.getImei();
         modified_by = Globals.user;
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
@@ -336,11 +338,14 @@ public class AccountsActivity extends AppCompatActivity {
         settings = Settings.getSettings(getApplicationContext(), database, "");
         if (settings == null) {
             PrinterType = "";
+            is_directPrint = "";
         } else {
             try {
                 PrinterType = settings.getPrinterId();
+                is_directPrint = settings.get_Is_Print_Dialog_Show();
             } catch (Exception ex) {
                 PrinterType = "";
+                is_directPrint = "";
             }
         }
 
@@ -378,17 +383,17 @@ public class AccountsActivity extends AppCompatActivity {
 
             @Override
             public void onRunResult(final boolean isSuccess) throws RemoteException {
-                Log.i(TAG,"result:" + isSuccess + "\n");
+                Log.i(TAG, "result:" + isSuccess + "\n");
             }
 
             @Override
             public void onReturnString(final String value) throws RemoteException {
-                Log.i(TAG,"result:" + value + "\n");
+                Log.i(TAG, "result:" + value + "\n");
             }
         };
 
         //绑定服务
-        Intent intent=new Intent();
+        Intent intent = new Intent();
         intent.setPackage("com.iposprinter.iposprinterservice");
         intent.setAction("com.iposprinter.iposprinterservice.IPosPrintService");
 //        startService(intent);
@@ -403,7 +408,7 @@ public class AccountsActivity extends AppCompatActivity {
         printerStatusFilter.addAction(PRINTER_THP_NORMALTEMP_ACTION);
         printerStatusFilter.addAction(PRINTER_MOTOR_HIGHTEMP_ACTION);
         printerStatusFilter.addAction(PRINTER_BUSY_ACTION);
-        registerReceiver(IPosPrinterStatusListener,printerStatusFilter);
+        registerReceiver(IPosPrinterStatusListener, printerStatusFilter);
 
         Intent intent_1 = new Intent();
         intent_1.setPackage("woyou.aidlservice.jiuiv5");
@@ -509,7 +514,12 @@ public class AccountsActivity extends AppCompatActivity {
             new Thread() {
                 @Override
                 public void run() {
-                    GetCustomerCreditDetail();
+                    try {
+                        GetCustomerCreditDetail();
+                    }
+                    catch(Exception e){
+
+                    }
                     pDialog.dismiss();
 //                    runOnUiThread(new Runnable() {
 //                        public void run() {
@@ -555,7 +565,12 @@ public class AccountsActivity extends AppCompatActivity {
                         new DialogInterface.OnClickListener() {
                             public void onClick(DialogInterface dialog,
                                                 int which) {
-                                pay_amount();
+                                try {
+                                    pay_amount();
+                                }
+                                catch(Exception e){
+
+                                }
                             }
                         });
 
@@ -648,7 +663,9 @@ public class AccountsActivity extends AppCompatActivity {
 //                                                if (PrinterType.equals("1")) {
                                         try {
 
+
                                             print();
+
 
                                         } catch (Exception ex) {
                                         }
@@ -677,61 +694,166 @@ public class AccountsActivity extends AppCompatActivity {
                     new Thread() {
                         @Override
                         public void run() {
-                            String result = SendCustomerCreditDetail();
+
+                                String result = SendCustomerCreditDetail();
+                            pDialog.dismiss();
+
                             if (result.equals("1")) {
-                                pDialog.dismiss();
                                 runOnUiThread(new Runnable() {
                                     public void run() {
-                                        Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(getApplicationContext(), " where contact_code='" + code + "'", database);
-                                        Double strOldBalance = 0d;
-                                        Double strAmount = 0d;
-                                        if (acc_customer == null) {
+                                        try {
+                                            Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(getApplicationContext(), " where contact_code='" + code + "'", database);
+                                            Double strOldBalance = 0d;
+                                            Double strAmount = 0d;
+                                            if (acc_customer == null) {
+                                                try {
 //                                                    strOldBalance = Double.parseDouble(acc_customer.get_amount());
-                                            strAmount = strOldBalance + Double.parseDouble(edt_pd_amt.getText().toString());
-                                            acc_customer = new Acc_Customer(getApplicationContext(), null, code, strAmount + "");
-                                            acc_customer.insertAcc_Customer(database);
-                                        } else {
-                                            strOldBalance = Double.parseDouble(acc_customer.get_amount());
-                                            strAmount = strOldBalance + Double.parseDouble(edt_pd_amt.getText().toString());
-                                            acc_customer.set_amount(strAmount + "");
-                                            long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{code}, database);
-                                        }
+                                                    strAmount = strOldBalance + Double.parseDouble(edt_pd_amt.getText().toString());
+                                                    acc_customer = new Acc_Customer(getApplicationContext(), null, code, strAmount + "");
+                                                    acc_customer.insertAcc_Customer(database);
+                                                }
+                                                catch(Exception e){
 
+                                                }
+                                            } else {
+                                                try {
+                                                    strOldBalance = Double.parseDouble(acc_customer.get_amount());
+                                                    strAmount = strOldBalance + Double.parseDouble(edt_pd_amt.getText().toString());
+                                                    acc_customer.set_amount(strAmount + "");
+                                                    long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{code}, database);
+                                                }catch(Exception e){
+
+                                                }
+                                            }
+
+                                        }
+                                        catch(Exception e){
+
+                                        }
 //                                                if (PrinterType.equals("1")) {
                                         try {
+                                            runOnUiThread(new Runnable() {
+                                                @Override
+                                                public void run() {
+                                                    // If  Is Direct Print  Parameter true
+                                                    // If not then give dialog  if press yes then print function call else no
+                                                    if (PrinterType.equals("") || PrinterType.equals("0")) {
+                                                        Toast.makeText(AccountsActivity .this,"Transaction successful",Toast.LENGTH_SHORT).show();
+                                                        Intent intent1 = new Intent(AccountsActivity.this, AccountsListActivity.class);
+                                                        startActivity(intent1);
+                                                        finish();
+                                                    } else {
+                                                        try {
 
-                                            print();
+                                                            if (is_directPrint.equals("true")) {
 
-                                        } catch (Exception ex) {
-                                        }
+                                                                print();
+                                                                Toast.makeText(AccountsActivity .this,"Tranction successful",Toast.LENGTH_SHORT).
+
+                                                                        show();
+
+                                                                Intent intent1 = new Intent(AccountsActivity.this, AccountsListActivity.class);
+
+                                                                startActivity(intent1);
+
+                                                                finish();
+                                                            } else {
+
+
+
+
+                                                                android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(AccountsActivity.this);
+
+                                                                alertDialog.setTitle(R.string.accounts);
+                                                                alertDialog.setMessage(R.string.acct_alertmsg);
+                                                                alertDialog.setIcon(R.drawable.delete);
+
+                                                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog, int which) {
+
+                                                                        try {
+                                                                            print();
+                                                                            Toast.makeText(AccountsActivity .this,"Transaction successful",Toast.LENGTH_SHORT).
+
+                                                                                    show();
+
+                                                                            Intent intent1 = new Intent(AccountsActivity.this, AccountsListActivity.class);
+
+                                                                            startActivity(intent1);
+
+                                                                            finish();
+                                                                        } catch (Exception e) {
+
+                                                                        }
+                                                                    }
+                                                                });
+
+
+                                                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                    public void onClick(DialogInterface dialog, int which) {
+
+                                                                        dialog.cancel();
+                                                                        Toast.makeText(AccountsActivity .this,"Transaction successful",Toast.LENGTH_SHORT).
+
+                                                                                show();
+
+                                                                        Intent intent1 = new Intent(AccountsActivity.this, AccountsListActivity.class);
+
+                                                                        startActivity(intent1);
+
+                                                                        finish();
+                                                                    }
+                                                                });
+
+                                                                // Showing Alert Message
+                                                                alertDialog.show();
+
+                                                                // give dialgo
+
+                                                                // yes  call print
+                                                            }
+
+
+                                                        } catch (Exception e) {
+
+                                                        }
+
+                                                    }
+                                                }
+                                            });
+                                        } catch(Exception ex){
+
+
+                                    }
 
 //                                                }
-                                        Toast.makeText(AccountsActivity.this, "Tranction successful", Toast.LENGTH_SHORT).show();
-                                        Intent intent1 = new Intent(AccountsActivity.this, AccountsListActivity.class);
-                                        startActivity(intent1);
-                                        finish();
-                                    }
-                                });
-                            } else {
-                                runOnUiThread(new Runnable() {
-                                    public void run() {
-                                        pDialog.dismiss();
-                                        Toast.makeText(AccountsActivity.this, "Tranction error", Toast.LENGTH_SHORT).show();
-                                    }
-                                });
-                            }
-                        }
-                    }.start();
-                }
 
-            } else {
-                pDialog.dismiss();
-                Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        } else
+
+                        {
+                            runOnUiThread(new Runnable() {
+                                public void run() {
+                                    pDialog.dismiss();
+                                    Toast.makeText(AccountsActivity.this, "Transaction error", Toast.LENGTH_SHORT).show();
+                                }
+                            });
+                        }
+                    }
+                }.start();
             }
+
         } else {
-            Toast.makeText(getApplicationContext(), "Can't paid", Toast.LENGTH_SHORT).show();
+            pDialog.dismiss();
+            Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
         }
+    } else
+
+    {
+        Toast.makeText(getApplicationContext(), "Can't paid", Toast.LENGTH_SHORT).show();
     }
+}
 
     private String SaveTransaction() {
 
@@ -740,7 +862,7 @@ public class AccountsActivity extends AppCompatActivity {
 
         try {
 
-            Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, txt_cus_code.getText().toString(), "0", edt_pd_amt.getText().toString().trim(), "0", "0", "1", modified_by, date);
+            Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, txt_cus_code.getText().toString(), "0", edt_pd_amt.getText().toString().trim(), "0", "0", "1", modified_by, date,"");
             long l = acc_customer_credit.insertAcc_Customer_Credit(database);
             if (l > 0) {
                 succ = "1";
@@ -909,7 +1031,7 @@ public class AccountsActivity extends AppCompatActivity {
                                 mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                                 mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                                 mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
+                                mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
                             }
                         } catch (RemoteException e) {
                             e.printStackTrace();
@@ -995,7 +1117,11 @@ public class AccountsActivity extends AppCompatActivity {
                 }
             }
 
-        } else {
+        }
+
+        // Cloud mode
+
+        else {
             if (PrinterType.equals("7")) {
                 try {
                     for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
@@ -1077,291 +1203,1077 @@ public class AccountsActivity extends AppCompatActivity {
                     e.printStackTrace();
                 }
             } else if (PrinterType.equals("3")) {
-                byte[] ab1;
-                ab1 = BytesUtil.setAlignCenter(1);
-                mService.write(ab1);
-                mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
-                mService.sendMessage("" + Globals.objLPR.getAddress() + "\n", "GBK");
-                mService.sendMessage("" + Globals.objLPR.getMobile_No() + "\n", "GBK");
-                try {
-                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
-                    } else {
-                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff() + "\n", "GBK");
-                    }
-                } catch (Exception ex) {
-                }
-                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
-                } else {
-                    mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
-                }
-                ab1 = BytesUtil.setAlignCenter(1);
-                mService.write(ab1);
-                mService.sendMessage("Payment Receipt\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                mService.sendMessage("Company Name" + ":" + contact.get_company_name(), "GBK");
-                mService.sendMessage("Customer Code" + ":" + txt_cus_code.getText().toString(), "GBK");
-                mService.sendMessage("Customer Name" + ":" + txt_cus_name.getText().toString(), "GBK");
-                mService.sendMessage("Contact No" + ":" + contact.get_contact_1(), "GBK");
-                mService.sendMessage("Date" + ":" + date.substring(0, 10), "GBK");
-                mService.sendMessage("Old Balance\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(2);
-                mService.write(ab1);
-                mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                mService.sendMessage("Received\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(2);
-                mService.write(ab1);
-                mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                Double ab;
-                if (txt_type_total.getText().toString().equals("DR")) {
-                    ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
-                    double abs1 = Math.abs(ab);
-                    if (ab > 0) {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
+
+                if(decimal_check.equals("2")) {
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        byte[] ab1;
+                        ab1 = BytesUtil.setAlignCenter(1);
                         mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(0);
-                        mService.write(ab1);
-                    }
-                } else {
-                    ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
-                    double abs1 = Math.abs(ab);
-                    if (ab > 0) {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
-                        mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") CR" + "\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(0);
-                        mService.write(ab1);
-                    } else {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
-                        mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "GBK");
-                    }
-                }
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("Signature :" + user.get_name() + "\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-            } else if (PrinterType.equals("4")) {
-                byte[] ab1;
-                ab1 = BytesUtil.setAlignCenter(1);
-                mService.write(ab1);
-                mService.sendMessage("" + Globals.objLPR.getCompany_Name() + "\n", "GBK");
-                mService.sendMessage("" + Globals.objLPR.getAddress() + "\n", "GBK");
-                mService.sendMessage("" + Globals.objLPR.getMobile_No() + "\n", "GBK");
-                try {
-                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
-                    } else {
-                        mService.sendMessage("" + Globals.objLPR.getService_code_tariff() + "\n", "GBK");
-                    }
-                } catch (Exception ex) {
-                }
-                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
-                } else {
-                    mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
-                }
-                ab1 = BytesUtil.setAlignCenter(1);
-                mService.write(ab1);
-                mService.sendMessage("Payment Receipt\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                mService.sendMessage("Company Name" + ":" + contact.get_company_name(), "GBK");
-                mService.sendMessage("Customer Code" + ":" + txt_cus_code.getText().toString(), "GBK");
-                mService.sendMessage("Customer Name" + ":" + txt_cus_name.getText().toString(), "GBK");
-                mService.sendMessage("Contact No" + ":" + contact.get_contact_1(), "GBK");
-                mService.sendMessage("Date" + ":" + date.substring(0, 10), "GBK");
-                mService.sendMessage("Old Balance\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(2);
-                mService.write(ab1);
-                mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                mService.sendMessage("Received\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(2);
-                mService.write(ab1);
-                mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "GBK");
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                Double ab;
-                if (txt_type_total.getText().toString().equals("DR")) {
-                    ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
-                    double abs1 = Math.abs(ab);
-                    if (ab > 0) {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
-                        mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(0);
-                        mService.write(ab1);
-                    }
-                } else {
-                    ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
-                    double abs1 = Math.abs(ab);
-                    if (ab > 0) {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
-                        mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") CR" + "\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(0);
-                        mService.write(ab1);
-                    } else {
-                        mService.sendMessage("Current Balance\n", "GBK");
-                        ab1 = BytesUtil.setAlignCenter(2);
-                        mService.write(ab1);
-                        mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "GBK");
-                    }
-                }
-                ab1 = BytesUtil.setAlignCenter(0);
-                mService.write(ab1);
-                User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("Signature :" + user.get_name() + "\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-                mService.sendMessage("\n", "GBK");
-            } else if (PrinterType.equals("8")) {
-                ThreadPoolManager.getInstance().executeTask(new Runnable() {
-                    @Override
-                    public void run() {
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
                         try {
-                            for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
-                                String Print_type = "0";
-                                mIPosPrinterService.setPrinterPrintFontSize(32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 32, 1,callbackPPT8555);
-                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 32,1, callbackPPT8555);
-                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 32,1, callbackPPT8555);
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff() , "GBK");
+                            }
+                        } catch (Exception ex) {
+                        }
+                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                        } else {
+                            mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
+                        }
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Payment Receipt", "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        mService.sendMessage("Company Name" + ":" + Globals.objLPR.getCompany_Name(), "GBK");
+                        mService.sendMessage("Customer Code" + ":" + txt_cus_code.getText().toString(), "GBK");
+                        mService.sendMessage("Customer Name" + ":" + txt_cus_name.getText().toString(), "GBK");
+                        mService.sendMessage("Contact No" + ":" + contact.get_contact_1(), "GBK");
+                        mService.sendMessage("Date" + ":" + date.substring(0, 10), "GBK");
+                        mService.sendMessage("Old Balance :" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                       // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        mService.sendMessage("Received :"+ Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                       // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        Double ab;
+                        if (txt_type_total.getText().toString().equals("DR")) {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check)+ " DR", "GBK");
+
+                              //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR" , "GBK");
+
+                            }
+                        } else {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check) + " CR", "GBK");
+
+                               // mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+
+                            } else {
+                                mService.sendMessage("Current Balance :" +Globals.myNumberFormat2Price(abs1, decimal_check) + " DR", "GBK");
+
+                              //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                            }
+                        }
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+
+                        mService.sendMessage("(Amounts in " + Globals.objLPD.getCurreny_Symbol() + ")" , "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Signature :" + user.get_name(), "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+                    }
+                }
+
+                else{
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        byte[] ab1;
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff() , "GBK");
+                            }
+                        } catch (Exception ex) {
+                        }
+                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                        } else {
+                            mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
+                        }
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Payment Receipt", "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        mService.sendMessage("Company Name" + ":" + Globals.objLPR.getCompany_Name(), "GBK");
+                        mService.sendMessage("Customer Code" + ":" + txt_cus_code.getText().toString(), "GBK");
+                        mService.sendMessage("Customer Name" + ":" + txt_cus_name.getText().toString(), "GBK");
+                        mService.sendMessage("Contact No" + ":" + contact.get_contact_1(), "GBK");
+                        mService.sendMessage("Date" + ":" + date.substring(0, 10), "GBK");
+                        mService.sendMessage("Old Balance :" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        mService.sendMessage("Received :"+ Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        Double ab;
+                        if (txt_type_total.getText().toString().equals("DR")) {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check)+ " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR" , "GBK");
+
+                            }
+                        } else {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check) + " CR", "GBK");
+
+                                // mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+
+                            } else {
+                                mService.sendMessage("Current Balance :" +Globals.myNumberFormat2Price(abs1, decimal_check) + " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                            }
+                        }
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                        mService.sendMessage("(Amounts in " + Globals.objLPD.getCurreny_Symbol() + ")" , "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Signature :" + user.get_name(), "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+                    }
+
+                }
+
+            }
+                else if (PrinterType.equals("4")) {
+
+                if(decimal_check.equals("2")) {
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        byte[] ab1;
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff() , "GBK");
+                            }
+                        } catch (Exception ex) {
+                        }
+                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                        } else {
+                            mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
+                        }
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("Payment Receipt", "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        mService.sendMessage("Company Name" + "   :" + Globals.objLPR.getCompany_Name(), "GBK");
+                        mService.sendMessage("Customer Code" + "  :" + txt_cus_code.getText().toString(), "GBK");
+                        mService.sendMessage("Customer Name" + "  :" + txt_cus_name.getText().toString(), "GBK");
+                        mService.sendMessage("Contact No" + "     :" + contact.get_contact_1(), "GBK");
+                        mService.sendMessage("Date" + "           :" + date.substring(0, 10), "GBK");
+                        mService.sendMessage("Old Balance         :" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        mService.sendMessage("Received            :"+ Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        Double ab;
+                        if (txt_type_total.getText().toString().equals("DR")) {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance            :"+ Globals.myNumberFormat2Price(abs1, decimal_check)+ " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR" , "GBK");
+
+                            }
+                        } else {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance            :"+ Globals.myNumberFormat2Price(abs1, decimal_check) + " CR", "GBK");
+
+                                // mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+
+                            } else {
+                                mService.sendMessage("Current Balance :" +Globals.myNumberFormat2Price(abs1, decimal_check) + " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                            }
+                        }
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+
+                        mService.sendMessage("(Amounts in " + Globals.objLPD.getCurreny_Symbol() + ")" , "GBK");
+                        mService.sendMessage("------------------------------------------------", "GBK");
+                        mService.sendMessage("Signature :" + user.get_name(), "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+                    }
+                }
+
+                else{
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        byte[] ab1;
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff() , "GBK");
+                            }
+                        } catch (Exception ex) {
+                        }
+                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                        } else {
+                            mService.sendMessage(Globals.GSTNo + ":" + Globals.objLPR.getLicense_No(), "GBK");
+                        }
+                        ab1 = BytesUtil.setAlignCenter(1);
+                        mService.write(ab1);
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("Payment Receipt", "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        mService.sendMessage("Company Name" + ":" + Globals.objLPR.getCompany_Name(), "GBK");
+                        mService.sendMessage("Customer Code" + ":" + txt_cus_code.getText().toString(), "GBK");
+                        mService.sendMessage("Customer Name" + ":" + txt_cus_name.getText().toString(), "GBK");
+                        mService.sendMessage("Contact No" + ":" + contact.get_contact_1(), "GBK");
+                        mService.sendMessage("Date" + ":" + date.substring(0, 10), "GBK");
+                        mService.sendMessage("Old Balance :" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check), "GBK");
+
+                        mService.sendMessage("Received :"+ Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        // mService.sendMessage(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check), "GBK");
+
+                        Double ab;
+                        if (txt_type_total.getText().toString().equals("DR")) {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check)+ " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check)+ "DR" , "GBK");
+
+                            }
+                        } else {
+                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                            double abs1 = Math.abs(ab);
+                            if (ab > 0) {
+                                mService.sendMessage("Current Balance :"+ Globals.myNumberFormat2Price(abs1, decimal_check) + " CR", "GBK");
+
+                                // mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "CR", "GBK");
+
+                            } else {
+                                mService.sendMessage("Current Balance :" +Globals.myNumberFormat2Price(abs1, decimal_check) + " DR", "GBK");
+
+                                //  mService.sendMessage(Globals.myNumberFormat2Price(abs1, decimal_check) + "DR", "GBK");
+                            }
+                        }
+                        ab1 = BytesUtil.setAlignCenter(0);
+                        mService.write(ab1);
+                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                        mService.sendMessage("(Amounts in " + Globals.objLPD.getCurreny_Symbol() + ")" , "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("Signature :" + user.get_name(), "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("\n", "GBK");
+                        mService.sendMessage("\n", "GBK");
+
+                    }
+
+                }
+            } else if (PrinterType.equals("8")) {
+
+                if(decimal_check.equals("2")) {
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
                                 try {
-                                    if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
 
-                                    } else {
-                                        mIPosPrinterService.printSpecifiedTypeText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 32, callbackPPT8555);
-                                    }
-                                } catch (Exception ex) {
-                                }
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
 
-                                if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
-                                } else {
-                                    mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
-                                }
+                                            }
+                                        } catch (Exception ex) {
+                                        }
 
-                                mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
 
-                                mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "", 48, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                        }
 
-                                if(contact.get_company_name().length()>0) {
-                                    mIPosPrinterService.printSpecifiedTypeText("Company Name \n", "", 32, callbackPPT8555);
-                                    mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                    mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 32, callbackPPT8555);
-
-                                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                }
-                                mIPosPrinterService.printSpecifiedTypeText("Customer Code \n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText( txt_cus_code.getText().toString(), "ST", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("Customer Name \n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText( txt_cus_name.getText().toString(), "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("Contact No \n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText(contact.get_contact_1(), "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-
-                                mIPosPrinterService.printSpecifiedTypeText("Date \n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText(date.substring(0, 10),"", 32, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-
-                                mIPosPrinterService.printSpecifiedTypeText("Old Balance\n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-
-                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("Received\n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-
-                                Double ab;
-                                if (txt_type_total.getText().toString().equals("DR")) {
-                                    ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
-                                    double abs1 = Math.abs(ab);
-                                    if (ab > 0) {
-                                        mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 32, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("Payment Receipt\n", "", 24, 1, callbackPPT8555);
+
+                                        //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (contact.get_company_name().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Company Name \n", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Code : " + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Name : " + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Contact No : " + contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Date : " + date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Old Balance : " + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Received : " + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+//                                mIPosPrinterService.printSpecifiedTypeText("Customer Code \n", "", 24, callbackPPT8555);
+//                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+//                                mIPosPrinterService.printSpecifiedTypeText(txt_cus_code.getText().toString(), "ST", 24, callbackPPT8555);
+                              /*  mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Customer Name \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(txt_cus_name.getText().toString(), "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Contact No \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(contact.get_contact_1(), "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+
+                                mIPosPrinterService.printSpecifiedTypeText("Date \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(date.substring(0, 10), "", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Old Balance\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Received\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+
+                                        Double ab;
+                                        if (txt_type_total.getText().toString().equals("DR")) {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                //  mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                      /*  mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 32, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 24, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            }
+                                        } else {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                // mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                     /*   mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                    }
-                                } else {
-                                    ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
-                                    double abs1 = Math.abs(ab);
-                                    if (ab > 0) {
-                                        mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 32, callbackPPT8555);
-                                        mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
-                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") CR" + "\n", "ST", 32, callbackPPT8555);
+                                     //   mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") CR" + "\n", "ST", 24, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                //   mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                     /*   mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                    } else {
-                                        mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 32, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            }
+                                        }
+                                        //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("(Amounts in" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Signature : \n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
+                             /*   mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else if (settings.get_Print_Lang().equals("1")) {
+
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            }
+                                        } catch (Exception ex) {
+                                        }
+
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                                         mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("إيصال الدفع\n", "", 24, 1, callbackPPT8555);
+
+                                        //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (contact.get_company_name().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("اسم الشركة", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("كود العميل : " + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("اسم الزبون : " + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("رقم الاتصال : " + contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("تاريخ : " + date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("توازن قديم : " + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("تم الاستلام : " + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+
+                                        Double ab;
+                                        if (txt_type_total.getText().toString().equals("DR")) {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        } else {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        }
+                                        //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("(المبالغ ب" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("التوقيع : ", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
                                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                        mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 32, callbackPPT8555);
-                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+
+                    } else {
+
+                            ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                                @Override
+                                public void run() {
+                                    try {
+                                        for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                            String Print_type = "0";
+                                            mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                            try {
+                                                if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                                } else {
+                                                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                                                }
+                                            } catch (Exception ex) {
+                                            }
+
+                                            if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                            } else {
+                                                //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
+
+                                                //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                            }
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                            mIPosPrinterService.PrintSpecFormatText("Payment Receipt/إيصال الدفع\n", "", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            if (contact.get_company_name().length() > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Company Name/سم الشركة \n", "", 24, callbackPPT8555);
+                                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                                mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                            }
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer Code/كود العميل \n" + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Customer Name/اسم الزبون\n" + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Contact No/رقم الاتصال\n" + contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Date/تاريخ\n" + date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Old Balance/توازن قديم\n" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Received/تم الاستلام\n" + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            Double ab;
+                                            if (txt_type_total.getText().toString().equals("DR")) {
+                                                ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n" + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                                }
+                                            } else {
+                                                ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                                double abs1 = Math.abs(ab);
+                                                if (ab > 0) {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                                } else {
+                                                    mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                                }
+                                            }
+                                            //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                            User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                            // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("(Amounts in/(المبالغ ب" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.printSpecifiedTypeText("Signature/التوقيع\n", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
+                             /*   mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                            mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                        }
+                                    } catch (RemoteException e) {
+                                        e.printStackTrace();
                                     }
                                 }
-                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
-                                User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                            });
 
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-
-                                mIPosPrinterService.printSpecifiedTypeText("Signature :" + user.get_name() + "\n", "", 32, callbackPPT8555);
-                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-
-
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
-                                mIPosPrinterService.printerPerformPrint(160,  callbackPPT8555);
-                            }
-                        } catch (RemoteException e) {
-                            e.printStackTrace();
                         }
                     }
-                });
+
+
+                else{
+
+                    if (settings.get_Print_Lang().equals("0")) {
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            }
+                                        } catch (Exception ex) {
+                                        }
+
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("Payment Receipt\n", "", 24, 1, callbackPPT8555);
+
+                                        //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (contact.get_company_name().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Company Name \n", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Code : " + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Name : " + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Contact No : " + contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Date : " + date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Old Balance : " + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Received : " + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+//                                mIPosPrinterService.printSpecifiedTypeText("Customer Code \n", "", 24, callbackPPT8555);
+//                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+//                                mIPosPrinterService.printSpecifiedTypeText(txt_cus_code.getText().toString(), "ST", 24, callbackPPT8555);
+                              /*  mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Customer Name \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(txt_cus_name.getText().toString(), "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Contact No \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(contact.get_contact_1(), "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+
+                                mIPosPrinterService.printSpecifiedTypeText("Date \n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(date.substring(0, 10), "", 24, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Old Balance\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText("Received\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "", 24, callbackPPT8555);
+                                mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+
+                                        Double ab;
+                                        if (txt_type_total.getText().toString().equals("DR")) {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                //  mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                      /*  mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            }
+                                        } else {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                // mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                     /*   mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                     //   mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") CR" + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance : " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+                                                //   mIPosPrinterService.printSpecifiedTypeText("Current Balance\n", "", 24, callbackPPT8555);
+                                     /*   mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                       // mIPosPrinterService.printSpecifiedTypeText(Globals.myNumberFormat2Price(abs1, decimal_check) + "(" + Globals.objLPD.getCurreny_Symbol() + ") DR" + "\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                            }
+                                        }
+                                        //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("(Amounts in" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Signature : \n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
+                             /*   mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+                    } else if (settings.get_Print_Lang().equals("1")) {
+
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            }
+                                        } catch (Exception ex) {
+                                        }
+
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("إيصال الدفع\n", "", 24, 1, callbackPPT8555);
+
+                                        //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (contact.get_company_name().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("اسم الشركة", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("كود العميل : " + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("اسم الزبون : " + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("رقم الاتصال : " + contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("تاريخ : " + date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("توازن قديم : " + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("تم الاستلام : " + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+
+                                        Double ab;
+                                        if (txt_type_total.getText().toString().equals("DR")) {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        } else {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText("الرصيد الحالي : " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        }
+                                        //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("(المبالغ ب" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("التوقيع : ", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+
+                    } else {
+
+                        ThreadPoolManager.getInstance().executeTask(new Runnable() {
+                            @Override
+                            public void run() {
+                                try {
+                                    for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
+                                        String Print_type = "0";
+                                        mIPosPrinterService.setPrinterPrintFontSize(24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                                        try {
+                                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                                            } else {
+                                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            }
+                                        } catch (Exception ex) {
+                                        }
+
+                                        if (Globals.objLPR.getLicense_No().equals("null") || Globals.objLPR.getLicense_No().equals("")) {
+                                        } else {
+                                            //  mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getLicense_No() + "\n", "", 24, 1, callbackPPT8555);
+
+                                            //  mIPosPrinterService.printColumnsText(new String[]{Globals.GSTNo, ":", Globals.objLPR.getLicense_No()}, new int[]{6, 1, 14}, new int[]{0, 0, 0}, 0, callbackPPT8555);
+                                        }
+
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.PrintSpecFormatText("Payment Receipt/إيصال الدفع\n", "", 24, 1, callbackPPT8555);
+
+                                        //  mIPosPrinterService.printSpecifiedTypeText("Payment Receipt\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        if (contact.get_company_name().length() > 0) {
+                                            mIPosPrinterService.printSpecifiedTypeText("Company Name/سم الشركة \n", "", 24, callbackPPT8555);
+                                            mIPosPrinterService.setPrinterPrintAlignment(2, callbackPPT8555);
+                                            mIPosPrinterService.printSpecifiedTypeText(contact.get_company_name(), "ST", 24, callbackPPT8555);
+
+                                            mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        }
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Code/كود العميل \n" + txt_cus_code.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Customer Name/اسم الزبون\n" + txt_cus_name.getText().toString() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Contact No/رقم الاتصال\n"+ contact.get_contact_1() + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Date/تاريخ\n"+date.substring(0, 10) + "\n", "ST", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Old Balance/توازن قديم\n" + Globals.myNumberFormat2Price(Double.parseDouble(txt_total_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Received/تم الاستلام\n" + Globals.myNumberFormat2Price(Double.parseDouble(edt_pd_amt.getText().toString()), decimal_check) + "\n", "ST", 24, callbackPPT8555);
+
+
+                                        Double ab;
+                                        if (txt_type_total.getText().toString().equals("DR")) {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) + Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n" + Globals.myNumberFormat2Price(abs1, decimal_check) + " DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        } else {
+                                            ab = Double.parseDouble(txt_total_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString());
+                                            double abs1 = Math.abs(ab);
+                                            if (ab > 0) {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n " + Globals.myNumberFormat2Price(abs1, decimal_check) + " CR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            } else {
+                                                mIPosPrinterService.printSpecifiedTypeText("Current Balance/الرصيد الحالي\n " + Globals.myNumberFormat2Price(abs1, decimal_check) + "DR" + "\n", "ST", 24, callbackPPT8555);
+
+
+                                            }
+                                        }
+                                        //mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                                        User user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+                                        // mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("(Amounts in/(المبالغ ب" + Globals.objLPD.getCurreny_Symbol() + ")" + "\n", "ST", 18, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                                        mIPosPrinterService.printSpecifiedTypeText("Signature/التوقيع\n", "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText(user.get_name(), "", 24, callbackPPT8555);
+                                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+
+                             /*   mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);*/
+                                        mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
+                                        mIPosPrinterService.printerPerformPrint(160, callbackPPT8555);
+                                    }
+                                } catch (RemoteException e) {
+                                    e.printStackTrace();
+                                }
+                            }
+                        });
+
+                    }
+
+
+
+
+                }
+
+
+
+
+            }
+               else if(PrinterType.equals("2")) {
+
+
+
+
             } else {
                 if (woyouService == null) {
                 } else {
@@ -1483,18 +2395,22 @@ public class AccountsActivity extends AppCompatActivity {
                                             strCheckAmmt = 0d;
 //                                        abs1 = Math.abs(0);
                                         }
-                                        abs = Math.abs(strCheckAmmt);
-                                        if (strCheckAmmt > 0) {
-                                            txt_type.setText("CR");
-                                            txt_type.setTextColor(Color.parseColor("#FF0000"));
+                                        try {
+                                            abs = Math.abs(strCheckAmmt);
+                                            if (strCheckAmmt > 0) {
+                                                txt_type.setText("CR");
+                                                txt_type.setTextColor(Color.parseColor("#FF0000"));
 
-                                        } else {
-                                            txt_type.setText("DR");
-                                            txt_type.setTextColor(Color.parseColor("#228B22"));
+                                            } else {
+                                                txt_type.setText("DR");
+                                                txt_type.setTextColor(Color.parseColor("#228B22"));
+
+                                            }
+                                            txt_cr_amt.setText(Globals.myNumberFormat2Price(abs, decimal_check));
+                                        }
+                                        catch(Exception e){
 
                                         }
-                                        txt_cr_amt.setText(Globals.myNumberFormat2Price(abs, decimal_check));
-
                                         String curAmount = "";
                                         try {
                                             String strTableQry = "Select sum(pay_amount) from order_payment left join orders on orders.order_code = order_payment.order_code where orders.order_code In(select orders.order_code from orders where orders.contact_code = '" + code + "' and orders.z_code = '0' and order_payment.payment_id='5')";
@@ -1522,12 +2438,12 @@ public class AccountsActivity extends AppCompatActivity {
                                                         txt_total_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
                                                         txt_type_total.setText("DR");
                                                         txt_type_total.setTextColor(Color.parseColor("#228B22"));
-                                                        edt_pd_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
+                                                        // edt_pd_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
                                                     } else {
                                                         txt_total_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
                                                         txt_type_total.setText("CR");
                                                         txt_type_total.setTextColor(Color.parseColor("#FF0000"));
-                                                        edt_pd_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
+                                                        // edt_pd_amt.setText(Globals.myNumberFormat2Price(abs1, decimal_check));
                                                     }
                                                 } catch (Exception ex) {
                                                     txt_total_amt.setText(Globals.myNumberFormat2Price(0, decimal_check));
@@ -1567,11 +2483,10 @@ public class AccountsActivity extends AppCompatActivity {
                             } catch (Exception ex) {
                             }
                         }
-                    }
-                    else if(strStatus.equals("false")){
+                    } else if (strStatus.equals("false")) {
 
                         try {
-                            if(strmsg.equals("Device Not Found")){
+                            if (strmsg.equals("Device Not Found")) {
 
                                 Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
                                 lite_pos_device.setStatus("Out");
@@ -1586,13 +2501,11 @@ public class AccountsActivity extends AppCompatActivity {
 
                             }
 
+                        } catch (Exception e) {
+                            System.out.println("Device not found Exception " + e.getMessage());
                         }
-                        catch(Exception e){
-                            System.out.println("Device not found Exception "+ e.getMessage());
-                        }
-                    }
-
-                    else {
+                    } else {
+                        pDialog.dismiss();
                         runOnUiThread(new Runnable() {
                             public void run() {
                                 Toast.makeText(getApplicationContext(), "No credit found", Toast.LENGTH_SHORT).show();
@@ -1601,6 +2514,7 @@ public class AccountsActivity extends AppCompatActivity {
                     }
 
                 } catch (JSONException e) {
+                    pDialog.dismiss();
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(getApplicationContext(), "No credit found", Toast.LENGTH_SHORT).show();
@@ -1613,132 +2527,147 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
     private String SendCustomerCreditDetail() {
+
         String succ = "0";
-        database.beginTransaction();
-        String serverData = SendCusCrDetailFromServer();
         try {
-            final JSONObject jsonObject_manufacture = new JSONObject(serverData);
-            final String strStatus = jsonObject_manufacture.getString("status");
-            final String strmsg = jsonObject_manufacture.getString("message");
-            if (strStatus.equals("true")) {
-                Double balance = Double.parseDouble(txt_cr_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString().trim());
-                String strBalance = Globals.myNumberFormat2Price(balance, decimal_check);
-                Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, txt_cus_code.getText().toString(), txt_cr_amt.getText().toString(), edt_pd_amt.getText().toString().trim(), strBalance, "0", "1", modified_by, date);
-                long l = acc_customer_credit.insertAcc_Customer_Credit(database);
-                if (l > 0) {
-                    succ = "1";
-                }
-            }
-            else if(strStatus.equals("false")){
+            database.beginTransaction();
+            String serverData = SendCusCrDetailFromServer();
+            try {
+                final JSONObject jsonObject_manufacture = new JSONObject(serverData);
+                final String strStatus = jsonObject_manufacture.getString("status");
+                final String strmsg = jsonObject_manufacture.getString("message");
+                JSONObject result = jsonObject_manufacture.getJSONObject("result");
+                if (strStatus.equals("true")) {
 
-                try {
-                    if(strmsg.equals("Device Not Found")){
+                    String accountid= result.getString("account_id");
 
-                        Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-                        lite_pos_device.setStatus("Out");
-                        long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
-                        if (ct > 0) {
 
-                            Intent intent_category = new Intent(AccountsActivity.this, LoginActivity.class);
-                            startActivity(intent_category);
-                            finish();
+                    Double balance = Double.parseDouble(txt_cr_amt.getText().toString()) - Double.parseDouble(edt_pd_amt.getText().toString().trim());
+                    String strBalance = Globals.myNumberFormat2Price(balance, decimal_check);
+                    Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, txt_cus_code.getText().toString(), txt_cr_amt.getText().toString(), edt_pd_amt.getText().toString().trim(), strBalance, "0", "1", modified_by, date,accountid);
+                    long l = acc_customer_credit.insertAcc_Customer_Credit(database);
+                    if (l > 0) {
+                        succ = "1";
+                    }
+                } else if (strStatus.equals("false")) {
+
+                    try {
+                        if (strmsg.equals("Device Not Found")) {
+
+                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                            lite_pos_device.setStatus("Out");
+                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                            if (ct > 0) {
+
+                                Intent intent_category = new Intent(AccountsActivity.this, LoginActivity.class);
+                                startActivity(intent_category);
+                                finish();
+                            }
+
+
                         }
 
-
+                    } catch (Exception e) {
+                        System.out.println("Device not found Exception " + e.getMessage());
                     }
-
+                } else {
+                    database.endTransaction();
                 }
-                catch(Exception e){
-                    System.out.println("Device not found Exception "+ e.getMessage());
+
+                if (succ.equals("1")) {
+                    database.setTransactionSuccessful();
+                    database.endTransaction();
                 }
-            }
-
-
-            else {
+            } catch (JSONException e) {
                 database.endTransaction();
             }
+        }catch(Exception e){
 
-            if (succ.equals("1")) {
-                database.setTransactionSuccessful();
-                database.endTransaction();
-            }
-        } catch (JSONException e) {
-            database.endTransaction();
         }
         return succ;
     }
 
     private String GetCusCrDetailFromServer() {
         String serverData = null;//
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
+        try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(
 
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts");
-        ArrayList nameValuePairs = new ArrayList(9);
-        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
-        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
-        nameValuePairs.add(new BasicNameValuePair("contact_code", code));
-        nameValuePairs.add(new BasicNameValuePair("type", "S"));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
-        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
-        System.out.println("get accounts"+ nameValuePairs);
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+                    "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts");
+            ArrayList nameValuePairs = new ArrayList(9);
+            nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
+            nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+            nameValuePairs.add(new BasicNameValuePair("contact_code", code));
+            nameValuePairs.add(new BasicNameValuePair("type", "S"));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+            nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+            System.out.println("get accounts" + nameValuePairs);
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                serverData = EntityUtils.toString(httpEntity);
+                Log.d("response", serverData);
+                System.out.println("response get accounts" + serverData);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
-            System.out.println("response get accounts"+ serverData);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        catch(Exception e){
+
         }
         return serverData;
     }
 
     private String SendCusCrDetailFromServer() {
         String serverData = null;//
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts/data");
-        ArrayList nameValuePairs = new ArrayList(10);
-        nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
-        nameValuePairs.add(new BasicNameValuePair("contact_code", code));
-        nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
-        nameValuePairs.add(new BasicNameValuePair("type", "S"));
-        nameValuePairs.add(new BasicNameValuePair("amount", edt_pd_amt.getText().toString().trim()));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_1",serial_no));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_3",android_id));
-        nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
-        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
-        System.out.println("send account "+ nameValuePairs);
+        try {
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(
+                    "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/accounts/data");
+            ArrayList nameValuePairs = new ArrayList(10);
+            nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
+            nameValuePairs.add(new BasicNameValuePair("contact_code", code));
+            nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+            nameValuePairs.add(new BasicNameValuePair("type", "S"));
+            nameValuePairs.add(new BasicNameValuePair("amount", edt_pd_amt.getText().toString().trim()));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
+            nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
+            nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+            System.out.println("send account " + nameValuePairs);
 //        nameValuePairs.add(new BasicNameValuePair("modified_by", modified_by));
-        try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                serverData = EntityUtils.toString(httpEntity);
+                Log.d("response", serverData);
+                System.out.println("response send account " + nameValuePairs);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
-            System.out.println("response send account "+ nameValuePairs);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        catch(Exception e){
+
         }
         return serverData;
 
@@ -1816,41 +2745,42 @@ public class AccountsActivity extends AppCompatActivity {
     }
 
 
-    class PrinterListener implements OnPrinterListener {
-        private final String TAG = "Print";
+class PrinterListener implements OnPrinterListener {
+    private final String TAG = "Print";
 
-        @Override
-        public void onStart() {
-            // TODO 打印开始
-            // Print start
+    @Override
+    public void onStart() {
+        // TODO 打印开始
+        // Print start
 //            LOGD("start print");
-        }
+    }
 
-        @Override
-        public void onFinish() {
-            // TODO 打印结束
-            // End of the print
+    @Override
+    public void onFinish() {
+        // TODO 打印结束
+        // End of the print
 //            LOGD("pint success");
-            timeTools.stop();
+        timeTools.stop();
 //            LOGD("time cost：" + timeTools.getProcessTime());
-        }
+    }
 
-        @Override
-        public void onError(int errorCode, String detail) {
-            // TODO 打印出错
-            // print error
+    @Override
+    public void onError(int errorCode, String detail) {
+        // TODO 打印出错
+        // print error
 //            LOGD("print error" + " errorcode = " + errorCode + " detail = " + detail);
-            if (errorCode == PrinterBinder.PRINTER_ERROR_NO_PAPER) {
-                Toast.makeText(AccountsActivity.this, "paper runs out during printing", Toast.LENGTH_SHORT).show();
-            }
-            if (errorCode == PrinterBinder.PRINTER_ERROR_OVER_HEAT) {
-                Toast.makeText(AccountsActivity.this, "over heat during printing", Toast.LENGTH_SHORT).show();
-            }
-            if (errorCode == PrinterBinder.PRINTER_ERROR_OTHER) {
-                Toast.makeText(AccountsActivity.this, "other error happen during printing", Toast.LENGTH_SHORT).show();
-            }
+        if (errorCode == PrinterBinder.PRINTER_ERROR_NO_PAPER) {
+            Toast.makeText(AccountsActivity.this, "paper runs out during printing", Toast.LENGTH_SHORT).show();
+        }
+        if (errorCode == PrinterBinder.PRINTER_ERROR_OVER_HEAT) {
+            Toast.makeText(AccountsActivity.this, "over heat during printing", Toast.LENGTH_SHORT).show();
+        }
+        if (errorCode == PrinterBinder.PRINTER_ERROR_OTHER) {
+            Toast.makeText(AccountsActivity.this, "other error happen during printing", Toast.LENGTH_SHORT).show();
         }
     }
+
+}
 
     public void printerInit() {
         ThreadPoolManager.getInstance().executeTask(new Runnable() {

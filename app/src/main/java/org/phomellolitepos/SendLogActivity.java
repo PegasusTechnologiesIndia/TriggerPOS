@@ -97,11 +97,11 @@ public class SendLogActivity extends AppCompatActivity {
     private void send_email_manager() {
         String dtt = Globals.Reportnamedate();
         try {
-            String[] recipients = {"pegasusq8@gmail.com","paliwalneeraj.pegasus@gmail.com"};
+            String[] recipients = {"pegasusq8@gmail.com"};
             final SendLogActivity.SendEmailAsyncTask email = new SendLogActivity.SendEmailAsyncTask();
             email.activity = this;
 
-            email.m = new GMailSender("pegasusq8@gmail.com","@Neeraj@99534388","smtp.gmail.com","465");
+            email.m = new GMailSender("pegasusq8@gmail.com","@Purbia@99534388","smtp.gmail.com","465");
             email.m.set_from("pegasusq8@gmail.com");
             email.m.setBody("Log file attached." + logs);
             email.m.set_to(recipients);

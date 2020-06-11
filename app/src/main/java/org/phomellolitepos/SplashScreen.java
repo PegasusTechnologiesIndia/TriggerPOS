@@ -69,8 +69,12 @@ import sunmi.ds.data.Data;
 import sunmi.ds.data.DataPacket;
 import sunmi.ds.data.UPacketFactory;
 
+import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
+import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
+import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SplashScreen extends AppCompatActivity {
     Lite_POS_Registration lite_pos_registration;
@@ -195,18 +199,35 @@ public class SplashScreen extends AppCompatActivity {
         }
     };
 
-    private boolean checkPermission() {
-        int result = ContextCompat.checkSelfPermission(getApplicationContext(), READ_EXTERNAL_STORAGE);
-        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
 
-        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED;
-    }
-
-    @RequiresApi(api = Build.VERSION_CODES.O)
+    @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_spash_screen);
+
+        try {
+            if (isReadStorageAllowed()) {
+                create_database();
+                return;
+            } else {
+                if (Build.VERSION.SDK_INT >= 23) {
+                    requestStoragePermission();
+                } else {
+                    try {
+                        create_database();
+                    }
+                    catch(Exception e){
+
+                    }
+                }
+            }
+        }
+        catch(Exception e){
+            Toast.makeText(SplashScreen.this, getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+            finishAffinity();
+            System.exit(0);
+        }
         serial_no = Build.SERIAL;
         android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
@@ -229,57 +250,55 @@ public class SplashScreen extends AppCompatActivity {
             imei_no=telephonyManager.getImei();
         }
 //
-    if (checkPermission()) {
-            create_database();
-            return;
-        } else {
-            if (Build.VERSION.SDK_INT >= 23) {
-                requestPermission();
-            } else {
-                create_database();
-            }
-        }
+
+    }
+
+    private boolean checkPermission() {
+        int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
+
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int result3 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
+        int result4 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
+        int result5 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_PHONE_STATE);
+        return result == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED;
     }
 
     private void create_database() {
         try {
             db = new Database(getApplicationContext());
             database = db.getWritableDatabase();
-            javaEncryption = new JavaEncryption();
-            Date d = new Date();
-            SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-            date = format.format(d);
 
-            Settings settings = Settings.getSettings(getApplicationContext(), database, "");
-            if (settings == null) {
-                InputStream ins = SplashScreen.this.getResources().openRawResource(
-                        R.raw.litepos);
-                BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
-                try {
-                    String line = null;
-                    String sql = "";
-                    while ((line = reader.readLine()) != null) {
-                        sql += line;
-                    }
-                    ins.close();
-                    runInsert(database, sql);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                } catch (Exception e) {
-                    e.printStackTrace();
-                }
-            }
-        } catch (Exception ex) {
-            ex.printStackTrace();
-        }
 
-        progressBar = (ProgressBar) findViewById(R.id.progressBar);
-        progressBar.setVisibility(View.VISIBLE);
+
+
+      /*  progressBar = (ProgressBar) findViewById(R.id.progressBar);
+        progressBar.setVisibility(View.VISIBLE);*/
 
         Thread timerThread = new Thread() {
             public void run() {
                 try {
                     sleep(1000);
+                    javaEncryption = new JavaEncryption();
+                    Date d = new Date();
+                    SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                    date = format.format(d);
+                    Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+                    if (settings == null) {
+                        InputStream ins = SplashScreen.this.getResources().openRawResource(
+                                R.raw.litepos);
+                        BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+                        try {
+                            String line = null;
+                            String sql = "";
+                            while ((line = reader.readLine()) != null) {
+                                sql += line;
+                            }
+                            ins.close();
+                            runInsert(database, sql);
+                        } catch (IOException e) {
+                            e.printStackTrace();
+                        }
+                    }
 
                     country = Country.getCountry(getApplicationContext(), "", database);
                     if (country == null) {
@@ -288,7 +307,7 @@ public class SplashScreen extends AppCompatActivity {
                         read_defult();
                     }
 
-                    Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+                  //  Settings settings = Settings.getSettings(getApplicationContext(), database, "");
                     if (settings == null) {
                         database.beginTransaction();
                         settings = new Settings(getApplicationContext(), null, "false", "0", "", "", "", "", "", "", "", "", "", "", "", "0", "false", "false", "0", "Powered By Phomello", "0", "", "", "false", "false", "false", "TRN", "TAX INVOICE", "Salesperson", "Invoice Number", "Invoice Date", "Device ID", "false", "false", "false", "", "", "AC", "false", "false", "0", "false", "true", "false", "1", "GST", "false", "false", "false", "false", "1", "0","false","0");
@@ -417,6 +436,10 @@ public class SplashScreen extends AppCompatActivity {
             }
         };
         timerThread.start();
+    } catch (Exception ex) {
+        Toast.makeText(getApplicationContext(), getString(R.string.somethingwentwrong), Toast.LENGTH_SHORT).show();
+        System.exit(0);
+    }
     }
 
     private void call_CMD() {
@@ -743,7 +766,7 @@ public class SplashScreen extends AppCompatActivity {
                         String email = jsonObject_company.getString("email");
                         String country_id = jsonObject_company.getString("country_id");
                         String zone_id = jsonObject_company.getString("zone_id");
-                        String mobile_no = jsonObject_company.getString("mobile_no");
+                        String mobile_no = jsonObject_company.getString("phone");
                         String address = jsonObject_company.getString("address");
                         String project_id = jsonObject_company.getString("project_id");
                         String srvc_trf = jsonObject_company.getString("service_code_tariff");
@@ -1130,31 +1153,45 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private void requestPermission() {
-        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, CAMERA}, PERMISSION_REQUEST_CODE);
+    private boolean isReadStorageAllowed() {
+        //Getting the permission status
+
+        int result = ContextCompat.checkSelfPermission(this, android.Manifest.permission.READ_EXTERNAL_STORAGE);
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
+        int result3 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_PHONE_STATE);
+        int result4 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
+        int result5 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+        //If permission is granted returning true
+
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED;
+
     }
 
+    //Requesting permission
+    private void requestStoragePermission() {
+        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+    }
+
+    //This method will be called when the user will tap on allow or deny
     @Override
-    public void onRequestPermissionsResult(int requestCode, String permissions[], int[] grantResults) {
+    public void onRequestPermissionsResult(int requestCode, @NonNull String[] permissions, @NonNull int[] grantResults) {
         switch (requestCode) {
             case PERMISSION_REQUEST_CODE:
                 if (grantResults.length > 0) {
-
                     boolean locationAccepted = grantResults[0] == PackageManager.PERMISSION_GRANTED;
                     boolean cameraAccepted = grantResults[1] == PackageManager.PERMISSION_GRANTED;
-
                     if (locationAccepted && cameraAccepted) {
                         create_database();
-
                     } else {
                         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
                             if (shouldShowRequestPermissionRationale(READ_EXTERNAL_STORAGE)) {
-                                showMessageOKCancel("You need to allow access to both the permissions",
+                                showMessageOKCancel(getString(R.string.acessperm),
                                         new DialogInterface.OnClickListener() {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                    requestPermissions(new String[]{READ_EXTERNAL_STORAGE, CAMERA},
+                                                    requestPermissions(new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},
                                                             PERMISSION_REQUEST_CODE);
                                                 }
                                             }
@@ -1162,7 +1199,6 @@ public class SplashScreen extends AppCompatActivity {
                                 return;
                             }
                         }
-
                     }
                 }
                 break;

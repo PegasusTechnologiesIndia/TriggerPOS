@@ -9,7 +9,6 @@
         app:showAsAction="always"
         android:icon="@drawable/ic_search_white_24dp"/>
 
-
     <item
         android:id="@+id/action_send"
         android:orderInCategory="100"

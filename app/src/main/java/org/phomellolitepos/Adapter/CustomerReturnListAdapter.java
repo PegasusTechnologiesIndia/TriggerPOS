@@ -63,22 +63,25 @@ public class CustomerReturnListAdapter extends BaseAdapter{
         } catch (Exception ex) {
             decimal_check = "1";
         }
-        try {
-        txt_price = (TextView) itemView.findViewById(R.id.txt_price);
-        txt_item_name.setText(resultp.get_voucher_no());
-        txt_item_code.setText(Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check));
-        txt_price.setText(resultp.get_date().substring(0,10));
-        }catch (Exception e){}
 
-        if(resultp.get_is_post().equals("false")) {
-            itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
-        }
-         if(resultp.get_is_cancel().equals("true")){
-            itemView.setBackgroundColor(Color.parseColor("#fb8951"));
-        }
-         if (resultp.get_is_post().equals("true")){
-            itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
-        }
+
+            try {
+                txt_price = (TextView) itemView.findViewById(R.id.txt_price);
+                txt_item_name.setText(resultp.get_voucher_no());
+                txt_item_code.setText(Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check));
+                txt_price.setText(resultp.get_date().substring(0, 10));
+            } catch (Exception e) {
+            }
+
+            if (resultp.get_is_post().equals("false")) {
+                itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
+            }
+            if (resultp.get_is_cancel().equals("true")) {
+                itemView.setBackgroundColor(Color.parseColor("#fb8951"));
+            }
+            if (resultp.get_is_post().equals("true")) {
+                itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
+            }
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

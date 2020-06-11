@@ -176,7 +176,7 @@ public class InvReturnListActivity extends AppCompatActivity {
     }
 
     private void getStockList(String strFilter) {
-        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='IR'"  + strFilter + " Order By lower(date) asc limit "+Globals.ListLimit+"", database);
+        arrayList = Returns.getAllReturns(getApplicationContext(), "WHERE is_active = '1' and return_type='IR' and z_code='0'"  + strFilter + " Order By lower(date) asc limit "+Globals.ListLimit+"", database);
         ListView category_list = (ListView) findViewById(R.id.item_list);
         if (arrayList.size() > 0) {
             returnListAdapter = new InvReturnListAdapter(InvReturnListActivity.this, arrayList);

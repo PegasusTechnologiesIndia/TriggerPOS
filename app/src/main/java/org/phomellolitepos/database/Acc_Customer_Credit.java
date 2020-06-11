@@ -25,12 +25,12 @@ public class Acc_Customer_Credit {
     private String is_active;
     private String modified_by;
     private String modified_date;
-
+    private String voucher_no;
     private Database db;
     private ContentValues value;
 
     public Acc_Customer_Credit(Context context, String id, String trans_date,
-                String contact_code, String cr_amount, String paid_amount, String balance_amount, String z_no,String is_active, String modified_by, String modified_date) {
+                String contact_code, String cr_amount, String paid_amount, String balance_amount, String z_no,String is_active, String modified_by, String modified_date,String voucherno) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -45,8 +45,17 @@ public class Acc_Customer_Credit {
         this.set_is_active(is_active);
         this.set_modified_by(modified_by);
         this.set_modified_date(modified_date);
+        this.setVoucher_no(voucherno);
     }
 
+    public String getVoucher_no() {
+        return voucher_no;
+    }
+
+    public void setVoucher_no(String voucher_no) {
+        this.voucher_no = voucher_no;
+        value.put("voucher_no", voucher_no);
+    }
 
     public String get_id() {
         return id;
@@ -180,7 +189,7 @@ public class Acc_Customer_Credit {
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7), cursor.getString(8),
-                        cursor.getString(9)
+                        cursor.getString(9),cursor.getString(10)
                         );
             } while (cursor.moveToNext());
         }
@@ -206,7 +215,7 @@ public class Acc_Customer_Credit {
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7), cursor.getString(8),
-                        cursor.getString(9)
+                        cursor.getString(9),cursor.getString(10)
                         );
 
                 list.add(master);

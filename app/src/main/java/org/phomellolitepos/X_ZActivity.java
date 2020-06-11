@@ -30,15 +30,19 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.MediaStore;
+import android.support.annotation.RequiresApi;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.content.FileProvider;
 import android.support.v7.app.AppCompatActivity;
 import android.support.v7.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
 import android.widget.TableRow;
@@ -128,9 +132,11 @@ import static a1088sdk.PrnDspA1088.ZQ_WRONGDATA;
 import static a1088sdk.PrnDspA1088.ZQ_WRONGFILE;
 
 public class X_ZActivity extends AppCompatActivity {
-    EditText edt_ob, edt_expenses, edt_cash, edt_total, edt_cash_total, edt_cr_amt, edt_acccash, edt_salescash, edt_dr_amt, edt_totl_return, edt_ret_cash, edt_return_amount, edt_retntotal;
+    EditText edt_ob, edt_expenses, edt_cash, edt_total, edt_cash_total, edt_cr_amt, edt_acccash, edt_salescash, edt_dr_amt, edt_totl_return, edt_ret_cash, edt_return_amount, edt_retntotal,edt_posbal_returncash;
     TextView total_sale;
-    Button btn_post, btn_exp_print, btn_xz_print;
+    LinearLayout ll_return,ll_table_llview,ll_account,ll_returncasview, ll_returncash;
+
+    Button btn_post, btn_exp_print, btn_xz_print,btn_returnpost;
     Database db;
     SQLiteDatabase database;
     Pos_Balance pos_balance;
@@ -146,6 +152,7 @@ public class X_ZActivity extends AppCompatActivity {
     Z_Detail z_detail;
     ProgressDialog pDialog;
     Returns returns;
+    ProgressDialog progressDialog;
     String decimal_check, strSelectedCategory = "", date, succ = "0";
     private Settings settings;
     private String PrinterType = "";
@@ -173,6 +180,7 @@ public class X_ZActivity extends AppCompatActivity {
     String z_no_id = null;
     Orders orders1;
     User user;
+    private String is_directPrint = "";
     private MyAdapter adp;
     ArrayList<String> arrPaymentName;
     ArrayList<String> arrPaymentAmount;
@@ -183,6 +191,7 @@ public class X_ZActivity extends AppCompatActivity {
     private PrinterListener printer_callback = new PrinterListener();
     public static PrinterBinder printer;
     String strTotal, strname;
+   String ck_project_type;
     private HandlerUtils.MyHandler handlerPPT8555;
     String serial_no, android_id, myKey, device_id, imei_no;
     /*定义打印机状态*/
@@ -339,6 +348,7 @@ public class X_ZActivity extends AppCompatActivity {
         }
     };
 
+    @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -394,7 +404,7 @@ public class X_ZActivity extends AppCompatActivity {
 
         }
         lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-        final String ck_project_type = lite_pos_registration.getproject_id();
+       ck_project_type = lite_pos_registration.getproject_id();
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
@@ -409,14 +419,20 @@ public class X_ZActivity extends AppCompatActivity {
         edt_ret_cash = (EditText) findViewById(R.id.edt_returncash);
         edt_return_amount = (EditText) findViewById(R.id.edt_ret_cr_amt);
         edt_retntotal = (EditText) findViewById(R.id.edt_totl_return1);
+        edt_posbal_returncash = (EditText) findViewById(R.id.edt_return_cash_amnt);
         edt_dr_amt = (EditText) findViewById(R.id.edt_dr_amt);
         edt_totl_return = (EditText) findViewById(R.id.edt_totl_return);
         total_sale = (TextView) findViewById(R.id.total_sale);
         btn_post = (Button) findViewById(R.id.btn_post);
         btn_exp_print = (Button) findViewById(R.id.btn_exp_print);
         btn_xz_print = (Button) findViewById(R.id.btn_xz_print);
-
+        btn_returnpost = (Button) findViewById(R.id.btn_returnpost);
         linearLayout = (TableLayout) findViewById(R.id.ll);
+        ll_return = (LinearLayout) findViewById(R.id.return_layout);
+        ll_table_llview = (LinearLayout) findViewById(R.id.table_layoutview);
+        ll_account = (LinearLayout) findViewById(R.id.ll_account);
+        ll_returncasview = (LinearLayout) findViewById(R.id.view_returncash);
+        ll_returncash = (LinearLayout) findViewById(R.id.ll_returncash);
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
         } catch (Exception ex) {
@@ -441,14 +457,26 @@ public class X_ZActivity extends AppCompatActivity {
         }
         device_id = telephonyManager.getDeviceId();
         imei_no = telephonyManager.getImei();
+
+        if (ck_project_type.equals("standalone")) {
+            btn_returnpost.setVisibility(View.GONE);
+            ll_return.setVisibility(View.GONE);
+            ll_table_llview.setVisibility(View.GONE);
+            ll_account.setVisibility(View.GONE);
+            ll_returncasview.setVisibility(View.GONE);
+            ll_returncash.setVisibility(View.GONE);
+        }
+
         settings = Settings.getSettings(getApplicationContext(), database, "");
         if (settings == null) {
             PrinterType = "";
         } else {
             try {
                 PrinterType = settings.getPrinterId();
+                is_directPrint = settings.get_Is_Print_Dialog_Show();
             } catch (Exception ex) {
                 PrinterType = "";
+                is_directPrint ="";
             }
         }
 
@@ -558,7 +586,55 @@ public class X_ZActivity extends AppCompatActivity {
                     if (orders == null) {
                         Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
                     } else {
-                        print_x();
+
+                        if (PrinterType.equals("") || PrinterType.equals("0")) {
+                            Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            try {
+                                if (is_directPrint.equals("true")) {
+
+
+                                    print_x();
+                                }
+                                else{
+
+                                    android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(X_ZActivity.this);
+
+                                    alertDialog.setTitle(R.string.xtoz);
+                                    alertDialog.setMessage(R.string.xz_alertmsg);
+
+
+                                    alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            try {
+                                                print_x();
+                                            } catch (Exception e) {
+
+                                            }
+                                        }
+                                    });
+
+
+                                    alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                        public void onClick(DialogInterface dialog, int which) {
+
+                                            dialog.cancel();
+                                            Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    });
+
+                                    // Showing Alert Message
+                                    alertDialog.show();
+                                }
+
+                            }catch (Exception e){
+                            }
+                        }
                     }
                 } else {
                     Toast.makeText(getApplicationContext(), R.string.Orders_not_closed, Toast.LENGTH_SHORT).show();
@@ -569,324 +645,375 @@ public class X_ZActivity extends AppCompatActivity {
         btn_post.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                Orders orders = Orders.getOrders(getApplicationContext(), database, " Where order_status = 'OPEN' And z_code='0'");
+                if (isNetworkStatusAvialable(getApplicationContext())) {
+                    Orders orders = Orders.getOrders(getApplicationContext(), database, " Where order_status = 'OPEN' And z_code='0'");
 
 
-                if (orders == null) {
-                    //performPDFExport();
-                    orders1 = Orders.getOrders(getApplicationContext(), database, " Where z_code='0'");
+                    if (orders == null) {
+                        //performPDFExport();
+                        orders1 = Orders.getOrders(getApplicationContext(), database, " Where z_code='0'");
 
-                    returns = Returns.getReturns(getApplicationContext(), " Where z_code='0' and is_post='false' and is_cancel='false'", database);
-                    if (returns != null) {
-                        Toast.makeText(getApplicationContext(), R.string.returnposterror, Toast.LENGTH_SHORT).show();
-                        return;
-                    }
+                        returns = Returns.getReturns(getApplicationContext(), " Where z_code='0' and is_post='false' and is_cancel='false' and is_active='1'", database);
+                        if (returns != null) {
+                      /*  AlertDialog.Builder builder = new AlertDialog.Builder(X_ZActivity.this);
 
+                        builder.setTitle(getString(R.string.return_post_Alert));
+                        builder.setMessage(getString(R.string.return_post_msg));
 
-                    if (orders1 == null) {
-                        Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
-                    }
-                  else {
-                        database.beginTransaction();
-                        String modified_by = Globals.user;
-                        z_close = Z_Close.getZ_Close(getApplicationContext(), "  order By z_no Desc LIMIT 1", database, db);
-                        Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
-                        if (last_code == null) {
-                            if (z_close == null) {
-                                strZ_Code = "Z-" + 1;
-                            } else {
-                                strZ_Code = "Z-" + (Integer.parseInt(z_close.get_z_no()) + 1);
+                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
+
+                            public void onClick(DialogInterface dialog, int which) {
+                                // Do nothing but close the dialog
+                                progressDialog = new ProgressDialog(X_ZActivity.this);
+                                progressDialog.setTitle("");
+                                progressDialog.setMessage(getString(R.string.Wait_msg));
+                                progressDialog.setCancelable(false);
+                                progressDialog.show();
+                                new Thread() {
+                                    @Override
+                                    public void run() {
+                                      //  String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'", liccustomerid, serial_no, android_id, myKey);
+                                        String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'", liccustomerid, serial_no, android_id, myKey);
+
+                                        progressDialog.dismiss();
+
+                                        if (result.equals("1")) {
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    String rsultPost = stock_post();
+                                                    Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        } else {
+                                            runOnUiThread(new Runnable() {
+                                                public void run() {
+                                                    Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
+                                                }
+                                            });
+                                        }
+                                    }
+                                }.start();
+                               // dialog.dismiss();
                             }
+                        });
+
+                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
+
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.dismiss();
+                                // Do nothing
+                            }
+                        });
+
+                        AlertDialog alert = builder.create();
+                        alert.show();*/
+                            Toast.makeText(getApplicationContext(), R.string.returnposterror, Toast.LENGTH_SHORT).show();
+                            return;
+                        }
+
+
+                        if (orders1 == null) {
+                            Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
                         } else {
-                            if (last_code.getlast_z_close_code().equals("0")) {
+                            database.beginTransaction();
+                            String modified_by = Globals.user;
+                            z_close = Z_Close.getZ_Close(getApplicationContext(), "  order By z_no Desc LIMIT 1", database, db);
+                            Last_Code last_code = Last_Code.getLast_Code(getApplicationContext(), "", database);
+                            if (last_code == null) {
                                 if (z_close == null) {
                                     strZ_Code = "Z-" + 1;
                                 } else {
                                     strZ_Code = "Z-" + (Integer.parseInt(z_close.get_z_no()) + 1);
                                 }
                             } else {
-                                if (z_close == null) {
-                                    String code = last_code.getlast_order_code();
-                                    String[] strCode = code.split("-");
-                                    part2 = strCode[1];
-                                    z_no_id = (Integer.parseInt(part2) + 1) + "";
-                                    strZ_Code = "Z-" + (Integer.parseInt(part2) + 1);
+                                if (last_code.getlast_z_close_code().equals("0")) {
+                                    if (z_close == null) {
+                                        strZ_Code = "Z-" + 1;
+                                    } else {
+                                        strZ_Code = "Z-" + (Integer.parseInt(z_close.get_z_no()) + 1);
+                                    }
                                 } else {
-                                    strZ_Code = "Z-" + (Integer.parseInt(z_close.get_z_no()) + 1);
+                                    if (z_close == null) {
+                                        String code = last_code.getlast_order_code();
+                                        String[] strCode = code.split("-");
+                                        part2 = strCode[1];
+                                        z_no_id = (Integer.parseInt(part2) + 1) + "";
+                                        strZ_Code = "Z-" + (Integer.parseInt(part2) + 1);
+                                    } else {
+                                        strZ_Code = "Z-" + (Integer.parseInt(z_close.get_z_no()) + 1);
+                                    }
                                 }
                             }
-                        }
 
-                        print_x_z();
 
-                        try {
-                            String ob = edt_ob.getText().toString();
-                            String ex = edt_expenses.getText().toString();
-                            String cash = edt_cash.getText().toString();
+                            try {
+                                String ob = edt_ob.getText().toString();
+                                String ex = edt_expenses.getText().toString();
+                                String cash = edt_cash.getText().toString();
 
-                            String strTotalAmount = Double.parseDouble(edt_cash.getText().toString()) + Double.parseDouble(edt_ob.getText().toString()) + Double.parseDouble(strCreditAmt) + Double.parseDouble(strDebitAmt) - Double.parseDouble(edt_expenses.getText().toString()) + "";
-                            z_close = new Z_Close(getApplicationContext(), null, strZ_Code, liccustomerid, date, strTotalAmount, "1", modified_by, date, "N");
+                                String strTotalAmount = Double.parseDouble(edt_cash.getText().toString()) + Double.parseDouble(edt_ob.getText().toString()) + Double.parseDouble(strCreditAmt) + Double.parseDouble(strDebitAmt) - Double.parseDouble(edt_expenses.getText().toString()) + "";
+                                z_close = new Z_Close(getApplicationContext(), null, strZ_Code, liccustomerid, date, strTotalAmount, "1", modified_by, date, "N");
 
-                            long I = z_close.insertZ_Close(database);
-                            if (I > 0) {
-                                succ = "1";
-                                z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "1", "OB", edt_ob.getText().toString(), "1", modified_by, date, "N");
-                                long d = z_detail.insert_Z_Detail(database);
-                                if (d > 0) {
+                                long I = z_close.insertZ_Close(database);
+                                if (I > 0) {
                                     succ = "1";
-                                } else {
-                                }
-
-                                z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "2", "EXP", edt_expenses.getText().toString(), "1", modified_by, date, "N");
-                                long d1 = z_detail.insert_Z_Detail(database);
-                                if (d1 > 0) {
-                                    succ = "1";
-                                } else {
-                                }
-
-                                z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "3", "CR AMT", edt_cr_amt.getText().toString(), "1", modified_by, date, "N");
-                                d1 = z_detail.insert_Z_Detail(database);
-                                if (d1 > 0) {
-                                    succ = "1";
-                                } else {
-                                }
-
-                                z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "4", "DR AMT", edt_dr_amt.getText().toString(), "1", modified_by, date, "N");
-                                d1 = z_detail.insert_Z_Detail(database);
-                                if (d1 > 0) {
-                                    succ = "1";
-                                } else {
-                                }
-
-                                z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "5", "RETURN", edt_totl_return.getText().toString(), "1", modified_by, date, "N");
-                                d1 = z_detail.insert_Z_Detail(database);
-                                if (d1 > 0) {
-                                    succ = "1";
-                                } else {
-                                }
-
-                                String strQry;
-                                Cursor cursor;
-                                strQry = "Select Sum(order_payment.pay_amount),order_payment.payment_id ,  payments.payment_name   as TotalSales from orders   \n" +
-                                        "INNER JOIN  order_payment on order_payment.order_code = orders.order_code   \n" +
-                                        "INNER JOIN  payments on payments.payment_id =   order_payment.payment_id   \n" +
-                                        "where orders.Z_Code = '0'  \n" +
-                                        "Group by order_payment.payment_id";
-                                cursor = database.rawQuery(strQry, null);
-                                int count = 6;
-                                while (cursor.moveToNext()) {
-                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, count + "", cursor.getString(2), cursor.getString(0), "1", modified_by, date, "N");
-                                    long d5 = z_detail.insert_Z_Detail(database);
-                                    if (d5 > 0) {
+                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "1", "OB", edt_ob.getText().toString(), "1", modified_by, date, "N");
+                                    long d = z_detail.insert_Z_Detail(database);
+                                    if (d > 0) {
                                         succ = "1";
                                     } else {
                                     }
-                                    count++;
+
+                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "2", "EXP", edt_expenses.getText().toString(), "1", modified_by, date, "N");
+                                    long d1 = z_detail.insert_Z_Detail(database);
+                                    if (d1 > 0) {
+                                        succ = "1";
+                                    } else {
+                                    }
+
+                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "3", "CR AMT", edt_cr_amt.getText().toString(), "1", modified_by, date, "N");
+                                    d1 = z_detail.insert_Z_Detail(database);
+                                    if (d1 > 0) {
+                                        succ = "1";
+                                    } else {
+                                    }
+
+                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "4", "DR AMT", edt_dr_amt.getText().toString(), "1", modified_by, date, "N");
+                                    d1 = z_detail.insert_Z_Detail(database);
+                                    if (d1 > 0) {
+                                        succ = "1";
+                                    } else {
+                                    }
+
+                                    z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, "5", "RETURN", edt_totl_return.getText().toString(), "1", modified_by, date, "N");
+                                    d1 = z_detail.insert_Z_Detail(database);
+                                    if (d1 > 0) {
+                                        succ = "1";
+                                    } else {
+                                    }
+
+                                    String strQry;
+                                    Cursor cursor;
+                                    strQry = "Select Sum(order_payment.pay_amount),order_payment.payment_id ,  payments.payment_name   as TotalSales from orders   \n" +
+                                            "INNER JOIN  order_payment on order_payment.order_code = orders.order_code   \n" +
+                                            "INNER JOIN  payments on payments.payment_id =   order_payment.payment_id   \n" +
+                                            "where orders.Z_Code = '0'  \n" +
+                                            "Group by order_payment.payment_id";
+                                    cursor = database.rawQuery(strQry, null);
+                                    int count = 6;
+                                    while (cursor.moveToNext()) {
+                                        z_detail = new Z_Detail(getApplicationContext(), null, strZ_Code, liccustomerid, count + "", cursor.getString(2), cursor.getString(0), "1", modified_by, date, "N");
+                                        long d5 = z_detail.insert_Z_Detail(database);
+                                        if (d5 > 0) {
+                                            succ = "1";
+                                        } else {
+                                        }
+                                        count++;
+                                    }
+
+                                    lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                                    String ck_project_type = lite_pos_registration.getproject_id();
+
+                                    if (ck_project_type.equals("standalone")) {
+                                        try {
+                                            Double strCredit = 0d;
+                                            strQry = "select order_payment.pay_amount,orders.contact_code from orders left join order_payment on orders.order_code = order_payment.order_code where order_payment.payment_id='5' and orders.z_code='0'";
+                                            cursor = database.rawQuery(strQry, null);
+                                            while (cursor.moveToNext()) {
+                                                Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, cursor.getString(1), cursor.getString(0), "", "", "0", "1", Globals.user, date, cursor.getString(9));
+                                                long a = acc_customer_credit.insertAcc_Customer_Credit(database);
+                                            }
+                                        } catch (Exception e) {
+                                        }
+                                    }
+
+                                    arrayListAccCusCr = Acc_Customer_Credit.getAllAcc_Customer_Credit(getApplicationContext(), "WHERE z_no ='0'", database);
+                                    if (arrayListAccCusCr.size() > 0) {
+                                        for (int i = 0; i < arrayListAccCusCr.size(); i++) {
+
+                                            Acc_Customer_Credit acc_customer_credit = Acc_Customer_Credit.getAcc_Customer_Credit(getApplicationContext(), "where z_no ='0'", database);
+                                            acc_customer_credit.set_z_no(strZ_Code);
+                                            long o = acc_customer_credit.updateAcc_Customer_Credit("id=?", new String[]{acc_customer_credit.get_id()}, database);
+                                            if (o > 0) {
+                                                succ = "1";
+                                            } else {
+                                            }
+                                        }
+                                    }
+
+                                    arrayListAccCusDr = Acc_Customer_Debit.getAllAcc_Customer_Debit(getApplicationContext(), "WHERE z_no ='0'", database);
+                                    if (arrayListAccCusDr.size() > 0) {
+                                        for (int i = 0; i < arrayListAccCusDr.size(); i++) {
+
+                                            Acc_Customer_Debit acc_customer_debit = Acc_Customer_Debit.getAcc_Customer_Debit(getApplicationContext(), "where z_no ='0'", database);
+                                            acc_customer_debit.set_z_no(strZ_Code);
+                                            long o = acc_customer_debit.updateAcc_Customer_Debit("id=?", new String[]{acc_customer_debit.get_id()}, database);
+                                            if (o > 0) {
+                                                succ = "1";
+                                            } else {
+                                            }
+                                        }
+                                    }
+
+
+                                    arrayList = Orders.getAllOrders(getApplicationContext(), "WHERE z_code ='0'", database);
+                                    if (arrayList.size() > 0) {
+                                        for (int i = 0; i < arrayList.size(); i++) {
+
+                                            String strCode = arrayList.get(i).get_order_code();
+
+                                            orders = Orders.getOrders(getApplicationContext(), database, " WHERE order_code ='" + strCode + "'");
+                                            orders.set_z_code(strZ_Code);
+                                            orders.set_is_push("N");
+                                            long o = orders.updateOrders("order_code=?", new String[]{strCode}, database);
+                                            if (o > 0) {
+                                                succ = "1";
+                                            } else {
+                                            }
+                                        }
+                                    }
+
+                                    ArrayList<Pos_Balance> arrayList_Pb = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE z_code ='0'", database);
+                                    if (arrayList_Pb.size() > 0) {
+                                        for (int i = 0; i < arrayList_Pb.size(); i++) {
+                                            String strCode = arrayList_Pb.get(i).get_pos_balance_code();
+
+                                            pos_balance = Pos_Balance.getPos_Balance(getApplicationContext(), database, " WHERE pos_balance_code ='" + strCode + "'");
+                                            pos_balance.set_z_code(strZ_Code);
+                                            long o = pos_balance.updatePos_Balance("pos_balance_code=?", new String[]{strCode}, database);
+                                            if (o > 0) {
+                                                succ = "1";
+                                            } else {
+                                            }
+                                        }
+                                    }
+
+                                    ArrayList<Returns> arrayList_TotalReturn = Returns.getAllReturns(getApplicationContext(), "WHERE is_post='true' and z_code ='0' and is_cancel='false'", database);
+                                    if (arrayList_TotalReturn.size() > 0) {
+                                        for (int i = 0; i < arrayList_TotalReturn.size(); i++) {
+                                            String strCode = arrayList_TotalReturn.get(i).get_voucher_no();
+                                            Returns returns = Returns.getReturns(getApplicationContext(), " WHERE voucher_no ='" + strCode + "'", database);
+                                            returns.set_z_code(strZ_Code);
+                                            long o = returns.updateReturns("voucher_no=?", new String[]{strCode}, database);
+                                            if (o > 0) {
+                                                succ = "1";
+                                            } else {
+                                            }
+                                        }
+                                    }
+
+                                } else {
                                 }
 
-                                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                                String ck_project_type = lite_pos_registration.getproject_id();
+                                if (succ.equals("1")) {
 
-                                if (ck_project_type.equals("standalone")) {
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
                                     try {
-                                        Double strCredit = 0d;
-                                        strQry = "select order_payment.pay_amount,orders.contact_code from orders left join order_payment on orders.order_code = order_payment.order_code where order_payment.payment_id='5' and orders.z_code='0'";
-                                        cursor = database.rawQuery(strQry, null);
-                                        while (cursor.moveToNext()) {
-                                            Acc_Customer_Credit acc_customer_credit = new Acc_Customer_Credit(getApplicationContext(), null, date, cursor.getString(1), cursor.getString(0), "", "", "0", "1", Globals.user, date);
-                                            long a = acc_customer_credit.insertAcc_Customer_Credit(database);
-                                        }
-                                    } catch (Exception e) {
-                                    }
-                                }
+                                        if (settings.get_Is_email().equals("true")) {
+                                            if (settings.get_Manager_Email().equals("")) {
 
-                                arrayListAccCusCr = Acc_Customer_Credit.getAllAcc_Customer_Credit(getApplicationContext(), "WHERE z_no ='0'", database);
-                                if (arrayListAccCusCr.size() > 0) {
-                                    for (int i = 0; i < arrayListAccCusCr.size(); i++) {
+                                            } else {
+                                                String exp = "POST";
+                                                if (settings.get_Is_ZDetail_InPrint().equals("true")) {
+                                                    performPDFExportZDetail();
+                                                } else {
+                                                    performPDFExport();
+                                                }
 
-                                        Acc_Customer_Credit acc_customer_credit = Acc_Customer_Credit.getAcc_Customer_Credit(getApplicationContext(), "where z_no ='0'", database);
-                                        acc_customer_credit.set_z_no(strZ_Code);
-                                        long o = acc_customer_credit.updateAcc_Customer_Credit("id=?", new String[]{acc_customer_credit.get_id()}, database);
-                                        if (o > 0) {
-                                            succ = "1";
+                                                String strEmail = settings.get_Manager_Email();
+                                                if (isNetworkStatusAvialable(getApplicationContext())) {
+                                                    send_email(strEmail, exp);
+                                                }
+
+                                            }
                                         } else {
-                                        }
-                                    }
-                                }
-
-                                arrayListAccCusDr = Acc_Customer_Debit.getAllAcc_Customer_Debit(getApplicationContext(), "WHERE z_no ='0'", database);
-                                if (arrayListAccCusDr.size() > 0) {
-                                    for (int i = 0; i < arrayListAccCusDr.size(); i++) {
-
-                                        Acc_Customer_Debit acc_customer_debit = Acc_Customer_Debit.getAcc_Customer_Debit(getApplicationContext(), "where z_no ='0'", database);
-                                        acc_customer_debit.set_z_no(strZ_Code);
-                                        long o = acc_customer_debit.updateAcc_Customer_Debit("id=?", new String[]{acc_customer_debit.get_id()}, database);
-                                        if (o > 0) {
-                                            succ = "1";
-                                        } else {
-                                        }
-                                    }
-                                }
-
-
-                                arrayList = Orders.getAllOrders(getApplicationContext(), "WHERE z_code ='0'", database);
-                                if (arrayList.size() > 0) {
-                                    for (int i = 0; i < arrayList.size(); i++) {
-
-                                        String strCode = arrayList.get(i).get_order_code();
-
-                                        orders = Orders.getOrders(getApplicationContext(), database, " WHERE order_code ='" + strCode + "'");
-                                        orders.set_z_code(strZ_Code);
-                                        orders.set_is_push("N");
-                                        long o = orders.updateOrders("order_code=?", new String[]{strCode}, database);
-                                        if (o > 0) {
-                                            succ = "1";
-                                        } else {
-                                        }
-                                    }
-                                }
-
-                                ArrayList<Pos_Balance> arrayList_Pb = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE z_code ='0'", database);
-                                if (arrayList_Pb.size() > 0) {
-                                    for (int i = 0; i < arrayList_Pb.size(); i++) {
-                                        String strCode = arrayList_Pb.get(i).get_pos_balance_code();
-
-                                        pos_balance = Pos_Balance.getPos_Balance(getApplicationContext(), database, " WHERE pos_balance_code ='" + strCode + "'");
-                                        pos_balance.set_z_code(strZ_Code);
-                                        long o = pos_balance.updatePos_Balance("pos_balance_code=?", new String[]{strCode}, database);
-                                        if (o > 0) {
-                                            succ = "1";
-                                        } else {
-                                        }
-                                    }
-                                }
-
-                                ArrayList<Returns> arrayList_TotalReturn = Returns.getAllReturns(getApplicationContext(), "WHERE is_post='true' and z_code ='0' and is_cancel='false'", database);
-                                if (arrayList_TotalReturn.size() > 0) {
-                                    for (int i = 0; i < arrayList_TotalReturn.size(); i++) {
-                                        String strCode = arrayList_TotalReturn.get(i).get_voucher_no();
-                                        Returns returns = Returns.getReturns(getApplicationContext(), " WHERE voucher_no ='" + strCode + "'", database);
-                                        returns.set_z_code(strZ_Code);
-                                        long o = returns.updateReturns("voucher_no=?", new String[]{strCode}, database);
-                                        if (o > 0) {
-                                            succ = "1";
-                                        } else {
-                                        }
-                                    }
-                                }
-
-                            } else {
-                            }
-
-                            if (succ.equals("1")) {
-
-                                database.setTransactionSuccessful();
-                                database.endTransaction();
-                                try {
-                                    if (settings.get_Is_email().equals("true")) {
-                                        if (settings.get_Manager_Email().equals("")) {
-
-                                        } else {
-                                            String exp = "POST";
                                             if (settings.get_Is_ZDetail_InPrint().equals("true")) {
                                                 performPDFExportZDetail();
                                             } else {
                                                 performPDFExport();
                                             }
-
-                                            String strEmail = settings.get_Manager_Email();
-                                            if (isNetworkStatusAvialable(getApplicationContext())) {
-                                                send_email(strEmail, exp);
-                                            }
-
                                         }
-                                    } else {
-                                        if (settings.get_Is_ZDetail_InPrint().equals("true")) {
-                                            performPDFExportZDetail();
-                                        } else {
-                                            performPDFExport();
-                                        }
+                                    } catch (Exception ex1) {
                                     }
-                                } catch (Exception ex1) {
-                                }
 
-                                if (ck_project_type.equals("standalone")) {
+                                    if (ck_project_type.equals("standalone")) {
 
-                                } else {
-                                    if (isNetworkStatusAvialable(getApplicationContext())) {
-                                        pDialog = new ProgressDialog(X_ZActivity.this);
-                                        pDialog.setCancelable(false);
-                                        pDialog.setMessage(getString(R.string.Posting_on_server));
-                                        pDialog.show();
-                                        new Thread() {
-                                            @Override
-                                            public void run() {
-                                                // send items on server
+                                    } else {
+                                        if (isNetworkStatusAvialable(getApplicationContext())) {
+                                            pDialog = new ProgressDialog(X_ZActivity.this);
+                                            pDialog.setCancelable(false);
+                                            pDialog.setMessage(getString(R.string.Posting_on_server));
+                                            pDialog.show();
+                                            new Thread() {
+                                                @Override
+                                                public void run() {
+                                                    // send items on server
 
 
-                                                String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'", liccustomerid, serial_no, android_id, myKey);
+                                                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'", liccustomerid, serial_no, android_id, myKey);
 
-                                                if (result_order.equals("2")) {
-                                                    runOnUiThread(new Runnable() {
-                                                        public void run() {
+                                                    if (result_order.equals("2")) {
+                                                        runOnUiThread(new Runnable() {
+                                                            public void run() {
 
-                                                            if (Globals.responsemessage.equals("Device Not Found")) {
+                                                                if (Globals.responsemessage.equals("Device Not Found")) {
 
-                                                                Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-                                                                lite_pos_device.setStatus("Out");
-                                                                long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
-                                                                if (ct > 0) {
+                                                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                                    lite_pos_device.setStatus("Out");
+                                                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                                    if (ct > 0) {
 
-                                                                    Intent intent_category = new Intent(X_ZActivity.this, LoginActivity.class);
-                                                                    startActivity(intent_category);
-                                                                    finish();
+                                                                        Intent intent_category = new Intent(X_ZActivity.this, LoginActivity.class);
+                                                                        startActivity(intent_category);
+                                                                        finish();
+                                                                    }
+
+
                                                                 }
 
-
                                                             }
+                                                        });
+
+                                                    }
+                                                    String result = send_online(pDialog);
+                                                    if (result.equals("1")) {
+                                                        runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                                    } else {
+                                                        runOnUiThread(new Runnable() {
+                                                            public void run() {
+                                                                Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
+                                                            }
+                                                        });
+                                                    }
+                                                    String result1 = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_post = 'true' and is_push  ='N' and  z_code !=  '0' and is_cancel ='false'", liccustomerid, serial_no, android_id, myKey);
+
+                                                    if (result1.equals("1")) {
+
+                                                        String Query = "Update returns Set is_push = 'Y' where  is_push = 'N'";
+                                                        long check = db.executeDML(Query, database);
+                                                        if (check > 0) {
 
                                                         }
-                                                    });
+
+                                                    }
+
+
+                                                    // is_post = true   and is_push  ='N'   and  z_code !=  '0'  and is_cancel ='0'
+                                                    // list you will get return then need to send pon  server and
+                                                    // invidual order retrun  and eash return response then u need to set inr order
+                                                    //Update    Returns  Set  is_push = 'Y'  where  is_push = 'N'
+
 
                                                 }
-                                                String result = send_online(pDialog);
-                                                if (result.equals("1")) {
-                                                    runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
-                                                } else {
-                                                    runOnUiThread(new Runnable() {
-                                                        public void run() {
-                                                            Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
-                                                        }
-                                                    });
-                                                }
-                                                String result1 = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_post = 'true' and is_push  ='N' and  z_code !=  '0' and is_cancel ='false'",liccustomerid,serial_no,android_id,myKey);
-                                                if (result1.equals("1")) {
-
-                                                            String Query = "Update returns Set is_push = 'Y' where  is_push = 'N'";
-                                                            long check = db.executeDML(Query, database);
-                                                            if(check>0){
-
-                                                            }
-
-                                                        }
-
-
-
-
-                                                // is_post = true   and is_push  ='N'   and  z_code !=  '0'  and is_cancel ='0'
-                                                // list you will get return then need to send pon  server and
-                                                // invidual order retrun  and eash return response then u need to set inr order
-                                                //Update    Returns  Set  is_push = 'Y'  where  is_push = 'N'
-
-
-                                            }
-                                        }.start();
+                                            }.start();
+                                        }
                                     }
-                                }
 
 //                                String strExpenses = Globals.myNumberFormat2Price(0, decimal_check);
 //                                edt_expenses.setText(strExpenses);
@@ -903,35 +1030,192 @@ public class X_ZActivity extends AppCompatActivity {
 //                                String strCashTotal = Globals.myNumberFormat2Price(0, decimal_check);
 //                                edt_cash_total.setText(strCashTotal);
 
-                                Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                database.endTransaction();
-                                Toast.makeText(getApplicationContext(), R.string.Post_Error, Toast.LENGTH_SHORT).show();
+                                    try {
+                                        runOnUiThread(new Runnable() {
+                                            @Override
+                                            public void run() {
+                                                if (PrinterType.equals("") || PrinterType.equals("0")) {
+                                                    Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else {
+                                                    try {
+                                                        if (is_directPrint.equals("true")) {
+
+
+                                                            print_x_z();
+                                                            Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                                            startActivity(intent);
+                                                            finish();
+                                                        } else {
+
+                                                            android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(X_ZActivity.this);
+
+                                                            alertDialog.setTitle(R.string.post_alert);
+                                                            alertDialog.setMessage(R.string.post_alertmsg);
+
+
+                                                            alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    try {
+                                                                        print_x_z();
+                                                                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                                                        startActivity(intent);
+                                                                        finish();
+                                                                    } catch (Exception e) {
+
+                                                                    }
+                                                                }
+                                                            });
+
+
+                                                            alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                                                public void onClick(DialogInterface dialog, int which) {
+
+                                                                    dialog.cancel();
+                                                                    Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                                                    startActivity(intent);
+                                                                    finish();
+                                                                }
+                                                            });
+
+                                                            // Showing Alert Message
+                                                            alertDialog.show();
+                                                        }
+
+                                                    } catch (Exception e) {
+                                                    }
+                                                }
+                                            }
+                                        });
+                                    } catch (Exception e) {
+
+                                    }
+
+                                } else {
+                                    database.endTransaction();
+                                    Toast.makeText(getApplicationContext(), R.string.Post_Error, Toast.LENGTH_SHORT).show();
+                                }
+                            } catch (Exception ex) {
+                                Toast.makeText(getApplicationContext(), R.string.somthing_wnt_wrng, Toast.LENGTH_SHORT).show();
                             }
-                        } catch (Exception ex) {
-                            Toast.makeText(getApplicationContext(), R.string.somthing_wnt_wrng, Toast.LENGTH_SHORT).show();
                         }
+                    } else {
+                        Toast.makeText(getApplicationContext(), R.string.Orders_not_closed, Toast.LENGTH_SHORT).show();
                     }
-                } else {
-                    Toast.makeText(getApplicationContext(), R.string.Orders_not_closed, Toast.LENGTH_SHORT).show();
+                }
+                else{
+                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+
                 }
             }
         });
 
+        btn_returnpost.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                if (isNetworkStatusAvialable(getApplicationContext())) {
+                    progressDialog = new ProgressDialog(X_ZActivity.this);
+                    progressDialog.setTitle("");
+                    progressDialog.setMessage(getString(R.string.Wait_msg));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                    new Thread() {
+                        @Override
+                        public void run() {
+                            //  String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'", liccustomerid, serial_no, android_id, myKey);
+                            String result = Returns.sendOnServer(getApplicationContext(), database, db, "Select * FROM  returns WHERE is_push = 'N' and is_post='false'", liccustomerid, serial_no, android_id, myKey);
+
+                            progressDialog.dismiss();
+                            if (result.equals("1")) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        String rsultPost = stock_post();
+                                        finish();
+                                        Intent i = new Intent(getApplicationContext(), X_ZActivity.class);
+                                        startActivity(i);
+                                        Toast.makeText(getApplicationContext(), R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), R.string.No_data_fnd, Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+                        }
+                    }.start();
+                }
+
+            else
+
+            {
+                Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+
+            }
+        }
+        });
         btn_exp_print.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
                 arraylist_PB = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE  z_code ='0' And type ='EXP' And is_active ='1' Order By remarks asc", database);
                 if (arraylist_PB.size() > 0) {
-                    pDialog = new ProgressDialog(X_ZActivity.this);
-                    pDialog.show();
+                   /* pDialog = new ProgressDialog(X_ZActivity.this);
+                    pDialog.show();*/
+                    if (PrinterType.equals("") || PrinterType.equals("0")) {
+                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        try {
+                            if (is_directPrint.equals("true")) {
 
-                    print_expenses();
+
+                                print_expenses();
+                            }
+                            else{
+
+                                android.support.v7.app.AlertDialog.Builder alertDialog = new android.support.v7.app.AlertDialog.Builder(X_ZActivity.this);
+
+                                alertDialog.setTitle(R.string.exp_alert);
+                                alertDialog.setMessage(R.string.exp_alertmsg);
 
 
-                    pDialog.dismiss();
+                                alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        try {
+                                            print_expenses();
+                                        } catch (Exception e) {
+
+                                        }
+                                    }
+                                });
+
+
+                                alertDialog.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+                                    public void onClick(DialogInterface dialog, int which) {
+
+                                        dialog.cancel();
+                                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                });
+
+                                // Showing Alert Message
+                                alertDialog.show();
+                            }
+
+                        }catch (Exception e){
+                        }
+                    }
+
+
+
+                   // pDialog.dismiss();
                     if (settings.get_Is_email().equals("true")) {
                         if (settings.get_Manager_Email().equals("")) {
 
@@ -1058,43 +1342,83 @@ public class X_ZActivity extends AppCompatActivity {
                 try {
 
                     mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText("X Report\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                    try {
+                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                        } else {
+                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                        }
+                    } catch (Exception ex) {
+                    }
+                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("X Report\n", "ST", 24, 1, callbackPPT8555);
+
+                    //mIPosPrinterService.printSpecifiedTypeText("X Report\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                     mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("Date     : " + date + "\n", "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("POS Name :" + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
                     user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
                     mIPosPrinterService.printSpecifiedTypeText("Cashier  :" + user.get_name() + "\n", "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText(" \n", "ST", 24, callbackPPT8555);
 
-                   /* mIPosPrinterService.printSpecifiedTypeText("POS Name :" + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText("Date     : " + date + "\n", "ST", 24, callbackPPT8555);
-                    user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                    mIPosPrinterService.printSpecifiedTypeText("Cashier  :" + user.get_name() + "\n", "ST", 24, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);*/
                     String ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
                     mIPosPrinterService.printSpecifiedTypeText("Opening Balance : " + ob, "ST", 24, callbackPPT8555);
                     String expenses;
 
                     expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
 
-                    mIPosPrinterService.printSpecifiedTypeText("Expenses(-)     : " + expenses, "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Expenses(-)  : " + expenses, "ST", 24, callbackPPT8555);
                     mIPosPrinterService.setPrinterPrintFontSize(30, callbackPPT8555);
                     mIPosPrinterService.setPrinterPrintFontSize(30, callbackPPT8555);
                     String cash;
                     cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                    mIPosPrinterService.printSpecifiedTypeText("Cash(+)         : " + cash, "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Cash(+)  : " + cash, "ST", 24, callbackPPT8555);
+
+
+                    // Here you need to Show Account Cash with project type Condition
+                    //------------------------------------------
+                    // Accounts (Cash)(+)   : 234.560
+                    //------------------------------------------
+                    if(Globals.objLPR.getproject_id().equals("cloud")){
+                        //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("Accounts Cash(+)  :" + edt_cr_amt.getText().toString(), "ST", 24, callbackPPT8555);
+
+                        mIPosPrinterService.printSpecifiedTypeText("Return (Cash)(-)  :" + edt_posbal_returncash.getText().toString(), "ST", 24, callbackPPT8555);
+
+                    }
+                    else{
+
+                    }
+
+                    // Here you need to Show Account Cash with project type Condition
+                    //------------------------------------------
+                    // Return (Cash)(-)   : 234.560
+                    //------------------------------------------
 
 
                     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText("NetCash         : " + edt_total.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("NetCash  : " + edt_total.getText().toString().trim().toString(), "ST", 32, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                     mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                    mIPosPrinterService.PrintSpecFormatText("Accounts\n", "ST", 32, 1, callbackPPT8555);
+//                    mIPosPrinterService.PrintSpecFormatText("Accounts\n", "ST", 32, 1, callbackPPT8555);
+//
+//                    mIPosPrinterService.printSpecifiedTypeText("Cash(+) : " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
+                    // Not Center Inside valus   Show Like pos balace
+                    //------------
+                    //              Sales Detail  -- Center Align
+                    //Cash          :256.365
+                    //Bank Card     :1258.255
+                    //------------
 
-                    mIPosPrinterService.printSpecifiedTypeText("Cash(+) : " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
+
                     mIPosPrinterService.PrintSpecFormatText("Sales Detail\n", "ST", 32, 1, callbackPPT8555);
                     String strTotal;
                     int iPayCount = 1;
@@ -1103,25 +1427,28 @@ public class X_ZActivity extends AppCompatActivity {
                         mIPosPrinterService.printSpecifiedTypeText(arrPaymentName.get(iPayCount) + " : " + strTotal, "ST", 24, callbackPPT8555);
                         iPayCount++;
                     }
-                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                    //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                     String strTotalSales;
 
-                    mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
+                  //  mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                     strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
 
-                    mIPosPrinterService.printSpecifiedTypeText("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Total Sales    : " + strTotalSales , "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
 
 
+                    // Here check Project ype condition if cloud will print else not
+                    // Here conect showing proper but need to alling values proper
+
                     mIPosPrinterService.PrintSpecFormatText("Sales Return\n", "ST", 32, 1, callbackPPT8555);
                     String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
-                    mIPosPrinterService.printSpecifiedTypeText("Cash(+) : " + retruncash, "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Cash(+)  : " + retruncash, "ST", 24, callbackPPT8555);
 
                     String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
-                    mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+) : " + retruncredit, "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+)  : " + retruncredit, "ST", 24, callbackPPT8555);
 
                     String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
-                    mIPosPrinterService.printSpecifiedTypeText("Total Return(+) : " + retruntotalsale + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("Total Return(+)   : " + retruntotalsale , "ST", 24, callbackPPT8555);
 //                    mIPosPrinterService.printSpecifiedTypeText("Total Return    : " + edt_totl_return.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                     mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
@@ -1144,9 +1471,24 @@ public class X_ZActivity extends AppCompatActivity {
             public void run() {
                 try {
                     mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText(" \n", "ST", 24, callbackPPT8555);
-                    mIPosPrinterService.printSpecifiedTypeText("Expense Report\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                    try {
+                        if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                        } else {
+                            mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                        }
+                    } catch (Exception ex) {
+                    }
+                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                    mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                    mIPosPrinterService.PrintSpecFormatText("Expense Report\n", "ST", 24, 1, callbackPPT8555);
+                    mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+
+                    //mIPosPrinterService.printSpecifiedTypeText("Expense Report\n", "ST", 24, callbackPPT8555);
                     mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("POS Name :" + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printSpecifiedTypeText("Date     : " + date + "\n", "ST", 24, callbackPPT8555);
@@ -1191,14 +1533,14 @@ public class X_ZActivity extends AppCompatActivity {
 
                     mIPosPrinterService.printSpecifiedTypeText("Total Expenses    : " + expenses + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "ST", 24, callbackPPT8555);
 
-                    String strTotal;
+                  /*  String strTotal;
                     int iPayCount = 1;
                     while (iPayCount < arrPaymentAmount.size()) {
                         strTotal = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(iPayCount)), decimal_check);
                         mIPosPrinterService.printSpecifiedTypeText(arrPaymentName.get(iPayCount) + " : " + strTotal, "ST", 24, callbackPPT8555);
                         iPayCount++;
                     }
-
+*/
 //                    mIPosPrinterService.printSpecifiedTypeText("Total Return    : " + edt_totl_return.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
                     mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                     mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
@@ -1306,44 +1648,67 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
-                        mService.sendMessage("X Report\n", "GBK");
+                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                            } else {
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                            }
+                        } catch (Exception ex) {
+                        }
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("X Report", "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
                         mService.sendMessage("POS Name :" + Globals.objLPD.getDevice_Name(), "GBK");
                         mService.sendMessage("Date     :" + date, "GBK");
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
                         mService.sendMessage("Cashier  :" + user.get_name(), "GBK");
-                        mService.sendMessage("................................................", "GBK");
+                        mService.sendMessage("...............................................", "GBK");
 
                         String ob;
 
                         ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
 
-                        mService.sendMessage("Opening Balance : " + ob, "GBK");
+                        mService.sendMessage("Opening Balance       : " + ob, "GBK");
+                        String expenses;
+                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+                        mService.sendMessage("Expenses(-)           : " + expenses, "GBK");
 
                         String cash;
                         cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                        mService.sendMessage("Cash(+)         : " + cash, "GBK");
+                        mService.sendMessage("Cash(+)               : " + cash, "GBK");
+                        if(Globals.objLPR.getproject_id().equals("cloud")){
+                            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                            mService.sendMessage("Accounts Cash(+)     :" + edt_cr_amt.getText().toString(), "GBK");
 
-                        String expenses;
-                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
-                        mService.sendMessage("Expenses(-)     : " + expenses, "GBK");
+                            mService.sendMessage("Return (Cash)(-)      :" + edt_posbal_returncash.getText().toString(), "GBK");
 
-                        String cr_amt;
+                        }
+                        else{
+
+                        }
+
+                       /* String cr_amt;
 
                         cr_amt = Globals.myNumberFormat2Price(Double.parseDouble(edt_cr_amt.getText().toString()), decimal_check);
-                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");
+                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");*/
 
-                        mService.sendMessage("................................", "GBK");
-                        mService.sendMessage("Net Cash        : " + edt_total.getText().toString().trim().toString(), "GBK");
-                        mService.sendMessage("................................", "GBK");
-                        String strTotalSales;
-
-                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-                        mService.sendMessage("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
-
+                        mService.sendMessage("...............................................", "GBK");
+                        mService.sendMessage("Net Cash  : " + edt_total.getText().toString().trim().toString(), "GBK");
+                        mService.sendMessage("...............................................", "GBK");
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Detail", "GBK");
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
                         String strTotal;
                         int iPayCount = 1;
                         while (iPayCount < arrPaymentAmount.size()) {
@@ -1351,9 +1716,33 @@ public class X_ZActivity extends AppCompatActivity {
                             mService.sendMessage(arrPaymentName.get(iPayCount) + " : " + strTotal, "GBK");
                             iPayCount++;
                         }
-                        String totl_return;
-                        totl_return = Globals.myNumberFormat2Price(Double.parseDouble(edt_totl_return.getText().toString()), decimal_check);
-                        mService.sendMessage("Total Return    :" + totl_return, "GBK");
+                        //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                        String strTotalSales;
+
+                        //  mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
+
+                        mService.sendMessage("Total Sales     : " + strTotalSales , "GBK");
+
+
+                        // Here check Project ype condition if cloud will print else not
+                        // Here conect showing proper but need to alling values proper
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Return", "GBK");
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
+                        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Cash(+)          : " + retruncash, "GBK");
+
+                        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Credit Amount(+)     : " + retruncredit, "GBK");
+
+                        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+                        mService.sendMessage("Total Return(+)    : " + retruntotalsale , "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
                     flag = "1";
@@ -1531,8 +1920,22 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
-                        mService.sendMessage("X Report\n", "GBK");
+                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                            } else {
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                            }
+                        } catch (Exception ex) {
+                        }
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("X Report", "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
                         mService.sendMessage("POS Name :" + Globals.objLPD.getDevice_Name(), "GBK");
@@ -1546,29 +1949,38 @@ public class X_ZActivity extends AppCompatActivity {
                         ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
 
                         mService.sendMessage("Opening Balance : " + ob, "GBK");
+                        String expenses;
+                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+                        mService.sendMessage("Expenses(-)   : " + expenses, "GBK");
 
                         String cash;
                         cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                        mService.sendMessage("Cash(+)         : " + cash, "GBK");
+                        mService.sendMessage("Cash(+)  : " + cash, "GBK");
+                        if(Globals.objLPR.getproject_id().equals("cloud")){
+                            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                            mService.sendMessage("Accounts Cash(+)  :" + edt_cr_amt.getText().toString(), "GBK");
 
-                        String expenses;
-                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
-                        mService.sendMessage("Expenses(-)     : " + expenses, "GBK");
+                            mService.sendMessage("Return (Cash)(-)  :" + edt_posbal_returncash.getText().toString(), "GBK");
 
-                        String cr_amt;
+                        }
+                        else{
+
+                        }
+
+                       /* String cr_amt;
 
                         cr_amt = Globals.myNumberFormat2Price(Double.parseDouble(edt_cr_amt.getText().toString()), decimal_check);
-                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");
+                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");*/
 
                         mService.sendMessage("................................", "GBK");
-                        mService.sendMessage("Net Cash        : " + edt_total.getText().toString().trim().toString(), "GBK");
+                        mService.sendMessage("Net Cash  : " + edt_total.getText().toString().trim().toString(), "GBK");
                         mService.sendMessage("................................", "GBK");
-                        String strTotalSales;
-
-                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-                        mService.sendMessage("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
-
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Detail", "GBK");
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
                         String strTotal;
                         int iPayCount = 1;
                         while (iPayCount < arrPaymentAmount.size()) {
@@ -1576,9 +1988,33 @@ public class X_ZActivity extends AppCompatActivity {
                             mService.sendMessage(arrPaymentName.get(iPayCount) + " : " + strTotal, "GBK");
                             iPayCount++;
                         }
-                        String totl_return;
-                        totl_return = Globals.myNumberFormat2Price(Double.parseDouble(edt_totl_return.getText().toString()), decimal_check);
-                        mService.sendMessage("Total Return  : " + totl_return, "GBK");
+                        //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                        String strTotalSales;
+
+                        //  mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
+
+                        mService.sendMessage("Total Sales   : " + strTotalSales , "GBK");
+
+
+                        // Here check Project ype condition if cloud will print else not
+                        // Here conect showing proper but need to alling values proper
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Return", "GBK");
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
+                        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Cash(+)  : " + retruncash, "GBK");
+
+                        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Credit Amount(+)  : " + retruncredit, "GBK");
+
+                        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+                        mService.sendMessage("Total Return(+)   : " + retruntotalsale , "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
                     flag = "1";
@@ -1662,39 +2098,107 @@ public class X_ZActivity extends AppCompatActivity {
 
     private ArrayList<String> getlistX() {
         ArrayList<String> mylist = new ArrayList<String>();
-        mylist.add("\n              " + Globals.objLPR.getCompany_Name() + "\n");
-        mylist.add("\n               X Report\n");
-        mylist.add("\nPOS Name    : " + Globals.objLPD.getDevice_Name());
-        mylist.add("\nDate        : " + date);
+        mylist.add("                " + Globals.objLPR.getCompany_Name() + "\n");
+        mylist.add("                " + Globals.objLPR.getAddress() + "\n");
+        mylist.add("                " + Globals.objLPR.getMobile_No() + "\n");
+        try {
+            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+            } else {
+                mylist.add("                  " + Globals.objLPR.getService_code_tariff() + "\n");
+
+            }
+        } catch (Exception ex) {
+        }
+        mylist.add("-----------------------------------------------\n");
+        mylist.add("                "+"X Report\n");
+        mylist.add("-----------------------------------------------\n");
+        mylist.add("Date            : " + date + "\n");
+        mylist.add("POS Name        : " + Globals.objLPD.getDevice_Name() + "\n");
         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-        mylist.add("\n" + "Cashier     : " + Globals.objLPR.getLicense_No());
-        mylist.add("\n-----------------------------------------------");
+        mylist.add("Cashier         : " + user.get_name() + "\n");
+        mylist.add("-----------------------------------------------\n");
+
         String ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
-        mylist.add("\nOpening Balance  : " + ob);
+        mylist.add("Opening Balance          : " + ob+"\n");
+        String expenses;
+
+        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+
+        mylist.add("Expenses(-)              : " + expenses+"\n");
+
         String cash;
         cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
-        mylist.add("\nCash         (+) : " + cash);
 
-        String expenses;
-        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
-        mylist.add("\nExpenses       (-) : " + expenses);
-        mylist.add("\nCredit Amount  (+) : " + edt_cr_amt.getText().toString().trim().toString());
-        mylist.add("\n-----------------------------------------------");
-        mylist.add("\nNet Cash       : " + edt_total.getText().toString());
-        mylist.add("\n-----------------------------------------------");
-        String strTotalSales;
+        mylist.add("Cash(+)                  : " + cash+"\n");
 
-        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-        mylist.add("\nTotal Sales      : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")");
 
+        // Here you need to Show Account Cash with project type Condition
+        //------------------------------------------
+        // Accounts (Cash)(+)   : 234.560
+        //------------------------------------------
+        if(Globals.objLPR.getproject_id().equals("cloud")){
+            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+       mylist.add("Accounts Cash(+)         : " + edt_cr_amt.getText().toString()+"\n");
+
+      mylist.add("Return (Cash)(-)         : " + edt_posbal_returncash.getText().toString()+"\n");
+
+        }
+        else{
+
+        }
+
+        mylist.add("-----------------------------------------------\n");
+        mylist.add("Net Cash                 : " + edt_total.getText().toString().trim().toString()+"\n");
+        mylist.add("-----------------------------------------------\n");
+
+
+        mylist.add("                "+"Sales Detail\n");
         String strTotal;
         int iPayCount = 1;
         while (iPayCount < arrPaymentAmount.size()) {
-            strTotal = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(iPayCount)), decimal_check);
-            mylist.add(arrPaymentName.get(iPayCount) + " : " + strTotal);
+          Double lp= Double.parseDouble(arrPaymentAmount.get(iPayCount).toString());
+            strTotal = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(iPayCount).toString()), decimal_check);
+            String strPaymentName  =  arrPaymentName.get(iPayCount);
+            if(strPaymentName.length()<=15)
+            {
+                int lenPaymentName = strPaymentName.length();
+                while(lenPaymentName <15)
+                {
+                    strPaymentName += " ";
+                    lenPaymentName++;
+                }
+            }
+            else
+            {
+                strPaymentName = strPaymentName.substring(0,15);
+            }
+            mylist.add(strPaymentName + " : " + strTotal+"\n");
             iPayCount++;
         }
-        mylist.add("\nTotal Return     : " + edt_totl_return.getText().toString().trim().toString());
+        //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+        String strTotalSales;
+
+        //  mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
+        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
+
+        mylist.add("Total Sales     : " + strTotalSales+"\n");
+
+
+
+        // Here check Project ype condition if cloud will print else not
+        // Here conect showing proper but need to alling values proper
+
+        mylist.add("                  "+"Sales Return\n");
+        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+        mylist.add("Cash(+)                : " + retruncash+"\n");
+
+        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+        mylist.add("Credit Amount(+)       : " + retruncredit+"\n");
+
+        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+        mylist.add("Total Return(+)        : " + retruntotalsale+"\n");
+
         mylist.add("\n");
         mylist.add("\n");
         mylist.add("\n");
@@ -1789,9 +2293,23 @@ public class X_ZActivity extends AppCompatActivity {
                 try {
                     for (int k = 0; k < Integer.parseInt(settings.get_No_Of_Print()); k++) {
                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
-                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "ST", 24, 1, callbackPPT8555);
-                        mIPosPrinterService.printSpecifiedTypeText(" \n", "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getCompany_Name() + "\n", "", 24, 1, callbackPPT8555);
+                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getAddress() + "\n", "", 24, 1, callbackPPT8555);
+                        mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getMobile_No() + "\n", "", 24, 1, callbackPPT8555);
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                            } else {
+                                mIPosPrinterService.PrintSpecFormatText("" + Globals.objLPR.getService_code_tariff() + "\n", "", 24, 1, callbackPPT8555);
+
+                            }
+                        } catch (Exception ex) {
+                        }
+                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         mIPosPrinterService.PrintSpecFormatText("Z Report\n", "ST", 24, 1, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                         mIPosPrinterService.printSpecifiedTypeText("ZNo      :" + strZ_Code + "\n", "ST", 24, callbackPPT8555);
                         mIPosPrinterService.printSpecifiedTypeText("POS Name : " + Globals.objLPD.getDevice_Name() + "\n", "ST", 24, callbackPPT8555);
@@ -1806,15 +2324,26 @@ public class X_ZActivity extends AppCompatActivity {
                         String cash;
                         cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                        mIPosPrinterService.printSpecifiedTypeText("Cash(+)         : " + cash, "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("Cash(+)  : " + cash, "ST", 24, callbackPPT8555);
                         String expenses;
 
                         expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
 
-                        mIPosPrinterService.printSpecifiedTypeText("Expenses(-)     : " + expenses, "ST", 24, callbackPPT8555);
-                        mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+): " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("Expenses(-)  : " + expenses, "ST", 24, callbackPPT8555);
+                        if(Globals.objLPR.getproject_id().equals("cloud")){
+                            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                            mIPosPrinterService.printSpecifiedTypeText("Accounts Cash(+)  :" + edt_cr_amt.getText().toString(), "ST", 24, callbackPPT8555);
+
+                            mIPosPrinterService.printSpecifiedTypeText("Return Cash(-)  :" + edt_posbal_returncash.getText().toString(), "ST", 24, callbackPPT8555);
+
+                        }
+                        else{
+
+                        }
+
+                        /*mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+): " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);*/
                         mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
-                        mIPosPrinterService.printSpecifiedTypeText("Net Cash        : " + edt_total.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("Net Cash : " +edt_total.getText().toString().trim().toString(), "ST", 32, callbackPPT8555);
                         mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
                         mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         mIPosPrinterService.PrintSpecFormatText("Sales Detail\n", "ST", 32, 1, callbackPPT8555);
@@ -1824,7 +2353,7 @@ public class X_ZActivity extends AppCompatActivity {
                         mIPosPrinterService.setPrinterPrintAlignment(0, callbackPPT8555);
                         strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
 
-                        mIPosPrinterService.printSpecifiedTypeText("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "ST", 24, callbackPPT8555);
+                        mIPosPrinterService.printSpecifiedTypeText("Total Sales  : " + strTotalSales , "ST", 24, callbackPPT8555);
 
                         String strTotal;
                         int iPayCount = 1;
@@ -1835,6 +2364,16 @@ public class X_ZActivity extends AppCompatActivity {
                         }
 
 //                        mIPosPrinterService.printSpecifiedTypeText("Total Return    : "+edt_totl_return.getText().toString().trim().toString(),"ST",24,callbackPPT8555);
+                        mIPosPrinterService.PrintSpecFormatText("Sales Return\n", "ST", 32, 1, callbackPPT8555);
+                        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mIPosPrinterService.printSpecifiedTypeText("Cash(+)  : " + retruncash, "ST", 24, callbackPPT8555);
+
+                        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+)  : " + retruncredit, "ST", 24, callbackPPT8555);
+
+                        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+                        mIPosPrinterService.printSpecifiedTypeText("Total Return(+)  : " + retruntotalsale, "ST", 24, callbackPPT8555);
+//                    mIPosPrinterService.printSpecifiedTypeText("Total Return    : " + edt_totl_return.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);
                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
                         mIPosPrinterService.printBlankLines(1, 8, callbackPPT8555);
@@ -1934,6 +2473,7 @@ public class X_ZActivity extends AppCompatActivity {
         cmd[1] = 0x21;
 
         if ((lang.compareTo("en")) == 0) {
+
             try {
                 if (mService.isAvailable() == false) {
                 } else {
@@ -1941,45 +2481,68 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
+                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+
+                            }
+                        } catch (Exception ex) {
+                        }
+                        mService.sendMessage("-----------------------------------------------", "GBK");
                         mService.sendMessage("Z Report\n", "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
-                        mService.sendMessage("ZNo      :" + strZ_Code, "GBK");
-                        mService.sendMessage("POS Name :" + Globals.objLPD.getDevice_Name(), "GBK");
-                        mService.sendMessage("Date     :" + date, "GBK");
+                        mService.sendMessage("ZNo          :" + strZ_Code, "GBK");
+                        mService.sendMessage("POS Name     :" + Globals.objLPD.getDevice_Name(), "GBK");
+                        mService.sendMessage("Date         :" + date, "GBK");
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                        mService.sendMessage("Cashier  :" + user.get_name(), "GBK");
-                        mService.sendMessage("................................................", "GBK");
+                        mService.sendMessage("Cashier      :" + user.get_name(), "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
 
                         String ob;
 
                         ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
 
-                        mService.sendMessage("Opening Balance : " + ob, "GBK");
-
+                        mService.sendMessage("Opening Balance      : " + ob, "GBK");
+                        String expenses;
+                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+                        mService.sendMessage("Expenses(-)          : " + expenses, "GBK");
                         String cash;
                         cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                        mService.sendMessage("Cash(+)         : " + cash, "GBK");
+                        mService.sendMessage("Cash(+)              : " + cash, "GBK");
 
-                        String expenses;
-                        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
-                        mService.sendMessage("Expenses(-)     : " + expenses, "GBK");
+                        if(Globals.objLPR.getproject_id().equals("cloud")){
+                            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                            mService.sendMessage("Accounts Cash(+)       :" + edt_cr_amt.getText().toString(), "GBK");
 
-                        String cr_amt;
+                            mService.sendMessage("Return Cash(-)         :" + edt_posbal_returncash.getText().toString(), "GBK");
 
-                        cr_amt = Globals.myNumberFormat2Price(Double.parseDouble(edt_cr_amt.getText().toString()), decimal_check);
-                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");
+                        }
+                        else{
 
-                        mService.sendMessage("................................................", "GBK");
-                        mService.sendMessage("Net Cash        : " + edt_total.getText().toString().trim().toString(), "GBK");
-                        mService.sendMessage("................................................", "GBK");
+                        }
+
+                        /*mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+): " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);*/
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("Net Cash      : " +edt_total.getText().toString().trim().toString(), "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Detail", "GBK");
+
                         String strTotalSales;
-
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
                         strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-                        mService.sendMessage("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
 
+                        mService.sendMessage("Total Sales      : " + strTotalSales , "GBK");
 
                         String strTotal;
                         int iPayCount = 1;
@@ -1989,9 +2552,23 @@ public class X_ZActivity extends AppCompatActivity {
                             iPayCount++;
                         }
 
-                        String totl_return;
-                        totl_return = Globals.myNumberFormat2Price(Double.parseDouble(edt_totl_return.getText().toString()), decimal_check);
-                        mService.sendMessage("Total Return  : " + totl_return, "GBK");
+//                        mIPosPrinterService.printSpecifiedTypeText("Total Return    : "+edt_totl_return.getText().toString().trim().toString(),"ST",24,callbackPPT8555);
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Return\n", "GBK");
+                        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
+                        mService.sendMessage("Cash(+)      : " + retruncash, "GBK");
+
+                        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Credit Amount(+)      : " + retruncredit, "GBK");
+
+                        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+                        mService.sendMessage("Total Return(+)      : " + retruntotalsale, "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
                     flag = "1";
@@ -2246,19 +2823,42 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                            }
+                        } catch (Exception ex) {
+                        }
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+                        mService.sendMessage("Expense Report", "GBK");
+                        mService.sendMessage("-----------------------------------------------", "GBK");
+
+                        //mIPosPrinterService.printSpecifiedTypeText("X Report\n", "ST", 24, callbackPPT8555);
+                        // mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                        //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
-                        mService.sendMessage("POS Name :" + Globals.objLPD.getDevice_Name(), "GBK");
-                        mService.sendMessage("Date     :" + date, "GBK");
+                        mService.sendMessage("POS Name     : " + Globals.objLPD.getDevice_Name(), "GBK");
+                        mService.sendMessage("Date         : " + date, "GBK");
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                        mService.sendMessage("Cashier  :" + user.get_name(), "GBK");
-                        mService.sendMessage("................................................", "GBK");
-                        mService.sendMessage("Expenses                        Amount ", "GBK");
-                        mService.sendMessage("................................................", "GBK");
+                        mService.sendMessage("Cashier      : " + user.get_name(), "GBK");
+                        mService.sendMessage("...............................................", "GBK");
+                        mService.sendMessage("Expenses       Amount ", "GBK");
+                        mService.sendMessage("...............................................", "GBK");
+
+                        String expenses="";
                         int count = 0;
                         arraylist_PB = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE  z_code ='0' And type ='EXP' And is_active ='1' Order By remarks asc", database);
                         while (count < arraylist_PB.size()) {
+
                             String strRemarks = arraylist_PB.get(count).get_remarks();
                             int len = 12;
                             if (strRemarks.length() > len) {
@@ -2268,25 +2868,44 @@ public class X_ZActivity extends AppCompatActivity {
                                     strRemarks = strRemarks + " ";
                                 }
                             }
-                            mService.sendMessage(" " + strRemarks + "                  " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check), "GBK");
-                            amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
-                            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);
+                            expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+                            mService.sendMessage(" " + strRemarks + " " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check) , "GBK");
+
+
+                            // mService.sendMessage(" " + strRemarks + "       " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check), "GBK");
+                            ;
+                           /* amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
+                            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);*/
+
+
                             count++;
                         }
-                        mService.sendMessage("................................................", "GBK");
-                        mService.sendMessage("Total Amount  :" + totalAmount, "GBK");
-                        mService.sendMessage("", "GBK");
-                        mService.sendMessage("", "GBK");
-                        cmd[2] &= 0xEF;
+                       /* mService.sendMessage("................................", "GBK");
+                        mService.sendMessage("Date  :" + totalAmount, "GBK");*/
+                        String strTotalSales;
+                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
+
+                        mService.sendMessage("Total Expenses      : " + expenses + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
+                    Globals.strContact_Code = "";
+                    Globals.strResvContact_Code = "";
+                    Globals.strOldCrAmt = "0";
                     flag = "1";
+                    Globals.setEmpty();
+
                 }
 
 
             } catch (Exception ex) {
+
             }
+
         }
+
         return flag;
     }
 
@@ -2473,18 +3092,38 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+                                ab = BytesUtil.setAlignCenter(1);
+                                mService.write(ab);
+                            }
+                        } catch (Exception ex) {
+                        }
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Expense Report", "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+
+                        //mIPosPrinterService.printSpecifiedTypeText("X Report\n", "ST", 24, callbackPPT8555);
+                       // mIPosPrinterService.printSpecifiedTypeText("--------------------------------\n", "ST", 24, callbackPPT8555);
+                        //mIPosPrinterService.setPrinterPrintAlignment(1, callbackPPT8555);
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
-                        mService.sendMessage("POS Name :" + Globals.objLPD.getDevice_Name(), "GBK");
-                        mService.sendMessage("Date    :" + date, "GBK");
+                        mService.sendMessage("POS Name : " + Globals.objLPD.getDevice_Name(), "GBK");
+                        mService.sendMessage("Date    : " + date, "GBK");
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-                        mService.sendMessage("Cashier :" + user.get_name(), "GBK");
+                        mService.sendMessage("Cashier : " + user.get_name(), "GBK");
                         mService.sendMessage("................................", "GBK");
                         mService.sendMessage("Expenses      Amount ", "GBK");
                         mService.sendMessage("................................", "GBK");
 
-
+String expenses="";
                         int count = 0;
                         arraylist_PB = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE  z_code ='0' And type ='EXP' And is_active ='1' Order By remarks asc", database);
                         while (count < arraylist_PB.size()) {
@@ -2498,21 +3137,35 @@ public class X_ZActivity extends AppCompatActivity {
                                     strRemarks = strRemarks + " ";
                                 }
                             }
+                            expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
+                            mService.sendMessage(" " + strRemarks + " " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check) , "GBK");
 
-                            mService.sendMessage(" " + strRemarks + " " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check) + "\n", "GBK");
 
-                            amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
-                            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);
+                           // mService.sendMessage(" " + strRemarks + "       " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check), "GBK");
+                            ;
+                           /* amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
+                            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);*/
 
 
                             count++;
                         }
-                        mService.sendMessage("................................", "GBK");
-                        mService.sendMessage("Date  :" + totalAmount, "GBK");
+                       /* mService.sendMessage("................................", "GBK");
+                        mService.sendMessage("Date  :" + totalAmount, "GBK");*/
+                        String strTotalSales;
+                        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
 
+                        mService.sendMessage("Total Expenses    : " + expenses + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
+                    Globals.strContact_Code = "";
+                    Globals.strResvContact_Code = "";
+                    Globals.strOldCrAmt = "0";
                     flag = "1";
+                    Globals.setEmpty();
+
                 }
 
 
@@ -2641,11 +3294,14 @@ public class X_ZActivity extends AppCompatActivity {
                 do {
                     strReturnTotal = Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(0)), decimal_check);
                     edt_ret_cash.setText("" + strReturnTotal);
+                    edt_posbal_returncash.setText("" + strReturnTotal);
+
                 } while (cursor.moveToNext());
             }
         } catch (Exception ex) {
             strReturnTotal = Globals.myNumberFormat2Price(0, decimal_check);
             edt_ret_cash.setText("" + strReturnTotal);
+            edt_posbal_returncash.setText("" + strReturnTotal);
         }
         try {
             String strDrQry = "Select sum(total) from returns where is_post = 'true' and z_code='0' and payment_id='5'";
@@ -2706,22 +3362,28 @@ public class X_ZActivity extends AppCompatActivity {
             TextView tv1 = new TextView(this);
             TextView tv2 = new TextView(this);
             TextView tv3 = new TextView(this);
-            tr.setGravity(1);
+           // tr.setGravity(1);
 
             tv1.setTextColor(Color.parseColor("#333333"));
             tv1.setTextSize(16);
             tv1.setText(cursor.getString(2));
+            tv1.setGravity(Gravity.LEFT);
             tr.addView(tv1);
+
 
             tv2.setTextColor(Color.parseColor("#333333"));
             tv2.setTextSize(16);
             tv2.setText(" : ");
+            tv2.setGravity(Gravity.LEFT);
             tr.addView(tv2);
 
             tv3.setTextColor(Color.parseColor("#333333"));
             tv3.setTextSize(16);
             tv3.setText(strTotal);
+            tv3.setGravity(Gravity.RIGHT);
+
             tr.addView(tv3);
+
             linearLayout.addView(tr);
 
             arrPaymentName.add(cursor.getString(2));
@@ -2731,7 +3393,7 @@ public class X_ZActivity extends AppCompatActivity {
     }
 
     private String send_online(final ProgressDialog pDialog) {
-        String result = Pos_Balance.sendOnServer(getApplicationContext(), database, db, "SELECT device_code,z_code,date,total_amount,is_active,modified_by FROM  z_close Where is_push = 'N'", liccustomerid);
+        String result = Pos_Balance.sendOnServer(getApplicationContext(), database, db, "SELECT device_code,z_code,date,total_amount,is_active,modified_by FROM  z_close Where is_push = 'N'", liccustomerid,serial_no,android_id,myKey);
         return result;
     }
 
@@ -2753,8 +3415,21 @@ public class X_ZActivity extends AppCompatActivity {
                         byte[] ab;
                         ab = BytesUtil.setAlignCenter(1);
                         mService.write(ab);
-                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase() + "\n", "GBK");
+                        mService.sendMessage(" " + Globals.objLPR.getCompany_Name().toUpperCase(), "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getAddress() , "GBK");
+                        mService.sendMessage("" + Globals.objLPR.getMobile_No(), "GBK");
+                        try {
+                            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+                            } else {
+                                mService.sendMessage("" + Globals.objLPR.getService_code_tariff(), "GBK");
+
+                            }
+                        } catch (Exception ex) {
+                        }
+                        mService.sendMessage("------------------------------", "GBK");
                         mService.sendMessage("Z Report\n", "GBK");
+                        mService.sendMessage("------------------------------", "GBK");
                         ab = BytesUtil.setAlignCenter(0);
                         mService.write(ab);
                         mService.sendMessage("ZNo      :" + strZ_Code, "GBK");
@@ -2762,36 +3437,46 @@ public class X_ZActivity extends AppCompatActivity {
                         mService.sendMessage("Date     :" + date, "GBK");
                         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
                         mService.sendMessage("Cashier  :" + user.get_name(), "GBK");
-                        mService.sendMessage("................................", "GBK");
+                        mService.sendMessage("------------------------------", "GBK");
 
                         String ob;
 
                         ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
 
                         mService.sendMessage("Opening Balance : " + ob, "GBK");
-
-                        String cash;
-                        cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
-
-                        mService.sendMessage("Cash(+)         : " + cash, "GBK");
-
                         String expenses;
                         expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
                         mService.sendMessage("Expenses(-)     : " + expenses, "GBK");
+                        String cash;
+                        cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
 
-                        String cr_amt;
+                        mService.sendMessage("Cash(+)  : " + cash, "GBK");
 
-                        cr_amt = Globals.myNumberFormat2Price(Double.parseDouble(edt_cr_amt.getText().toString()), decimal_check);
-                        mService.sendMessage("Credit Amount(+): " + cr_amt, "GBK");
+                        if(Globals.objLPR.getproject_id().equals("cloud")){
+                            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+                            mService.sendMessage("Accounts Cash(+)  :" + edt_cr_amt.getText().toString(), "GBK");
 
-                        mService.sendMessage("................................", "GBK");
-                        mService.sendMessage("Net Cash        : " + edt_total.getText().toString().trim().toString(), "GBK");
-                        mService.sendMessage("................................", "GBK");
+                            mService.sendMessage("Return Cash(-)  :" + edt_posbal_returncash.getText().toString(), "GBK");
+
+                        }
+                        else{
+
+                        }
+
+                        /*mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+): " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);*/
+                        mService.sendMessage("--------------------------------", "GBK");
+                        mService.sendMessage("Net Cash : " +edt_total.getText().toString().trim().toString(), "GBK");
+                        mService.sendMessage("--------------------------------", "GBK");
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Detail", "GBK");
+
                         String strTotalSales;
-
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
                         strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-                        mService.sendMessage("Total Sales     : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")", "GBK");
 
+                        mService.sendMessage("Total Sales  : " + strTotalSales , "GBK");
 
                         String strTotal;
                         int iPayCount = 1;
@@ -2801,9 +3486,23 @@ public class X_ZActivity extends AppCompatActivity {
                             iPayCount++;
                         }
 
-                        String totl_return;
-                        totl_return = Globals.myNumberFormat2Price(Double.parseDouble(edt_totl_return.getText().toString()), decimal_check);
-                        mService.sendMessage("Total Return  : " + totl_return, "GBK");
+//                        mIPosPrinterService.printSpecifiedTypeText("Total Return    : "+edt_totl_return.getText().toString().trim().toString(),"ST",24,callbackPPT8555);
+                        ab = BytesUtil.setAlignCenter(1);
+                        mService.write(ab);
+                        mService.sendMessage("Sales Return\n", "GBK");
+                        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        ab = BytesUtil.setAlignCenter(0);
+                        mService.write(ab);
+                        mService.sendMessage("Cash(+)  : " + retruncash, "GBK");
+
+                        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check);
+                        mService.sendMessage("Credit Amount(+)  : " + retruncredit, "GBK");
+
+                        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check);
+                        mService.sendMessage("Total Return(+)  : " + retruntotalsale, "GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
+                        mService.sendMessage("\n","GBK");
                         mService.write(cmd);
                     }
                     flag = "1";
@@ -4035,40 +4734,85 @@ public class X_ZActivity extends AppCompatActivity {
 
     private ArrayList<String> getlist() {
         ArrayList<String> mylist = new ArrayList<String>();
-        mylist.add("\n              " + Globals.objLPR.getCompany_Name() + "\n");
-        mylist.add("\n               Z Report\n");
-        mylist.add("\nZNo         : " + Globals.objLPD.getDevice_Name());
-        mylist.add("\nPOS Name    : " + Globals.objLPD.getDevice_Name());
-        mylist.add("\nDate        : " + date);
-        user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
-        mylist.add("\n" + "Cashier     : " + Globals.objLPR.getLicense_No());
-        mylist.add("\n-----------------------------------------------");
-        String ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
-        mylist.add("\nOpening Balance  : " + ob);
-        String cash;
-        cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check);
-        mylist.add("\nCash            : " + cash);
+        mylist.add("                " + Globals.objLPR.getCompany_Name() + "\n");
+        mylist.add("                " + Globals.objLPR.getAddress() + "\n");
+        mylist.add("                " + Globals.objLPR.getMobile_No() + "\n");
+        try {
+            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
 
+            } else {
+                mylist.add("                  " + Globals.objLPR.getService_code_tariff() + "\n");
+
+            }
+        } catch (Exception ex) {
+        }
+        mylist.add("-----------------------------------------------\n");
+        mylist.add("                "+"Z Report\n");
+        mylist.add("-----------------------------------------------\n");
+
+        mylist.add("ZNo         :" + strZ_Code + "\n");
+        mylist.add("POS Name    : " + Globals.objLPD.getDevice_Name() + "\n");
+        mylist.add("Date        : " + date + "\n");
+        user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
+        mylist.add("Cashier     : " + user.get_name() + "\n");
+        mylist.add("------------------------------------------------------\n");
+        String ob = Globals.myNumberFormat2Price(Double.parseDouble(edt_ob.getText().toString()), decimal_check);
+
+        mylist.add("Opening Balance     : " + ob+"\n");
+
+        String cash;
+        cash = Globals.myNumberFormat2Price(Double.parseDouble(edt_cash.getText().toString()), decimal_check+"\n");
+
+        mylist.add("Cash(+)             : " + cash+"\n");
         String expenses;
-        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check);
-        mylist.add("\nExpenses         : " + expenses);
-        mylist.add("\nCredit Amount    : " + edt_cr_amt.getText().toString().trim().toString());
-        mylist.add("\n-----------------------------------------------");
-        mylist.add("\nNet Cash       : " + edt_total.getText().toString());
-        mylist.add("\n-----------------------------------------------");
+
+        expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check+"\n");
+
+        mylist.add("Expenses(-)         : " + expenses+"\n");
+        if(Globals.objLPR.getproject_id().equals("cloud")){
+            //mIPosPrinterService.PrintSpecFormatText("Accounts (Cash)(+)   :", "ST", 32, 1, callbackPPT8555);
+       mylist.add("Accounts Cash(+)     :" + edt_cr_amt.getText().toString()+"\n");
+
+       mylist.add("Return Cash(-)       :" + edt_posbal_returncash.getText().toString()+"\n");
+
+        }
+        else{
+
+        }
+
+        /*mIPosPrinterService.printSpecifiedTypeText("Credit Amount(+): " + edt_cr_amt.getText().toString().trim().toString(), "ST", 24, callbackPPT8555);*/
+        mylist.add("--------------------------------------------\n");
+        mylist.add("Net Cash            : " +edt_total.getText().toString().trim().toString()+"\n");
+        mylist.add("--------------------------------------------\n");
+
+        mylist.add("                "+"Sales Detail\n");
+
         String strTotalSales;
 
-        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
-        mylist.add("\nTotal Sales      : " + strTotalSales + "(" + Globals.objLPD.getCurreny_Symbol() + ")");
+
+        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check+"\n");
+
+        mylist.add("Total Sales  : " + strTotalSales+"\n" );
 
         String strTotal;
         int iPayCount = 1;
         while (iPayCount < arrPaymentAmount.size()) {
-            strTotal = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(iPayCount)), decimal_check);
-            mylist.add(arrPaymentName.get(iPayCount) + " : " + strTotal);
+            strTotal = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(iPayCount)), decimal_check+"\n");
+            mylist.add(arrPaymentName.get(iPayCount) + "    : " + strTotal+"\n");
             iPayCount++;
         }
-        mylist.add("\nTotal Return     : " + edt_totl_return.getText().toString().trim().toString());
+
+//                        mIPosPrinterService.printSpecifiedTypeText("Total Return    : "+edt_totl_return.getText().toString().trim().toString(),"ST",24,callbackPPT8555);
+        mylist.add("                "+"Sales Return\n");
+        String retruncash = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check+"\n");
+        mylist.add("Cash(+)                : " + retruncash+"\n");
+
+        String retruncredit = Globals.myNumberFormat2Price(Double.parseDouble(edt_ret_cash.getText().toString()), decimal_check+"\n");
+        mylist.add("Credit Amount(+)       : " + retruncredit+"\n");
+
+        String retruntotalsale = Globals.myNumberFormat2Price(Double.parseDouble(edt_retntotal.getText().toString()), decimal_check+"\n");
+        mylist.add("Total Return(+)        : " + retruntotalsale+"\n");
+
         mylist.add("\n");
         mylist.add("\n");
         mylist.add("\n");
@@ -4079,7 +4823,22 @@ public class X_ZActivity extends AppCompatActivity {
     private ArrayList<String> getlistEx() {
         ArrayList<String> mylist = new ArrayList<String>();
 
-        mylist.add("\n              " + Globals.objLPR.getCompany_Name() + "\n");
+        mylist.add("             " + Globals.objLPR.getCompany_Name() + "\n");
+        mylist.add("             " + Globals.objLPR.getAddress() + "\n");
+        mylist.add("             " + Globals.objLPR.getMobile_No() + "\n");
+        try {
+            if (Globals.objLPR.getService_code_tariff().equals("null") || Globals.objLPR.getService_code_tariff().equals("")) {
+
+            } else {
+                mylist.add("             " + Globals.objLPR.getService_code_tariff() + "\n");
+
+            }
+        } catch (Exception ex) {
+        }
+        mylist.add("-----------------------------------------------\n");
+
+        mylist.add("             " +"Expense Report\n");
+        mylist.add("--------------------------------------------------\n");
         mylist.add("\nPOS Name    : " + Globals.objLPD.getDevice_Name());
         mylist.add("\nDate        : " + date);
         user = User.getUser(getApplicationContext(), " Where user_code='" + Globals.user + "'", database);
@@ -4088,6 +4847,7 @@ public class X_ZActivity extends AppCompatActivity {
         mylist.add("\n  Expenses          Amount");
         mylist.add("\n-----------------------------------------------");
         int count = 0;
+        String expenses="";
         arraylist_PB = Pos_Balance.getAllPos_Balance(getApplicationContext(), "WHERE  z_code ='0' And type ='EXP' And is_active ='1' Order By remarks asc", database);
         while (count < arraylist_PB.size()) {
             String strRemarks = arraylist_PB.get(count).get_remarks();
@@ -4099,14 +4859,23 @@ public class X_ZActivity extends AppCompatActivity {
                     strRemarks = strRemarks + " ";
                 }
             }
+
+            expenses = Globals.myNumberFormat2Price(Double.parseDouble(edt_expenses.getText().toString()), decimal_check+"\n");
+
             mylist.add("\n" + "  " + strRemarks + "       " + Globals.myNumberFormat2Price(Double.parseDouble(arraylist_PB.get(count).get_amount()), decimal_check));
-            amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
-            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);
+         /*   amt = amt + Double.parseDouble(arraylist_PB.get(count).get_amount());
+            totalAmount = Globals.myNumberFormat2Price(amt, decimal_check);*/
             count++;
         }
+        String strTotalSales;
+
+
+        strTotalSales = Globals.myNumberFormat2Price(Double.parseDouble(arrPaymentAmount.get(0)), decimal_check);
+
+        mylist.add("Total Expenses    : " + expenses + "(" + Globals.objLPD.getCurreny_Symbol() + ")");
 
         mylist.add("\n-----------------------------------------------");
-        mylist.add("\nTotal           : " + totalAmount);
+      //  mylist.add("\nTotal           : " + totalAmount);
         mylist.add("\n");
         mylist.add("\n");
         mylist.add("\n");
@@ -4209,5 +4978,16 @@ public class X_ZActivity extends AppCompatActivity {
         }
         Log.i(TAG, "#### printerStatus" + printerStatus);
         return printerStatus;
+    }
+
+    private String stock_post() {
+        String suc = "0";
+        returns = Returns.getReturns(getApplicationContext(), " where voucher_no ='" + Globals.strvoucherno + "' ", database);
+        returns.set_is_post("true");
+        long l = returns.updateReturns("voucher_no=?", new String[]{Globals.strvoucherno}, database);
+        if (l > 0) {
+            suc = "1";
+        }
+        return suc;
     }
 }

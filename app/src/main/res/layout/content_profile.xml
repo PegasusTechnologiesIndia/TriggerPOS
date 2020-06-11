@@ -604,6 +604,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginTop="50dp"
             android:background="#403c3c"
+
             android:text="@string/Update_License" />
 
 
@@ -613,6 +614,7 @@
             android:layout_below="@+id/tableLayout1"
             android:layout_centerHorizontal="true"
             android:layout_marginTop="20dp"
+
             android:background="#403c3c"
             android:text="@string/Update_Profile" />
 
@@ -623,6 +625,7 @@
             android:layout_centerHorizontal="true"
             android:layout_marginBottom="20dp"
             android:layout_marginTop="20dp"
+
             android:background="#403c3c"
             android:text="@string/get_profile" />
     </LinearLayout>

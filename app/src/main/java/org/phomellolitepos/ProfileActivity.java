@@ -131,6 +131,8 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
         if (flag.equals("login")) {
+
+
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
@@ -207,7 +209,18 @@ public class ProfileActivity extends AppCompatActivity {
         txt_res_code.setText(lite_pos_registration.getRegistration_Code());
         txt_address.setText(lite_pos_registration.getAddress());
         txt_res_code.setText(lite_pos_registration.getRegistration_Code());
+        if (flag.equals("login")) {
 
+            btn_upd_profile.setVisibility(View.GONE);
+            btn_get_profile.setVisibility(View.GONE);
+            btn_upd_exp.setVisibility(View.VISIBLE);
+        }
+        else if(flag.equals("profile")){
+            btn_upd_profile.setVisibility(View.GONE);
+            btn_get_profile.setVisibility(View.GONE);
+            btn_upd_exp.setVisibility(View.GONE);
+
+        }
         try {
             lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
 
@@ -588,7 +601,7 @@ public class ProfileActivity extends AppCompatActivity {
                 nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
                 nameValuePairs.add(new BasicNameValuePair("reg_code", lite_pos_registration.getRegistration_Code()));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_1", serial_no));
-                nameValuePairs.add(new BasicNameValuePair("sys_code_2", "4"));
+                nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
                 nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
             }

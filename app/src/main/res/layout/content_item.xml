@@ -78,6 +78,19 @@
                 android:selectAllOnFocus="true"/>
 
         </android.support.design.widget.TextInputLayout>
+        <android.support.design.widget.TextInputLayout
+            android:id="@+id/edt_layout_item_description"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_description"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/item_name_l"
+                android:selectAllOnFocus="true"
+                />
+
+        </android.support.design.widget.TextInputLayout>
 
 
         <android.support.design.widget.TextInputLayout
@@ -150,19 +163,6 @@
             android:inputType="text">
         </Spinner>
 
-        <android.support.design.widget.TextInputLayout
-            android:id="@+id/edt_layout_item_description"
-            style="@style/AppTheme.TextInputLayout"
-            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
-
-            <EditText
-                android:id="@+id/edt_item_description"
-                style="@style/AppTheme.EditText"
-                android:hint="@string/Description"
-                android:selectAllOnFocus="true"
-                />
-
-        </android.support.design.widget.TextInputLayout>
 
         <CheckBox
             android:id="@+id/ck_stockable"

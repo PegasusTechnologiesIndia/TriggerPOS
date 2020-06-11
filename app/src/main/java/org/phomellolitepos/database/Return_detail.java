@@ -213,4 +213,26 @@ public class Return_detail {
         }
         return master;
     }
+
+
+    public static String getItemNameReturn_l(Context context, String WhereClasue)
+    {
+        String Query = "Select item.description FROM " + tableName + "  LEFT JOIN item ON item.item_code = Return_detail.item_code  " + WhereClasue;
+        String master = null;
+        Database db = new Database(context);
+        SQLiteDatabase database = db.getReadableDatabase();
+        try {
+            Cursor cursor = database.rawQuery(Query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    master = cursor.getString(0);
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+//            database.close();
+//            db.close();
+        } catch (Exception ex) {
+        }
+        return master;
+    }
 }

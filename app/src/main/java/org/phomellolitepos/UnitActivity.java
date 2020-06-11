@@ -116,10 +116,15 @@ public class UnitActivity extends AppCompatActivity {
 
         if (operation.equals("Edit")) {
             try {
-                btn_delete.setVisibility(View.VISIBLE);
+                if(!Globals.objLPR.getproject_id().equals("cloud")) {
+
+                    btn_delete.setVisibility(View.VISIBLE);
+                }
+
                 unit = Unit.getUnit(getApplicationContext(), database, db, " WHERE unit_id = '" + unit_id + "'");
                 edt_unit_name.setText(unit.get_name());
                 edt_code.setText(unit.get_code());
+                edt_code.setEnabled(false);
                 edt_description.setText(unit.get_description());
             }catch (Exception ex){}
         } else {

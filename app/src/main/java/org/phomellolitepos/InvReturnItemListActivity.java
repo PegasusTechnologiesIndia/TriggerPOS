@@ -44,6 +44,8 @@ public class InvReturnItemListActivity extends AppCompatActivity {
     ArrayList<Object> object;
     ArrayList<Object> itemcodelist;
     ArrayList<Object> barcodelist;
+    ArrayList<Object> return_qtylist;
+    ArrayList<Object> qtylist;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -73,7 +75,31 @@ public class InvReturnItemListActivity extends AppCompatActivity {
 
             decimal_check = "1";
         }
+        try {
+            Intent intent = getIntent();
+            getSupportActionBar().setTitle("");
+            operation = intent.getStringExtra("operation");
+            str_voucher_no = intent.getStringExtra("voucher_no");
+            str_date = intent.getStringExtra("date");
+            str_remarks = intent.getStringExtra("remarks");
+            PayId = intent.getStringExtra("payment_id");
+            ordCode = intent.getStringExtra("order_code");
+            cusCode = intent.getStringExtra("contact_code");
+            Bundle args = intent.getBundleExtra("BUNDLE");
+            object = (ArrayList<Object>) args.getSerializable("ARRAYLIST");
 
+            itemcodelist = (ArrayList<Object>) args.getSerializable("ItemCodeList");
+            barcodelist = (ArrayList<Object>) args.getSerializable("BarCodeList");
+            return_qtylist = (ArrayList<Object>) args.getSerializable("ret_quantitylist");
+            qtylist = (ArrayList<Object>) args.getSerializable("quantitylist");
+            order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), "where order_code='" + ordCode + "'", database);
+            ListView category_list = (ListView) findViewById(R.id.item_list);
+
+            returnListAdapter = new InvReturnItemListadapter(InvReturnItemListActivity.this, order_detail,object);
+            category_list.setAdapter(returnListAdapter);
+            returnListAdapter.notifyDataSetChanged();
+        }
+        catch(Exception e){}
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -97,6 +123,10 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                             intent.putExtra("order_code", ordCode);
                             Bundle args = new Bundle();
                             args.putSerializable("ARRAYLIST",(Serializable)object);
+                            args.putSerializable("ItemCodeList",(Serializable)itemcodelist);
+                            args.putSerializable("BarCodeList",(Serializable)barcodelist);
+                            args.putSerializable("ret_quantitylist",(Serializable)return_qtylist);
+                            args.putSerializable("quantitylist",(Serializable)qtylist);
                             intent.putExtra("BUNDLE",args);
 
 
@@ -121,29 +151,7 @@ public class InvReturnItemListActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         item_title = (TextView) findViewById(R.id.item_title);
 
-        try {
-            Intent intent = getIntent();
-            getSupportActionBar().setTitle("");
-            operation = intent.getStringExtra("operation");
-            str_voucher_no = intent.getStringExtra("voucher_no");
-            str_date = intent.getStringExtra("date");
-            str_remarks = intent.getStringExtra("remarks");
-            PayId = intent.getStringExtra("payment_id");
-            ordCode = intent.getStringExtra("order_code");
-            cusCode = intent.getStringExtra("contact_code");
-            Bundle args = intent.getBundleExtra("BUNDLE");
-           object = (ArrayList<Object>) args.getSerializable("ARRAYLIST");
 
-            itemcodelist = (ArrayList<Object>) args.getSerializable("ItemCodeList");
-            barcodelist = (ArrayList<Object>) args.getSerializable("BarCodeList");
-
-            order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), "where order_code='" + ordCode + "'", database);
-            ListView category_list = (ListView) findViewById(R.id.item_list);
-            returnListAdapter = new InvReturnItemListadapter(InvReturnItemListActivity.this, order_detail,object);
-            category_list.setAdapter(returnListAdapter);
-            returnListAdapter.notifyDataSetChanged();
-        }
-        catch(Exception e){}
     }
 
     @Override
