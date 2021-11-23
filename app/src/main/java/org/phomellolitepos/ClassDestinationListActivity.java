@@ -8,10 +8,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -24,23 +24,15 @@ import android.widget.Toast;
 
 import org.phomellolitepos.Adapter.ClassCategoryListAdapter;
 import org.phomellolitepos.Adapter.DestinationListAdapter;
-import org.phomellolitepos.Adapter.ManufactureListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Manufacture;
 import org.phomellolitepos.database.Settings;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
 
 public class ClassDestinationListActivity extends AppCompatActivity {
     EditText edt_toolbar_manufacture_list;

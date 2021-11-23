@@ -1,0 +1,541 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/txt_itemcatego"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        card_view:cardCornerRadius="20dp"
+        card_view:cardElevation="@dimen/_10sdp"
+        card_view:cardMaxElevation="@dimen/_10sdp"
+        card_view:contentPadding="@dimen/_10sdp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Item No"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_itemNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Item Category"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_itemcategory"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="0.5"
+                    android:gravity="left"
+                    android:text="Item Name"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_itemName"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1" />
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="HSN Code"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_hsncode"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Invoice No."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_invoiceNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Date-Time"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_datetime"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Sales Price  W/O Tax"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_salepricewithouTax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Quantity"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_qty"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="UOM"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_uom"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Gross Amt. W/O Tax"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_grossAmtwithouttax"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:gravity="left"
+                    android:text="Discount "
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_disPer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:gravity="right"
+                    android:text="10%"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:gravity="right"
+                    android:text="Amt."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_disAmt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:gravity="right"
+                    android:text="500"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Amount After Dis."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_amtafterDis"
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:gravity="left"
+                    android:text="CGST "
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_cgstPer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:gravity="right"
+                    android:text="Amt."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/CGSTamt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:gravity="left"
+                    android:text="SGST "
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_sgstPer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="match_parent"
+                    android:layout_weight=".1"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:gravity="right"
+                    android:text="Amt."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/SGSTamt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".3"
+                    android:gravity="left"
+                    android:text="IGST"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_igstPer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".1"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".2"
+                    android:gravity="right"
+                    android:text="Amt."
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/IGSTamt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".4"
+                    android:gravity="right"
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Total Tax"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_totalVat"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Net Amount"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+
+                    android:id="@+id/txt_netAmt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="right"
+                    android:text=""
+                    android:textColor="@color/black"></TextView>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

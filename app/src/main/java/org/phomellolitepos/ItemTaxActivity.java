@@ -7,11 +7,9 @@ import android.content.SharedPreferences;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.design.widget.TabLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
@@ -21,10 +19,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.phomellolitepos.Adapter.DialogContactMainListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
-import org.phomellolitepos.database.Bussiness_Group;
-import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group;

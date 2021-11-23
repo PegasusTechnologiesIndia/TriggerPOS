@@ -16,10 +16,20 @@
 #   public *;
 #}
 
+-dontwarn org.apache.http.**
+-dontwarn android.net.**
+-keep class org.apache.** {*;}
+-keep class org.apache.http.** { *; }
+-keepclassmembers enum * { *; }
+
+-keep,includedescriptorclasses class org.bouncycastle.** { *; }
+-dontwarn javax.naming.**
+-keep class com.google.** {*;}
+-dontnote sun.java2d.cmm.kcms.KcmsServiceProvider
 # Uncomment this to preserve the line number information for
 # debugging stack traces.
 #-keepattributes SourceFile,LineNumberTable
-
+#  -keep class net.sourceforge.zbar.** { *; }
 # If you keep the line number information, uncomment this to
 # hide the original source file name.
 #-renamesourcefileattribute SourceFile

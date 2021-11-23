@@ -7,7 +7,7 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Handler;
 import android.os.IBinder;
-import android.support.annotation.Nullable;
+import androidx.annotation.Nullable;
 
 import com.android.volley.AuthFailureError;
 import com.android.volley.NetworkError;
@@ -43,9 +43,13 @@ public class BackgroundApiService extends Service {
         @Override
         public void run() {
 
+try {
+    postBackgroundJson(Globals.objLPR.getRegistration_Code(), serial_no, Globals.syscode2, android_id, myKey, Globals.Device_Code, Globals.objLPD.getLic_customer_license_id(), Globals.jsonArray_background.toString());
 
-            postBackgroundJson(Globals.objLPR.getRegistration_Code(), serial_no, Globals.syscode2, android_id, myKey, Globals.Device_Code, Globals.objLPD.getLic_customer_license_id(), Globals.jsonArray_background.toString());
+}
+catch(Exception e){
 
+}
 
             // Repeat this runnable code block again every ... min
             mHandler.postDelayed(runnableService, DEFAULT_SYNC_INTERVAL);
@@ -105,7 +109,7 @@ public class BackgroundApiService extends Service {
     public void postBackgroundJson(final String registrationcode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String devicecode, final String licensecustomerid, final String backgroundjson) {
 
         String server_url = Globals.App_Lic_Base_URL + "/index.php?route=api/license_product_3/last_background_service";
-        HttpsTrustManager.allowAllSSL();
+       /* HttpsTrustManager.allowAllSSL();*/
         // String server_url =  Gloabls.server_url;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
                 new Response.Listener<String>() {

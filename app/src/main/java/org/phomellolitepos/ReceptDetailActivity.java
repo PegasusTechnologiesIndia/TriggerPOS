@@ -15,12 +15,13 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TableLayout;
@@ -114,6 +115,7 @@ public class ReceptDetailActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         arrayList = new ArrayList<Order_Detail>();
         Intent intent = getIntent();
         order_code = intent.getStringExtra("order_code");
@@ -160,6 +162,7 @@ public class ReceptDetailActivity extends AppCompatActivity {
                             sleep(1000);
 
                             Intent intent = new Intent(ReceptDetailActivity.this, ReceptActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             progressDialog.dismiss();
                             finish();
@@ -250,10 +253,11 @@ public class ReceptDetailActivity extends AppCompatActivity {
             subtotal = cursor1.getString(0);
 
         }
-
-        subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)), decimal_check);
-        txt_subtotal.setText(subtotal);
-
+try {
+    subtotal = Globals.myNumberFormat2Price((Double.parseDouble(subtotal)), decimal_check);
+    txt_subtotal.setText(subtotal);
+}
+catch(Exception e){}
 
 //        String strSubttl = null;
 //        if (objOrder == null) {
@@ -400,6 +404,7 @@ public class ReceptDetailActivity extends AppCompatActivity {
                 launchIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                 launchIntent.putExtra("strOrderNo", order_code);
                 launchIntent.putExtra("flag", flag);
+                launchIntent.putExtra("posflag","1");
                 ReceptDetailActivity.this.startActivity(launchIntent);
             }
             return true;
@@ -419,6 +424,7 @@ public class ReceptDetailActivity extends AppCompatActivity {
                 try {
                     sleep(1000);
                     Intent intent = new Intent(ReceptDetailActivity.this, ReceptActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     progressDialog.dismiss();
                     finish();

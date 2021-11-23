@@ -53,6 +53,7 @@
                 android:layout_marginLeft="2dp"
                 android:layout_weight="0.6"
                 android:enabled="false"
+                android:gravity="right"
                 android:textColor="#333333"
                 android:textSize="16sp" />
 
@@ -101,6 +102,7 @@
                     android:layout_marginLeft="2dp"
                     android:layout_weight="0.2"
                     android:hint=""
+                    android:gravity="right"
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:inputType="numberDecimal"
@@ -144,6 +146,7 @@
                     android:layout_marginLeft="2dp"
                     android:layout_weight="0.5"
                     android:hint=""
+                    android:gravity="right"
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:inputType="numberDecimal"
@@ -190,6 +193,7 @@
                 android:layout_gravity="center_vertical"
                 android:layout_marginLeft="2dp"
                 android:layout_weight="0.6"
+                android:gravity="right"
                 android:hint="@string/enter_qty"
                 android:textColor="#333333"
                 android:textSize="16sp"
@@ -236,6 +240,7 @@
                 android:layout_marginLeft="2dp"
                 android:layout_weight="0.6"
                 android:hint=""
+                android:gravity="right"
                 android:textColor="#333333"
                 android:textSize="16sp"
                 android:inputType="numberDecimal"
@@ -270,7 +275,7 @@
 
 
 
-    <android.support.design.widget.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/retail_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

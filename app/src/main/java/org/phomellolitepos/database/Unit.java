@@ -6,6 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,12 +29,15 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.phomellolitepos.AppController;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by LENOVO on 8/30/2017.
@@ -133,7 +148,31 @@ public class Unit {
         value.put("is_push", is_push);
     }
 
+    public void add_unit(ArrayList<Unit> list,SQLiteDatabase db) {
 
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Unit unit : list) {
+
+
+                values.put("unit_id", unit.get_unit_id());
+                values.put("name", unit.get_name());
+                values.put("code", unit.get_code());
+                values.put("description", unit.get_description());
+                values.put("is_active", unit.get_is_active());
+                values.put("modified_by", unit.get_modified_by());
+                values.put("modified_date", unit.get_modified_date());
+                values.put("is_push", unit.get_is_push());
+
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
     public long insertUnit(SQLiteDatabase database) {
 //        SQLiteDatabase database = db.getWritableDatabase();
         long insert = database.insert(tableName, "unit_id", value);
@@ -241,21 +280,8 @@ public class Unit {
                 }
                 result.put(row);
                 sender.put("unit".toLowerCase(), result);
-                String serverData = send_manufactrue_json_on_server(sender.toString());
-                final JSONObject jsonObject1 = new JSONObject(serverData);
-                final String strStatus = jsonObject1.getString("status");
-                if (strStatus.equals("true")) {
-                    database.beginTransaction();
-                    String Query = "Update  unit Set is_push = 'Y' Where unit_id = '" + strBussinessGroupCode + "'";
-                    long check = db.executeDML(Query,database);
-                    if (check>0){
-                        ig = "1";
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
-                    }else {
-                        database.endTransaction();
-                    }
-                }
+
+                sendunit_json_on_server(context,database,db,sender.toString(),strBussinessGroupCode);
             }
             cursor.close();
         } catch (Exception ex) {
@@ -263,12 +289,12 @@ public class Unit {
         return ig;
     }
 
-    private static String send_manufactrue_json_on_server(String JsonString) {
+   /* private static String send_manufactrue_json_on_server(String JsonString) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/unit/data");
+                Globals.App_IP_URL + "unit/data");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
@@ -289,5 +315,86 @@ public class Unit {
             e.printStackTrace();
         }
         return serverData;
+    }*/
+
+    public static void sendunit_json_on_server(Context context, SQLiteDatabase database,Database db,final String JsonString,String strBussinessGroupCode){
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url =Globals.App_IP_URL + "unit/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject jsonObject1 = new JSONObject(response);
+                            final String strStatus = jsonObject1.getString("status");
+                            if (strStatus.equals("true")) {
+                                database.beginTransaction();
+                                String Query = "Update  unit Set is_push = 'Y' Where unit_id = '" + strBussinessGroupCode + "'";
+                                long check = db.executeDML(Query,database);
+                                if (check>0){
+                                    //ig = "1";
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                }else {
+                                    database.endTransaction();
+                                }
+                            }
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
+
 }

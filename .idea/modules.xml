@@ -3,7 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/PhomelloLite-lic.iml" filepath="$PROJECT_DIR$/PhomelloLite-lic.iml" />
-      <module fileurl="file://$PROJECT_DIR$/app/app.iml" filepath="$PROJECT_DIR$/app/app.iml" />
+      <module fileurl="file://$PROJECT_DIR$/.idea/modules/app/PhomelloLite-lic.app.iml" filepath="$PROJECT_DIR$/.idea/modules/app/PhomelloLite-lic.app.iml" />
     </modules>
   </component>
 </project>

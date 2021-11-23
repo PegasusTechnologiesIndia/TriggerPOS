@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_table_list"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_below="@+id/appBarLayout"
+   android:paddingTop="70dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:showIn="@layout/activity_item_modifier_selection">
+
+    <TextView
+        android:id="@+id/txtitemname"
+        android:text=""
+        android:gravity="center"
+        android:textSize="20sp"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+/>
+    <TextView
+        android:id="@+id/table_title"
+        android:text="@string/No_modifier_Fnd"
+        android:layout_below="@+id/txtitemname"
+        style="@style/AppTheme.NoListfoundText"/>
+
+    <androidx.recyclerview.widget.RecyclerView
+        android:id="@+id/modifier_recyclerView"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/txtitemname"
+
+        >
+
+    </androidx.recyclerview.widget.RecyclerView>
+
+</RelativeLayout>

@@ -11,6 +11,8 @@
     <style name="AppTheme.NoActionBar">
         <item name="windowActionBar">false</item>
         <item name="windowNoTitle">true</item>
+        <item name="android:windowDisablePreview">true</item>
+
     </style>
 
     <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar" />
@@ -46,6 +48,47 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="AppTheme.EditText_600dp">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="AppTheme.EditText_720dp">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+
+    <style name="AppTheme.EditText_720dp_land">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+        <item name="android:textSize">22sp</item>
+    </style>
+    <style name="AppTheme.EditText_720dp_land_register">
+
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:layout_marginLeft">180dp</item>
+        <item name="android:layout_marginRight">180dp</item>
+        <item name="android:paddingLeft">10dp</item>
+        <item name="android:textCursorDrawable">@drawable/edittext_cursor_color</item>
+        <item name="android:textSize">30sp</item>
+    </style>
     <!--this is text input layout style  -->
 
     <style name="AppTheme.TextInputLayout">
@@ -55,7 +98,20 @@
         <item name="android:textSize">15dp</item>
 
     </style>
+    <style name="AppTheme.TextInputLayout_600dp">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">#C0C0C0</item>
+        <item name="android:textSize">22dp</item>
 
+    </style>
+    <style name="AppTheme.TextInputLayout_720dp">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:textColorHint">#C0C0C0</item>
+        <item name="android:textSize">22dp</item>
+
+    </style>
     <!--this is text label style  -->
     <style name="AppTheme.LabelText">
         <item name="android:layout_width">wrap_content</item>
@@ -66,18 +122,62 @@
         <item name="android:textSize">17sp</item>
 
     </style>
+    <style name="MyTextInputLayout" parent="Widget.MaterialComponents.TextInputLayout.OutlinedBox">
+        <item name="android:textColorHint">@color/colorPrimary</item>
 
+        <item name="boxStrokeColor">@color/whitecolor</item>
+    </style>
+
+    <style name="MyTextInputEditText" parent="ThemeOverlay.MaterialComponents.TextInputEditText.OutlinedBox.Dense">
+        <item name="android:textColor">@android:color/white</item>
+    </style>
+
+    <!--this is text label style  -->
+    <style name="AppTheme.LabelText_600dp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">22sp</item>
+
+    </style>
+    <style name="AppTheme.LabelText_720dp">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginLeft">10dp</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:textColor">#333333</item>
+        <item name="android:textSize">30sp</item>
+
+    </style>
     <!--this is spinner style  -->
     <style name="AppTheme.Spinner">
         <item name="android:layout_width">match_parent</item>
-        <item name="android:layout_height">42dp</item>
+        <item name="android:layout_height">match_parent</item>
         <item name="android:layout_marginTop">10dp</item>
         <item name="android:paddingLeft">5dp</item>
+        <item name="android:textSize">22dp</item>
+        <item name="android:textColor">#808080</item>
+    </style>
+    <style name="AppTheme.Spinner_720dp">
+        <item name="android:layout_width">match_parent</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginTop">10dp</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:textSize">30dp</item>
+        <item name="android:textColor">#808080</item>
+
+    </style>
+    <style name="AppTheme.SpinnerPayment">
+        <item name="android:layout_width">0dp</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:paddingLeft">5dp</item>
+        <item name="android:textSize">22dp</item>
         <item name="android:textColor">#808080</item>
 
 
     </style>
-
 
     <!--this is button style  -->
     <style name="AppTheme.Button">
@@ -92,7 +192,17 @@
 
     </style>
 
+    <style name="AppTheme.Button_600dp">
 
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:layout_gravity">center_horizontal</item>
+        <item name="android:layout_marginTop">30dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:textSize">25sp</item>
+    </style>
     <!--this is simple edittext style  -->
     <style name="AppTheme.SimpleEditText">
 
@@ -181,7 +291,33 @@
 
     </style>
 
+    <style name="AppTheme.HorizontalButton_600dp">
 
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">20sp</item>
+
+    </style>
+    <style name="AppTheme.HorizontalButton_720dp">
+
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">25sp</item>
+
+    </style>
+    <style name="AppTheme.HorizontalButton_600dp_land">
+
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">80dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textSize">25sp</item>
+
+    </style>
     <style name="AppTheme.SearchHintColor">
 
         <item name="android:textColorHint">#f0f0f0</item>
@@ -202,6 +338,27 @@
 
     </style>
 
+
+    <style name="AppTheme.PlusMinusLayout_600dp">
+
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">40dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">60dp</item>
+        <item name="android:background">@drawable/edittext_bg</item>
+
+    </style>
+    <style name="AppTheme.PlusMinusLayout_720dp">
+
+        <item name="android:layout_width">340dp</item>
+        <item name="android:layout_height">50dp</item>
+        <item name="android:orientation">horizontal</item>
+        <item name="android:layout_centerHorizontal">true</item>
+        <item name="android:layout_marginTop">60dp</item>
+        <item name="android:background">@drawable/edittext_bg</item>
+
+    </style>
     <style name="AppTheme.PlusMinusButton">
 
         <item name="android:layout_width">70dp</item>
@@ -213,6 +370,27 @@
 
     </style>
 
+    <style name="AppTheme.PlusMinusButton_600dp">
+
+        <item name="android:layout_width">70dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textSize">25sp</item>
+        <item name="android:textColor">#ffffff</item>
+
+    </style>
+
+    <style name="AppTheme.PlusMinusButton_720dp">
+
+        <item name="android:layout_width">100dp</item>
+        <item name="android:layout_height">match_parent</item>
+        <item name="android:layout_marginLeft">0dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textSize">20sp</item>
+        <item name="android:textColor">#ffffff</item>
+
+    </style>
 
     <style name="AppTheme.PlusMinusEdittext">
 
@@ -278,11 +456,20 @@
 
     <style name="AppTheme.ListItemTextSize">
 
-        <item name="android:textSize">18sp</item>
+        <item name="android:textSize">17sp</item>
 
     </style>
 
+    <style name="AppTheme.ListItemTextSize_600dp">
 
+        <item name="android:textSize">20sp</item>
+
+    </style>
+    <style name="AppTheme.ListItemTextSize_720dp">
+
+        <item name="android:textSize">22sp</item>
+
+    </style>
     <!--this is Spinner Item style -->
 
     <style name="AppTheme.SpinnerTextSize">
@@ -304,15 +491,75 @@
         <item name="android:layout_height">100dp</item>
         <item name="android:background">#fb7c3e</item>
         <item name="android:textColor">#ffffff</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:gravity">center</item>
+        <item name="android:layout_margin">10dp</item>
+        <item name="android:textSize">16sp</item>
         <item name="android:textAllCaps">false</item>
 
 
     </style>
+    <style name="AppTheme.DatabaseButton_600dp">
+
+        <item name="android:layout_width">200dp</item>
+        <item name="android:layout_height">60dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">22sp</item>
 
 
+    </style>
+    <style name="AppTheme.DatabaseButton_720dp">
+
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">100dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">25sp</item>
+
+
+    </style>
+    <style name="AppTheme.DatabaseButton_600dp_land">
+
+        <item name="android:layout_width">300dp</item>
+        <item name="android:layout_height">150dp</item>
+        <item name="android:background">#fb7c3e</item>
+        <item name="android:textColor">#ffffff</item>
+        <item name="android:textAllCaps">false</item>
+        <item name="android:layout_gravity">center</item>
+        <item name="android:textSize">25sp</item>
+
+
+    </style>
     <style name="AppTheme.WhiteAccent">
         <item name="colorAccent">@color/white</item> <!-- Whatever color you want-->
     </style>
 
+     <!--style for 600dp-->
+    <style name="BottomNavigationView" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">18sp</item>
+    </style>
 
+    <style name="BottomNavigationView.Active" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">15sp</item>
+    </style>
+    <style name="BottomNavigationView_600dpland" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">18sp</item>
+    </style>
+
+    <style name="BottomNavigationView.Active_600dpland" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">16sp</item>
+    </style>
+    <!--style for 7200dp-->
+    <style name="BottomNavigationView_720" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">20sp</item>
+    </style>
+
+    <style name="BottomNavigationView_720.Active" parent="@style/TextAppearance.AppCompat.Caption">
+        <item name="android:textSize">18sp</item>
+    </style>
 </resources>

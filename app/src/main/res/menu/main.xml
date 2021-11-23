@@ -6,14 +6,16 @@
         android:id="@+id/search"
         android:icon="@android:drawable/ic_menu_search"
         android:title="Search"
-        app:actionViewClass="android.support.v7.widget.SearchView"
+        app:actionViewClass="androidx.appcompat.widget.SearchView"
         app:showAsAction="always" />
+
+    <group android:id="@+id/overFlowtabbleToHide">
     <item
         android:id="@+id/table"
         android:icon="@drawable/table"
         android:title="Table"
         app:showAsAction="always" />
-
+    </group>
     <item
         android:id="@+id/action_openRight"
         android:orderInCategory="100"

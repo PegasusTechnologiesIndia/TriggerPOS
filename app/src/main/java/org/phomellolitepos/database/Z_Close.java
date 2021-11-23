@@ -134,7 +134,9 @@ public class Z_Close {
 
     public long insertZ_Close(SQLiteDatabase database) {
         //SQLiteDatabase database = db.getWritableDatabase();
-        long insert = database.insert(tableName, "tax_id", value);
+        //long insert = database.insert(tableName, "tax_id", value);
+
+        long insert = database.insert(tableName, "z_no", value);
         //database.close();
         return insert;
     }

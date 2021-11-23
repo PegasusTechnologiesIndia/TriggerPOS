@@ -1,0 +1,93 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.Main2Activity"
+    tools:showIn="@layout/app_bar_main2"
+    android:weightSum="1">
+
+    <TextView
+        android:id="@+id/list_title"
+        style="@style/AppTheme.NoListfoundText"
+        android:layout_marginTop="70dp"
+        android:text="@string/No_Itm_Fnd" />
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:itemTextAppearanceActive="@style/BottomNavigationView_600dpland"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/bottom_nav_menu" />
+    <com.toptoche.searchablespinnerlibrary.SearchableSpinner
+        android:id="@+id/spinner_item_category"
+        android:layout_width="match_parent"
+        android:layout_marginTop="5sp"
+        android:layout_marginLeft="30sp"
+        android:layout_marginRight="30sp"
+        android:layout_below="@id/top_navigation"
+        android:background="@drawable/spinner_border"
+        android:layout_height="40sp" />
+    <TextView
+        android:id="@+id/txt_subcategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold|italic"
+        android:layout_centerHorizontal="true"
+        android:layout_below="@+id/spinner_item_category"></TextView>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/top_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:clickable="true"
+        android:background="@color/topnav"
+        app:itemBackground="@color/topnav"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:itemTextAppearanceActive="@style/BottomNavigationView_600dpland"
+        app:labelVisibilityMode="labeled"
+        app:menu="@menu/top_nav_menu" />
+
+    <LinearLayout
+
+        android:id="@+id/main_linear"
+        style="@style/AppTheme.FooterButtonLayout"
+        android:layout_above="@+id/bottom_navigation">
+
+
+        <Button
+            android:id="@+id/btn_Qty"
+            style="@style/AppTheme.FooterButton"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+        <Button
+            android:id="@+id/btn_Item_Price"
+            style="@style/AppTheme.FooterButton"
+            android:layout_marginLeft="1dp"
+            android:background="#403c3c"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+    </LinearLayout>
+
+    <FrameLayout
+        android:id="@+id/contaier"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/top_navigation"
+        android:layout_marginTop="50dp"
+        android:layout_marginBottom="55dp"/>
+</RelativeLayout>

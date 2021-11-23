@@ -1,11 +1,25 @@
 package org.phomellolitepos.database;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -18,11 +32,17 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.phomellolitepos.AppController;
+import org.phomellolitepos.CusReturnFinalActivity;
+import org.phomellolitepos.LoginActivity;
+import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 /**
  * Created by LENOVO on 4/6/2018.
@@ -315,7 +335,74 @@ public class Returns {
 
     }
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1, String syscode3, String syscode4) {
+    public static String sendOnServer(ProgressDialog pdialog,Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1, String syscode3, String syscode4) {
+
+        String strItemCode = "", resultStr = "0";
+        Cursor cursor = database.rawQuery(strTableQry, null);
+        try {
+            int columnCount = cursor.getColumnCount();
+            while (cursor.moveToNext()) {
+                JSONObject sender = new JSONObject();
+                JSONArray result = new JSONArray();
+                JSONObject row = new JSONObject();
+                JSONArray array_return_detail = new JSONArray();
+                JSONObject item_return_detail_row = null;
+                JSONArray array_return_detail_tax = new JSONArray();
+                JSONObject item_return_detail_row_tax = null;
+
+                strItemCode = cursor.getString(2);
+                for (int index = 0; index < columnCount; index++) {
+                    row.put(cursor.getColumnName(index).toLowerCase(), cursor.getString(index));
+                }
+
+                String item_location_qry = "Select * FROM return_detail WHERE ref_voucher_no  = '" + strItemCode + "'";
+                Cursor cursor_location = database.rawQuery(item_location_qry, null);
+                try {
+                    int columnCount_location = cursor_location.getColumnCount();
+                    while (cursor_location.moveToNext()) {
+                        item_return_detail_row = new JSONObject();
+                        for (int index = 0; index < columnCount_location; index++) {
+                            item_return_detail_row.put(cursor_location.getColumnName(index).toLowerCase(), cursor_location.getString(index));
+                        }
+                        item_return_detail_row.put("device_code", Globals.objLPD.getDevice_Code());
+                        array_return_detail.put(item_return_detail_row);
+                    }
+                    cursor_location.close();
+                    String return_tax_qry = "Select * FROM return_detail_tax WHERE order_return_voucher_no  = '" + strItemCode + "'";
+                    Cursor cursor_return_tax = database.rawQuery(return_tax_qry, null);
+
+                        int columnCount_returntax = cursor_return_tax.getColumnCount();
+                        while (cursor_return_tax.moveToNext()) {
+                            item_return_detail_row_tax = new JSONObject();
+                            for (int index = 0; index < columnCount_returntax; index++) {
+                                item_return_detail_row_tax.put(cursor_return_tax.getColumnName(index).toLowerCase(), cursor_return_tax.getString(index));
+                            }
+                            array_return_detail_tax.put(item_return_detail_row_tax);
+                        }
+
+                    cursor_return_tax.close();
+                    row.put("order_return_detail", array_return_detail);
+                    row.put("order_return_detail_tax", array_return_detail_tax);
+                    row.put("device_code", Globals.objLPD.getDevice_Code());
+                    row.put("location_id", Globals.objLPD.getLocation_Code());
+                    result.put(row);
+                    sender.put("order_return".toLowerCase(), result);
+
+                    send_itemreturn_json_on_server(pdialog,context,database,db,resultStr,sender.toString(),strItemCode,syscode1,Globals.syscode2,syscode3,syscode4,liccustomerid);
+
+
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        } catch (Exception ex) {
+           String msg = ex.getMessage();
+        }
+        return resultStr;
+    }
+
+
+    public static String sendOnServerXZ(ProgressDialog pdialog,Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1, String syscode3, String syscode4) {
 
         String strItemCode = "", resultStr = "0";
         Cursor cursor = database.rawQuery(strTableQry, null);
@@ -352,59 +439,26 @@ public class Returns {
                     row.put("location_id", Globals.objLPD.getLocation_Code());
                     result.put(row);
                     sender.put("order_return".toLowerCase(), result);
-                    Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(context, database, db, "");
-                    String regcode= lite_pos_registration.getRegistration_Code();
-                    String serverData = send_item_json_on_server(sender.toString(),regcode,liccustomerid,syscode1,syscode3,syscode4);
-                    final JSONObject collection_jsonObject1 = new JSONObject(serverData);
-                    final String strStatus = collection_jsonObject1.getString("status");
-                    final String strmsg = collection_jsonObject1.getString("message");
-                    if (strStatus.equals("true")) {
-                        //Update This Item Group Push True
-                        database.beginTransaction();
-                        String Query = "Update returns Set is_post='true' Where voucher_no = '" + strItemCode + "'";
-                        long check = db.executeDML(Query, database);
-                        if (check > 0) {
-                            resultStr = "1";
-                            Globals.strvoucherno=strItemCode;
-                            database.setTransactionSuccessful();
-                            database.endTransaction();
-                        } else {
-                            database.endTransaction();
-                        }
-                    }
-                    else if(strStatus.equals("false")){
 
-                        Globals.responsemessage =strmsg;
-                        if(Globals.responsemessage.equals("Device Not Found")){
+                    send_itemreturn_json_on_serverXZ(pdialog,context,database,db,resultStr,sender.toString(),strItemCode,syscode1,Globals.syscode2,syscode3,syscode4,liccustomerid);
 
-                            resultStr = "3";
-                        }
-                        else{
-                            resultStr="4";
-                        }
 
-                    }
-
-                    else {
-                        resultStr = "2";
-                        database.endTransaction();
-                    }
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
             }
         } catch (Exception ex) {
-           String msg = ex.getMessage();
+            String msg = ex.getMessage();
         }
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString,String regcode,String liccustomerid,String syscode1, String syscode3,String syscode4) {
+    /* private static String send_item_json_on_server(String JsonString,String regcode,String liccustomerid,String syscode1, String syscode3,String syscode4) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/order_return/data");
+                Globals.App_IP_URL + "order_return/data");
 
         ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",regcode));
@@ -434,5 +488,254 @@ System.out.println("order return"+ nameValuePairs);
             e.printStackTrace();
         }
         return serverData;
+    }*/
+    public static void send_itemreturn_json_on_server(final ProgressDialog pDialog,Context context, SQLiteDatabase database,Database db,final String ig,final String JsonString,String strItemCode,final String syscode1,final String syscode2,final String syscode3,final String syscode4, final String liccustomerid) {
+
+    /*    pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url = Globals.App_IP_URL + "order_return/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject collection_jsonObject1 = new JSONObject(response);
+                            final String strStatus = collection_jsonObject1.getString("status");
+                            final String strmsg = collection_jsonObject1.getString("message");
+                            if (strStatus.equals("true")) {
+                                //Update This Item Group Push True
+
+                                database.beginTransaction();
+                                String Query = "Update returns Set is_post='true' Where voucher_no = '" + strItemCode + "'";
+                                long check = db.executeDML(Query, database);
+                                if (check > 0) {
+                                    //resultStr = "1";
+                                    Globals.strvoucherno=strItemCode;
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                } else {
+                                    database.endTransaction();
+                                }
+                            }
+                            else if(strStatus.equals("false")){
+
+
+                                        if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(context, "", database);
+                                            lite_pos_device.setStatus("Out");
+                                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                            if (ct > 0) {
+
+                                                Intent intent_category = new Intent(context, LoginActivity.class);
+                                                context.startActivity(intent_category);
+                                            }
+
+
+                                        }
+
+                              else if(!Globals.responsemessage.equals("Device Not Found")){
+                                        Toast.makeText(context, Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                    }
+
+
+
+
+                            }
+
+                            else {
+                                Toast.makeText(context, context.getString(R.string.recordntpostserver), Toast.LENGTH_SHORT).show();
+
+                                //resultStr = "2";
+                                database.endTransaction();
+                            }
+                        } catch (Exception e) {
+                        }
+                  // pDialog.dismiss();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", liccustomerid);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
+
+
+
+
+    public static void send_itemreturn_json_on_serverXZ(final ProgressDialog pDialog,Context context, SQLiteDatabase database,Database db,final String ig,final String JsonString,String strItemCode,final String syscode1,final String syscode2,final String syscode3,final String syscode4, final String liccustomerid) {
+
+    /*    pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url = Globals.App_IP_URL + "order_return/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject collection_jsonObject1 = new JSONObject(response);
+                            final String strStatus = collection_jsonObject1.getString("status");
+                            final String strmsg = collection_jsonObject1.getString("message");
+                            if (strStatus.equals("true")) {
+                                //Update This Item Group Push True
+
+                                database.beginTransaction();
+                                String Query = "Update returns Set is_push = 'Y' where  is_push = 'N'";
+                                long check = db.executeDML(Query, database);
+                                if (check > 0) {
+                                    //resultStr = "1";
+                                    Globals.strvoucherno=strItemCode;
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                } else {
+                                    database.endTransaction();
+                                }
+                            }
+                            else if(strStatus.equals("false")){
+
+
+                                if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(context, "", database);
+                                    lite_pos_device.setStatus("Out");
+                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                    if (ct > 0) {
+
+                                        Intent intent_category = new Intent(context, LoginActivity.class);
+                                        context.startActivity(intent_category);
+                                    }
+
+
+                                }
+
+                                else if(!Globals.responsemessage.equals("Device Not Found")){
+                                    Toast.makeText(context, Globals.responsemessage, Toast.LENGTH_SHORT).show();
+                                }
+
+
+
+
+                            }
+
+                            else {
+                                Toast.makeText(context, context.getString(R.string.recordntpostserver), Toast.LENGTH_SHORT).show();
+
+                                //resultStr = "2";
+                                database.endTransaction();
+                            }
+                        } catch (Exception e) {
+                        }
+                        // pDialog.dismiss();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", liccustomerid);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
 }

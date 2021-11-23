@@ -12,8 +12,8 @@ import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
 
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 
 import android.widget.AdapterView;
@@ -28,8 +28,6 @@ import android.widget.Toast;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.database.Customer_Image;
 import org.phomellolitepos.database.Database;
-
-import java.io.File;
 
 import java.util.ArrayList;
 
@@ -74,7 +72,7 @@ public class CustomerImageActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             Intent intent = new Intent(CustomerImageActivity.this, SetttingsActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -137,14 +135,17 @@ public class CustomerImageActivity extends AppCompatActivity {
                                 }
                             } catch (Exception e) {
                                 e.printStackTrace();
+                                database.endTransaction();
                             } finally {
                             }
                         }
                     } else {
+                        database.endTransaction();
                         Toast.makeText(getApplicationContext(), R.string.No_data_in_list, Toast.LENGTH_SHORT)
                                 .show();
                     }
                 } catch (Exception ex) {
+                    database.endTransaction();
                     Toast.makeText(getApplicationContext(), R.string.No_data_in_list, Toast.LENGTH_SHORT)
                             .show();
                 }
@@ -197,15 +198,26 @@ public class CustomerImageActivity extends AppCompatActivity {
             String realPath;
             Uri uri = data.getData();
             String path = uri.getPath();
-            if (Build.VERSION.SDK_INT < 11)
+            if (Build.VERSION.SDK_INT < 11) {
                 realPath = RealPathUtil.getRealPathFromURI_BelowAPI11(CustomerImageActivity.this, data.getData());
+            }
                 // SDK >= 11 && SDK < 19
-            else if (Build.VERSION.SDK_INT < 19)
+            else if (Build.VERSION.SDK_INT < 19) {
                 realPath = RealPathUtil.getRealPathFromURI_API11to18(this, data.getData());
+            }
                 // SDK > 19 (Android 4.4)
-            else
-                realPath = RealPathUtil.getRealPathFromURI_API19(this, data.getData());
-            edt_cus_img.setText(realPath);
+            else {
+                try {
+
+
+                    realPath = RealPathUtil.getRealPathFromURI_API19(this, data.getData());
+                    edt_cus_img.setText(realPath);
+                }
+                catch(Exception e){
+
+                }
+            }
+
         }
     }
 

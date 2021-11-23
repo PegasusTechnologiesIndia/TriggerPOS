@@ -1,10 +1,12 @@
 package org.phomellolitepos;
 
 import android.Manifest;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
@@ -12,40 +14,43 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.ContactsContract;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.Window;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
-import org.phomellolitepos.Adapter.CountryAdapter;
-import org.phomellolitepos.Adapter.ZoneAdapter;
-import org.phomellolitepos.Util.AESHelper;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.JavaEncryption;
@@ -57,17 +62,16 @@ import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Zone;
 
 public class ProfileActivity extends AppCompatActivity {
-    TextView txt_email, txt_res_code, txt_exp, txt_device_code, txt_loc_code;
+    EditText txt_email, txt_res_code, txt_exp, txt_device_code, txt_loc_code;
     EditText txt_contact_person, txt_license_no, txt_mobile, txt_address, txt_device_no, txt_company_name;
     Button btn_upd_exp, btn_upd_profile, btn_get_profile;
     SQLiteDatabase database;
     Database db;
-    Lite_POS_Registration lite_pos_registration;
-    Lite_POS_Device lite_pos_device;
+
     ProgressDialog progressDialog;
     String str;
     String flag = "";
-    Spinner spn_country, spn_zone;
+    TextView spn_country, spn_zone;
     Country country;
     Zone zone;
     ArrayList<Country> arrayCList;
@@ -75,8 +79,13 @@ public class ProfileActivity extends AppCompatActivity {
     String strSelectedZoneCode, strSelectedCountryCode;
     //    AESHelper aesHelper;
     Settings settings;
+    PackageInfo pInfo = null;
     JavaEncryption javaEncryption;
+    Lite_POS_Registration lite_pos_registration;
+    Lite_POS_Device lite_pos_device;
+    ProgressDialog pDialog;
     String serial_no, android_id, myKey, device_id,imei_no;
+    Button btn_change_ip;
     @RequiresApi(api = Build.VERSION_CODES.O)
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -98,7 +107,7 @@ public class ProfileActivity extends AppCompatActivity {
 
         myKey = serial_no + android_id;
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager mTelephony = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -108,10 +117,32 @@ public class ProfileActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
 
+
             return;
         }
-        device_id = telephonyManager.getDeviceId();
-        imei_no=telephonyManager.getImei();
+
+        try {
+            pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+
+        } catch (PackageManager.NameNotFoundException e) {
+            e.printStackTrace();
+        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            device_id = android.provider.Settings.Secure.getString(
+                    getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        } else {
+            if (mTelephony.getDeviceId() != null) {
+                device_id = mTelephony.getDeviceId();
+            } else {
+                device_id = android.provider.Settings.Secure.getString(
+                        getApplicationContext().getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+            }
+
+        }
+      /*  device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();*/
         try {
             flag = intent.getStringExtra("flag");
             if (flag.equals("null")) {
@@ -120,6 +151,7 @@ public class ProfileActivity extends AppCompatActivity {
         } catch (Exception ex) {
             flag = "profile";
         }
+        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
 
 
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
@@ -143,12 +175,15 @@ public class ProfileActivity extends AppCompatActivity {
                     Thread timerThread = new Thread() {
                         public void run() {
                             try {
-                                sleep(1000);
+
+                              //  sleep(100);
                                 Intent intent = new Intent(ProfileActivity.this, LoginActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                                 startActivity(intent);
                                 progressDialog.dismiss();
                                 finish();
-                            } catch (InterruptedException e) {
+                            } catch (Exception e) {
                                 e.printStackTrace();
                             } finally {
                             }
@@ -161,23 +196,55 @@ public class ProfileActivity extends AppCompatActivity {
             toolbar.setNavigationOnClickListener(new View.OnClickListener() {
                 @Override
                 public void onClick(View v) {
-                    if (settings.get_Home_Layout().equals("0")) {
-                        Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+
+                    if(lite_pos_registration.getIndustry_Type().equals("2")){
+                        Intent intent = new Intent(ProfileActivity.this, Retail_IndustryActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                         startActivity(intent);
                         finish();
-                    } else if (settings.get_Home_Layout().equals("2")) {
-                        try {
-                            Intent intent = new Intent(ProfileActivity.this, RetailActivity.class);
+
+                    }
+                   else if(lite_pos_registration.getIndustry_Type().equals("3")){
+                        Intent intent = new Intent(ProfileActivity.this, PaymentCollection_MainScreen.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        startActivity(intent);
+                        finish();
+
+                    }
+                    else if(lite_pos_registration.getIndustry_Type().equals("4")){
+                        Intent intent = new Intent(ProfileActivity.this, ParkingIndustryActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                        startActivity(intent);
+                        finish();
+
+                    }
+                    else {
+                        if (settings.get_Home_Layout().equals("0")) {
+                            Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                             startActivity(intent);
                             finish();
-                        } finally {
-                        }
-                    } else {
-                        Intent intent = new Intent(ProfileActivity.this, Main2Activity.class);
-                        startActivity(intent);
-                        finish();
-                    }
+                        } else if (settings.get_Home_Layout().equals("2")) {
+                            try {
+                                Intent intent = new Intent(ProfileActivity.this, RetailActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
 
+                                startActivity(intent);
+                                finish();
+                            } finally {
+                            }
+                        } else {
+                            Intent intent = new Intent(ProfileActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            startActivity(intent);
+                            finish();
+                        }
+                    }
                 }
             });
         }
@@ -185,40 +252,46 @@ public class ProfileActivity extends AppCompatActivity {
         txt_company_name = (EditText) findViewById(R.id.txt_company_name);
         txt_contact_person = (EditText) findViewById(R.id.txt_contact_person);
         txt_license_no = (EditText) findViewById(R.id.txt_license_no);
-        txt_email = (TextView) findViewById(R.id.txt_email);
+        txt_email = (EditText) findViewById(R.id.txt_email);
         txt_mobile = (EditText) findViewById(R.id.txt_mobile);
         txt_address = (EditText) findViewById(R.id.txt_address);
-        txt_res_code = (TextView) findViewById(R.id.txt_res_code);
-        txt_device_code = (TextView) findViewById(R.id.txt_device_code);
+        txt_res_code = (EditText) findViewById(R.id.txt_res_code);
+        txt_device_code = (EditText) findViewById(R.id.txt_device_code);
         txt_device_no = (EditText) findViewById(R.id.txt_device_no);
-        txt_loc_code = (TextView) findViewById(R.id.txt_loc_code);
-        txt_exp = (TextView) findViewById(R.id.txt_exp);
+        txt_loc_code = (EditText) findViewById(R.id.txt_loc_code);
+        txt_exp = (EditText) findViewById(R.id.txt_exp);
         btn_upd_exp = (Button) findViewById(R.id.btn_upd_exp);
         btn_upd_profile = (Button) findViewById(R.id.btn_upd_profile);
         btn_get_profile = (Button) findViewById(R.id.btn_get_profile);
-        spn_country = (Spinner) findViewById(R.id.spn_country);
-        spn_zone = (Spinner) findViewById(R.id.spn_zone);
-        btn_upd_profile.setVisibility(View.GONE);
-        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+        spn_country = (EditText) findViewById(R.id.spn_country);
+        spn_zone = (EditText) findViewById(R.id.spn_zone);
+      //  btn_upd_profile.setVisibility(View.GONE);
         txt_company_name.setText(lite_pos_registration.getCompany_Name());
         txt_contact_person.setText(lite_pos_registration.getContact_Person());
-        txt_license_no.setText(lite_pos_registration.getLicense_No());
+        txt_license_no.setText(lite_pos_registration.getService_code_tariff());
         txt_email.setText(lite_pos_registration.getEmail());
         txt_mobile.setText(lite_pos_registration.getMobile_No());
         txt_address.setText(lite_pos_registration.getAddress());
         txt_res_code.setText(lite_pos_registration.getRegistration_Code());
         txt_address.setText(lite_pos_registration.getAddress());
         txt_res_code.setText(lite_pos_registration.getRegistration_Code());
-        if (flag.equals("login")) {
+        btn_change_ip=(Button)findViewById(R.id.btn_get_changeip);
+        try {
+            if (flag.equals("login")) {
 
-            btn_upd_profile.setVisibility(View.GONE);
-            btn_get_profile.setVisibility(View.GONE);
-            btn_upd_exp.setVisibility(View.VISIBLE);
+                btn_upd_profile.setVisibility(View.GONE);
+                btn_get_profile.setVisibility(View.GONE);
+                btn_upd_exp.setVisibility(View.VISIBLE);
+                btn_change_ip.setVisibility(View.VISIBLE);
+            } else if (flag.equals("profile")) {
+                btn_upd_profile.setVisibility(View.GONE);
+                btn_get_profile.setVisibility(View.GONE);
+                btn_upd_exp.setVisibility(View.GONE);
+                btn_change_ip.setVisibility(View.GONE);
+
+            }
         }
-        else if(flag.equals("profile")){
-            btn_upd_profile.setVisibility(View.GONE);
-            btn_get_profile.setVisibility(View.GONE);
-            btn_upd_exp.setVisibility(View.GONE);
+        catch(Exception e){
 
         }
         try {
@@ -226,7 +299,7 @@ public class ProfileActivity extends AppCompatActivity {
 
             txt_device_no.setText(lite_pos_device.getDevice_Name());
             txt_device_code.setText(lite_pos_device.getDevice_Code());
-            txt_loc_code.setText(lite_pos_device.getLocation_Code());
+            txt_loc_code.setText(lite_pos_device.getLocation_name());
         } catch (Exception e) {
 
         }
@@ -239,41 +312,97 @@ public class ProfileActivity extends AppCompatActivity {
         }
 
 
-        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+       // lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
         String strCheck = lite_pos_registration.getproject_id();
 
-        String cntryid = "";
+        String cntryname = "";
         try {
-            cntryid = lite_pos_registration.getCountry_Id();
-            country = Country.getCountry(getApplicationContext(), "WHERE country_id ='" + cntryid + "'", database);
-            if (country == null) {
-                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+            cntryname = lite_pos_registration.getCountry_name();
+            spn_country.setText(cntryname);
+          //  country = Country.getCountry(getApplicationContext(), "WHERE country_id ='" + cntryid + "'", database);
+           /* if (country == null) {
+              //  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                 country = Country.getCountry(getApplicationContext(), "WHERE country_id='" + lite_pos_registration.getCountry_Id() + "'", database);
                 get_country(country.get_name(), lite_pos_registration.getCountry_Id());
             } else {
                 get_country(country.get_name(), cntryid);
-            }
+            }*/
         } catch (Exception ex) {
             ex.getStackTrace();
         }
 
 
+        btn_change_ip.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Dialog listDialog1 = new Dialog(ProfileActivity.this);
+                listDialog1.setTitle(R.string.Select_Contact);
+                LayoutInflater li1 = (LayoutInflater) getApplicationContext().getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                View v1 = li1.inflate(R.layout.custom_layout_ipchange, null, false);
+                listDialog1.setContentView(v1);
+                listDialog1.setCancelable(true);
+
+
+                final EditText edt_ip = (EditText) listDialog1.findViewById(R.id.edt_ipchange);
+                final EditText edt_password = (EditText) listDialog1.findViewById(R.id.edt_ippassword);
+                Button btn_save = (Button) listDialog1.findViewById(R.id.btn_save);
+
+                listDialog1.show();
+                // fill_dialog_contact_List(contact_title, list11, strSelectedCategory, strFiltr);
+                Window window = listDialog1.getWindow();
+                window.setLayout(LinearLayout.LayoutParams.MATCH_PARENT, LinearLayout.LayoutParams.WRAP_CONTENT);
+                Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+
+                edt_ip.setText(settings.getApi_Ip());
+                btn_save.setOnClickListener(new View.OnClickListener() {
+                    @Override
+                    public void onClick(View view) {
+
+                        edt_password.setVisibility(View.VISIBLE);
+
+
+                        if(edt_ip.getText().toString().length()==0){
+                            edt_ip.setError("Enter Ip Address");
+                            return;
+                        }
+                        else if(edt_password.getText().toString().length()==0){
+                            edt_password.setError("Enter Password");
+                            return;
+                        }
+                        else if(!edt_password.getText().toString().equals(pInfo.versionName)){
+                            Toast.makeText(getApplicationContext(),"Please Enter Password to proceed",Toast.LENGTH_LONG).show();
+                            edt_password.setError("Wrong Password");
+                            return;
+                        }
+                        else if(edt_password.getText().toString().equals(pInfo.versionName)){
+                            Settings settings = Settings.getSettings(getApplicationContext(), database, "");
+                            settings.setApi_Ip(String.valueOf(edt_ip.getText().toString()));
+                            settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
+                            listDialog1.dismiss();
+                        }
+
+
+                    }
+                });
+            }
+        });
         try {
-            String zoneid = lite_pos_registration.getZone_Id();
-            zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + zoneid + "'");
+            String zonename = lite_pos_registration.getZone_name();
+            spn_zone.setText(zonename);
+           /* zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + zoneid + "'");
             if (zone == null) {
-                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                //lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                 zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + lite_pos_registration.getZone_Id() + "'");
                 get_zone(lite_pos_registration.getCountry_Id());
             } else {
                 get_zone(cntryid);
-            }
+            }*/
         } catch (Exception ex) {
             ex.getStackTrace();
         }
 
 
-        spn_zone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+        /*spn_zone.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> adapterView, View view, int i, long l) {
                 try {
@@ -305,7 +434,7 @@ public class ProfileActivity extends AppCompatActivity {
             public void onNothingSelected(AdapterView<?> adapterView) {
             }
         });
-
+*/
         btn_get_profile.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -341,19 +470,19 @@ public class ProfileActivity extends AppCompatActivity {
                     @Override
                     public void run() {
                         database.beginTransaction();
-                        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                        lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                       // lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                       // lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
                         lite_pos_registration.setCompany_Name(txt_company_name.getText().toString());
                         lite_pos_registration.setContact_Person(txt_contact_person.getText().toString());
-                        lite_pos_registration.setLicense_No(txt_license_no.getText().toString());
+                        lite_pos_registration.setService_code_tariff(txt_license_no.getText().toString());
                         lite_pos_registration.setMobile_No(txt_mobile.getText().toString());
                         lite_pos_registration.setAddress(txt_address.getText().toString());
                         lite_pos_registration.setCountry_Id(strSelectedCountryCode);
                         lite_pos_registration.setZone_Id(strSelectedZoneCode);
                         lite_pos_device.setDevice_Name(txt_device_no.getText().toString());
-                        long l = lite_pos_registration.updateRegistration("Id=?", new String[]{lite_pos_registration.getId()}, database);
+                        long l =  lite_pos_registration.updateRegistration("Id=?", new String[]{ lite_pos_registration.getId()}, database);
                         if (l > 0) {
-                            long l1 = lite_pos_device.updateDevice("Id=?", new String[]{lite_pos_device.getId()}, database);
+                            long l1 =  lite_pos_device.updateDevice("Id=?", new String[]{ lite_pos_device.getId()}, database);
                             if (l > 0) {
                                 database.setTransactionSuccessful();
                                 database.endTransaction();
@@ -404,12 +533,17 @@ public class ProfileActivity extends AppCompatActivity {
 
                             String existing_expiry = "";
                             try {
-                                existing_expiry = javaEncryption.encrypt(lite_pos_device.getExpiry_Date(), "12345678");
+                                existing_expiry = javaEncryption.encrypt( lite_pos_device.getExpiry_Date(), "12345678");
                             } catch (Exception e) {
                                 e.printStackTrace();
                             }
 
-                            update_license(existing_expiry);
+                            try {
+                                postDeviceCheckLicense(progressDialog,lite_pos_registration.getRegistration_Code(),Globals.Device_Code,lite_pos_registration.getEmail(),serial_no,Globals.syscode2,android_id,myKey,existing_expiry);
+                            }
+                            catch(Exception e){
+                 System.out.println(e.getMessage());
+                            }
                             // progressDialog.dismiss();
                         }
                     }.start();
@@ -423,7 +557,8 @@ public class ProfileActivity extends AppCompatActivity {
 
     private void update_profile_process() {
 
-        String serverData = profile_on_server();
+        String serverData ="";
+                //= profile_on_server();
         try {
             JSONObject collection_jsonObject1 = new JSONObject(serverData);
             final String strStatus = collection_jsonObject1.getString("status");
@@ -443,12 +578,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
-    private String profile_on_server() {
+   /* private String profile_on_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/register/update");
+                Globals.App_IP_URL + "register/update");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("device_code", lite_pos_device.getDevice_Code()));
@@ -457,7 +592,7 @@ public class ProfileActivity extends AppCompatActivity {
         nameValuePairs.add(new BasicNameValuePair("mobile_no", lite_pos_registration.getMobile_No()));
         nameValuePairs.add(new BasicNameValuePair("country_id", lite_pos_registration.getCountry_Id()));
         nameValuePairs.add(new BasicNameValuePair("zone_id", lite_pos_registration.getZone_Id()));
-        nameValuePairs.add(new BasicNameValuePair("address", lite_pos_registration.getAddress()));
+        nameValuePairs.add(new BasicNameValuePair("address",lite_pos_registration.getAddress()));
 
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
@@ -477,12 +612,12 @@ public class ProfileActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
 
-    private void update_license(String existing_expiry) {
+    private void update_license(String serverData ,String existing_expiry, final ProgressDialog progressDialog) {
         // Call check license api here
-        String serverData = Update_licence_from_server();
+
         try {
             final JSONObject jsonObject1 = new JSONObject(serverData);
             final String strStatus = jsonObject1.getString("status");
@@ -532,43 +667,48 @@ public class ProfileActivity extends AppCompatActivity {
             } else if (strStatus.equals("false")) {
                 progressDialog.dismiss();
                 try {
-                    JSONObject myResult = jsonObject1.getJSONObject("result");
-                    JSONObject myResult1 = myResult.getJSONObject("device");
-                    String device_code = myResult1.getString("device_code");
-                    String expiry_date = myResult1.getString("expiry_date");
-                    String duration = myResult1.getString("duration");
-                    if (existing_expiry.equals(expiry_date)) {
-                        runOnUiThread(new Runnable() {
-                            public void run() {
-                                progressDialog.dismiss();
-                                Toast.makeText(getApplicationContext(), R.string.Not_Update_Found, Toast.LENGTH_SHORT).show();
-                            }
-                        });
-                    } else {
-                        lite_pos_device.setExpiry_Date(javaEncryption.encrypt("2020-07-10 09:58:21", "12345678"));
-                        long l = lite_pos_device.updateDevice("device_code=?", new String[]{device_code}, database);
-                        if (l > 0) {
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    progressDialog.dismiss();
+//                    JSONObject myResult = jsonObject1.getJSONObject("result");
+//                    JSONObject myResult1 = myResult.getJSONObject("device");
+//                    String device_code = myResult1.getString("device_code");
+//                    String expiry_date = myResult1.getString("expiry_date");
+//                    String duration = myResult1.getString("duration");
+//                    if (existing_expiry.equals(expiry_date)) {
+//                        runOnUiThread(new Runnable() {
+//                            public void run() {
+//                                progressDialog.dismiss();
+//                                Toast.makeText(getApplicationContext(), R.string.Not_Update_Found, Toast.LENGTH_SHORT).show();
+//                            }
+//                        });
+//                    } else {
+//                       lite_pos_device.setExpiry_Date(javaEncryption.encrypt("2020-07-10 09:58:21", "12345678"));
+//                        long l = lite_pos_device.updateDevice("device_code=?", new String[]{device_code}, database);
+//                        if (l > 0) {
+//                            runOnUiThread(new Runnable() {
+//                                public void run() {
+//                                    progressDialog.dismiss();
+////                                    Toast.makeText(getApplicationContext(), R.string.Updated_Successfully, Toast.LENGTH_SHORT).show();
 //                                    Toast.makeText(getApplicationContext(), R.string.Updated_Successfully, Toast.LENGTH_SHORT).show();
-                                    Toast.makeText(getApplicationContext(), R.string.Updated_Successfully, Toast.LENGTH_SHORT).show();
-                                    Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }
-                            });
-                        } else {
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    progressDialog.dismiss();
-                                    Toast.makeText(getApplicationContext(), R.string.License_Not_Updated, Toast.LENGTH_SHORT).show();
-                                }
-                            });
-                        }
-                    }
-                } catch (JSONException jex) {
+//                                    Intent intent = new Intent(ProfileActivity.this, ProfileActivity.class);
+//                                    startActivity(intent);
+//                                    finish();
+//                                }
+//                            });
+//                        } else {
+//                            runOnUiThread(new Runnable() {
+//                                public void run() {
+//                                    progressDialog.dismiss();
+//                                    Toast.makeText(getApplicationContext(), R.string.License_Not_Updated, Toast.LENGTH_SHORT).show();
+//                                }
+//                            });
+//                        }
+//                    }
+                    Toast.makeText(getApplicationContext(),jsonObject1.getString("message"), Toast.LENGTH_SHORT).show();
+
+                } catch (JSONException jex)
+                {
                     progressDialog.dismiss();
+                    Toast.makeText(getApplicationContext(), jex+"", Toast.LENGTH_LONG).show();
+
                 } catch (Exception e) {
                     e.printStackTrace();
                 }
@@ -583,11 +723,12 @@ public class ProfileActivity extends AppCompatActivity {
         }
     }
 
+/*
     private String Update_licence_from_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/device/check_license");
+                 Globals.App_IP_URL + "device/check_license");
         ArrayList nameValuePairs = new ArrayList(7);
         try {
             try {
@@ -622,6 +763,82 @@ public class ProfileActivity extends AppCompatActivity {
         }
         return serverData;
     }
+*/
+
+    public void postDeviceCheckLicense(final ProgressDialog pDialog,final String registration_code,final String devicecode,final String email,final String syscode1,final String syscode2,final String syscode3,final String syscode4,String existing_expiry) {
+
+      /*  pDialog = new ProgressDialog(ProfileActivity.this);
+        pDialog.setMessage(getString(R.string.loggingin));
+        pDialog.show()*/;
+        String server_url= Globals.App_IP_URL + "device/check_license";
+
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            update_license(response,existing_expiry,pDialog);
+                            pDialog.dismiss();
+                        } catch (Exception e) {
+
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code", registration_code);
+                params.put("device_code", devicecode);
+                params.put("email", email);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
 
     @Override
     public void onBackPressed() {
@@ -652,28 +869,56 @@ public class ProfileActivity extends AppCompatActivity {
             timerThread.start();
 
         } else {
-            if (settings.get_Home_Layout().equals("0")) {
-                Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
+
+            if(lite_pos_registration.getIndustry_Type().equals("2")){
+                Intent intent = new Intent(ProfileActivity.this, Retail_IndustryActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                 startActivity(intent);
                 finish();
-            } else if (settings.get_Home_Layout().equals("2")) {
-                try {
-                    Intent intent = new Intent(ProfileActivity.this, RetailActivity.class);
+
+            }
+            else if(lite_pos_registration.getIndustry_Type().equals("3")){
+                Intent intent = new Intent(ProfileActivity.this, PaymentCollection_MainScreen.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+                finish();
+
+            }
+            else if(lite_pos_registration.getIndustry_Type().equals("4")){
+                Intent intent = new Intent(ProfileActivity.this, ParkingIndustryActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                startActivity(intent);
+                finish();
+
+            }
+            else {
+
+                if (settings.get_Home_Layout().equals("0")) {
+                    Intent intent = new Intent(ProfileActivity.this, MainActivity.class);
                     startActivity(intent);
                     finish();
-                } finally {
+                } else if (settings.get_Home_Layout().equals("2")) {
+                    try {
+                        Intent intent = new Intent(ProfileActivity.this, RetailActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } finally {
+                    }
+                } else {
+                    Intent intent = new Intent(ProfileActivity.this, Main2Activity.class);
+                    startActivity(intent);
+                    finish();
                 }
-            } else {
-                Intent intent = new Intent(ProfileActivity.this, Main2Activity.class);
-                startActivity(intent);
-                finish();
             }
         }
 
 
     }
 
-    private void get_country(String name, String id) {
+  /*  private void get_country(String name, String id) {
         arrayCList = country.getAllCountry(getApplicationContext(), "");
         CountryAdapter countryAdapter = new CountryAdapter(getApplicationContext(), arrayCList);
         spn_country.setAdapter(countryAdapter);
@@ -706,7 +951,7 @@ public class ProfileActivity extends AppCompatActivity {
             }
         }
     }
-
+*/
     private boolean isNetworkStatusAvialable(Context applicationContext) {
         // TODO Auto-generated method stub
         ConnectivityManager connectivityManager = (ConnectivityManager) getBaseContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -723,7 +968,8 @@ public class ProfileActivity extends AppCompatActivity {
     private void check_device() {
         // Call check license api here
         String succ = "0";
-        String serverData = getting_profile_server();
+        String serverData ="";
+                //getting_profile_server();
         try {
             final JSONObject jsonObject1 = new JSONObject(serverData);
             final String strStatus = jsonObject1.getString("status");
@@ -757,16 +1003,19 @@ public class ProfileActivity extends AppCompatActivity {
                     String srvc_trf = jsonObject_company.getString("service_code_tariff");
                     String indus_type = jsonObject_company.getString("industry_type");
                     String logo = jsonObject_company.getString("logo");
+                    String zonename = jsonObject_company.getString("zone_name");
+                    String countryname = jsonObject_company.getString("country_name");
 
                     Lite_POS_Device.delete_Device(getApplicationContext(), null, null, database);
 
-                    lite_pos_device = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
+                    lite_pos_device
+                            = new Lite_POS_Device(getApplicationContext(), null, jsonObject_device.getString("device_id"),
                             jsonObject_device.getString("app_type"), jsonObject_device.getString("device_code"),
                             jsonObject_device.getString("device_name"), javaEncryption.encrypt(jsonObject_device.getString("expiry_date"), "12345678"),
                             jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
                             jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
                             jsonObject_device.getString("currency_place"), jsonObject_device.getString("lic_customer_license_id"), jsonObject_device.getString("lic_code"),
-                            jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN");
+                            jsonObject_device.getString("license_key"), jsonObject_device.getString("license_type"), "IN",jsonObject_device.getString("location_name"));
 
                     long d = lite_pos_device.insertDevice(database);
                     if (d > 0) {
@@ -776,8 +1025,8 @@ public class ProfileActivity extends AppCompatActivity {
 
                     long l2 = Lite_POS_Registration.delete_Registration(getApplicationContext(), "Lite_POS_Registration", null, null, database);
 
-                    lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name, contact_person,
-                            mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                   lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name, contact_person,
+                            mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type,"",countryname,zonename);
                     long r = lite_pos_registration.insertRegistration(database);
                     if (r > 0) {
                         succ = "1";
@@ -949,11 +1198,11 @@ public class ProfileActivity extends AppCompatActivity {
     }
         }
 
-    private String getting_profile_server() {
+   /* private String getting_profile_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/device/check_license");
+                 Globals.App_IP_URL + "device/check_license");
         ArrayList nameValuePairs = new ArrayList(7);
         try {
             nameValuePairs.add(new BasicNameValuePair("email", lite_pos_registration.getEmail()));
@@ -981,5 +1230,5 @@ public class ProfileActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 }

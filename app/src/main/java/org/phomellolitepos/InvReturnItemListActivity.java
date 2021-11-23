@@ -6,16 +6,16 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.WindowManager;
+import android.widget.AdapterView;
 import android.widget.ListView;
 import android.widget.TextView;
 
 import org.phomellolitepos.Adapter.InvReturnItemListadapter;
-import org.phomellolitepos.Adapter.InvReturnListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
@@ -36,7 +36,7 @@ public class InvReturnItemListActivity extends AppCompatActivity {
     Settings settings;
     InvReturnItemListadapter returnListAdapter;
     TextView item_title;
-    String relt = "", PayId,cusCode;
+    String relt = "", PayId, cusCode;
     ArrayList itemlist;
     String operation, str_voucher_no, str_date, str_remarks, ordCode;
     String decimal_check, qty_decimal_check;
@@ -46,17 +46,23 @@ public class InvReturnItemListActivity extends AppCompatActivity {
     ArrayList<Object> barcodelist;
     ArrayList<Object> return_qtylist;
     ArrayList<Object> qtylist;
+    ArrayList<Object> pricelist;
+
+    ListView category_list;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_inv_return_item_list);
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
+
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
-        getSupportActionBar().setTitle("");
+
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
@@ -92,14 +98,38 @@ public class InvReturnItemListActivity extends AppCompatActivity {
             barcodelist = (ArrayList<Object>) args.getSerializable("BarCodeList");
             return_qtylist = (ArrayList<Object>) args.getSerializable("ret_quantitylist");
             qtylist = (ArrayList<Object>) args.getSerializable("quantitylist");
+            pricelist = (ArrayList<Object>) args.getSerializable("pricelist");
             order_detail = Order_Detail.getAllOrder_Detail(getApplicationContext(), "where order_code='" + ordCode + "'", database);
-            ListView category_list = (ListView) findViewById(R.id.item_list);
+            category_list = (ListView) findViewById(R.id.item_list);
 
-            returnListAdapter = new InvReturnItemListadapter(InvReturnItemListActivity.this, order_detail,object);
+            returnListAdapter = new InvReturnItemListadapter(InvReturnItemListActivity.this, itemcodelist, object,qtylist,return_qtylist,pricelist);
             category_list.setAdapter(returnListAdapter);
             returnListAdapter.notifyDataSetChanged();
+
+            /*category_list.setOnItemClickListener(new AdapterView.OnItemClickListener()
+            {
+
+                @Override
+                public void onItemClick(AdapterView<?> parent, View view,
+                                        int position, long id) {
+                    ArrayList<String> arraylist = new ArrayList<String>();
+                    arraylist.add(itemcodelist.toString());
+                    String TempListViewClickedValue = arraylist.get(position).toString();
+
+                    Intent intent = new Intent(InvReturnItemListActivity.this, InvReturnFinalActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    intent.putExtra("operation", operation);
+                    intent.putExtra("voucher_no", str_voucher_no);
+                    intent.putExtra("date", str_date);
+                    intent.putExtra("remarks", str_remarks);
+                    intent.putExtra("contact_code", cusCode);
+                    intent.putExtra("order_code", ordCode);
+                    intent.putExtra("itemcode", TempListViewClickedValue);
+                    startActivity(intent);
+                }
+            });*/
+        } catch (Exception e) {
         }
-        catch(Exception e){}
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -111,10 +141,10 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                           // sleep(100);
                             pDialog.dismiss();
                             Intent intent = new Intent(InvReturnItemListActivity.this, InvReturnFinalActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("operation", operation);
                             intent.putExtra("voucher_no", str_voucher_no);
                             intent.putExtra("date", str_date);
@@ -122,12 +152,13 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                             intent.putExtra("contact_code", cusCode);
                             intent.putExtra("order_code", ordCode);
                             Bundle args = new Bundle();
-                            args.putSerializable("ARRAYLIST",(Serializable)object);
-                            args.putSerializable("ItemCodeList",(Serializable)itemcodelist);
-                            args.putSerializable("BarCodeList",(Serializable)barcodelist);
-                            args.putSerializable("ret_quantitylist",(Serializable)return_qtylist);
-                            args.putSerializable("quantitylist",(Serializable)qtylist);
-                            intent.putExtra("BUNDLE",args);
+                            args.putSerializable("ARRAYLIST", (Serializable) object);
+                            args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
+                            args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                            args.putSerializable("ret_quantitylist", (Serializable) return_qtylist);
+                            args.putSerializable("quantitylist", (Serializable) qtylist);
+                            args.putSerializable("pricelist", (Serializable) pricelist);
+                            intent.putExtra("BUNDLE", args);
 
 
                             if (cusCode.equals("")) {
@@ -137,7 +168,7 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                             }
                             startActivity(intent);
                             finish();
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         } finally {
                         }
@@ -146,12 +177,11 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                 timerThread.start();
             }
         });
-
-        getSupportActionBar().setTitle(R.string.invoice_return);
-        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-        item_title = (TextView) findViewById(R.id.item_title);
-
-
+        //getSupportActionBar().setTitle(R.string.invoice_return);
+        if (order_detail.size() == 0) {
+            item_title = (TextView) findViewById(R.id.item_title);
+            item_title.setText("NO Result Found");
+        }
     }
 
     @Override
@@ -164,10 +194,10 @@ public class InvReturnItemListActivity extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                  //  sleep(100);
                     pDialog.dismiss();
                     Intent intent = new Intent(InvReturnItemListActivity.this, InvReturnFinalActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("operation", operation);
                     intent.putExtra("voucher_no", str_voucher_no);
                     intent.putExtra("date", str_date);
@@ -175,8 +205,13 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                     intent.putExtra("contact_code", cusCode);
                     intent.putExtra("order_code", ordCode);
                     Bundle args = new Bundle();
-                    args.putSerializable("ARRAYLIST",(Serializable)object);
-                    intent.putExtra("BUNDLE",args);
+                    args.putSerializable("ARRAYLIST", (Serializable) object);
+                    args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
+                    args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                    args.putSerializable("ret_quantitylist", (Serializable) return_qtylist);
+                    args.putSerializable("quantitylist", (Serializable) qtylist);
+                    args.putSerializable("pricelist", (Serializable) pricelist);
+                    intent.putExtra("BUNDLE", args);
 
 
                     if (cusCode.equals("")) {
@@ -187,7 +222,7 @@ public class InvReturnItemListActivity extends AppCompatActivity {
                     startActivity(intent);
 
                     finish();
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
                 } finally {
                 }
@@ -196,5 +231,37 @@ public class InvReturnItemListActivity extends AppCompatActivity {
         timerThread.start();
     }
 
+    public  void callIntent(String itemcodevalue,String itemnamevalue,String itemqtyvalue,String itemrtqtyvalue,String itemprice){
+
+        Intent intent = new Intent(InvReturnItemListActivity.this, InvReturnFinalActivity.class);
+      //  intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+        intent.putExtra("operation", operation);
+        intent.putExtra("voucher_no", str_voucher_no);
+        intent.putExtra("date", str_date);
+        intent.putExtra("remarks", str_remarks);
+        intent.putExtra("contact_code", cusCode);
+        intent.putExtra("order_code", ordCode);
+        intent.putExtra("itemcode", itemcodevalue);
+        intent.putExtra("itemname", itemnamevalue);
+        intent.putExtra("itemqty", itemqtyvalue);
+        intent.putExtra("itemreturnqty", itemrtqtyvalue);
+        intent.putExtra("itemprice", itemprice);
+        Bundle args = new Bundle();
+        args.putSerializable("ARRAYLIST", (Serializable) object);
+        args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
+        args.putSerializable("BarCodeList", (Serializable) barcodelist);
+        args.putSerializable("ret_quantitylist", (Serializable) return_qtylist);
+        args.putSerializable("quantitylist", (Serializable) qtylist);
+        args.putSerializable("pricelist", (Serializable) pricelist);
+        intent.putExtra("BUNDLE", args);
+        if (cusCode.equals("")) {
+            intent.putExtra("payment_id", "1");
+        } else {
+            intent.putExtra("payment_id", PayId);
+        }
+        startActivity(intent);
+        finish();
+    }
 
 }

@@ -58,6 +58,7 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
                     android:textSize="16sp"
                     android:maxLength="100"
                     android:enabled="false"
@@ -97,6 +98,8 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
+
                     android:textSize="16sp"
                     android:inputType="text"
                     android:maxLength="100"
@@ -136,6 +139,8 @@
                     android:layout_weight="1.7"
                     android:ems="10"
                     android:textSize="16sp"
+                    android:gravity="right"
+
                     android:inputType="numberDecimal"
                     android:maxLength="100"
                     android:textColor="#333333"
@@ -184,6 +189,8 @@
                     android:ems="10"
                     android:textSize="16sp"
                     android:maxLength="100"
+                    android:gravity="right"
+
                     android:enabled="false"
                     android:textColor="#333333"
                     android:singleLine="true"
@@ -221,6 +228,8 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
+
                     android:textSize="16sp"
                     android:maxLength="100"
                     android:enabled="false"
@@ -282,10 +291,12 @@
                     android:layout_width="match_parent"
                     android:layout_height="wrap_content"
                     android:layout_weight="0.7"
+                    android:gravity="right"
+
                     android:layout_marginTop="10dp"
                     />
 
-                <android.support.design.widget.TextInputLayout
+                <com.google.android.material.textfield.TextInputLayout
                     android:id="@+id/edt_layout_cheque"
                     style="@style/AppTheme.TextInputLayout"
                     app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -294,9 +305,10 @@
                     <EditText
                         android:id="@+id/edt_cheque"
                         style="@style/AppTheme.EditText"
+                        android:gravity="right"
                         android:hint="@string/cheque_no" />
 
-                </android.support.design.widget.TextInputLayout>
+                </com.google.android.material.textfield.TextInputLayout>
 
             </LinearLayout>
 
@@ -326,6 +338,8 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
+
                     android:textSize="16sp"
                     android:inputType="numberDecimal"
                     android:maxLength="100"
@@ -367,6 +381,8 @@
                     android:layout_weight="2.2"
                     android:ems="10"
                     android:hint=""
+                    android:gravity="right"
+
                     android:textSize="16sp"
                     android:inputType="numberDecimal"
                     android:enabled="false"
@@ -510,6 +526,8 @@
                 android:layout_weight="2.1"
                 android:ems="10"
                 android:textSize="16sp"
+                android:gravity="right"
+
                 android:maxLength="100"
                 android:singleLine="true"
                 android:textCursorDrawable="@drawable/edittext_cursor_color"

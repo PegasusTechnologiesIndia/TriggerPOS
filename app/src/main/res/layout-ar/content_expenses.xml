@@ -13,7 +13,7 @@
     tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.ExpensesActivity"
     tools:showIn="@layout/activity_expenses">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_expense_name"
         style="@style/AppTheme.TextInputLayout"
         android:layout_marginTop="20dp"
@@ -22,12 +22,13 @@
         <EditText
             android:id="@+id/edt_expense_name"
             style="@style/AppTheme.EditText"
+            android:gravity="right"
             android:hint="@string/ExpenseName" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_expenses"
         style="@style/AppTheme.TextInputLayout"
         android:layout_below="@+id/edt_layout_expense_name"
@@ -38,10 +39,12 @@
             android:id="@+id/edt_expenses"
             style="@style/AppTheme.EditText"
             android:hint="@string/ExpenseAmount"
+            android:gravity="right"
+
             android:inputType="numberDecimal"
             />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
 

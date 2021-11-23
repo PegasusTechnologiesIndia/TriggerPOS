@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".CouponGenerateActivity"
+    tools:showIn="@layout/activity_coupon_generate"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/edt_noc"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="Number of coupon"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <EditText
+        android:id="@+id/edt_start"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="Start"
+        android:inputType="phone"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:visibility="gone"/>
+
+    <EditText
+        android:id="@+id/edt_last_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="Last Code"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:enabled="false"
+        android:visibility="gone"/>
+
+    <LinearLayout
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_marginTop="40dp">
+
+        <Button
+            android:id="@+id/btn_save"
+            style="@style/AppTheme.HorizontalButton"
+            android:text="@string/save" />
+
+        <Button
+            android:id="@+id/btn_csv"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="CSV Import"
+            android:visibility="visible" />
+
+    </LinearLayout>
+
+
+</LinearLayout>

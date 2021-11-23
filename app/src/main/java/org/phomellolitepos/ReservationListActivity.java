@@ -6,10 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -20,14 +20,10 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import org.phomellolitepos.Adapter.ExpensesListAdapter;
-import org.phomellolitepos.Adapter.MainItemCategoryListAdapter;
 import org.phomellolitepos.Adapter.ReservationListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
-import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Pos_Balance;
 import org.phomellolitepos.database.Reservation;
 import org.phomellolitepos.database.Settings;
 

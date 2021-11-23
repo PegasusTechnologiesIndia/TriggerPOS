@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_manager"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:gravity="center_horizontal"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ManagerActivity"
+    tools:showIn="@layout/activity_manager">
+
+    <Button
+        android:id="@+id/btn_ob"
+
+        android:layout_marginTop="80dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/Opening_Balance"
+        android:background="#403c3c"
+        style="@style/AppTheme.HorizontalButton_720dp"/>
+
+    <Button
+        android:id="@+id/btn_expenses"
+
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/Expenses"
+        android:background="#403c3c"
+        style="@style/AppTheme.HorizontalButton_720dp"/>
+
+    <Button
+        android:id="@+id/btn_xz"
+
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/X_Z"
+        android:background="#403c3c"
+        style="@style/AppTheme.HorizontalButton_720dp"/>
+
+
+</LinearLayout>

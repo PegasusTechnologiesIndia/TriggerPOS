@@ -6,6 +6,7 @@
         android:enabled="true"
         android:title="@string/Check_Out"
         android:icon="@drawable/checkout"
+
         app:showAsAction="ifRoom" />
     <item
         android:id="@+id/action_save"
@@ -14,9 +15,15 @@
         android:icon="@drawable/save"
         app:showAsAction="ifRoom" />
     <item
-        android:id="@+id/action_clear"
+    android:id="@+id/action_clear"
+    android:enabled="true"
+    android:title="@string/Clear"
+    android:icon="@drawable/clear"
+    app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_whatsapphelp"
         android:enabled="true"
-        android:title="@string/Clear"
-        android:icon="@drawable/clear"
+        android:title="@string/help"
+        android:icon="@drawable/help"
         app:showAsAction="ifRoom" />
 </menu>

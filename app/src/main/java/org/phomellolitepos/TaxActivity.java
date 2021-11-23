@@ -7,13 +7,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -37,10 +38,7 @@ import java.util.Locale;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Group_Tax;
-import org.phomellolitepos.database.Lite_POS_Device;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Type_Tax;
 import org.phomellolitepos.database.Sys_Tax_Group;
 import org.phomellolitepos.database.Tax_Master;
@@ -55,8 +53,7 @@ public class TaxActivity extends AppCompatActivity {
     Database db;
     String date, strType;
     Tax_Master tax_master;
-    Lite_POS_Registration lite_pos_registration;
-    Lite_POS_Device lite_pos_device;
+String taxId;
     String taxtype[] = {};
     String taxGroup[] = {};
     ProgressDialog pDialog;
@@ -99,8 +96,9 @@ String taxname;
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            sleep(100);
                             Intent intent = new Intent(TaxActivity.this, TaxListActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -116,9 +114,14 @@ String taxname;
             }
         });
 
-        db = new Database(getApplicationContext());
-        database = db.getWritableDatabase();
-        lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(),"" ,database);
+        try {
+            db = new Database(getApplicationContext());
+            database = db.getWritableDatabase();
+        }
+        catch(Exception e){
+
+        }
+    //    lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(),"" ,database);
         edt_layout_tax_name = (TextInputLayout) findViewById(R.id.edt_layout_tax_name);
         edt_layout_value = (TextInputLayout) findViewById(R.id.edt_layout_value);
         edt_layout_comment = (TextInputLayout) findViewById(R.id.edt_layout_comment);
@@ -210,8 +213,18 @@ String taxname;
 
         } else {
             btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
-            fill_tax_type_spinner();
-            fill_tax_group_spinner();
+            try {
+                fill_tax_type_spinner();
+            }
+            catch(Exception e){
+
+            }
+            try {
+                fill_tax_group_spinner();
+            }
+            catch(Exception e){
+
+            }
         }
 
         spinner_type.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
@@ -280,46 +293,78 @@ String taxname;
                                     public void run() {
                                         try {
                                             sleep(1000);
-                                            database.beginTransaction();
-                                            try {
-                                                long l = Order_Type_Tax.delete_Order_Type_Tax(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
-                                            }catch (Exception ex){}
+                                           // database.beginTransaction();
 
-                                            try {
-                                                long lg = Item_Group_Tax.delete_Item_Group_Tax(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
-                                            }catch (Exception ex){}
 
-                                            try {
-                                                long lg1 = Sys_Tax_Group.delete_Sys_Tax_Group(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
-                                            }catch (Exception ex){}
+                                            String sqlQuery="select tx.tax_id from tax tx left join item_group_tax it_tax ON it_tax.tax_id = tx.tax_id left join Sys_Tax_Group sys_tax ON sys_tax.tax_id = tx.tax_id left join order_type_tax od_tax ON od_tax.tax_id = tx.tax_id where it_tax.tax_id = '"+ tax_id+"' and tx.is_active ='1'";
+                                          //  database = db.getReadableDatabase();
+                                            Cursor cursor = database.rawQuery(sqlQuery, null);
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                    taxId=cursor.getString(0);
+                                                   // Unitid = cursor.getString(1);
+                                                } while (cursor.moveToNext());
 
-                                            Tax_Master tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id = '" + tax_id + "'", database, db);
-                                            tax_master.set_is_active("false");
-                                            long h = tax_master.updateTax_Master("tax_id=?", new String[]{tax_id}, database);
-                                            if (h > 0) {
-                                                database.setTransactionSuccessful();
-                                                database.endTransaction();
-                                                pDialog.dismiss();
+                                            }
+
+                                            // closing connection
+                                            cursor.close();
+
+                                            if(taxId!=null){
                                                 runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(getApplicationContext(), R.string.Delete_Successfully, Toast.LENGTH_SHORT).show();
-                                                        Intent intent_category = new Intent(TaxActivity.this, TaxListActivity.class);
-                                                        startActivity(intent_category);
-                                                        finish();
-                                                    }
-                                                });
+                                                        pDialog.dismiss();
+                                                        Toast.makeText(getApplicationContext(), getString(R.string.deletemsg), Toast.LENGTH_LONG).show();
 
 
-                                            } else {
-                                                database.endTransaction();
-                                                pDialog.dismiss();
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Toast.makeText(getApplicationContext(), R.string.Record_Not_Deleted, Toast.LENGTH_SHORT).show();
                                                     }
                                                 });
                                             }
+                                            else {
+                                                database.beginTransaction();
+                                                try {
+                                                    long l = Order_Type_Tax.delete_Order_Type_Tax(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
+                                                } catch (Exception ex) {
+                                                }
 
+                                                try {
+                                                    long lg = Item_Group_Tax.delete_Item_Group_Tax(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
+                                                } catch (Exception ex) {
+                                                }
+
+                                                try {
+                                                    long lg1 = Sys_Tax_Group.delete_Sys_Tax_Group(getApplicationContext(), "tax_id=?", new String[]{tax_id}, database);
+                                                } catch (Exception ex) {
+                                                }
+
+                                                Tax_Master tax_master = Tax_Master.getTax_Master(getApplicationContext(), "WHERE tax_id = '" + tax_id + "'", database, db);
+                                                tax_master.set_is_active("false");
+                                                long h = tax_master.updateTax_Master("tax_id=?", new String[]{tax_id}, database);
+                                                if (h > 0) {
+                                                    database.setTransactionSuccessful();
+                                                    database.endTransaction();
+                                                    pDialog.dismiss();
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), R.string.Delete_Successfully, Toast.LENGTH_SHORT).show();
+                                                            Intent intent_category = new Intent(TaxActivity.this, TaxListActivity.class);
+                                                            startActivity(intent_category);
+                                                            finish();
+                                                        }
+                                                    });
+
+
+                                                } else {
+                                                    database.endTransaction();
+                                                    pDialog.dismiss();
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), R.string.Record_Not_Deleted, Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
+                                                }
+
+                                            }
                                         } catch (InterruptedException e) {
                                             e.printStackTrace();
 
@@ -368,7 +413,7 @@ String taxname;
     private void Insert_tax(String tax_name, String value, String comment, String strType, String strTaxGroup) {
         String modified_by = Globals.user;
         database.beginTransaction();
-        tax_master = new Tax_Master(getApplicationContext(), null, lite_pos_device.getLocation_Code(), tax_name, strType, value, comment, "1", modified_by, date, "N");
+        tax_master = new Tax_Master(getApplicationContext(), null, Globals.objLPD.getLocation_Code(), tax_name, strType, value, comment, "1", modified_by, date, "N");
         long l = tax_master.insertTax_Master(database);
         if (l > 0) {
             if (Integer.parseInt(strTaxGroup)>0){
@@ -385,11 +430,18 @@ String taxname;
             pDialog.dismiss();
             runOnUiThread(new Runnable() {
                 public void run() {
-                    Intent intent_category = new Intent(TaxActivity.this, OrderTypeCheckListActivity.class);
-                    intent_category.putExtra("tax_id", strTaxId);
-                    intent_category.putExtra("operation", operation);
-                    startActivity(intent_category);
-                    finish();
+                    if(Globals.objLPR.getIndustry_Type().equals("4")){
+                        Intent intent_category = new Intent(TaxActivity.this, TaxListActivity.class);
+                        startActivity(intent_category);
+                        finish();
+                    }
+                    else {
+                        Intent intent_category = new Intent(TaxActivity.this, OrderTypeCheckListActivity.class);
+                        intent_category.putExtra("tax_id", strTaxId);
+                        intent_category.putExtra("operation", operation);
+                        startActivity(intent_category);
+                        finish();
+                    }
                 }
             });
 
@@ -438,11 +490,18 @@ String taxname;
             pDialog.dismiss();
             runOnUiThread(new Runnable() {
                 public void run() {
-                    Intent intent_category = new Intent(TaxActivity.this, OrderTypeCheckListActivity.class);
-                    intent_category.putExtra("tax_id", tax_id);
-                    intent_category.putExtra("operation", operation);
-                    startActivity(intent_category);
-                    finish();
+                    if(Globals.objLPR.getIndustry_Type().equals("4")){
+                        Intent intent_category = new Intent(TaxActivity.this, TaxListActivity.class);
+                        startActivity(intent_category);
+                        finish();
+                    }
+                    else {
+                        Intent intent_category = new Intent(TaxActivity.this, OrderTypeCheckListActivity.class);
+                        intent_category.putExtra("tax_id", tax_id);
+                        intent_category.putExtra("operation", operation);
+                        startActivity(intent_category);
+                        finish();
+                    }
                 }
             });
 
@@ -526,20 +585,25 @@ String taxname;
 
                         }
 
-                        if(edt_tax_name.getText().toString().equals(taxname)){
+                        if(edt_tax_name.getText().toString().equalsIgnoreCase(taxname)){
                             runOnUiThread(new Runnable() {
                                 public void run() {
                                     pDialog.dismiss();
                                     edt_tax_name.setText(tax_master.get_tax_name());
                                     edt_tax_name.selectAll();
-                                    Toast.makeText(TaxActivity.this, "Tax already present", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TaxActivity.this, getString(R.string.taxpresent), Toast.LENGTH_SHORT).show();
 //                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
                         }
                         else {
-                            Update_tax(tax_id, tax_name, tax_value, tax_comment, strType, strTaxGroup);
+                            try {
+                                Update_tax(tax_id, tax_name, tax_value, tax_comment, strType, strTaxGroup);
+                            }
+                            catch(Exception e){
+
+                            }
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -597,14 +661,19 @@ String taxname;
                                     pDialog.dismiss();
                                     edt_tax_name.setText("");
 
-                                    Toast.makeText(TaxActivity.this, "Tax already present", Toast.LENGTH_SHORT).show();
+                                    Toast.makeText(TaxActivity.this, getString(R.string.taxpresent), Toast.LENGTH_SHORT).show();
 //                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
                                 }
                             });
 
                         }
                         else {
-                            Insert_tax(tax_name, value, comment, strType, strTaxGroup);
+                            try {
+                                Insert_tax(tax_name, value, comment, strType, strTaxGroup);
+                            }
+                            catch(Exception e){
+
+                            }
                         }
                     } catch (InterruptedException e) {
                         e.printStackTrace();
@@ -630,9 +699,10 @@ String taxname;
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(100);
 
                     Intent intent = new Intent(TaxActivity.this, TaxListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     pDialog.dismiss();
                     finish();

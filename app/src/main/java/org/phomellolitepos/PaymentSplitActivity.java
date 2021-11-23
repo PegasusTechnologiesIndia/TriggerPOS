@@ -30,10 +30,11 @@ import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.FileProvider;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -52,6 +53,7 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.google.gson.Gson;
 import com.itextpdf.text.BaseColor;
 import com.itextpdf.text.Document;
 import com.itextpdf.text.Element;
@@ -76,7 +78,6 @@ import org.phomellolitepos.Util.Loyalty_Redeem;
 import org.phomellolitepos.Util.Watermark;
 import org.phomellolitepos.database.Acc_Customer;
 import org.phomellolitepos.database.Contact;
-import org.phomellolitepos.database.Coupon_Detail;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Location;
@@ -87,12 +88,10 @@ import org.phomellolitepos.database.OrderTaxArray;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Order_Detail_Tax;
 import org.phomellolitepos.database.Order_Item_Tax;
-import org.phomellolitepos.database.Order_Loyalty_Earn;
 import org.phomellolitepos.database.Order_Payment;
 import org.phomellolitepos.database.Order_Tax;
 import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Payment;
-import org.phomellolitepos.database.Pro_Loyalty_Setup;
 import org.phomellolitepos.database.User;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.ShoppingCart;
@@ -113,6 +112,17 @@ import java.util.Locale;
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
+import sunmi.bean.SecondScreenData;
+import sunmi.ds.DSKernel;
+import sunmi.ds.callback.IConnectionCallback;
+import sunmi.ds.callback.IReceiveCallback;
+import sunmi.ds.callback.ISendCallback;
+import sunmi.ds.data.DSData;
+import sunmi.ds.data.DSFile;
+import sunmi.ds.data.DSFiles;
+import sunmi.ds.data.Data;
+import sunmi.ds.data.DataPacket;
+import sunmi.ds.data.UPacketFactory;
 import woyou.aidlservice.jiuiv5.ICallback;
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
@@ -124,11 +134,16 @@ public class PaymentSplitActivity extends AppCompatActivity {
     ListView list;
     String strAmount, decimal_check, strPayCode, PayMethodName = "", strChange;
     Database db;
+    String path1 = Environment.getExternalStorageDirectory().getPath() + "/small.png";
+
     SQLiteDatabase database;
     ArrayList<Payment> paymentArrayList;
     ArrayList<SplitPaymentList> array_list;
     Double UpdAmount;
     ProgressDialog pDialog;
+    DSKernel mDSKernel;
+    DataPacket dsPacket;
+    JSONObject jsonObject;
     boolean flag = false;
     String date, strOrderNo = "", modified_by;
     Lite_POS_Device lite_pos_device;
@@ -149,19 +164,134 @@ public class PaymentSplitActivity extends AppCompatActivity {
     Loyalty_Redeem loyalty_redeem;
 Lite_POS_Device liteposdevice;
 String liccustomerid;
+String displayTilte;
     String serial_no, android_id, myKey, device_id,imei_no;
+    private ISendCallback callback = new ISendCallback() {
+
+        @Override
+        public void onSendFail(int arg0, String arg1) {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                }
+            });
+        }
+
+        @Override
+        public void onSendProcess(long arg0, long arg1) {
+            // TODO Auto-generated method stub
+        }
+
+        @Override
+        public void onSendSuccess(long arg0) {
+            runOnUiThread(new Runnable() {
+
+                @Override
+                public void run() {
+                }
+            });
+
+        }
+    };
+
+
+    private IConnectionCallback mConnCallback = new IConnectionCallback() {
+
+        @Override
+        public void onDisConnect() {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                }
+            });
+
+        }
+
+        @Override
+        public void onConnected(final ConnState state) {
+
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+                    switch (state) {
+                        case AIDL_CONN:
+                            //connState.setText("与本地service的连接畅通");
+                            break;
+                        case VICE_SERVICE_CONN:
+//                            connState.setText("与副屏service连接畅通");
+//                            enableBtn();
+                            break;
+                        case VICE_APP_CONN:
+//                            connState.setText("与副屏app连接畅通");
+//                            enableBtn();
+                            break;
+                        default:
+                            break;
+                    }
+                }
+            });
+
+        }
+    };
+
+    // 接收副屏数据的回调
+    private IReceiveCallback mReceiveCallback = new IReceiveCallback() {
+
+        @Override
+        public void onReceiveFile(DSFile arg0) {
+            // TODO
+        }
+
+        @Override
+        public void onReceiveFiles(DSFiles dsFiles) {
+            // TODO
+        }
+
+        @Override
+        public void onReceiveData(DSData data) {
+            if (dsPacket == null) return;
+            long taskId = dsPacket.getData().taskId;
+            Gson gson = new Gson();
+            Data data4Json = gson.fromJson(data.data, Data.class);
+            if (taskId == data.taskId) {
+                final SecondScreenData secondScreenData = gson.fromJson(data4Json.data, SecondScreenData.class);
+                Globals.AppLogWrite("Payment Second screen data"+ secondScreenData);
+
+                runOnUiThread(new Runnable() {
+                    @Override
+                    public void run() {
+                        //connState.setText(secondScreenData.toString());
+                    }
+                });
+            }
+        }
+
+        @Override
+        public void onReceiveCMD(DSData arg0) {
+            // TODO
+        }
+
+    };
+
     private ServiceConnection connService = new ServiceConnection() {
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
+
             woyouService = null;
+            Globals.AppLogWrite("Woyoservice disconnection");
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
+
             woyouService = IWoyouService.Stub.asInterface(service);
+            Globals.AppLogWrite("Woyoservice connection");
         }
     };
+
     private final int MSG_TEST = 1;
     private long printCount = 0;
     @SuppressLint("HandlerLeak")
@@ -295,7 +425,7 @@ String liccustomerid;
 
         myKey = serial_no + android_id;
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager mTelephony = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -307,12 +437,27 @@ String liccustomerid;
 
             return;
         }
-        device_id = telephonyManager.getDeviceId();
-        imei_no=telephonyManager.getImei();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            device_id = android.provider.Settings.Secure.getString(
+                    getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        } else {
+            if (mTelephony.getDeviceId() != null) {
+                device_id = mTelephony.getDeviceId();
+            } else {
+                device_id = android.provider.Settings.Secure.getString(
+                        getApplicationContext().getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+            }
+
+        }
+       /* device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();*/
         Globals.CouponTotal = Double.parseDouble(Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
         txt_amount.setText("Amount : " + Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
         edt_amount.setText(Globals.myNumberFormat2Price(Double.parseDouble(strAmount), decimal_check));
         edt_amount.selectAll();
+        edt_amount.requestFocus();
         fill_spinner_pay_method("");
         edt_amount.addTextChangedListener(new TextWatcher() {
             @Override
@@ -728,19 +873,24 @@ String liccustomerid;
                     }
 
 
-                    objOrder = new Orders(getApplicationContext(), orderId, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
-                            "0", Globals.TotalItem + "", Globals.TotalQty + "",
-                            Globals.TotalItemPrice + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
-                            changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description, Globals.strTable_Code, Globals.Inv_Delivery_Date);
+                        objOrder = new Orders(getApplicationContext(), orderId, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
+                                "0", Globals.TotalItem + "", Globals.TotalQty + "",
+                                Globals.TotalItemPrice + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
+                                changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description, Globals.strTable_Code, Globals.Inv_Delivery_Date,null);
 
                     long l = objOrder.insertOrders(database);
                     if (l > 0) {
                         strFlag = "1";
+                        double finalDis = 0;
                         for (int count = 0; count < myCart.size(); count++) {
+                             try{
                             ShoppingCart mCart = myCart.get(count);
+                            Double cartsales_price = Double.parseDouble(mCart.get_Sales_Price());
+                            Double discountedvalue = Globals.DiscountPer;
+                             finalDis = (discountedvalue / 100.0) * cartsales_price;
                             objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
-                                    mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
+                                    mCart.get_Quantity(), "0", String.valueOf(finalDis), mCart.get_Line_Total(), "0","false",mCart.getUnitId(),mCart.getBeforeTaxPrice());
                             long o = objOrderDetail.insertOrder_Detail(database);
                             if (o > 0) {
                                 if (settings.get_Is_Stock_Manager().equals("true")) {
@@ -750,6 +900,8 @@ String liccustomerid;
                             } else {
 
                             }
+                        }
+                        catch(Exception e){}
                         }
                         //database.endTransaction();
 
@@ -828,27 +980,32 @@ String liccustomerid;
 //                        }
 
                         if (!Globals.strContact_Code.equals("")) {
-                            Double strOldBalance = 0d;
-                            Double strAmount = 0d;
-                            String strQry2 = "Select SUM(pay_amount) from order_payment Where order_code ='" + strOrderNo + "' and payment_id='5'";
                             try {
-                                Cursor cursor = database.rawQuery(strQry2, null);
-                                while (cursor.moveToNext()) {
-                                    strAmount = Double.parseDouble(cursor.getString(0));
+                                Double strOldBalance = 0d;
+                                Double strAmount = 0d;
+                                String strQry2 = "Select SUM(pay_amount) from order_payment Where order_code ='" + strOrderNo + "' and payment_id='5'";
+                                try {
+                                    Cursor cursor = database.rawQuery(strQry2, null);
+                                    while (cursor.moveToNext()) {
+                                        strAmount = Double.parseDouble(cursor.getString(0));
+                                    }
+                                } catch (Exception ex) {
                                 }
-                            } catch (Exception ex) {
-                            }
 
-                            Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(getApplicationContext(), " where contact_code='" + Globals.strContact_Code + "'", database);
-                            if (acc_customer == null) {
-                                strAmount = strOldBalance - strAmount;
-                                acc_customer = new Acc_Customer(getApplicationContext(), null, Globals.strContact_Code, strAmount + "");
-                                acc_customer.insertAcc_Customer(database);
-                            } else {
-                                strOldBalance = Double.parseDouble(acc_customer.get_amount());
-                                strAmount = strOldBalance - strAmount;
-                                acc_customer.set_amount(strAmount + "");
-                                long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{Globals.strContact_Code}, database);
+                                Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(getApplicationContext(), " where contact_code='" + Globals.strContact_Code + "'", database);
+                                if (acc_customer == null) {
+                                    strAmount = strOldBalance - strAmount;
+                                    acc_customer = new Acc_Customer(getApplicationContext(), null, Globals.strContact_Code, strAmount + "");
+                                    acc_customer.insertAcc_Customer(database);
+                                } else {
+                                    strOldBalance = Double.parseDouble(acc_customer.get_amount());
+                                    strAmount = strOldBalance - strAmount;
+                                    acc_customer.set_amount(strAmount + "");
+                                    long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{Globals.strContact_Code}, database);
+                                }
+                            }
+                            catch (Exception e){
+
                             }
                         }
 
@@ -926,30 +1083,43 @@ String liccustomerid;
                     } catch (Exception ex) {
                         locCode = "";
                     }
-
-                    String strDis = Globals.Inv_Discount + "";
+                    String strDis="";
+                    strDis = Globals.Inv_Discount + "";
 
                     if (strDis.equals("")) {
                         strDis = "0";
                     }
 
                     objOrder = Orders.getOrders(getApplicationContext(), database, " WHERE order_code = '" + strOrderNo + "'");
+                    if(opr.equals("Add")) {
+                        objOrder = new Orders(getApplicationContext(), orderId, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, "0",
+                                "0", Globals.TotalItem + "", Globals.TotalQty + "",
+                                Globals.Sub_Total + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
+                                changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description + "", Globals.strTable_Code, Globals.Inv_Delivery_Date,null);
+                    }
+                    else{
+                        objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), Globals.strContact_Code,
+                                "0", Globals.TotalItem + "", Globals.TotalQty + "",
+                                Globals.Sub_Total + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
+                                changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description + "", Globals.strTable_Code, Globals.Inv_Delivery_Date,null);
+                    }
 
 
-                    objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(), liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, objOrder.get_order_date(), "0",
-                            "0", Globals.TotalItem + "", Globals.TotalQty + "",
-                            Globals.Sub_Total + "", Globals.Inv_Tax + "", strDis, Globals.Net_Amount + "", tenderAmountStr + "",
-                            changeStr + "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, Globals.Inv_Description + "", Globals.strTable_Code, Globals.Inv_Delivery_Date);
 
                     long l = objOrder.updateOrders("order_code=? And order_id=?", new String[]{strOrderNo, objOrder.get_order_id()}, database);
                     if (l > 0) {
                         strFlag = "1";
+                        double finalDis = 0d;
                         long e = Order_Detail.delete_order_detail(getApplicationContext(), "order_detail", "order_code =?", new String[]{strOrderNo}, database);
                         for (int count = 0; count < myCart.size(); count++) {
+                            try{
                             ShoppingCart mCart = myCart.get(count);
+                            Double cartsales_price = Double.parseDouble(mCart.get_Sales_Price());
+                            Double discountedvalue = Globals.DiscountPer;
+                             finalDis = cartsales_price * (discountedvalue / 100.0);
                             objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
-                                    mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
+                                    mCart.get_Quantity(), "0", String.valueOf(finalDis), mCart.get_Line_Total(), "0","false",mCart.getUnitId(),mCart.getBeforeTaxPrice());
 
                             long o = objOrderDetail.insertOrder_Detail(database);
 
@@ -958,6 +1128,10 @@ String liccustomerid;
                             } else {
 
                             }
+                        }
+                        catch(Exception e1){
+
+                        }
                         }
 
                         long e1 = Order_Tax.delete_Order_Tax(getApplicationContext(), "order_tax", " order_code =? ", new String[]{strOrderNo}, database);
@@ -1000,11 +1174,14 @@ String liccustomerid;
                         int count = 1;
                         for (int i = 0; i < Globals.splitPsyMd.size(); i++) {
 
-
-                            long e5 = Order_Payment.delete_order_payment(getApplicationContext(), "order_payment", " order_code =? ", new String[]{strOrderNo}, database);
-                            objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
-                                    Globals.splitPsyMd.get(i).getPayment_Type(), "", "", "", "", "", "");
-
+                            if (Globals.splitPsyMd.get(i).getPayment_Type().equals("6")) {
+                                objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
+                                        Globals.splitPsyMd.get(i).getPayment_Type(), "", "", Globals.CardNo, "", "", "");
+                            } else {
+                              //  long e5 = Order_Payment.delete_order_payment(getApplicationContext(), "order_payment", " order_code =? ", new String[]{strOrderNo}, database);
+                                objOrderPayment = new Order_Payment(getApplicationContext(), null, liccustomerid, strOrderNo, count + "", Globals.splitPsyMd.get(i).getAmount(),
+                                        Globals.splitPsyMd.get(i).getPayment_Type(), "", "", "", "", "", "");
+                            }
                             long op = objOrderPayment.insertOrder_Payment(database);
                             if (op > 0) {
                                 strFlag = "1";
@@ -1052,16 +1229,29 @@ String liccustomerid;
                 database.setTransactionSuccessful();
                 database.endTransaction();
 
-                performPDFExport();
-//                try {
-//                    displayTilte = lite_pos_registration.getCompany_Name();
-//                    call_customer_disply_title(displayTilte);
-//                } catch (Exception ex) {
-//                }
+                try {
+                    performPDFExport();
+                }
+                catch(Exception e){}
+                try {
+                    if (Globals.objLPR.getShort_companyname().equals("") || Globals.objLPR.getShort_companyname().equals("null") || Globals.objLPR.getShort_companyname().length() == 0 || Globals.objLPR.getShort_companyname().isEmpty()) {
+                        displayTilte = Globals.objLPR.getCompany_Name();
+                    }
+                    else{
+                        displayTilte=Globals.objLPR.getShort_companyname();
+                    }
+                   // displayTilte = lite_pos_registration.getCompany_Name();
+                    call_customer_disply_title(displayTilte);
+                    call_MN(displayTilte);
+                } catch (Exception ex) {
+                }
                 pDialog.dismiss();
 
                 if (Globals.strContact_Code.equals("")) {
-                    call_remaining_code();
+                    try {
+                        call_remaining_code();
+                    }
+                    catch(Exception e){}
                 } else {
                     if (settings.get_Is_File_Share().equals("true")) {
                         runOnUiThread(new Runnable() {
@@ -1102,7 +1292,12 @@ String liccustomerid;
                             }
                         });
                     } else {
-                        call_remaining_code();
+                        try {
+                            call_remaining_code();
+                        }
+                        catch(Exception e){
+
+                        }
                     }
 
                 }
@@ -1128,7 +1323,7 @@ String liccustomerid;
             email.m.set_to(recipients);
             email.m.set_subject("Confirmation of your Order " + strOrderNo + " Mail");
 //            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + strOrderNo + ".pdf");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "PDF Report" + "/" + strOrderNo + ".pdf");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "PDF Report" + "/" + strOrderNo + ".pdf");
             email.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -1710,8 +1905,11 @@ String liccustomerid;
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
-                    if (result_order.equals("1")) {
+                  //  String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
+        Sendorder_BackgroundAsyncTask order = new Sendorder_BackgroundAsyncTask();
+                    order.execute();
+
+                  //  if (result_order.equals("1")) {
                         if (settings.get_Is_KOT_Print().equals("true")) {
                             if (PrinterType.equals("1")) {
                                 try {
@@ -1890,20 +2088,26 @@ String liccustomerid;
                                         Globals.strContact_Code = "";
                                         Globals.strResvContact_Code = "";
                                         Toast.makeText(PaymentSplitActivity.this, R.string.chkpriset, Toast.LENGTH_SHORT).show();
-                                        if (settings.get_Home_Layout().equals("0")) {
-                                            Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        }else if (settings.get_Home_Layout().equals("2")){
-                                            Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                            startActivity(intent);
-                                            finish();
-                                        } else {
-                                            Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                        if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                            if (settings.get_Home_Layout().equals("0")) {
+                                                Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else if (settings.get_Home_Layout().equals("2")) {
+                                                Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            } else {
+                                                Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                        }
+                                        else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                            Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                             startActivity(intent);
                                             finish();
                                         }
-
                                     }
                                 });
 
@@ -2089,16 +2293,23 @@ String liccustomerid;
                                     Globals.strContact_Code = "";
                                     Globals.strResvContact_Code = "";
 
-                                    if (settings.get_Home_Layout().equals("0")) {
-                                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }else if (settings.get_Home_Layout().equals("2")){
-                                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                    if (Globals.objLPR.getIndustry_Type().equals("1")) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else if (settings.get_Home_Layout().equals("2")) {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+                                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                        Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }
@@ -2106,7 +2317,8 @@ String liccustomerid;
                             });
                         }
 
-                    } else {
+                   // }
+            /*        else {
                         if (settings.get_Is_KOT_Print().equals("true")) {
                             if (PrinterType.equals("1")) {
                                 try {
@@ -2487,7 +2699,7 @@ String liccustomerid;
                             });
                         }
 
-                    }
+                    }*/
                 } else {
                     pDialog.dismiss();
                     if (settings.get_Is_KOT_Print().equals("true")) {
@@ -2667,16 +2879,23 @@ String liccustomerid;
                                     Globals.strContact_Code = "";
                                     Globals.strResvContact_Code = "";
                                     Toast.makeText(PaymentSplitActivity.this, R.string.chkpriset, Toast.LENGTH_SHORT).show();
-                                    if (settings.get_Home_Layout().equals("0")) {
-                                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    }else if (settings.get_Home_Layout().equals("2")){
-                                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                    if (Globals.objLPR.getIndustry_Type().equals("1")) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else if (settings.get_Home_Layout().equals("2")) {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+                                    }
+                                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                        Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                         startActivity(intent);
                                         finish();
                                     }
@@ -2859,17 +3078,24 @@ String liccustomerid;
 
                                 Globals.strContact_Code = "";
                                 Globals.strResvContact_Code = "";
+                                if(Globals.objLPR.getIndustry_Type().equals("1")){
                                 if (settings.get_Home_Layout().equals("0")) {
 
                                     Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
                                     startActivity(intent);
                                     finish();
-                                }else if (settings.get_Home_Layout().equals("2")){
+                                } else if (settings.get_Home_Layout().equals("2")) {
                                     Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
                                     startActivity(intent);
                                     finish();
                                 } else {
                                     Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+                            }
+                                 else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                    Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -3056,16 +3282,23 @@ String liccustomerid;
                                 Globals.strContact_Code = "";
                                 Globals.strResvContact_Code = "";
                                 Toast.makeText(PaymentSplitActivity.this, R.string.chkpriset, Toast.LENGTH_SHORT).show();
-                                if (settings.get_Home_Layout().equals("0")) {
-                                    Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }else if (settings.get_Home_Layout().equals("2")){
-                                    Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    if (settings.get_Home_Layout().equals("0")) {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else if (settings.get_Home_Layout().equals("2")) {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                    Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -3253,16 +3486,24 @@ String liccustomerid;
                             Globals.strOldCrAmt = "0";
                             Globals.strContact_Code = "";
                             Globals.strResvContact_Code = "";
-                            if (settings.get_Home_Layout().equals("0")) {
-                                Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                startActivity(intent);
-                                finish();
-                            }else if (settings.get_Home_Layout().equals("2")){
-                                Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                startActivity(intent);
-                                finish();
-                            } else {
-                                Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                            if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                if (settings.get_Home_Layout().equals("0")) {
+                                    Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else if (settings.get_Home_Layout().equals("2")) {
+                                    Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                    startActivity(intent);
+                                    finish();
+                                } else {
+                                    Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                    startActivity(intent);
+                                    finish();
+                                }
+
+                            }
+                            else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
@@ -3283,9 +3524,10 @@ String liccustomerid;
                     ck_projct_type = "";
                 }
                 if (ck_projct_type.equals("cloud") && settings.get_IsOnline().equals("true")) {
-                    String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
-
-                    if (result_order.equals("1")) {
+                   // String result_order = Orders.sendOnServer(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
+                    Sendorder_BackgroundAsyncTask order = new Sendorder_BackgroundAsyncTask();
+                    order.execute();
+                   //if (result_order.equals("1")) {
                         runOnUiThread(new Runnable() {
                             public void run() {
 
@@ -3451,16 +3693,23 @@ String liccustomerid;
                                 Globals.strContact_Code = "";
                                 Globals.strResvContact_Code = "";
                                 Toast.makeText(PaymentSplitActivity.this, R.string.chkpriset, Toast.LENGTH_SHORT).show();
-                                if (settings.get_Home_Layout().equals("0")) {
-                                    Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                }else if (settings.get_Home_Layout().equals("2")){
-                                    Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                                    startActivity(intent);
-                                    finish();
-                                } else {
-                                    Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    if (settings.get_Home_Layout().equals("0")) {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else if (settings.get_Home_Layout().equals("2")) {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                    Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                                     startActivity(intent);
                                     finish();
                                 }
@@ -3468,7 +3717,8 @@ String liccustomerid;
                             }
                         });
 
-                    } else {
+                    //}
+       /*            else {
                         runOnUiThread(new Runnable() {
                             public void run() {
 
@@ -3649,7 +3899,7 @@ String liccustomerid;
                                 }
                             }
                         });
-                    }
+                    }*/
 
                 } else {
 
@@ -3815,19 +4065,28 @@ String liccustomerid;
                     Globals.strOldCrAmt = "0";
                     Globals.strContact_Code = "";
                     Globals.strResvContact_Code = "";
-                    if (settings.get_Home_Layout().equals("0")) {
-                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
-                        startActivity(intent);
-                        finish();
-                    }else if (settings.get_Home_Layout().equals("2")){
-                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                        startActivity(intent);
-                        finish();
-                    } else {
-                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
-                        startActivity(intent);
-                        finish();
+                    if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                        if (settings.get_Home_Layout().equals("0")) {
+                            Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else if (settings.get_Home_Layout().equals("2")) {
+                            Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                            startActivity(intent);
+                            finish();
+                        } else {
+                            Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                            startActivity(intent);
+                            finish();
+                        }
                     }
+                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                        Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
+                        startActivity(intent);
+                        finish();
+
+                    }
+
                 }
             } else {
 
@@ -3990,18 +4249,26 @@ String liccustomerid;
                 Globals.strOldCrAmt = "0";
                 Globals.strContact_Code = "";
                 Globals.strResvContact_Code = "";
-                if (settings.get_Home_Layout().equals("0")) {
-                    Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        Intent intent = new Intent(PaymentSplitActivity.this, MainActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
+                        startActivity(intent);
+                        finish();
+                    } else {
+                        Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
+                        startActivity(intent);
+                        finish();
+                    }
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(PaymentSplitActivity.this, Retail_IndustryActivity.class);
                     startActivity(intent);
                     finish();
-                }else if (settings.get_Home_Layout().equals("2")){
-                    Intent intent = new Intent(PaymentSplitActivity.this, RetailActivity.class);
-                    startActivity(intent);
-                    finish();
-                } else {
-                    Intent intent = new Intent(PaymentSplitActivity.this, Main2Activity.class);
-                    startActivity(intent);
-                    finish();
+
                 }
                 //Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
             }
@@ -4013,40 +4280,55 @@ String liccustomerid;
 
     private void startWhatsApp() {
         String strContct = "";
-        contact = Contact.getContact(getApplicationContext(), database, db, " where contact_code='" + Globals.strContact_Code + "'");
+        contact = Contact.getContact(getApplicationContext(), database, db, " where is_active ='1' and contact_code='" + Globals.strContact_Code + "'");
         if (contact == null) {
         } else {
-            strContct = contact.get_contact_1();
+            if(Globals.objLPR.getCountry_Id().equals("99")) {
+
+                strContct = "91"+contact.get_contact_1();
+
+            }
+            if(Globals.objLPR.getCountry_Id().equals("114")) {
+
+                strContct = "965"+contact.get_contact_1();
+
+            }
+            if(Globals.objLPR.getCountry_Id().equals("221")) {
+                strContct = "971"+contact.get_contact_1();
+            }
         }
         final File file = new File(Globals.folder + Globals.pdffolder
                 + "/" + objOrder.get_order_code() + ".pdf");
+        // Toast.makeText(getApplicationContext(),file+"",Toast.LENGTH_SHORT).show();
         if (contactExists(getApplicationContext(), strContct)) {
-
             boolean installed = appInstalledOrNot("com.whatsapp");
             if (installed) {
                 //This intent will help you to launch if the package is already installed
                 try {
-                    openWhatsApp(file);
+                    openWhatsApp(file,getApplicationContext(),strContct);
 
                 } catch (Exception e) {
+                    Globals.AppLogWrite("Contact Exception  "+e.getMessage());
+                    /// Toast.makeText(getApplicationContext(),"Exception"+e.getMessage(),Toast.LENGTH_SHORT).show();
                     e.printStackTrace();
                 }
             } else {
                 Toast.makeText(this, "Please Install whatsapp first!", Toast.LENGTH_SHORT).show();
-                finish();
+                call_remaining_code();
             }
 
-        } else {
+        }
+        else {
 
             if (SaveContact()) {
-                Toast.makeText(getBaseContext(), "Contact Saved!", Toast.LENGTH_SHORT).show();
-                finish();
+                Toast.makeText(getBaseContext(), "Contact Saved in Ur PhoneContacts!", Toast.LENGTH_SHORT).show();
+                //  finish();
                 boolean installed = appInstalledOrNot("com.whatsapp");
                 if (installed) {
                     //This intent will help you to launch if the package is already installed
                     try {
                         // String id = "Message +91 9024490780";
-                        openWhatsApp(file);
+                        openWhatsApp(file,getApplicationContext(),strContct);
                     } catch (Exception e) {
                         e.printStackTrace();
                     }
@@ -4057,11 +4339,18 @@ String liccustomerid;
         }
     }
 
-    private void openWhatsApp(File file) {
-        Uri path = Uri.fromFile(file);
+    private void openWhatsApp(File file,Context context,String contactnumbr) {
+        Uri path = FileProvider.getUriForFile(context, "com.org.phomellolitepos.myfileprovider", file);
+        String toNumber = contactnumbr;
+        // contains spaces.
+        toNumber = toNumber.replace("+", "").replace(" ", "");
         Intent pdfOpenintent = new Intent(Intent.ACTION_SEND);
+        pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
         pdfOpenintent.setType("application/pdf");
+        pdfOpenintent.setPackage("com.whatsapp");
+        pdfOpenintent.putExtra("jid", toNumber + "@s.whatsapp.net");
         pdfOpenintent.putExtra(Intent.EXTRA_STREAM, path);
+        // context.startActivity(sendIntent);
         try {
             startActivityForResult(pdfOpenintent, 1);
         } catch (ActivityNotFoundException e) {
@@ -4205,4 +4494,110 @@ String liccustomerid;
             e.printStackTrace();
         }
     }
+
+
+    private void call_customer_disply_title(final String displayTilte) {
+
+        Thread timerThread1 = new Thread() {
+            public void run() {
+                try {
+                    try {
+                        // for (int i = 0; i < Globals.CMD_Images.size(); i++) {
+                        try {
+                            JSONObject json = new JSONObject();
+                            json.put("title", "Welcome");
+                            json.put("content", displayTilte);
+                            String titleContentJsonStr = json.toString();
+                            dsPacket = UPacketFactory.buildShowText(
+                                    DSKernel.getDSDPackageName(), json.toString(), callback);
+                            mDSKernel.sendData(dsPacket);
+                            Globals.AppLogWrite("call_customer_disply_title"+ titleContentJsonStr);
+                            mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, path1, new ISendCallback() {
+                                @Override
+                                public void onSendSuccess(long fileId) {
+                                    showQRCode(fileId);//sending the qr-code image
+                                }
+
+                                public void onSendFail(int i, String s) {
+                                    //failure
+                                }
+
+                                public void onSendProcess(long l, long l1) {
+                                    //sending status
+                                }
+                            });
+                        } catch (Exception ex) {
+                        }
+                        //}
+                    } catch (Exception ex) {
+                    }
+                } finally {
+                }
+            }
+        };
+        timerThread1.start();
+    }
+
+    private void showQRCode(long fileId) {
+
+        try {
+            String json = UPacketFactory.createJson(sunmi.ds.data.DataModel.QRCODE, "");
+            mDSKernel.sendCMD(DSKernel.getDSDPackageName(), json, fileId, null);
+//        showing an image by sending this command
+        } catch (Exception ex) {
+            Toast.makeText(getApplicationContext(), ex.getMessage(), Toast.LENGTH_SHORT).show();
+        }
+
+    }
+    private void call_MN(String companyname) {
+        try {
+            woyouService.sendLCDDoubleString("Welcome to", companyname, null);
+            Globals.AppLogWrite("Call mn"+ Globals.objLPR.getCompany_Name());
+        } catch (Exception ex) {
+        }
+    }
+
+
+    class Sendorder_BackgroundAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        PaymentActivity activity;
+
+        public Sendorder_BackgroundAsyncTask() {
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+
+                Orders order=new Orders(getApplicationContext());
+
+                 order.sendOn_Server(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",liccustomerid,serial_no,android_id,myKey);
+/*
+                if(result_order.equals("1")){
+                    Toast.makeText(activity, "Data Post Successfully", Toast.LENGTH_SHORT).show();
+                }*/
+                //Toast.makeText(getApplicationContext(), "Email sent.", Toast.LENGTH_SHORT).show();
+
+
+//                    activity.displayMessage("Email sent.");
+
+
+                return true;
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //Toast.makeText(getApplicationContext(), "Unexpected error occured.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+//                activity.displayMessage("Unexpected error occured.");
+                return false;
+            }
+        }
+
+    }
+
 }

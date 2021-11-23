@@ -13,27 +13,33 @@
 
     <Button
         android:id="@+id/btn_ob"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:text="@string/Opening_Balance"
         android:background="#403c3c"
         style="@style/AppTheme.HorizontalButton"/>
 
     <Button
         android:id="@+id/btn_expenses"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:text="@string/Expenses"
         android:background="#403c3c"
         style="@style/AppTheme.HorizontalButton"/>
 
     <Button
         android:id="@+id/btn_xz"
-        android:layout_width="120dp"
+        android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
         android:text="@string/X_Z"
         android:background="#403c3c"
         style="@style/AppTheme.HorizontalButton"/>

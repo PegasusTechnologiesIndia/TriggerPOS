@@ -1,5 +1,6 @@
 package org.phomellolitepos;
 
+import android.annotation.SuppressLint;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -10,9 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -28,27 +29,29 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.phomellolitepos.Adapter.UserListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.User;
 
@@ -58,12 +61,13 @@ public class UserListActivity extends AppCompatActivity {
     User user;
     ArrayList<User> arrayList;
     UserListAdapter userListAdapter;
-    Lite_POS_Registration lite_pos_registration;
+   // Lite_POS_Registration lite_pos_registration;
     ProgressDialog pDialog;
     Database db;
     SQLiteDatabase database;
     Settings settings;
 
+    @SuppressLint("RestrictedApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,6 +80,7 @@ public class UserListActivity extends AppCompatActivity {
         database = db.getWritableDatabase();
         settings = Settings.getSettings(getApplicationContext(), database, "");
         edt_toolbar_bussiness_gp_list = (EditText) findViewById(R.id.edt_toolbar_bussiness_gp_list);
+        edt_toolbar_bussiness_gp_list.setMaxLines(1);
         bussiness_group_title = (TextView) findViewById(R.id.bussiness_group_title);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
@@ -107,76 +112,115 @@ public class UserListActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pDialog = new ProgressDialog(UserListActivity.this);
+          /*      pDialog = new ProgressDialog(UserListActivity.this);
                 pDialog.setCancelable(false);
                 pDialog.setMessage(getString(R.string.Wait_msg));
                 pDialog.show();
 
                 Thread timerThread = new Thread() {
-                    public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(UserListActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(UserListActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(UserListActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
+                    public void run() {*/
+                        if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                            if (settings.get_Home_Layout().equals("0")) {
+                                try {
+                                    Globals.cart.clear();
+                                    Globals.order_item_tax.clear();
+                                    Globals.TotalItemPrice = 0;
+                                    Globals.TotalQty = 0;
+                                    Intent intent = new Intent(UserListActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                   // pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else if (settings.get_Home_Layout().equals("2")) {
+                                try {
+                                    Intent intent = new Intent(UserListActivity.this, RetailActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                   // pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else {
+                                try {
+                                    Intent intent = new Intent(UserListActivity.this, Main2Activity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                  //  pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
                             }
                         }
+                        else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                            Intent intent = new Intent(UserListActivity.this, Retail_IndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
+                        else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                            Intent intent = new Intent(UserListActivity.this, PaymentCollection_MainScreen.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
+                        else if(Globals.objLPR.getIndustry_Type().equals("4")){
+                            Intent intent = new Intent(UserListActivity.this, ParkingIndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
 
-                    }
+                /*    }
                 };
-                timerThread.start();
+                timerThread.start();*/
 
             }
         });
         FloatingActionButton fab = (FloatingActionButton) findViewById(R.id.fab);
-        fab.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                String operation = "Add";
-                Intent intent = new Intent(UserListActivity.this, UserActivity.class);
-                intent.putExtra("operation", operation);
-                startActivity(intent);
-                finish();
-            }
-        });
-        //Get bussiness group list here
-        getUserList("");
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            fab.setVisibility(View.VISIBLE);
+            fab.setOnClickListener(new View.OnClickListener() {
+                @Override
+                public void onClick(View view) {
+                    String operation = "Add";
+                    Intent intent = new Intent(UserListActivity.this, UserActivity.class);
+                    intent.putExtra("operation", operation);
+                    startActivity(intent);
+                    finish();
+                }
+            });
+        }
+        else{
+            fab.setVisibility(View.GONE);
+        }
+        try {
+            //Get user list  here
+            getUserList("");
+        }
+        catch(Exception e){}
+
     }
 
     private void getUserList(String strFilter) {
-        arrayList = User.getAllUser(getApplicationContext(), "WHERE is_active = '1' " + strFilter + " Order By lower(name) asc limit "+Globals.ListLimit+"", database, db);
-        ListView category_list = (ListView) findViewById(R.id.bussiness_group_list);
-        if (arrayList.size() > 0) {
-            userListAdapter = new UserListAdapter(UserListActivity.this, arrayList);
-            bussiness_group_title.setVisibility(View.GONE);
-            category_list.setVisibility(View.VISIBLE);
-            category_list.setAdapter(userListAdapter);
-            category_list.setTextFilterEnabled(true);
-            userListAdapter.notifyDataSetChanged();
-        } else {
-            bussiness_group_title.setVisibility(View.VISIBLE);
-            category_list.setVisibility(View.GONE);
+        try {
+            arrayList = User.getAllUser(getApplicationContext(), "WHERE is_active = '1' " + strFilter + " Order By lower(name) asc limit " + Globals.ListLimit + "", database, db);
+            ListView category_list = (ListView) findViewById(R.id.bussiness_group_list);
+            if (arrayList.size() > 0) {
+                userListAdapter = new UserListAdapter(UserListActivity.this, arrayList);
+                bussiness_group_title.setVisibility(View.GONE);
+                category_list.setVisibility(View.VISIBLE);
+                category_list.setAdapter(userListAdapter);
+                category_list.setTextFilterEnabled(true);
+                userListAdapter.notifyDataSetChanged();
+            } else {
+                bussiness_group_title.setVisibility(View.VISIBLE);
+                category_list.setVisibility(View.GONE);
+            }
+        }
+        catch(Exception e){
+
         }
     }
 
@@ -194,6 +238,7 @@ public class UserListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // Search user
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_bussiness_gp_list.getText().toString().trim();
             strFilter = " and ( user_code Like '%" + strFilter + "%'  Or name Like '%" + strFilter + "%' )";
@@ -201,6 +246,8 @@ public class UserListActivity extends AppCompatActivity {
             getUserList(strFilter);
             return true;
         }
+
+        // User Sync and send to server both
         if (id == R.id.action_send) {
             // here dialog will open for cloud operations
             if (isNetworkStatusAvialable(getApplicationContext())) {
@@ -223,49 +270,21 @@ public class UserListActivity extends AppCompatActivity {
                                 new Thread() {
                                     @Override
                                     public void run() {
-                                        send_online_user();
-                                        String suss = getUser();
-                                        pDialog.dismiss();
-                                        switch (suss) {
-                                            case "1":
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        getUserList("");
-                                                        Toast.makeText(getApplicationContext(), "User download!", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-
-                                                break;
-                                            case "2":
-
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        getUserList("");
-                                                        Toast.makeText(getApplicationContext(), "User Updated!", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-
-                                                break;
-
-                                            case "3":
-
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        getUserList("");
-                                                        Toast.makeText(getApplicationContext(), "Server Error!", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-
-                                                break;
-                                            default:
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-
-                                                        Toast.makeText(getApplicationContext(), "User data not found!", Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
-                                                break;
+                                        String suss="";
+                                        try {
+                                            send_online_user();
                                         }
+                                        catch(Exception e){
+
+                                        }
+                                        try {
+                                            get_user_from_server(pDialog);
+
+                                        }
+                                        catch(Exception e){
+
+                                        }
+                                      //  pDialog.dismiss();
 
                                     }
                                 }.start();
@@ -280,8 +299,8 @@ public class UserListActivity extends AppCompatActivity {
                     @Override
                     public void onShow(DialogInterface dialog) {
 
-                        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                        String ck_project_type = lite_pos_registration.getproject_id();
+                      //  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                        String ck_project_type = Globals.objLPR.getproject_id();
 
                         if (ck_project_type.equals("standalone")) {
                             ((AlertDialog) dialog).getButton(
@@ -303,17 +322,17 @@ public class UserListActivity extends AppCompatActivity {
                 pbutton.setTextColor(getResources().getColor(R.color.colorPrimary));
 
             } else {
-                Toast.makeText(getApplicationContext(), "internet Not avialable", Toast.LENGTH_SHORT).show();
+                Toast.makeText(getApplicationContext(), getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
             }
         }
         return super.onOptionsItemSelected(item);
     }
 
 
-    private String getUser() {
+    private String getUser(String serverData) {
         String succ_manu = "0";
         // Call get bussiness group api here
-        String serverData = get_user_from_server();
+
         database.beginTransaction();
         try {
             final JSONObject jsonObject_bp = new JSONObject(serverData);
@@ -372,11 +391,11 @@ public class UserListActivity extends AppCompatActivity {
         return succ_manu;
     }
 
-    private String get_user_from_server() {
+   /* private String get_user_from_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/user");
+                Globals.App_IP_URL + "user");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         try {
@@ -398,6 +417,114 @@ public class UserListActivity extends AppCompatActivity {
         }
         return serverData;
 
+    }*/
+
+    public void get_user_from_server(final ProgressDialog pDialog) {
+
+    /*    pDialog = new ProgressDialog(getApplicationContext());
+        pDialog.setMessage(getString(R.string.Syncdataserver));
+        pDialog.show();*/
+        String server_url = Globals.App_IP_URL + "user";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            String result = getUser(response);
+                            switch (result) {
+                                case "1":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getUserList("");
+                                            Toast.makeText(getApplicationContext(), "User download!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    break;
+                                case "2":
+
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getUserList("");
+                                            Toast.makeText(getApplicationContext(), "User Updated!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    break;
+
+                                case "3":
+
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getUserList("");
+                                            Toast.makeText(getApplicationContext(), "Server Error!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    break;
+                                default:
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+
+                                            Toast.makeText(getApplicationContext(), "User data not found!", Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    break;
+
+                            }
+
+                        } catch (Exception e) {
+                        }
+
+                        pDialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
     private void send_online_user() {
@@ -420,43 +547,67 @@ public class UserListActivity extends AppCompatActivity {
 
     @Override
     public void onBackPressed() {
-        pDialog = new ProgressDialog(UserListActivity.this);
+       /* pDialog = new ProgressDialog(UserListActivity.this);
         pDialog.setCancelable(false);
         pDialog.setMessage(getString(R.string.Wait_msg));
         pDialog.show();
 
         Thread timerThread = new Thread() {
-            public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(UserListActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(UserListActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(UserListActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
+            public void run() {*/
+                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Globals.cart.clear();
+                            Globals.order_item_tax.clear();
+                            Globals.TotalItemPrice = 0;
+                            Globals.TotalQty = 0;
+                            Intent intent = new Intent(UserListActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                           // pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(UserListActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                           // pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(UserListActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                           // pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
                 }
-            }
+                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+
+                    Intent intent = new Intent(UserListActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("3")){
+
+                    Intent intent = new Intent(UserListActivity.this, PaymentCollection_MainScreen.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("4")){
+
+                    Intent intent = new Intent(UserListActivity.this, ParkingIndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+            /*}
         };
-        timerThread.start();
+        timerThread.start();*/
     }
 }

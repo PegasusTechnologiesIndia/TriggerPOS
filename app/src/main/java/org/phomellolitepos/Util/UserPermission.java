@@ -8,6 +8,7 @@ import android.widget.Toast;
 import org.phomellolitepos.ActivateActivity;
 import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.MainActivity;
+import org.phomellolitepos.ParkingIndustryActivity;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.User;
@@ -51,13 +52,20 @@ public class UserPermission {
                 result = arrayList.contains(strTitle);
                 if (result == false) {
                     Toast.makeText(context, "This user don't have permission to access this form", Toast.LENGTH_LONG).show();
-                    if (settings.get_Home_Layout().equals("0")) {
-                        Intent intent = new Intent(context, MainActivity.class);
-                        context.startActivity(intent);
-                    } else {
-                        Intent intent = new Intent(context, Main2Activity.class);
-                        context.startActivity(intent);
-                    }
+                 if(Globals.objLPR.getIndustry_Type().equals("4")){
+                     Intent intent = new Intent(context, ParkingIndustryActivity.class);
+                     context.startActivity(intent);
+                 }
+                 else {
+
+                     if (settings.get_Home_Layout().equals("0")) {
+                         Intent intent = new Intent(context, MainActivity.class);
+                         context.startActivity(intent);
+                     } else {
+                         Intent intent = new Intent(context, Main2Activity.class);
+                         context.startActivity(intent);
+                     }
+                 }
 
                 } else {
                     Intent intent = new Intent(context, cls);

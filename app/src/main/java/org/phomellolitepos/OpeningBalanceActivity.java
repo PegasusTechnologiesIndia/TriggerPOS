@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
@@ -69,9 +69,9 @@ public class OpeningBalanceActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            sleep(100);
                             Intent intent = new Intent(OpeningBalanceActivity.this, ManagerActivity.class);
-                            startActivity(intent);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -120,7 +120,12 @@ public class OpeningBalanceActivity extends AppCompatActivity {
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
 
-        check_pos_balance();
+        try {
+            check_pos_balance();
+        }
+        catch(Exception e){
+
+        }
 
 //        edt_ob.setOnTouchListener(new View.OnTouchListener() {
 //            @Override
@@ -192,10 +197,19 @@ public class OpeningBalanceActivity extends AppCompatActivity {
                 if (pos_balance == null) {
 
                     String code = last_code.getlast_order_code();
-                    String[] strCode = code.split("-");
-                    part2 = strCode[1];
-                    posId = (Integer.parseInt(part2) + 1) + "";
+                    if(!code.equals("0"))
+                        {
+                            String[] strCode = code.split("-");
+                            part2 = strCode[1];
+                            posId = (Integer.parseInt(part2) + 1) + "";
+
                     strPBCode = "PB-" + (Integer.parseInt(part2) + 1);
+                        }
+                        else{
+                        strPBCode = "PB-" + (Integer.parseInt(code) + 1);
+                        }
+
+
                 } else {
                     strPBCode = "PB-" + (Integer.parseInt(pos_balance.get_pos_balance_id()) + 1);
                 }
@@ -205,6 +219,7 @@ public class OpeningBalanceActivity extends AppCompatActivity {
 
         pos_balance = Pos_Balance.getPos_Balance(getApplicationContext(), database, " WHERE z_code ='0' And type ='OB'");
         database.beginTransaction();
+        // Insert Pos Balance
         if (pos_balance == null) {
             pos_balance = new Pos_Balance(getApplicationContext(), posId, strPBCode, Globals.objLPD.getDevice_Code(), "OB", date, op_balance, "opening balance", "0", "1", modified_by, date, "N");
             long l = pos_balance.insertPos_Balance(database);
@@ -212,6 +227,8 @@ public class OpeningBalanceActivity extends AppCompatActivity {
                 succ = "1";
             }
         } else {
+
+            // Update Pos Balance
             pos_balance.set_amount(op_balance);
             long u = pos_balance.updatePos_Balance("pos_balance_code=?", new String[]{pos_balance.get_pos_balance_code()}, database);
             if (u > 0) {
@@ -261,7 +278,9 @@ public class OpeningBalanceActivity extends AppCompatActivity {
         } else {
             opening_amount = Globals.myNumberFormat2Price(Double.parseDouble(pos_balance.get_amount()), decimal_check);
             edt_ob.setText(opening_amount);
+            btn_save.setVisibility(View.GONE);
             edt_ob.selectAll();
+            edt_ob.setEnabled(false);
             InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE);
             imm.toggleSoftInput(InputMethodManager.SHOW_FORCED, 0);
 
@@ -279,10 +298,10 @@ public class OpeningBalanceActivity extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(100);
 
                     Intent intent = new Intent(OpeningBalanceActivity.this, ManagerActivity.class);
-                    startActivity(intent);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     pDialog.dismiss();
                     finish();

@@ -1,0 +1,100 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+
+    android:paddingTop="20dp"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="100dp"
+        card_view:cardCornerRadius="0dp"
+
+        android:layout_marginRight="10dp"
+        card_view:cardElevation="@dimen/_10sdp"
+        card_view:cardMaxElevation="@dimen/_10sdp"
+        card_view:contentPadding="@dimen/_10sdp"
+
+ >
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:weightSum="1"
+    android:orientation="vertical">
+
+  <TextView
+      android:id="@+id/modifiername"
+      android:layout_width="match_parent"
+android:layout_weight=".5"
+      android:textSize="18sp"
+      android:textStyle="bold"
+      android:layout_height="wrap_content"
+      />
+
+    <TextView
+        android:id="@+id/modifiercode"
+        android:layout_width="match_parent"
+        android:layout_weight=".5"
+        android:textSize="18sp"
+        android:layout_marginTop="10dp"
+        android:textStyle="bold"
+        android:layout_height="wrap_content"
+        />
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:visibility="gone"
+    android:orientation="vertical"
+   >
+
+    <TextView
+        android:id="@+id/modifierQty"
+        android:layout_width="wrap_content"
+        android:layout_weight=".4"
+        android:textSize="18sp"
+        android:textStyle="bold"
+        android:layout_marginTop="10dp"
+        android:text="@string/Quantity"
+        android:layout_height="wrap_content"
+        />
+            <LinearLayout
+        android:id="@+id/layout_price"
+                android:visibility="gone"
+        style="@style/AppTheme.PlusMinusLayout"
+                android:layout_weight=".2"
+      >
+
+        <Button
+            android:id="@+id/btn_minus_price"
+            style="@style/AppTheme.PlusMinusButton"
+            android:background="#403c3c"
+            android:text="-" />
+
+        <EditText
+            android:id="@+id/count_price"
+            android:layout_width="145.5dp"
+            android:layout_height="wrap_content"
+            android:background="#FFFFFF"
+            android:inputType="numberDecimal"
+            android:text="0"
+            android:textAlignment="center"
+            android:textCursorDrawable="@drawable/edittext_cursor_color"
+            android:textSize="20sp"
+            android:gravity="center_horizontal" />
+
+        <Button
+            android:id="@+id/btn_plus_price"
+            style="@style/AppTheme.PlusMinusButton"
+            android:layout_alignParentRight="true"
+            android:text="+" />
+
+    </LinearLayout>
+</LinearLayout>
+</LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

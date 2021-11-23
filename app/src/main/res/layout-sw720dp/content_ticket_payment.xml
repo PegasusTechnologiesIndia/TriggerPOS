@@ -1,0 +1,286 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_margin="10dp"
+    android:orientation="vertical"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.TicketSolution.TicketPaymentActivity"
+    tools:showIn="@layout/activity_ticket_payment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Name:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_name"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Time:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_time"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Tax:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_tax"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Price:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_price"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.2"
+            android:text="Customer:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Button
+            android:id="@+id/btn_customer"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.8"
+            android:background="#fb7c3e"
+            android:text="Select Customer"
+            android:textAllCaps="false"
+            android:textColor="#ffffff"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/img_add"
+            android:layout_width="45dp"
+            android:layout_height="45dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="@drawable/search_add"></ImageView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Mobile No:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_mobile"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:text="No of Seat:"
+            android:textSize="18sp"
+            android:layout_weight="0.4"
+            android:textStyle="bold"></TextView>
+
+        <LinearLayout
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6">
+
+
+        <LinearLayout
+        android:id="@+id/layout_qty"
+            style="@style/AppTheme.PlusMinusLayouttc"
+            android:layout_below="@+id/layout_price"
+            android:layout_marginTop="0dp"
+            android:layout_marginLeft="0dp">
+
+            <Button
+                android:id="@+id/btn_minus_qty"
+                style="@style/AppTheme.PlusMinusButtontc"
+                android:layout_alignParentLeft="true"
+                android:background="#403c3c"
+                android:text="-" />
+
+            <EditText
+                android:id="@+id/count_qty"
+                style="@style/AppTheme.PlusMinusEdittexttc"
+                android:inputType="numberDecimal"
+                android:text=""
+                />
+
+            <Button
+                android:id="@+id/btn_plus_qty"
+                style="@style/AppTheme.PlusMinusButtontc"
+                android:layout_alignParentRight="true"
+                android:text="+" />
+
+        </LinearLayout>
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.4"
+            android:text="Total Amount:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/txt_totl_amt"
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.6"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+    </LinearLayout>
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:orientation="horizontal"
+        android:weightSum="1">
+
+        <TextView
+            android:layout_width="0dp"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:layout_weight="0.4"
+            android:text="Payment Method:"
+            android:textSize="16sp"
+            android:textStyle="bold" />
+
+        <Spinner
+            android:id="@+id/spr_payment"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.6"
+            android:foreground="@drawable/border"
+            android:textSize="16sp" />
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_payment"
+        android:layout_width="150dp"
+        android:layout_height="40dp"
+        android:layout_gravity="center"
+        android:layout_marginTop="30dp"
+        android:background="#403c3c"
+        android:text="Pay"
+        android:textAllCaps="false"
+        android:textColor="#ffffff"
+        android:textSize="16sp"
+        android:textStyle="bold" />
+
+</LinearLayout>

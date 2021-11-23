@@ -10,10 +10,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -28,32 +28,19 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.phomellolitepos.Adapter.BussinessGroupListAdapter;
 import org.phomellolitepos.Adapter.PayCollectionListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Manufacture;
 import org.phomellolitepos.database.Pay_Collection;
 import org.phomellolitepos.database.Pay_Collection_Setup;
 import org.phomellolitepos.database.Settings;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 public class PayCollectionListActivity extends AppCompatActivity {
@@ -443,7 +430,8 @@ public class PayCollectionListActivity extends AppCompatActivity {
     private String getPaycollection() {
         String succ_manu = "0";
         database.beginTransaction();
-        String serverData = get_Paycollection_from_server();
+        String serverData ="";
+                //get_Paycollection_from_server();
         try {
 
             final JSONObject jsonObject_manufacture = new JSONObject(serverData);
@@ -492,12 +480,12 @@ public class PayCollectionListActivity extends AppCompatActivity {
         return succ_manu;
     }
 
-    private String get_Paycollection_from_server() {
+   /* private String get_Paycollection_from_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/payment_setup");
+                Globals.App_IP_URL + "/trigger-pos/index.php/api/payment_setup");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         try {
@@ -520,7 +508,7 @@ public class PayCollectionListActivity extends AppCompatActivity {
         return serverData;
 
     }
-
+*/
 
     @Override
     public void onBackPressed() {

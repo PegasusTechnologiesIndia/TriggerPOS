@@ -11,6 +11,7 @@ import android.widget.TextView;
 
 import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.MainActivity;
+import org.phomellolitepos.MainSpinneActivity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Order_Type;
@@ -67,9 +68,9 @@ public class ParentCategoryListAdapter extends BaseAdapter{
             public void onClick(View v) {
                 dialog.dismiss();
                 try {
-                    ((MainActivity) context).call_parent_dialog(resultp.get_item_group_code());
+                    ((MainActivity) context).call_parent_dialog(resultp.get_item_group_code(),resultp.get_item_group_name());
                 }catch (Exception ex){
-                    ((Main2Activity) context).call_parent_dialog(resultp.get_item_group_code());
+                    ((Main2Activity) context).call_parent_dialog(resultp.get_item_group_code(),resultp.get_item_group_name());
                 }
             }
         });

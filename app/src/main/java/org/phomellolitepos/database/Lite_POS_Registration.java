@@ -32,14 +32,19 @@ public class Lite_POS_Registration {
     private String Registration_Code;
     private String Service_code_tariff;
     private String Industry_Type;
-
+    private String Short_companyname;
+    private String Country_Name;
+    private String Zone_Name;
+private String Country_name;
+        private String Zone_name;
 
     private Database db;
     private ContentValues value;
 
     public Lite_POS_Registration(Context context, String Id, String Company_Name,
                                  String Contact_Person, String Mobile_No, String Country_Id, String Zone_Id, String Password,
-                                 String License_No, String Email, String Address, String company_id,String project_id,String Registration_Code,String Service_code_tariff,String Industry_Type) {
+                                 String License_No, String Email, String Address, String company_id,String project_id,String Registration_Code,String Service_code_tariff,String Industry_Type,String shortcompanyname,
+                                 String countryname,String zonename) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -59,7 +64,27 @@ public class Lite_POS_Registration {
         this.setRegistration_Code(Registration_Code);
         this.setService_code_tariff(Service_code_tariff);
         this.setIndustry_Type(Industry_Type);
+        this.setShort_companyname(shortcompanyname);
+        this.setCountry_name(countryname);
+        this.setZone_name(zonename);
+    }
 
+    public String getCountry_name() {
+        return Country_name;
+    }
+
+    public void setCountry_name(String country_name) {
+        Country_name = country_name;
+        value.put("Country_name", Country_name);
+    }
+
+    public String getZone_name() {
+        return Zone_name;
+    }
+
+    public void setZone_name(String zone_name) {
+        Zone_name = zone_name;
+        value.put("Zone_name", Zone_name);
     }
 
     public String getId() {
@@ -69,6 +94,15 @@ public class Lite_POS_Registration {
     public void setId(String id) {
         Id = id;
         value.put("Id", Id);
+    }
+
+    public String getShort_companyname() {
+        return Short_companyname;
+    }
+
+    public void setShort_companyname(String short_companyname) {
+        Short_companyname = short_companyname;
+        value.put("Short_companyname", Short_companyname);
     }
 
     public String getCompany_Name() {
@@ -249,7 +283,7 @@ public class Lite_POS_Registration {
                             cursor.getString(9),cursor.getString(10),
                             cursor.getString(11), cursor.getString(12),
                             cursor.getString(13),
-                            cursor.getString(14));
+                            cursor.getString(14), cursor.getString(15),cursor.getString(16),cursor.getString(17));
                 } while (cursor.moveToNext());
             }
             cursor.close();

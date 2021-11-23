@@ -14,7 +14,7 @@
     tools:showIn="@layout/activity_bussiness_group">
 
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_business_gp_code"
         style="@style/AppTheme.TextInputLayout"
         android:layout_alignParentTop="true"
@@ -26,9 +26,9 @@
             style="@style/AppTheme.EditText"
             android:hint="@string/bussiness_group_code" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_business_gp_name"
         style="@style/AppTheme.TextInputLayout"
         android:layout_below="@+id/edt_layout_business_gp_code"
@@ -40,7 +40,7 @@
             style="@style/AppTheme.EditText"
             android:hint="@string/bussiness_group_name" />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <LinearLayout

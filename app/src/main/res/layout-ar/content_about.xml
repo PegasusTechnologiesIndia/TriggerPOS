@@ -5,7 +5,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.AboutActivity"
     tools:showIn="@layout/activity_about">
 
     <LinearLayout
@@ -31,7 +30,7 @@
         android:id="@+id/pegasus_image"
         android:layout_width="50dp"
         android:layout_height="30dp"
-        android:background="@drawable/logo3"
+        android:background="@drawable/triggerposlogo"
         android:layout_above="@+id/txt_footer"
         android:layout_centerHorizontal="true"
         />
@@ -52,7 +51,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:text="Copyright © 2017 www.PegasusTech.net. All right reserved."
+        android:text="@string/copyright"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
 
@@ -60,7 +59,7 @@
         android:id="@+id/about_image"
         android:layout_width="100dp"
         android:layout_height="60dp"
-        android:background="@drawable/logo3"
+        android:background="@drawable/triggerposlogo"
         android:layout_marginTop="13dp"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true" />

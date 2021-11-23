@@ -1,0 +1,179 @@
+{
+
+    "result": [
+        {
+            "contact_id": "3",
+            "device_code": "LITE_POS",
+            "contact_code": "LITE_POS-C-3",
+            "title": "Mr.",
+            "name": "Jai",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "9874563210",
+            "contact_2": "",
+            "email_1": "",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-25 00:01:50",
+            "gstin": "",
+            "country_id": "114",
+            "zone_id": "1789",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "is_taxable": "1",
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "LITE_POS-C-3",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        },
+        {
+            "contact_id": "4",
+            "device_code": "LITE_POS",
+            "contact_code": "LITE_POS-C-4",
+            "title": "Mr.",
+            "name": "Satish",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "9081809878",
+            "contact_2": "",
+            "email_1": "",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-25 00:02:22",
+            "gstin": "",
+            "country_id": "114",
+            "zone_id": "1789",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "is_taxable": "1",
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "LITE_POS-C-4",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        },
+        {
+            "contact_id": "5",
+            "device_code": "LITE_POS",
+            "contact_code": "LITE_POS-C-5",
+            "title": "Mr.",
+            "name": "Gopi",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "55658484",
+            "contact_2": "",
+            "email_1": "",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-25 00:02:50",
+            "gstin": "",
+            "country_id": "114",
+            "zone_id": "1789",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "is_taxable": "1",
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "LITE_POS-C-5",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        },
+        {
+            "contact_id": "6",
+            "device_code": "3098",
+            "contact_code": "B-CT-1",
+            "title": "",
+            "name": "Jyoti",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "8209494878",
+            "contact_2": "",
+            "email_1": "android2@pegasustech.net",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-31 11:33:30",
+            "gstin": "",
+            "country_id": "114",
+            "zone_id": "1789",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "is_taxable": "1",
+            "business_group_code": "BGC-1",
+            "address_lookup": [
+                {
+                    "address_lookup_id": "7",
+                    "device_code": "3098",
+                    "address_code": "B-CT-1",
+                    "refrence_type": "1",
+                    "refrence_code": "B-CT-1"
+                }
+            ],
+            "address": [
+                {
+                    "address_id": "7",
+                    "device_code": "3098",
+                    "address_code": "B-CT-1",
+                    "address_category_code": "AC-1",
+                    "area_id": "0",
+                    "address": "",
+                    "landmark": "0",
+                    "latitude": "0.000000",
+                    "longitude": "0.000000",
+                    "contact_person": "0",
+                    "contact": "0",
+                    "is_default": "0",
+                    "is_active": "1",
+                    "modified_by": "1",
+                    "modified_date": "2020-07-31 11:33:07"
+                }
+            ],
+            "contact_business_group": [
+                {
+                    "contact_code": "B-CT-1",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        }
+    ]
+}

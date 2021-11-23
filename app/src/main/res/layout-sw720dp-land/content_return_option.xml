@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".ReturnOptionActivity"
+    tools:showIn="@layout/activity_return_option">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:gravity="center"
+        >
+    <Button
+        android:id="@+id/btn_cus_return"
+
+
+        android:text="@string/customer_return"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        style="@style/AppTheme.HorizontalButton_720dp"
+        />
+
+    <Button
+        android:id="@+id/btn_inv_return"
+
+        android:layout_marginTop="50dp"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"
+        android:text="@string/invoice_return"
+        android:layout_below="@+id/btn_cus_return"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        style="@style/AppTheme.HorizontalButton_720dp"
+      />
+    </LinearLayout>
+</RelativeLayout>

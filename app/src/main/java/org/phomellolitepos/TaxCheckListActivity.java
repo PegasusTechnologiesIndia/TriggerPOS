@@ -6,34 +6,28 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.phomellolitepos.Adapter.ContactCheckListAdapter;
 import org.phomellolitepos.Adapter.TaxItemCheckListAdapter;
-import org.phomellolitepos.CheckBoxClass.ContactCheck;
 import org.phomellolitepos.CheckBoxClass.TaxItemCheck;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
-import org.phomellolitepos.database.Item_Supplier;
-import org.phomellolitepos.database.Order_Item_Tax;
 import org.phomellolitepos.database.Tax_Master;
 
-import java.nio.DoubleBuffer;
 import java.util.ArrayList;
 
 public class TaxCheckListActivity extends AppCompatActivity {
@@ -41,7 +35,7 @@ public class TaxCheckListActivity extends AppCompatActivity {
     ListView contact_ck_list;
     TextView txt_title;
     Button btn_finish, btn_delete;
-    String item_code, operation, strPIT, sPrice, strItemTax, strSelectedCategory;
+    String item_code, operation, strPIT, sPrice, strItemTax, strSelectedCategory,strIsModifier;
     Database db;
     Tax_Master tax_master;
     Item_Group_Tax item_group_tax;
@@ -63,6 +57,7 @@ public class TaxCheckListActivity extends AppCompatActivity {
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
 
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         getSupportActionBar().setTitle(R.string.Item_Tax);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         db = new Database(getApplicationContext());
@@ -87,15 +82,13 @@ public class TaxCheckListActivity extends AppCompatActivity {
                     Thread timerThread = new Thread() {
                         public void run() {
                             try {
-                                sleep(1000);
+                                sleep(100);
                                 Intent intent = new Intent(TaxCheckListActivity.this, ItemTaxActivity.class);
 //                                intent.putStringArrayListExtra("item_code", category_code);
                                 startActivity(intent);
                                 pDialog.dismiss();
                                 finish();
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
+
 
                             } catch (InterruptedException e) {
                                 e.printStackTrace();
@@ -109,13 +102,15 @@ public class TaxCheckListActivity extends AppCompatActivity {
                     Thread timerThread = new Thread() {
                         public void run() {
                             try {
-                                sleep(1000);
+                                sleep(100);
 
                                 Intent intent = new Intent(TaxCheckListActivity.this, ItemActivity.class);
                                 intent.putExtra("item_code", item_code);
                                 intent.putExtra("operation", operation);
                                 intent.putExtra("PIT", strPIT);
                                 intent.putExtra("sprice", sPrice);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                                 startActivity(intent);
                                 pDialog.dismiss();
                                 finish();
@@ -141,6 +136,7 @@ public class TaxCheckListActivity extends AppCompatActivity {
         operation = intent.getStringExtra("operation");
         strItemTax = intent.getStringExtra("item_tax");
         strPIT = intent.getStringExtra("PIT");
+        strIsModifier=intent.getStringExtra("modifier");
         sPrice = intent.getStringExtra("sprice");
         if (operation == null) {
             operation = "";
@@ -241,7 +237,8 @@ public class TaxCheckListActivity extends AppCompatActivity {
         });
     }
 
-    private void insert_item_tax() {
+    private void insert_item_tax()
+    {
         String loc;
         try {
             loc = Globals.objLPD.getLocation_Code();
@@ -339,7 +336,37 @@ public class TaxCheckListActivity extends AppCompatActivity {
                             finish();
                         }
                     });
-                } else {
+                }
+                else if(strIsModifier.equals("0")){
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                    Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
+                    if(Globals.objLPR.getIndustry_Type().equals("4")){
+                        Intent intent_category = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                        startActivity(intent_category);
+                        finish();
+                    }
+                            if(Globals.objLPR.getIndustry_Type().equals("2"))
+                            {
+                                Intent intent_category = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                                startActivity(intent_category);
+                                finish();
+                            }
+                    else {
+
+                        Intent intent_category = new Intent(TaxCheckListActivity.this, ModiferCheckListActivity.class);
+                        intent_category.putExtra("item_code", item_code);
+                        intent_category.putExtra("PIT", strPIT);
+                        intent_category.putExtra("sprice", sPrice);
+                        intent_category.putExtra("operation", operation);
+                        intent_category.putExtra("modifier", strIsModifier);
+                        startActivity(intent_category);
+                        finish();
+                    }
+                        }
+                    });
+                }
+                else {
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
@@ -364,7 +391,40 @@ public class TaxCheckListActivity extends AppCompatActivity {
                             finish();
                         }
                     });
-                } else {
+                }
+
+                else if(strIsModifier.equals("0"))
+                {
+                    runOnUiThread(new Runnable() {
+                        public void run() {
+                            Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
+
+                            if(Globals.objLPR.getIndustry_Type().equals("4")){
+                                Intent intent_category = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                                startActivity(intent_category);
+                                finish();
+                            }
+                            if(Globals.objLPR.getIndustry_Type().equals("2"))
+                            {
+                                Intent intent_category = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                                startActivity(intent_category);
+                                finish();
+                            }
+                            else {
+
+                                Intent intent_category = new Intent(TaxCheckListActivity.this, ModiferCheckListActivity.class);
+                                intent_category.putExtra("item_code", item_code);
+                                intent_category.putExtra("PIT", strPIT);
+                                intent_category.putExtra("sprice", sPrice);
+                                intent_category.putExtra("operation", operation);
+                                intent_category.putExtra("modifier", strIsModifier);
+                                startActivity(intent_category);
+                                finish();
+                            }
+                        }
+                    });
+                }
+                else {
                     runOnUiThread(new Runnable() {
                         public void run() {
                             Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
@@ -387,7 +447,41 @@ public class TaxCheckListActivity extends AppCompatActivity {
                         finish();
                     }
                 });
-            } else {
+            }
+            else if(strIsModifier.equals("0"))
+            {
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
+                        if(Globals.objLPR.getIndustry_Type().equals("4"))
+                        {
+                            finish();
+                            Intent intent_category = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                            startActivity(intent_category);
+
+                        }else
+                        if(Globals.objLPR.getIndustry_Type().equals("2"))
+                        {
+                            Intent intent = new Intent(TaxCheckListActivity.this, ItemListActivity.class);
+                            startActivity(intent);
+                            finish();
+                        }
+                        else {
+
+                            Intent intent_category = new Intent(TaxCheckListActivity.this, ModiferCheckListActivity.class);
+                            intent_category.putExtra("item_code", item_code);
+                            intent_category.putExtra("PIT", strPIT);
+                            intent_category.putExtra("sprice", sPrice);
+                            intent_category.putExtra("operation", operation);
+                            intent_category.putExtra("modifier", strIsModifier);
+                            startActivity(intent_category);
+                            finish();
+                        }
+                    }
+                });
+            }
+
+            else {
                 runOnUiThread(new Runnable() {
                     public void run() {
                         Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
@@ -493,9 +587,11 @@ public class TaxCheckListActivity extends AppCompatActivity {
             Thread timerThread = new Thread() {
                 public void run() {
                     try {
-                        sleep(1000);
+                        sleep(100);
 
                         Intent intent = new Intent(TaxCheckListActivity.this, ItemTaxActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
 //                        intent.putStringArrayListExtra("item_code", category_code);
                         startActivity(intent);
                         pDialog.dismiss();
@@ -513,13 +609,15 @@ public class TaxCheckListActivity extends AppCompatActivity {
             Thread timerThread = new Thread() {
                 public void run() {
                     try {
-                        sleep(1000);
+                        sleep(100);
 
                         Intent intent = new Intent(TaxCheckListActivity.this, ItemActivity.class);
                         intent.putExtra("item_code", item_code);
                         intent.putExtra("operation", operation);
                         intent.putExtra("PIT", strPIT);
                         intent.putExtra("sprice", sPrice);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                         startActivity(intent);
                         pDialog.dismiss();
                         finish();

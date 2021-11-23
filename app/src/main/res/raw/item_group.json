@@ -1,0 +1,95 @@
+{
+    "result": [
+        {
+            "item_group_id": "1",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-1",
+            "parent_code": 0,
+            "item_group_name": "BoxMeals",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:05:04",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "2",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-2",
+            "parent_code": 0,
+            "item_group_name": "Burgers",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "3",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-3",
+            "parent_code": 0,
+            "item_group_name": "Chicken",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "4",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-4",
+            "parent_code": 0,
+            "item_group_name": "Snacks",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "5",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-5",
+            "parent_code": 0,
+            "item_group_name": "Beverages",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "6",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-6",
+            "parent_code": 0,
+            "item_group_name": "Deserts",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        },
+        {
+            "item_group_id": "7",
+            "device_code": "TRRIGER_POS",
+            "item_group_code": "TRRIGER_POS-IG-7",
+            "parent_code": 0,
+            "item_group_name": "Kru",
+            "image": "",
+            "printer_ip": "192.168.2.200:9100",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:04:45",
+            "device_id": "3217"
+        }
+    ]
+}

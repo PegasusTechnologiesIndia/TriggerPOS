@@ -1,0 +1,114 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_activate_email"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ActivateEmailActivity"
+    tools:showIn="@layout/activity_activate_email">
+
+    <ImageView
+        android:id="@+id/pegasus_image"
+        android:layout_width="200dp"
+        android:layout_height="120dp"
+        android:layout_marginTop="20dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+
+        android:background="@drawable/triggerposlogo" />
+
+    <TextView
+        android:id="@+id/appname"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pegasus_image"
+        android:gravity="center"
+        android:textColor="@color/black"
+        android:text="@string/app_modelname"></TextView>
+    <TextView
+        android:id="@+id/txt_version"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pegasus_image"
+        android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
+        android:text=""
+        android:textColor="#000000"
+        android:textSize="15sp"
+        android:layout_marginTop="30dp"/>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edt_layout_email"
+
+
+        android:layout_below="@+id/txt_version"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="80dp"
+        style="@style/AppTheme.TextInputLayout"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+        <EditText
+            android:id="@+id/edt_email"
+            android:hint="@string/Email"
+            android:layout_below="@+id/pegasus_image"
+            android:singleLine="true"
+            style="@style/AppTheme.EditText_600dp"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edt_layout_regis"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="30dp"
+        style="@style/AppTheme.TextInputLayout"
+        android:layout_below="@+id/edt_layout_email"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+        <EditText
+            android:id="@+id/edt_regis_code"
+            android:hint="@string/Registration_Code"
+            style="@style/AppTheme.EditText_600dp"
+            android:inputType="number"
+            android:singleLine="true"
+            />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+
+    <Button
+        android:id="@+id/btn_save"
+        android:text="Activate"
+        android:layout_below="@+id/edt_layout_regis"
+        android:layout_marginTop="60dp"
+        android:layout_centerHorizontal="true"
+        android:background="#403c3c"
+        style="@style/AppTheme.Button_600dp"/>
+
+    <TextView
+        android:id="@+id/txv_register"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/registeractivity"
+        android:layout_below="@+id/btn_save"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:textColor="#ff1515"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"></TextView>
+    <TextView
+        android:id="@+id/txv_changeip"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/Changeip"
+        android:layout_below="@+id/txv_register"
+        android:gravity="center"
+        android:layout_marginTop="30dp"
+        android:textColor="@color/black"
+        android:textSize="20sp"
+        android:textStyle="bold|italic"></TextView>
+</RelativeLayout>

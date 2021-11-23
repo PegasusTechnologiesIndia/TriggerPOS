@@ -6,12 +6,14 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ListView;
 import org.phomellolitepos.Adapter.YouTubeListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
+import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Sys_Support;
@@ -35,6 +37,7 @@ public class YouTubeVideoListActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("Youtube Library");
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         list_youtube = (ListView) findViewById(R.id.list_youtube);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
@@ -55,35 +58,53 @@ public class YouTubeVideoListActivity extends AppCompatActivity {
                 pDialog.show();
                 Thread timerThread = new Thread() {
                     public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(YouTubeVideoListActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(YouTubeVideoListActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(YouTubeVideoListActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
+
+                        if(Globals.objLPR.getIndustry_Type().equals("2")){
+                            Intent intent = new Intent(YouTubeVideoListActivity.this, Retail_IndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            startActivity(intent);
+                            finish();
+
+                        }
+                        else if(Globals.objLPR.getIndustry_Type().equals("4")){
+                            Intent intent = new Intent(YouTubeVideoListActivity.this, ParkingIndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+
+                        }
+                        else {
+                            if (settings.get_Home_Layout().equals("0")) {
+                                try {
+                                    Intent intent = new Intent(YouTubeVideoListActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else if (settings.get_Home_Layout().equals("2")) {
+                                try {
+                                    Intent intent = new Intent(YouTubeVideoListActivity.this, RetailActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else {
+                                try {
+                                    Intent intent = new Intent(YouTubeVideoListActivity.this, Main2Activity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
                             }
                         }
-
                     }
                 };
                 timerThread.start();
@@ -117,32 +138,50 @@ public class YouTubeVideoListActivity extends AppCompatActivity {
         pDialog.show();
         Thread timerThread = new Thread() {
             public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(YouTubeVideoListActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(YouTubeVideoListActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(YouTubeVideoListActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
+
+                if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(YouTubeVideoListActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    pDialog.dismiss();
+                    finish();
+                }
+               else if(Globals.objLPR.getIndustry_Type().equals("4")){
+                    Intent intent = new Intent(YouTubeVideoListActivity.this, ParkingIndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    startActivity(intent);
+                    pDialog.dismiss();
+                    finish();
+                }
+                else {
+
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Intent intent = new Intent(YouTubeVideoListActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(YouTubeVideoListActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(YouTubeVideoListActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
                 }
             }

@@ -322,7 +322,8 @@ public class Pay_Collection {
                     row.put("pay_collection_detail", array_payCollectionDetail);
                     result.put(row);
                     sender.put("payment".toLowerCase(), result);
-                    String serverData = send_item_json_on_server(sender.toString());
+                    String serverData = "";
+                            //send_item_json_on_server(sender.toString());
                     final JSONObject collection_jsonObject1 = new JSONObject(serverData);
                     final String strStatus = collection_jsonObject1.getString("status");
                     if (strStatus.equals("true")) {
@@ -354,12 +355,12 @@ public class Pay_Collection {
 
     // database.endTransaction();
 
-    private static String send_item_json_on_server(String JsonString) {
+    /*private static String send_item_json_on_server(String JsonString) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/payment_collection/data");
+                 Globals.App_IP_URL + "payment_collection/data");
 
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", cmpnyId));
@@ -381,6 +382,6 @@ public class Pay_Collection {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
 }

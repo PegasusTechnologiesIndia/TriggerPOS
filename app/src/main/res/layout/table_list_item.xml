@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_columnSpan="2"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="200dp"
+        card_view:cardCornerRadius="0dp"
+        android:layout_marginRight="10dp"
+        card_view:cardElevation="@dimen/_10sdp"
+        card_view:cardMaxElevation="@dimen/_10sdp"
+        card_view:contentPadding="@dimen/_10sdp">
+
+
+        <LinearLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="168dp"
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="30dp"
+                android:layout_gravity="center"
+                android:background="@color/darker_gray"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:id="@+id/tv_tablename"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_weight=".2"
+
+                    android:gravity="center"
+                    android:textColor="@android:color/white" />
+            </LinearLayout>
+
+            <ImageView
+                android:id="@+id/img_table"
+                android:layout_width="wrap_content"
+                android:layout_height="200dp"
+
+                android:layout_centerHorizontal="true"
+                android:layout_gravity="center"
+                android:layout_weight=".8"
+
+                android:padding="5dp" />
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+
+</RelativeLayout>

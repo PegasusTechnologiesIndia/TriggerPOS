@@ -2,7 +2,6 @@ package org.phomellolitepos.Adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.design.widget.BottomNavigationView;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -62,6 +61,7 @@ public class DefaultOrderTypeSettingAdapter extends BaseAdapter{
         txt_order_type_name = (TextView) itemView.findViewById(R.id.txt_order_type_name);
         txt_order_type_id = (TextView) itemView.findViewById(R.id.txt_order_type_id);
         txt_order_type_name.setText(resultp.get_name());
+        Globals.strorderType=resultp.get_name();
         txt_order_type_id.setText(resultp.get_order_type_id());
         
         return itemView;

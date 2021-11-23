@@ -1,0 +1,133 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_data_base"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingTop="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.DataBaseActivity"
+    tools:showIn="@layout/activity_data_base">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical">
+
+        <LinearLayout
+            android:id="@+id/linear_layout1"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:layout_gravity="center"
+            android:orientation="horizontal">
+
+
+            <Button
+                android:id="@+id/btn_database"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+                android:text="@string/BackUp" />
+            <Button
+                android:id="@+id/btn_initialize"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/initialize"
+                />
+            <Button
+                android:id="@+id/btn_database_clear"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:visibility="gone"
+                style="@style/AppTheme.DatabaseButton"
+                android:text="@string/Clear_Transaction" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout3"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_push_order"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+
+                android:text="@string/Pushorders" />
+            <Button
+                android:id="@+id/btn_import_table"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/ImportTable" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout6"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="40dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal">
+
+            <Button
+                android:id="@+id/btn_push_orderparking"
+                style="@style/AppTheme.DatabaseButton"
+                android:layout_marginRight="10dp"
+                android:visibility="gone"
+                android:layout_marginLeft="10dp"
+                android:text="@string/Pushorders" />
+
+
+            <Button
+                android:id="@+id/btn_all_sync"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/all_data_sync"
+                />
+
+            <Button
+                android:id="@+id/btn_import_bank"
+                style="@style/AppTheme.DatabaseButton_600dp_land"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/import_bank"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linear_layout7"
+            android:layout_width="match_parent"
+            android:layout_height="100dp"
+            android:layout_marginTop="20dp"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:visibility="visible">
+
+
+            <Button
+                android:id="@+id/btn_payment"
+                style="@style/AppTheme.DatabaseButton"
+                android:visibility="gone"
+                android:text="@string/get_payment_methods"
+                />
+
+        </LinearLayout>
+
+
+    </LinearLayout>
+
+
+</ScrollView>

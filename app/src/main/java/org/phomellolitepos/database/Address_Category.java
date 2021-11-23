@@ -103,6 +103,32 @@ public class Address_Category {
         value.put("modified_by", modified_by);
     }
 
+
+    public void add_addrresscategory(ArrayList<Address_Category> list,SQLiteDatabase db) {
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Address_Category address_category : list) {
+
+
+                values.put("address_category_id", address_category.get_address_category_id());
+                values.put("device_code", address_category.get_device_code());
+                values.put("address_category_code", address_category.get_address_category_code());
+                values.put("name", address_category.get_name());
+                values.put("is_active", address_category.get_is_active());
+                values.put("modified_by", address_category.get_modified_by());
+                values.put("modified_date", address_category.get_modified_date());
+                values.put("is_push", address_category.get_is_push());
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
+
     public String get_modified_date() {
         return modified_date;
     }

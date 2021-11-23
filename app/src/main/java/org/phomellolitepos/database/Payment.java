@@ -107,7 +107,30 @@ public class Payment {
         this.is_push = is_push;
         value.put("is_push", is_push);
     }
+    public void add_payment(ArrayList<Payment> list,SQLiteDatabase db) {
 
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Payment payment : list) {
+
+
+                values.put("payment_id", payment.get_payment_id());
+                values.put("parent_id", payment.get_parent_id());
+                values.put("payment_name", payment.get_payment_name());
+                values.put("is_active", payment.get_is_active());
+                values.put("modified_by", payment.get_modified_by());
+                values.put("modified_date", payment.get_modified_date());
+                values.put("is_push", payment.get_is_push());
+
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
 
     public long insertPayment(SQLiteDatabase database) {
         long insert = 0;
@@ -160,6 +183,28 @@ public class Payment {
         // db.close();
         return master;
     }
+
+    public static Payment getPayment_maxid(Context context, String WhereClasue) {
+        String Query = "Select (max(payment_id)+1) FROM " + tableName + " " + WhereClasue;
+        Payment master = null;
+        Database db = new Database(context);
+        SQLiteDatabase database = db.getReadableDatabase();
+        Cursor cursor = database.rawQuery(Query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                master = new Payment(context, cursor.getString(0),
+                        cursor.getString(1), cursor.getString(2),
+                        cursor.getString(3), cursor.getString(4),
+                        cursor.getString(5),
+                        cursor.getString(6));
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+        //database.close();
+        // db.close();
+        return master;
+    }
+
 
     // Here Changed in function  need to update all classes
     public static ArrayList<Payment> getAllPayment(Context context, String WhereClasue) {

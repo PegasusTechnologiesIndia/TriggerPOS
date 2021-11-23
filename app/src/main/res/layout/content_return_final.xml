@@ -169,14 +169,41 @@
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_below="@+id/btn_add"
+        android:layout_above="@+id/main_linear"
         android:layout_alignParentStart="true"
         android:layout_alignParentLeft="true"
         android:layout_marginStart="-3dp"
         android:layout_marginLeft="-3dp"
         android:layout_marginTop="13dp"
-        android:layout_marginBottom="55dp"></ListView>
+        android:scrollbars="vertical"
+        android:fastScrollEnabled="true"
+       ></ListView>
+    <LinearLayout
 
-    <android.support.design.widget.BottomNavigationView
+        android:id="@+id/main_linear"
+        style="@style/AppTheme.FooterButtonLayout"
+        android:layout_marginBottom="2dp"
+
+        android:layout_above="@+id/retail_bottom_navigation">
+
+        <Button
+            android:id="@+id/btn_Qty"
+
+            style="@style/AppTheme.FooterButton"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+        <Button
+            android:id="@+id/btn_Item_Price"
+            style="@style/AppTheme.FooterButton"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="#403c3c"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+    </LinearLayout>
+    <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/retail_bottom_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

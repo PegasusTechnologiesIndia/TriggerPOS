@@ -28,7 +28,9 @@ public class Order_Detail {
     private String discount;
     private String line_total;
     private String is_combo;
-
+    private String is_KitchenPrintFlag;
+    private String unit_id;
+    private String BeforeTaxPrice;
 
     private Database db;
     private ContentValues value;
@@ -37,7 +39,8 @@ public class Order_Detail {
                         String order_code, String reference_order_code, String item_code,
                         String sr_no, String cost_price,
                         String sale_price, String tax, String quantity,
-                        String return_quantity, String discount,String line_total,String is_combo) {
+                        String return_quantity, String discount,String line_total,String is_combo,String kitchenPrintFlag,String unitid,
+                        String beforeTaxPrice) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -56,8 +59,38 @@ public class Order_Detail {
         this.set_discount(discount);
         this.set_line_total(line_total);
         this.set_is_combo(is_combo);
+        this.setIs_KitchenPrintFlag(kitchenPrintFlag);
+        this.setUnit_id(unitid);
+        this.setBeforeTaxPrice(beforeTaxPrice);
     }
 
+
+    public String getBeforeTaxPrice() {
+        return BeforeTaxPrice;
+    }
+
+    public void setBeforeTaxPrice(String beforeTaxPrice) {
+        BeforeTaxPrice = beforeTaxPrice;
+        value.put("BeforeTaxPrice", beforeTaxPrice);
+    }
+
+    public String getUnit_id() {
+        return unit_id;
+    }
+
+    public void setUnit_id(String unit_id) {
+        this.unit_id = unit_id;
+        value.put("unit_id", unit_id);
+    }
+
+    public String getIs_KitchenPrintFlag() {
+        return is_KitchenPrintFlag;
+    }
+
+    public void setIs_KitchenPrintFlag(String is_KitchenPrintFlag) {
+        this.is_KitchenPrintFlag = is_KitchenPrintFlag;
+        value.put("is_KitchenPrintFlag", is_KitchenPrintFlag);
+    }
 
     public String get_order_detail_id() {
         return order_detail_id;
@@ -227,7 +260,8 @@ public class Order_Detail {
                         cursor.getString(9), cursor.getString(10),
                         cursor.getString(11),
                         cursor.getString(12),
-                        cursor.getString(13));
+                        cursor.getString(13),cursor.getString(14),cursor.getString(15),
+                        cursor.getString(16));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -252,7 +286,8 @@ public class Order_Detail {
                         cursor.getString(9), cursor.getString(10),
                         cursor.getString(11),
                         cursor.getString(12),
-                        cursor.getString(13)
+                        cursor.getString(13),cursor.getString(14),cursor.getString(15),
+                        cursor.getString(16)
                        );
             } while (cursor.moveToNext());
         }
@@ -279,7 +314,7 @@ public class Order_Detail {
                         cursor.getString(9), cursor.getString(10),
                         cursor.getString(11),
                         cursor.getString(12),
-                        cursor.getString(13));
+                        cursor.getString(13),cursor.getString(14),cursor.getString(15),cursor.getString(16));
                 list.add(master);
             } while (cursor.moveToNext());
         }
@@ -303,6 +338,7 @@ public class Order_Detail {
             if (cursor.moveToFirst()) {
                 do {
                     master = cursor.getString(0);
+
                 } while (cursor.moveToNext());
             }
             cursor.close();

@@ -16,9 +16,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -47,7 +47,6 @@ import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
-import org.phomellolitepos.Adapter.ItemAdapter;
 import org.phomellolitepos.Adapter.StockAdjestmentListAdapter;
 import org.phomellolitepos.Mail.GMailSender;
 import org.phomellolitepos.Util.DateUtill;
@@ -55,12 +54,8 @@ import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.HeaderAndFooter;
 import org.phomellolitepos.Util.Watermark;
-import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
-import org.phomellolitepos.database.Orders;
-import org.phomellolitepos.database.Return_detail;
-import org.phomellolitepos.database.Returns;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Stock_Adjustment_Detail;
 import org.phomellolitepos.database.Stock_Adjustment_Header;
@@ -306,7 +301,7 @@ public class StockAdjestmentListActivity extends AppCompatActivity {
             email.m.setBody(strReportName);
             email.m.set_to(recipients);
             email.m.set_subject(Globals.objLPD.getDevice_Name() + ":" + strReportName + "");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
 
 
             email.execute();

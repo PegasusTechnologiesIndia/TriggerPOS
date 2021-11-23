@@ -1,0 +1,336 @@
+{
+
+    "result": [
+        {
+            "tax_id": "1",
+            "location_id": "0",
+            "tax_name": "Tax1_2.5",
+            "tax_type": "P",
+            "rate": "2.500000",
+            "comment": "",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2021-02-22 05:38:21",
+            "item_group_tax": [
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2001"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2002"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2003"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2004"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2005"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2006"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2007"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2008"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2009"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2010"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2011"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2012"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2013"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2014"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2015"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2016"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2017"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2018"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2019"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2020"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2021"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2022"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2023"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "1",
+                    "item_group_code": "2024"
+                }
+            ],
+            "order_type_tax": [],
+            "tax_detail": [],
+            "tax_group": [
+                {
+                    "id": "1",
+                    "tax_master_id": "1",
+                    "tax_id": "1"
+                }
+            ]
+        },
+        {
+            "tax_id": "2",
+            "location_id": "0",
+            "tax_name": "Tax2_2.5",
+            "tax_type": "P",
+            "rate": "2.500000",
+            "comment": "",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2021-02-22 05:40:49",
+            "item_group_tax": [
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2001"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2002"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2003"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2004"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2005"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2006"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2007"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2008"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2009"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2010"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2011"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2012"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2013"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2014"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2015"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2016"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2017"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2018"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2019"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2020"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2021"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2022"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2023"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "2",
+                    "item_group_code": "2024"
+                }
+            ],
+            "order_type_tax": [],
+            "tax_detail": [],
+            "tax_group": [
+                {
+                    "id": "2",
+                    "tax_master_id": "2",
+                    "tax_id": "2"
+                }
+            ]
+        },
+        {
+            "tax_id": "3",
+            "location_id": "0",
+            "tax_name": "Vat-5",
+            "tax_type": "F",
+            "rate": "5.000000",
+            "comment": "",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2021-02-22 05:41:36",
+            "item_group_tax": [],
+            "order_type_tax": [
+                {
+                    "location_id": "0",
+                    "tax_id": "3",
+                    "order_type_id": "1"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "3",
+                    "order_type_id": "2"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "3",
+                    "order_type_id": "3"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "3",
+                    "order_type_id": "4"
+                },
+                {
+                    "location_id": "0",
+                    "tax_id": "3",
+                    "order_type_id": "5"
+                }
+            ],
+            "tax_detail": [],
+            "tax_group": [
+                {
+                    "id": "3",
+                    "tax_master_id": "3",
+                    "tax_id": "3"
+                }
+            ]
+        }
+    ]
+}

@@ -23,13 +23,13 @@ import javax.mail.Folder;
 
 
 public class Database extends SQLiteOpenHelper {
-    private static final int version = 76;
+    public  final static int version = 84;
 
     public static final String DATABASE_FILE_PATH = Environment.getExternalStorageDirectory() +
-            File.separator + "Phomello-LitePOS";
+            File.separator + "Phomello-TriggerPOS";
 
     Cursor cursor;
-    public final static String DBNAME = "LitePOS.db";
+    public final static String DBNAME = "triggerpos.db";
     Context context;
 
     SQLiteDatabase database;
@@ -92,8 +92,8 @@ public class Database extends SQLiteOpenHelper {
                         arg0.execSQL("INSERT into Sys_Sycntime (table_name,datetime) values ('business_group','1990-01-01')");
                         arg0.execSQL("INSERT into Sys_Sycntime (table_name,datetime) values ('tax','1990-01-01')");
                         arg0.execSQL("INSERT into Sys_Sycntime (table_name,datetime) values ('manufacture','1990-01-01')");
-                        arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Phomello LitePOS Manager','https://www.youtube.com/watch?v=GlAFWX3VSzQ')");
-                        arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Business Group Creation and Modification','https://www.youtube.com/watch?v=StBQ2n3_Lyo')");
+                        arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Phomello TriggerPOS Manager','https://www.youtube.com/watch?v=GlAFWX3VSzQ')");
+                      //  arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Business Group Creation and Modification','https://www.youtube.com/watch?v=StBQ2n3_Lyo')");
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Contact creation and Modification','https://www.youtube.com/watch?v=wTSi5-lG7Og')");
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Tax Creation and Modification','https://www.youtube.com/watch?v=CWziXsSHPPI')");
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Creating an order','https://www.youtube.com/watch?v=dPkSh8lVLIQ')");
@@ -101,7 +101,7 @@ public class Database extends SQLiteOpenHelper {
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Profile and License Update','https://www.youtube.com/watch?v=T7OV10m8SZI')");
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Receipt reprint cancel and save','https://www.youtube.com/watch?v=hGoYroSyoxc')");
                         arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Reports Details','https://www.youtube.com/watch?v=LtoXWqUsVws')");
-                        arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Phomello LitePOS Settings','https://www.youtube.com/watch?v=i3wAQ-K7vTA')");
+                        arg0.execSQL("INSERT into Sys_Support (name,vedio_url) values ('Phomello TriggerPOS Settings','https://www.youtube.com/watch?v=i3wAQ-K7vTA')");
                         arg0.execSQL("ALTER TABLE item ADD COLUMN item_image NVARCHAR(50)");
 
                     } catch (Exception e) {
@@ -618,6 +618,146 @@ public class Database extends SQLiteOpenHelper {
                         arg0.execSQL("ALTER TABLE last_code ADD COLUMN last_order_return_code NVARCHAR(50)");
                         arg0.execSQL("UPDATE last_code SET last_order_return_code = ''");
                     } catch (Exception ex) {}
+
+                case 77:
+                    try {
+                        arg0.execSQL("ALTER TABLE Lite_POS_Registration ADD COLUMN Short_companyname TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Registration SET Short_companyname = ''");
+
+                        arg0.execSQL("ALTER TABLE Lite_POS_Device ADD COLUMN Location_name TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Device SET Location_name = ''");
+
+                    } catch (Exception ex) {}
+
+                    // 21/01/2021
+                case 78:
+                    try{
+                        arg0.execSQL("ALTER TABLE tables ADD COLUMN Zone_id NVARCHAR(50)");
+                        arg0.execSQL("UPDATE tables SET Zone_id = ''");
+                        arg0.execSQL("ALTER TABLE tables ADD COLUMN Zone_name NVARCHAR(50)");
+                        arg0.execSQL("UPDATE tables SET Zone_name = ''");
+                        arg0.execSQL("ALTER TABLE tables ADD COLUMN is_active BOOLEAN");
+                        arg0.execSQL("UPDATE tables SET is_active = ''");
+                        arg0.execSQL("ALTER TABLE tables ADD COLUMN modified_by INTEGER(11)");
+                        arg0.execSQL("UPDATE tables SET modified_by = ''");
+                        arg0.execSQL("ALTER TABLE tables ADD COLUMN modified_date DATETIME");
+                        arg0.execSQL("UPDATE tables SET modified_date = ''");
+                    }
+                    catch (Exception e){
+
+                    }
+                case 79:
+                    try{
+                        arg0.execSQL("ALTER TABLE Lite_POS_Registration ADD COLUMN Country_name TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Registration SET Country_name = ''");
+                        arg0.execSQL("ALTER TABLE Lite_POS_Registration ADD COLUMN Zone_name TEXT");
+                        arg0.execSQL("UPDATE Lite_POS_Registration SET Zone_name = ''");
+                    }
+                    catch (Exception e){
+
+                    }
+                case 80:
+                    try{
+                        arg0.execSQL("ALTER TABLE Receipe_Modifier ADD COLUMN id INTEGER PRIMARY KEY AUTOINCREMENT");
+                        arg0.execSQL("UPDATE Receipe_Modifier SET id = ''");
+                        arg0.execSQL("ALTER TABLE Receipe_Modifier ADD COLUMN item_code NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Receipe_Modifier SET item_code = ''");
+                        arg0.execSQL("ALTER TABLE Receipe_Modifier ADD COLUMN modifier_code NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Receipe_Modifier SET modifier_code = ''");
+                    }
+                    catch (Exception e){
+
+                    }
+                case 81:
+                    try{
+                        arg0.execSQL("ALTER TABLE Time_Calculation ADD COLUMN tcalid INTEGER PRIMARY KEY AUTOINCREMENT");
+                        arg0.execSQL("UPDATE Time_Calculation SET tcalid = ''");
+                        arg0.execSQL("ALTER TABLE Time_Calculation ADD COLUMN range1 INTEGER(11)");
+                        arg0.execSQL("UPDATE Time_Calculation SET range1 = ''");
+                        arg0.execSQL("ALTER TABLE Time_Calculation ADD COLUMN range2 INTEGER(11)");
+                        arg0.execSQL("UPDATE Time_Calculation SET range2 = ''");
+                        arg0.execSQL("ALTER TABLE Time_Calculation ADD COLUMN actualvalue INTEGER(11)");
+                        arg0.execSQL("UPDATE Time_Calculation SET actualvalue = ''");
+                    }
+                    catch (Exception e){
+
+                    }
+                case 82:
+                    try {
+
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_singleWindow BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_singleWindow = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_FillAdvanceAmnt BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_FillAdvanceAmnt = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_ValidateVehNo BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_ValidateVehNo = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_ValidateMobNo BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_ValidateMobNo = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_NFC BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_NFC = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN Is_KitchenPrint BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET Is_KitchenPrint = ''");
+
+                        arg0.execSQL("ALTER TABLE item_group ADD COLUMN categoryIp TEXT");
+                        arg0.execSQL("UPDATE item_group SET categoryIp = ''");
+
+                        arg0.execSQL("ALTER TABLE orders ADD COLUMN RFID NVARCHAR(50)");
+                        arg0.execSQL("UPDATE orders SET RFID = ''");
+
+                        arg0.execSQL("ALTER TABLE order_detail ADD COLUMN is_KitchenPrintFlag BOOLEAN");
+                        arg0.execSQL("UPDATE order_detail SET is_KitchenPrintFlag = ''");
+
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN vId INTEGER");
+                        arg0.execSQL("UPDATE Void SET vId = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN order_no NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Void SET order_no = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN device_code NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Void SET device_code = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN item_code NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Void SET item_code = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN is_modifier BOOLEAN");
+                        arg0.execSQL("UPDATE Void SET is_modifier = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN Qty NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Void SET Qty = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN vDateTime DATETIME");
+                        arg0.execSQL("UPDATE Void SET vDateTime = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN print_flag BOOLEAN");
+                        arg0.execSQL("UPDATE Void SET print_flag = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN is_post BOOLEAN");
+                        arg0.execSQL("UPDATE Void SET is_post = ''");
+                        arg0.execSQL("ALTER TABLE Void ADD COLUMN user_id NVARCHAR(50)");
+                        arg0.execSQL("UPDATE Void SET user_id = ''");
+
+
+
+
+
+                    } catch (Exception ex) {}
+
+                case 83:
+                    try{
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN is_saveprint BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET is_saveprint = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN is_cloudprint BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET is_cloudprint = ''");
+
+                    }
+                    catch (Exception e){
+
+                    }
+
+                case 84:
+                    try{
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN is_deliverydate BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET is_deliverydate = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN is_selfpos_KOT BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET is_selfpos_KOT = ''");
+                        arg0.execSQL("ALTER TABLE Settings ADD COLUMN is_paymentmethod BOOLEAN");
+                        arg0.execSQL("UPDATE Settings SET is_paymentmethod = ''");
+                    }
+                    catch (Exception e){
+
+                    }
             }
         }
     }
@@ -626,7 +766,7 @@ public class Database extends SQLiteOpenHelper {
         File backupDB = null;
         String backupDBPath = null;
         try {
-            File sd = new File(Environment.getExternalStorageDirectory(), "LitePOS/Backup");
+            File sd = new File(Environment.getExternalStorageDirectory(), "TriggerPOS/Backup");
 
             if (!sd.exists()) {
                 sd.mkdirs();
@@ -634,7 +774,7 @@ public class Database extends SQLiteOpenHelper {
             FileChannel source = null;
             FileChannel destination = null;
             String currentDBPath = Database.DATABASE_FILE_PATH + File.separator + Database.DBNAME;
-            backupDBPath = "LitePOS" + DateUtill.currentDatebackup() + ".db";
+            backupDBPath = "TriggerPOS" + DateUtill.currentDatebackup() + ".db";
             File currentDB = new File(currentDBPath);
             backupDB = new File(sd, backupDBPath);
             try {
@@ -741,7 +881,7 @@ public class Database extends SQLiteOpenHelper {
     public static void deleteDatabase(Context context) {
         try {
             String currentDBPath = "/data/" + "litepos.pegasus_andorid_1.example.com.litepos"
-                    + "/databases/" + "LitePOS.db";
+                    + "/databases/" + "TriggerPOS.db";
             File data = Environment.getDataDirectory();
             File currentDB = new File(data, currentDBPath);
             if (!currentDB.exists()) {

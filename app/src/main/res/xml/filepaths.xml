@@ -2,6 +2,7 @@
 <paths xmlns:android="http://schemas.android.com/apk/res/android">
     <external-path name="external_download" path="Download"/>
     <external-path name="share" path="/" />
+    <external-path name="external_files" path="."/>
 </paths>
 
 

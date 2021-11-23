@@ -32,7 +32,7 @@
             android:visibility="gone">
         </Spinner>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_contact_code"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -42,11 +42,12 @@
                 android:id="@+id/edt_contact_code"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/contact_code_auto_generated"
+                android:gravity="right"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_contact_name"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -55,11 +56,13 @@
                 android:id="@+id/edt_contact_name"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/ContactName"
+                android:gravity="right"
+
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_contact_1"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -68,13 +71,15 @@
                 android:id="@+id/edt_contact_1"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Contact_1"
+                android:gravity="right"
+
                 android:inputType="phone"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_email_1"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -83,9 +88,11 @@
                 android:id="@+id/edt_email_1"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Email_1"
+                android:gravity="right"
+
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -166,7 +173,7 @@
                 style="@style/AppTheme.Spinner"/>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_gstn"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -177,10 +184,10 @@
                     android:hint="@string/gstn"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_dob"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -191,9 +198,9 @@
                     android:hint="@string/DOB"
                     />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_company_name"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -204,10 +211,10 @@
                     android:hint="@string/CompanyName"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_contact_2"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -219,10 +226,10 @@
                     android:inputType="phone"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_email_2"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -233,10 +240,10 @@
                     android:hint="@string/Email_2"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_description"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -247,10 +254,10 @@
                     android:hint="@string/Description"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_address"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -261,7 +268,7 @@
                     android:hint="@string/Address"
                     android:selectAllOnFocus="true"/>
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
         </LinearLayout>
 
 

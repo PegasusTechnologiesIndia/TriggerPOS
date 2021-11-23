@@ -95,7 +95,9 @@ public class Tax_Detail {
         if (cursor.moveToFirst()) {
             do {
                 master = new Table(context, cursor.getString(0),
-                        cursor.getString(1), cursor.getString(2));
+                        cursor.getString(1), cursor.getString(2), cursor.getString(3)
+                        , cursor.getString(4), cursor.getString(5), cursor.getString(6)
+                        , cursor.getString(7));
             } while (cursor.moveToNext());
         }
         cursor.close();

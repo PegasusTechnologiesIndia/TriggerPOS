@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -64,6 +64,7 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
             @Override
             public void onClick(View v) {
                 Intent intent = new Intent(UserParmissionCheckListActivity.this, UserActivity.class);
+                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                 intent.putExtra("code", user_code);
                 intent.putExtra("operation", operation);
                 startActivity(intent);
@@ -80,108 +81,80 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
 
         user = User.getUser(getApplicationContext(), "WHERE is_active = '1' and user_code ='" + user_code + "'", database);
         if (operation.equals("Add")) {
+
             fill_user_permission();
         } else if (operation.equals("Edit")) {
             fill_user_permission();
             arrayList.clear();
             list.clear();
-            if (Globals.Industry_Type.equals("3")) {
-                arrayList.add("Contact");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Database");
-                arrayList.add("Update_License");
-                arrayList.add("Profile");
-                arrayList.add("Payment Collection");
-                arrayList.add("User");
-            } else if (Globals.Industry_Type.equals("1")) {
-                arrayList.add("Item Category");
-                arrayList.add("Item");
-                arrayList.add("Contact");
-                arrayList.add("Order");
-                arrayList.add("Manager");
-                arrayList.add("Reservation");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Tax");
-                arrayList.add("Unit");
-                arrayList.add("Database");
-                arrayList.add("Update License");
-                arrayList.add("Profile");
-                arrayList.add("Returns");
-                arrayList.add("Accounts");
-                arrayList.add("User");
-            } else if (Globals.Industry_Type.equals("2")) {
-                arrayList.add("Item Category");
-                arrayList.add("Item");
-                arrayList.add("Contact");
-                arrayList.add("Order");
-                arrayList.add("Manager");
-                arrayList.add("Reservation");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Tax");
-                arrayList.add("Unit");
-                arrayList.add("Database");
-                arrayList.add("Update License");
-                arrayList.add("Profile");
-                arrayList.add("Returns");
-                arrayList.add("Accounts");
-                arrayList.add("User");
-            } else if (Globals.Industry_Type.equals("5")) {
-                arrayList.add("Item Category");
-                arrayList.add("Item");
-                arrayList.add("Contact");
-                arrayList.add("Order");
-                arrayList.add("Manager");
-                arrayList.add("Reservation");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Tax");
-                arrayList.add("Unit");
-                arrayList.add("Database");
-                arrayList.add("Update License");
-                arrayList.add("Profile");
-                arrayList.add("Accounts");
-                arrayList.add("Returns");
-                arrayList.add("User");
-            } else if (Globals.Industry_Type.equals("4")) {
-                arrayList.add("Item Category");
-                arrayList.add("Item");
-                arrayList.add("Contact");
-                arrayList.add("Order");
-                arrayList.add("Manager");
-                arrayList.add("Reservation");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Tax");
-                arrayList.add("Unit");
-                arrayList.add("Database");
-                arrayList.add("Update License");
-                arrayList.add("Profile");
-                arrayList.add("Returns");
-                arrayList.add("Accounts");
-                arrayList.add("User");
-            } else if (Globals.Industry_Type.equals("6")) {
+        if (Globals.Industry_Type.equals("1")) {
+             if(Globals.objLPR.getproject_id().equals("cloud")) {
+                 arrayList.add("Item Category");
+                 arrayList.add("Item");
+                 arrayList.add("Contact");
+                 arrayList.add("Order");
+                 arrayList.add("Manager");
+                 //arrayList.add("Reservation");
+                 arrayList.add("Settings");
+                 arrayList.add("Report");
+                 arrayList.add("Tax");
+                 arrayList.add("Unit");
+                 arrayList.add("Database");
+                 arrayList.add("Update License");
+                 arrayList.add("Profile");
+                 arrayList.add("Return");
+                 arrayList.add("Accounts");
+                 arrayList.add("User");
+             }
 
-                arrayList.add("Contact");
-                arrayList.add("Settings");
-                arrayList.add("Report");
-                arrayList.add("Tax");
-                arrayList.add("Database");
-                arrayList.add("Update License");
-                arrayList.add("Profile");
-                arrayList.add("About");
-                arrayList.add("Support");
-                arrayList.add("Class/Category");
-                arrayList.add("Area/Destination");
-                arrayList.add("Setup");
-                arrayList.add("Ticketing");
-                arrayList.add("Manufacture");
-                arrayList.add("User");
+             else {
+                 arrayList.add("Item Category");
+                 arrayList.add("Item");
+                 arrayList.add("Contact");
+                 arrayList.add("Order");
+                 arrayList.add("Manager");
+                 arrayList.add("Payment");
+                 //arrayList.add("Reservation");
+                 arrayList.add("Settings");
+                 arrayList.add("Report");
+                 arrayList.add("Tax");
+                 arrayList.add("Unit");
+                 arrayList.add("Database");
+                 arrayList.add("Update License");
+                 arrayList.add("Profile");
+                 arrayList.add("User");
+             }
             }
 
+        else if(Globals.objLPR.getIndustry_Type().equals("3")){
 
+
+            arrayList.add("Settings");
+            arrayList.add("Manager");
+            arrayList.add("Database");
+            arrayList.add("Update License");
+            arrayList.add("Profile");
+            arrayList.add("Report");
+            arrayList.add("User");
+            arrayList.add("Contact");
+            arrayList.add("Accounts");
+
+        }
+
+        else if(Globals.objLPR.getIndustry_Type().equals("4")){
+
+            arrayList.add("Item");
+            arrayList.add("Contact");
+            arrayList.add("Order");
+            arrayList.add("Settings");
+            arrayList.add("Report");
+            arrayList.add("Tax");
+            arrayList.add("Database");
+            arrayList.add("Update License");
+            arrayList.add("Profile");
+            arrayList.add("User");
+
+        }
             if (user.get_app_user_permission().equals("")) {
             } else {
                 String[] str = user.get_app_user_permission().split(",");
@@ -199,7 +172,9 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
 
                         String name = arrayList_cbg.get(h);
                         b.setName(arrayList.get(i));
-                        b.setSelected(false);
+
+                            b.setSelected(true);
+
                         if (name.equals(arrayList.get(i))) {
                             found = true;
                             b.setSelected(true);
@@ -221,7 +196,10 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
                     bg_ck_list.setVisibility(View.GONE);
                 }
             } else {
-                fill_user_permission();
+                try {
+                    fill_user_permission();
+                }
+                catch(Exception e){}
             }
 
 
@@ -239,7 +217,12 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             sleep(1000);
-                            insert_user_permision();
+                            try {
+                                insert_user_permision();
+                            }
+                            catch(Exception e){
+
+                            }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
                         } finally {
@@ -286,6 +269,10 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
                 pDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        Globals.cart.clear();
+                        Globals.order_item_tax.clear();
+                        Globals.TotalItemPrice = 0;
+                        Globals.TotalQty = 0;
                         Intent intent_category = new Intent(UserParmissionCheckListActivity.this, UserListActivity.class);
                         startActivity(intent_category);
                         finish();
@@ -297,6 +284,10 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
                 pDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        Globals.cart.clear();
+                        Globals.order_item_tax.clear();
+                        Globals.TotalItemPrice = 0;
+                        Globals.TotalQty = 0;
                         Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
                         Intent intent_category = new Intent(UserParmissionCheckListActivity.this, UserListActivity.class);
                         startActivity(intent_category);
@@ -308,6 +299,11 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
             pDialog.dismiss();
             runOnUiThread(new Runnable() {
                 public void run() {
+
+                    Globals.cart.clear();
+                    Globals.order_item_tax.clear();
+                    Globals.TotalItemPrice = 0;
+                    Globals.TotalQty = 0;
                     Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
                     Intent intent_category = new Intent(UserParmissionCheckListActivity.this, UserListActivity.class);
                     startActivity(intent_category);
@@ -322,101 +318,42 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
     private void fill_user_permission() {
         arrayList.clear();
 
-        if (Globals.Industry_Type.equals("3")) {
-            arrayList.add("Contact");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Database");
-            arrayList.add("Update_License");
-            arrayList.add("Profile");
-            arrayList.add("Payment Collection");
-            arrayList.add("User");
-        } else if (Globals.Industry_Type.equals("1")) {
-            arrayList.add("Item Category");
-            arrayList.add("Item");
-            arrayList.add("Contact");
-            arrayList.add("Order");
-            arrayList.add("Manager");
-            arrayList.add("Reservation");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Tax");
-            arrayList.add("Unit");
-            arrayList.add("Database");
-            arrayList.add("Update License");
-            arrayList.add("Profile");
-            arrayList.add("Returns");
-            arrayList.add("Accounts");
-            arrayList.add("User");
-        } else if (Globals.Industry_Type.equals("2")) {
-            arrayList.add("Item Category");
-            arrayList.add("Item");
-            arrayList.add("Contact");
-            arrayList.add("Order");
-            arrayList.add("Manager");
-            arrayList.add("Reservation");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Tax");
-            arrayList.add("Unit");
-            arrayList.add("Database");
-            arrayList.add("Update License");
-            arrayList.add("Profile");
-            arrayList.add("Returns");
-            arrayList.add("Accounts");
-            arrayList.add("User");
-        } else if (Globals.Industry_Type.equals("5")) {
-            arrayList.add("Item Category");
-            arrayList.add("Item");
-            arrayList.add("Contact");
-            arrayList.add("Order");
-            arrayList.add("Manager");
-            arrayList.add("Reservation");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Tax");
-            arrayList.add("Unit");
-            arrayList.add("Database");
-            arrayList.add("Update License");
-            arrayList.add("Profile");
-            arrayList.add("Search Order");
-            arrayList.add("Accounts");
-            arrayList.add("Returns");
-            arrayList.add("User");
-        } else if (Globals.Industry_Type.equals("4")) {
-            arrayList.add("Item Category");
-            arrayList.add("Item");
-            arrayList.add("Contact");
-            arrayList.add("Order");
-            arrayList.add("Manager");
-            arrayList.add("Reservation");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Tax");
-            arrayList.add("Unit");
-            arrayList.add("Database");
-            arrayList.add("Update License");
-            arrayList.add("Profile");
-            arrayList.add("Returns");
-            arrayList.add("Accounts");
-            arrayList.add("User");
-        } else if (Globals.Industry_Type.equals("6")) {
-            arrayList.add("Contact");
-            arrayList.add("Settings");
-            arrayList.add("Report");
-            arrayList.add("Tax");
-            arrayList.add("Database");
-            arrayList.add("Update License");
-            arrayList.add("Profile");
-            arrayList.add("About");
-            arrayList.add("Support");
-            arrayList.add("Class/Category");
-            arrayList.add("Area/Destination");
-            arrayList.add("Setup");
-            arrayList.add("Ticketing");
-            arrayList.add("Manufacture");
-            arrayList.add("User");
-        }
+// if (Globals.Industry_Type.equals("1")) {
+     if(Globals.objLPR.getproject_id().equals("cloud")) {
+         arrayList.add("Item Category");
+         arrayList.add("Item");
+         arrayList.add("Contact");
+         arrayList.add("Order");
+         arrayList.add("Manager");
+         //arrayList.add("Reservation");
+         arrayList.add("Settings");
+         arrayList.add("Report");
+         arrayList.add("Tax");
+         arrayList.add("Unit");
+         arrayList.add("Database");
+         arrayList.add("Update License");
+         arrayList.add("Profile");
+         arrayList.add("Return");
+         arrayList.add("Accounts");
+         arrayList.add("User");
+     }
+     else{
+         arrayList.add("Item Category");
+         arrayList.add("Item");
+         arrayList.add("Contact");
+         arrayList.add("Order");
+         arrayList.add("Manager");
+         //arrayList.add("Reservation");
+         arrayList.add("Settings");
+         arrayList.add("Report");
+         arrayList.add("Tax");
+         arrayList.add("Unit");
+         arrayList.add("Database");
+         arrayList.add("Update License");
+         arrayList.add("Profile");
+         arrayList.add("User");
+     }
+       // }
 
         for (int i = 0; i < arrayList.size(); i++) {
             UserPermissionCheck b = new UserPermissionCheck();
@@ -494,6 +431,7 @@ public class UserParmissionCheckListActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
         Intent intent = new Intent(UserParmissionCheckListActivity.this, UserActivity.class);
+        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
         intent.putExtra("code", user_code);
         intent.putExtra("operation", operation);
         startActivity(intent);

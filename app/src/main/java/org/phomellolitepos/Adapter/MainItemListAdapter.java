@@ -1,3 +1,4 @@
+
 package org.phomellolitepos.Adapter;
 
 import android.app.Activity;
@@ -10,12 +11,12 @@ import android.content.ServiceConnection;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Color;
+import android.media.MediaPlayer;
 import android.os.Environment;
 import android.os.IBinder;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ActivityOptionsCompat;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
+import androidx.core.app.ActivityCompat;
+import androidx.core.app.ActivityOptionsCompat;
+
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -39,20 +40,25 @@ import org.json.JSONObject;
 import java.util.ArrayList;
 
 import org.phomellolitepos.ChangePriceActivity;
+import org.phomellolitepos.ItemModifierSelection;
 import org.phomellolitepos.MainActivity;
 
+
+import org.phomellolitepos.ModiferCheckListActivity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
+import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Item_Tax;
-import org.phomellolitepos.database.Orders;
+import org.phomellolitepos.database.ReceipeModifier;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.ShoppingCart;
+import org.phomellolitepos.database.Sys_Tax_Group;
 import org.phomellolitepos.database.Sys_Tax_Type;
 import org.phomellolitepos.database.Tax_Detail;
 import org.phomellolitepos.database.Tax_Master;
@@ -73,7 +79,7 @@ import woyou.aidlservice.jiuiv5.IWoyouService;
 
 import static org.phomellolitepos.R.id.imageView;
 
-public class MainItemListAdapter extends BaseAdapter implements Animation.AnimationListener {
+public class MainItemListAdapter extends BaseAdapter  {
     Context context;
     LayoutInflater inflater;
     ArrayList<Item> data;
@@ -83,14 +89,21 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
     String decimal_check, qty_decimal_check;
     ListView listView;
     ArrayList<Item_Group_Tax> item_group_taxArrayList;
+    Sys_Tax_Group sys_tax_group;
+    Item_Group item_group;
+    ArrayList<ReceipeModifier> receipemodifierlist;
     SQLiteDatabase database;
     Database db;
+    MediaPlayer mp;
+
     //Customer display variables
     DSKernel mDSKernel;
     DataPacket dsPacket;
     JSONObject jsonObject;
     Settings settings;
+    String  SRNO;
     String item_group_code;
+    Contact contact;
     int count = 0;
     String path1 = Environment.getExternalStorageDirectory().getPath() + "/small.png";
     String path2 = Environment.getExternalStorageDirectory().getPath() + "/big.png";
@@ -165,6 +178,7 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
         @Override
         public void onReceiveData(DSData data) {
             if (dsPacket == null) return;
+            Globals.AppLogWrite("Connection  dsPacket" + dsPacket);
             long taskId = dsPacket.getData().taskId;
             Gson gson = new Gson();
             Data data4Json = gson.fromJson(data.data, Data.class);
@@ -206,21 +220,27 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
 
         @Override
         public void onServiceDisconnected(ComponentName name) {
-
+            Globals.AppLogWrite("Woyoservice disconnection");
             woyouService = null;
         }
 
         @Override
         public void onServiceConnected(ComponentName name, IBinder service) {
             woyouService = IWoyouService.Stub.asInterface(service);
+            Globals.AppLogWrite("Woyoservice connection");
         }
     };
 
     @Override
     public View getView(final int i, final View view, ViewGroup viewGroup) {
         TextView txt_item_name, txt_item_code, txt_price;
-        db = new Database(context);
-        database = db.getWritableDatabase();
+        try {
+            db = new Database(context);
+            database = db.getWritableDatabase();
+        }
+        catch(Exception e){
+
+        }
         inflater = (LayoutInflater) context.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         final View itemView = inflater.inflate(R.layout.main_list_item, viewGroup, false);
         final Item resultp = data.get(i);
@@ -228,10 +248,14 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
         txt_item_code = (TextView) itemView.findViewById(R.id.txt_item_code);
         txt_price = (TextView) itemView.findViewById(R.id.txt_price);
         settings = Settings.getSettings(context, database, "");
+       //
+        mp = MediaPlayer.create(context, R.raw.beep1);
         if (settings.get_Is_Customer_Display().equals("true")) {
             mDSKernel = DSKernel.newInstance();
             mDSKernel.checkConnection();
+            Globals.AppLogWrite(mDSKernel.toString());
             mDSKernel.init(context, mConnCallback);
+
             mDSKernel.addReceiveCallback(mReceiveCallback);
         }
         Intent intent1 = new Intent();
@@ -261,33 +285,60 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
             progressBar.setVisibility(View.GONE);
         } catch (Exception ex) {
         }
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View arg0) {
                 progressBar.setVisibility(View.VISIBLE);
+
+                contact = Contact.getContact(context, database, db, " where is_active ='1' and contact_code='" + Globals.strContact_Code + "'");
+
                 if (settings.get_Is_Stock_Manager().equals("false")) {
                     try {
+
+                        mp.start();
+                        //  data = Item.getAllItem(activity, "WHERE  is_active = '1'  and is_modifier ='1'", database);
                         Item resultp = data.get(i);
+
+
+                        //Double TotalSlesPrice_CustomerDisplay;
                         item_group_code = resultp.get_item_code();
                         item_group_taxArrayList = Item_Group_Tax.getAllItem_Group_Tax(context, "Where item_group_code = '" + item_group_code + "'", database, db);
+
+
                         String item_code = resultp.get_item_code();
+                        item_group = Item_Group.getItem_Group(context, database, db, "WHERE item_group_code ='" + resultp.get_item_group_code() + "'");
+
                         item_location = Item_Location.getItem_Location(context, "Where item_code = '" + item_code + "'", database);
                         final ArrayList<ShoppingCart> myCart = Globals.cart;
                         int count = 0;
-                        boolean bFound = false;
+                        Double spricewdtax=0d;
+                         boolean bFound = false;
                         while (count < myCart.size()) {
 //                            setAnimation(itemView, i);
                             if (resultp.get_item_code().equals(myCart.get(count).get_Item_Code())) {
                                 bFound = true;
                                 myCart.get(count).set_Quantity(((Double.parseDouble(myCart.get(count).get_Quantity())) + 1) + "");
-                                myCart.get(count).set_Line_Total((Double.parseDouble(myCart.get(count).get_Quantity()) * (Double.parseDouble(myCart.get(count).get_Sales_Price()) + Double.parseDouble(myCart.get(count).get_Tax_Price()))) + "");
-                                Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * (Double.parseDouble(myCart.get(count).get_Sales_Price()) + Double.parseDouble(myCart.get(count).get_Tax_Price())));
+                                myCart.get(count).set_Line_Total((Double.parseDouble(myCart.get(count).get_Quantity()) * (Double.parseDouble(myCart.get(count).get_Sales_Price()))) + "");
+                                if(resultp.get_is_inclusive_tax().equals("0")) {
+                                    Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * (Double.parseDouble(myCart.get(count).get_Sales_Price())));
+                                }
+                                else{
+                                    spricewdtax= Double.parseDouble(sale_priceStr)- Double.parseDouble(myCart.get(count).get_Tax_Price());
+                                    Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * spricewdtax) + Double.parseDouble(myCart.get(count).get_Tax_Price());
+
+                                }
+
+                                //Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * (Double.parseDouble(myCart.get(count).get_Sales_Price()) + Double.parseDouble(myCart.get(count).get_Tax_Price())));
                                 Globals.TotalQty = Globals.TotalQty + 1;
                                 Globals.TotalItemCost = Globals.TotalItemCost + (1 * Double.parseDouble(myCart.get(count).get_Cost_Price()));
                                 String salePrice;
                                 salePrice = Globals.myNumberFormat2Price(Double.parseDouble(myCart.get(count).get_Sales_Price()), decimal_check);
                                 if (settings.get_Is_Customer_Display().equals("true")) {
+                                    Globals.AppLogWrite("Customer display true on ItemClick");
                                     if (settings.get_CustomerDisplay().equals("1")) {
+                                        Globals.AppLogWrite("Customer display true on 1");
+
                                         try {
                                             Globals.CMDItemPrice = Double.parseDouble(salePrice);
                                             Globals.CMDItemName = myCart.get(count).get_Item_Name();
@@ -296,8 +347,11 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             jsonObject.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                             dsPacket = UPacketFactory.buildShowText(
                                                     DSKernel.getDSDPackageName(), jsonObject.toString(), callback1);
+                                            Globals.AppLogWrite("json result" + jsonObject.toString());
                                             mDSKernel.sendData(dsPacket);
                                         } catch (Exception ex) {
+                                            Toast.makeText(context, "Stock this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
                                             progressBar.setVisibility(View.GONE);
                                         }
                                         try {
@@ -310,6 +364,10 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             json.put("title", myCart.get(count).get_Item_Name() + " " + salePrice);
                                             json.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                             String titleContentJsonStr = json.toString();
+                                            dsPacket = UPacketFactory.buildShowText(
+                                                    DSKernel.getDSDPackageName(), json.toString(), callback1);
+                                            Globals.AppLogWrite(" Else json result" + json.toString());
+                                            mDSKernel.sendData(dsPacket);
                                             mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, path1, new ISendCallback() {
                                                 @Override
                                                 public void onSendSuccess(long fileId) {
@@ -325,6 +383,8 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                                 }
                                             });
                                         } catch (Exception ex) {
+                                            Toast.makeText(context, " Stock Else this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
                                             progressBar.setVisibility(View.GONE);
                                         }
                                         try {
@@ -348,30 +408,456 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                 sale_priceStr = item_location.get_selling_price();
                                 cost_priceStr = item_location.get_cost_price();
                             }
-                            calculateTax();
-                            ArrayList<String> taxIdFinalAarry = calculateTax();
+                          //  calculateTax();
+                         //   ArrayList<String> taxIdFinalAarry = calculateTax();
                             Double iTax = 0d;
+                            Double iTaxTl = 0d;
                             Double iTaxTotal = 0d;
-                            if (taxIdFinalAarry.size() > 0) {
-                                for (int i = 0; i < taxIdFinalAarry.size(); i++) {
-                                    iTax = 0d;
-                                    Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + taxIdFinalAarry.get(i) + "'", database, db);
-                                    Double iPrice = Double.parseDouble(item_location.get_selling_price());
-                                    if (tax_master.get_tax_type().equals("P")) {
-                                        iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                            Double sprice=0d;
+                            double beforeTaxPrice =  0;
+                      //      if (taxIdFinalAarry.size() > 0) {
+
+                             if (Globals.objLPR.getCountry_Id().equals("114")) {
+                                 if (contact != null) {
+                                     if (contact.getIs_taxable().equals("1")) {
+
+                                             for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+                                                 if (Globals.Taxwith_state.equals("1")  || Globals.Taxwith_state.equals("")) {
+                                                     iTax = 0d;
+                                                     Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                     if (tax_master != null) {
+                                                         Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                                         if (tax_master.get_tax_type().equals("P")) {
+                                                             iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                                                         } else {
+                                                             iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                         }
+
+                                                         Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                                         Globals.order_item_tax.add(order_item_tax);
+                                                         iTaxTotal += iTax;
+                                                         Globals.Taxwith_state = "1";
+                                                     }
+                                                 }
+                                                 else{
+                      Toast.makeText(context,"You cannot add item. your contact have different Tax Group",Toast.LENGTH_LONG).show();
+                                                 }
+                                             }
+
+                                         if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                             spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                             sprice = spricewdtax + iTaxTotal;
+
+                                         } else {
+                                             sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                         }
+                                             //sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+
+
+
+                                     } else {
+                                         sprice = Double.parseDouble(sale_priceStr);
+                                         Globals.NoTax="0";
+                                     }
+                                 } else if (contact == null) {
+                                     for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+                                         iTax = 0d;
+                                         Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                         if (tax_master != null) {
+                                             Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                             if (tax_master.get_tax_type().equals("P")) {
+                                                 iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                                             } else {
+                                                 iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                             }
+
+                                             Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                             Globals.order_item_tax.add(order_item_tax);
+                                             iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTax, decimal_check));
+
+                                             Globals.Taxwith_state = "1";
+                                         }
+                                     }
+                                     if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                         spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                         sprice = spricewdtax + iTaxTotal;
+
+                                     } else {
+                                         sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                     }
+                                 }
+
+                             }
+                            else if (Globals.objLPR.getCountry_Id().equals("221")) {
+                                if (contact != null) {
+                                    if (contact.getIs_taxable().equals("1")) {
+                                        iTax = 0d;
+                                        Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                        for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+
+
+                                            Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                            if(tax_master!=null) {
+
+                                                if (tax_master.get_tax_type().equals("P")) {
+                                                    iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                                                } else {
+                                                    iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                }
+
+                                                Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                                Globals.order_item_tax.add(order_item_tax);
+                                                iTaxTotal += iTax;
+                                                Globals.Taxwith_state = "1";
+                                            }
+                                        }
+
+                                        if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                            spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                            sprice = spricewdtax + iTaxTotal;
+
+                                        } else {
+                                            sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                        }
+
+
+
                                     } else {
-                                        iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                        sprice = Double.parseDouble(sale_priceStr);
+                                        Globals.NoTax="0";
                                     }
-                                    iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTax, decimal_check));
-                                    Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), taxIdFinalAarry.get(i), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                } else if (contact == null) {
+
+                                    iTax = 0d;
+                                    Tax_Master tax_master=null;
+                                    Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                    for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+                                         tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                        if(tax_master!=null) {
+
+                                            if (tax_master.get_tax_type().equals("P")) {
+                                                iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()));
+                                            } else {
+                                                iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                            }
+
+
+                                        }
+                                    }
+
+                                    if (tax_master.get_tax_type().equals("P")) {
+                                        iTaxTl = (iPrice * iTax) / (100 + iTax);
+                                    }
+                                    else{
+                                        iTaxTl=iTax;
+                                    }
+                                    Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
                                     Globals.order_item_tax.add(order_item_tax);
+                                    iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                    Globals.Taxwith_state = "1";
+                                    if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                        spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                        sprice = spricewdtax + iTaxTotal;
+
+                                    } else {
+                                        sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                    }
                                 }
+
                             }
-                            Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                            ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "");
+                             else if(Globals.objLPR.getCountry_Id().equals("99")) {
+                                 if (contact != null) {
+                                     if (contact.getIs_taxable().equals("1")) {
+                                         if (contact.get_zone_id().equals(Globals.objLPR.getZone_Id())) {
+                                             Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                             Tax_Master tax_master = null;
+                                             iTax = 0d;
+                                             double   iPTax = 0;
+                                             for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+
+                                                 sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                 if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
+
+                                                  tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                     if (tax_master != null) {
+
+
+                                                         if (tax_master.get_tax_type().equals("P")) {
+                                                             iPTax = iPTax + ( Double.parseDouble(tax_master.get_rate())/100);
+                                                         } else {
+                                                             iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                         }
+
+
+
+                                                     }
+                                                 }
+                                                   
+
+                                             }
+                                             if(iPTax > 0 )
+                                             {
+
+                                                 beforeTaxPrice = ( (iPrice ) -  (iTax ))/(iPTax+ 1);
+
+                                             }
+                                             else
+                                             {
+                                                 beforeTaxPrice = ( (iPrice ) -  (iTax ));
+                                             }
+
+
+
+
+                                             // Now you get item price before tax
+                                             for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                                 sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                 if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
+
+
+                                                     tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                     if (tax_master != null) {
+
+                                                         if (tax_master.get_tax_type().equals("P")) {
+                                                             iTaxTl = beforeTaxPrice *  ( Double.parseDouble(tax_master.get_rate())/100);
+
+                                                             Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                             Globals.order_item_tax.add(order_item_tax);
+                                                             iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                                         } else {
+                                                             iTaxTl =  Double.parseDouble(tax_master.get_rate());
+
+                                                             Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                             Globals.order_item_tax.add(order_item_tax);
+                                                             iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                                         }
+
+
+                                                     }
+                                                 }
+
+                                             }
+
+                                             Globals.Taxwith_state = "1";
+                                             if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                                 spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                                 sprice = spricewdtax + iTaxTotal;
+
+                                             } else {
+                                                 sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                             }
+                                         } else if (!contact.get_zone_id().equals(Globals.objLPR.getZone_Id())) {
+                                             Tax_Master tax_master=null;
+                                             iTax = 0d;
+                                             double   iPTax = 0;
+                                             Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                             for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+
+
+                                                 sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                 if (sys_tax_group.get_tax_master_id().equals("3")) {
+
+                                                      tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                     if (tax_master != null) {
+
+                                                         if (tax_master.get_tax_type().equals("P")) {
+                                                             iPTax = iPTax + ( Double.parseDouble(tax_master.get_rate())/100);
+                                                         } else {
+                                                             iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                         }
+
+                                                     }
+                                                 }
+
+                                             }
+
+                                             if(iPTax > 0 )
+                                             {
+
+                                                 beforeTaxPrice = ( (iPrice ) -  (iTax ))/(iPTax+ 1);
+
+                                             }
+                                             else
+                                             {
+                                                 beforeTaxPrice = ( (iPrice ) -  (iTax ));
+                                             }
+
+
+
+                                             for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                                 sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                 if (sys_tax_group.get_tax_master_id().equals("3")) {
+
+                                                     tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                     if (tax_master != null) {
+
+                                                         if (tax_master.get_tax_type().equals("P")) {
+                                                             iTaxTl = beforeTaxPrice *  ( Double.parseDouble(tax_master.get_rate())/100);
+
+                                                             Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                             Globals.order_item_tax.add(order_item_tax);
+                                                             iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                                         } else {
+                                                             iTaxTl =  Double.parseDouble(tax_master.get_rate());
+
+                                                             Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                             Globals.order_item_tax.add(order_item_tax);
+                                                             iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                                         }
+
+
+                                                     }
+                                                 }
+
+                                             }
+
+                                             Globals.Taxdifferent_state = "2";
+                                             if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                                 spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                                 sprice = spricewdtax + iTaxTotal;
+
+                                             } else {
+                                                 sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                             }
+                                         }
+
+
+                                     } else {
+                                         Globals.NoTax="0";
+                                         sprice = Double.parseDouble(sale_priceStr);
+                                     }
+                                 } else if (contact == null) {
+                                     Double iPce = Double.parseDouble(item_location.get_selling_price());
+                                     Tax_Master tax_master=null;
+                                     iTax = 0d;
+                                    double   iPTax = 0;
+
+                                     for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                         sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                         if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
+
+
+                                              tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                             if (tax_master != null) {
+
+                                                 if (tax_master.get_tax_type().equals("P")) {
+                                                     iPTax = iPTax + ( Double.parseDouble(tax_master.get_rate())/100);
+                                                 } else {
+                                                     iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                 }
+
+
+                                             }
+                                         }
+
+                                     }
+
+                                     if(resultp.get_is_inclusive_tax().equals("1")) {
+                                         if (iPTax > 0) {
+
+                                             beforeTaxPrice = ((iPce) - (iTax)) / (iPTax + 1);
+
+                                         } else {
+                                             beforeTaxPrice = ((iPce) - (iTax));
+                                         }
+                                     }
+                                     else{
+                                         beforeTaxPrice=Double.parseDouble(sale_priceStr);
+                                     }
+
+
+
+                                        // Now you get item price before tax
+                                     for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                         sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                         if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
+
+
+                                             tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                             if (tax_master != null) {
+
+                                                 if (tax_master.get_tax_type().equals("P")) {
+                                                     iTaxTl = beforeTaxPrice *  ( Double.parseDouble(tax_master.get_rate())/100);
+
+                                                     Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                     Globals.order_item_tax.add(order_item_tax);
+                                                     iTaxTotal = iTaxTotal + iTaxTl;
+
+                                                 } else {
+                                                     iTaxTl =  Double.parseDouble(tax_master.get_rate());
+
+                                                     Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTaxTl, decimal_check) + "");
+                                                     Globals.order_item_tax.add(order_item_tax);
+                                                     iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTaxTl, decimal_check));
+
+                                                 }
+
+
+                                             }
+                                         }
+
+                                     }
+
+
+
+
+
+
+
+                                     Globals.Taxwith_state="1";
+                                     if (resultp.get_is_inclusive_tax().equals("1")) {
+
+                                         spricewdtax = Double.parseDouble(sale_priceStr) - iTaxTotal;
+                                         sprice = spricewdtax + iTaxTotal;
+
+                                     } else {
+                                         sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                     }
+                                 }
+                             }
+                            sale_priceStr=String.valueOf(sprice);
+                            Globals.TotalSlesPrice_CustomerDisplay = Double.parseDouble(sprice + "");
+                            ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + "","0","0",item_group.getCategoryIp(),"false",resultp.get_unit_id(),beforeTaxPrice+"");
                             Globals.cart.add(cartItem);
-                            Globals.SRNO = Globals.SRNO + 1;
+                            receipemodifierlist= ReceipeModifier.getAllReceipeModifier(context,"Where item_code = '"+resultp.get_item_code()+"'",database);
+
+                            if(receipemodifierlist.size()>0) {
+
+                                Globals.SRNO = Globals.SRNO ;
+                            }
+                            else{
+                                 Globals.SRNO = Globals.SRNO + 1;
+                            }
                             Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));
+
+                            //Globals.TotalSlesPrice_CustomerDispla0y= Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));
                             Globals.TotalItem = Globals.TotalItem + 1;
                             Globals.TotalQty = Globals.TotalQty + 1;
                             final String salePrice;
@@ -379,7 +865,9 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                             Globals.CMDItemPrice = Double.parseDouble(salePrice);
                             Globals.CMDItemName = resultp.get_item_name();
                             if (settings.get_Is_Customer_Display().equals("true")) {
+                                Globals.AppLogWrite("Customer display true  bfound flag");
                                 if (settings.get_CustomerDisplay().equals("1")) {
+                                    Globals.AppLogWrite("Customer display true on 1 bfound flag");
                                     try {
                                         Globals.CMDItemPrice = Double.parseDouble(salePrice);
                                         Globals.CMDItemName = myCart.get(count).get_Item_Name();
@@ -388,8 +876,12 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                         jsonObject.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                         dsPacket = UPacketFactory.buildShowText(
                                                 DSKernel.getDSDPackageName(), jsonObject.toString(), callback1);
+                                        Globals.AppLogWrite("json result 1" + jsonObject.toString());
                                         mDSKernel.sendData(dsPacket);
                                     } catch (Exception ex) {
+                                        Toast.makeText(context, " bFOUND this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
+
                                         progressBar.setVisibility(View.GONE);
                                     }
                                     try {
@@ -398,10 +890,23 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                     }
                                 } else {
                                     try {
+                                        Double doubletotalprice;
                                         JSONObject json = new JSONObject();
-                                        json.put("title", resultp.get_item_name() + " " + salePrice);
+                                        //Double TotalItemPrice = (Double.parseDouble(myCart.get(count).get_Sales_Price()) + Double.parseDouble(myCart.get(count).get_Tax_Price()));
+
+                                        String totalprice = Globals.myNumberFormat2Price(Double.parseDouble(myCart.get(count).get_Line_Total()), decimal_check);
+                                        String totalquantity = Globals.myNumberFormat2Price(Double.parseDouble(myCart.get(count).get_Quantity()), decimal_check);
+
+                                        doubletotalprice = (Double.parseDouble(totalprice) / Double.parseDouble(totalquantity));
+
+                                        String title_value = resultp.get_item_name();
+                                        json.put("title", title_value + "   " + Globals.myNumberFormat2Price(doubletotalprice, decimal_check));
                                         json.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                         String titleContentJsonStr = json.toString();
+                                        dsPacket = UPacketFactory.buildShowText(
+                                                DSKernel.getDSDPackageName(), json.toString(), callback1);
+                                        Globals.AppLogWrite("else json result 1" + json.toString());
+                                        mDSKernel.sendData(dsPacket);
                                         mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, path1, new ISendCallback() {
                                             @Override
                                             public void onSendSuccess(long fileId) {
@@ -417,6 +922,8 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             }
                                         });
                                     } catch (Exception ex) {
+                                        Toast.makeText(context, " bFOUND Else this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
                                         progressBar.setVisibility(View.GONE);
                                     }
                                     try {
@@ -428,17 +935,26 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                             }
                         }
                         Globals.cart = myCart;
+                       // SRNO= myCart.get(count).get_SRNO();
+                        notifyDataSetChanged();
+                        // Collections.reverse(myCart);
                         String item_price;
                         item_price = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
                         ((MainActivity) context).setTextView(item_price, Globals.TotalQty + "");
+
                     } catch (Exception ex) {
                         progressBar.setVisibility(View.GONE);
                     }
-                } else {
+                }
+                //else
+                    /*{
                     try {
                         Item resultp = data.get(i);
+
+
                         item_group_code = resultp.get_item_code();
                         item_group_taxArrayList = Item_Group_Tax.getAllItem_Group_Tax(context, "Where item_group_code = '" + item_group_code + "'", database, db);
+
                         String item_code = resultp.get_item_code();
                         item_location = Item_Location.getItem_Location(context, "Where item_code = '" + item_code + "'", database);
                         final ArrayList<ShoppingCart> myCart = Globals.cart;
@@ -468,8 +984,11 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                                 jsonObject.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                                 dsPacket = UPacketFactory.buildShowText(
                                                         DSKernel.getDSDPackageName(), jsonObject.toString(), callback1);
+                                                Globals.AppLogWrite("json result 2" + jsonObject.toString());
                                                 mDSKernel.sendData(dsPacket);
                                             } catch (Exception ex) {
+                                                Toast.makeText(context, " Item this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
                                                 progressBar.setVisibility(View.GONE);
                                             }
                                             try {
@@ -482,6 +1001,11 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                                 json.put("title", myCart.get(count).get_Item_Name() + " " + salePrice);
                                                 json.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                                 String titleContentJsonStr = json.toString();
+                                                dsPacket = UPacketFactory.buildShowText(
+                                                        DSKernel.getDSDPackageName(), json.toString(), callback1);
+
+                                                mDSKernel.sendData(dsPacket);
+                                                Globals.AppLogWrite("Item onclick Json" + json.toString());
                                                 mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, path1, new ISendCallback() {
                                                     @Override
                                                     public void onSendSuccess(long fileId) {
@@ -498,6 +1022,8 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                                 });
 
                                             } catch (Exception ex) {
+                                                Toast.makeText(context, " Item else this Exception" + ex.getMessage(), Toast.LENGTH_SHORT).show();
+
                                                 progressBar.setVisibility(View.GONE);
                                             }
 
@@ -511,6 +1037,7 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                 }
                             }
                             count = count + 1;
+                       //     SRNO= myCart.get(count).get_SRNO();
                         }
                         if (!bFound) {
                             curQty = 0d;
@@ -524,14 +1051,68 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                     sale_priceStr = item_location.get_selling_price();
                                     cost_priceStr = item_location.get_cost_price();
                                 }
-                                calculateTax();
-                                ArrayList<String> taxIdFinalAarry = calculateTax();
+                              //  calculateTax();
+                                //ArrayList<String> taxIdFinalAarry = calculateTax();
                                 Double iTax = 0d;
                                 Double iTaxTotal = 0d;
-                                if (taxIdFinalAarry.size() > 0) {
-                                    for (int i = 0; i < taxIdFinalAarry.size(); i++) {
+                                Double sprice=0d;
+                             //   if (taxIdFinalAarry.size() > 0) {
+                                if(contact!=null) {
+                                    if (contact.getIs_taxable().equals("1")) {
+                                        if (contact.get_zone_id().equals(Globals.objLPR.getZone_Id())) {
+                                            for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                                sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
+                                                    iTax = 0d;
+                                                    Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                    Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                                    if (tax_master.get_tax_type().equals("P")) {
+                                                        iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                                                    } else {
+                                                        iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                    }
+                                                    iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTax, decimal_check));
+                                                    Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                                    Globals.order_item_tax.add(order_item_tax);
+                                                }
+                                            }
+                                            sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+                                            }
+                                        else if(!contact.get_zone_id().equals(Globals.objLPR.getZone_Id())){
+                                            for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                                sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                                if (sys_tax_group.get_tax_master_id().equals("3")) {
+                                                    iTax = 0d;
+                                                    Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+                                                    Double iPrice = Double.parseDouble(item_location.get_selling_price());
+                                                    if (tax_master.get_tax_type().equals("P")) {
+                                                        iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                                                    } else {
+                                                        iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                                                    }
+                                                    iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTax, decimal_check));
+                                                    Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                                    Globals.order_item_tax.add(order_item_tax);
+                                                }
+                                            }
+                                            sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+
+                                        }
+                                        }
+
+                                    else{
+                                        sprice = Double.parseDouble(sale_priceStr);
+                                    }
+                                }
+                                else if(contact==null){
+                                    for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+                                        sys_tax_group = Sys_Tax_Group.getSys_Tax_Group(context, "WHERE tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'");
+
+                                        if (sys_tax_group.get_tax_master_id().equals("1") || sys_tax_group.get_tax_master_id().equals("2")) {
                                         iTax = 0d;
-                                        Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + taxIdFinalAarry.get(i) + "'", database, db);
+                                        Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
                                         Double iPrice = Double.parseDouble(item_location.get_selling_price());
                                         if (tax_master.get_tax_type().equals("P")) {
                                             iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
@@ -539,14 +1120,17 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             iTax = iTax + Double.parseDouble(tax_master.get_rate());
                                         }
                                         iTaxTotal = iTaxTotal + Double.parseDouble(Globals.myNumberFormat2Price(iTax, decimal_check));
-                                        Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), taxIdFinalAarry.get(i), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                                        Order_Item_Tax order_item_tax = new Order_Item_Tax(context, "", "", Globals.SRNO + "", resultp.get_item_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
                                         Globals.order_item_tax.add(order_item_tax);
                                     }
+                                    }
+                                    sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
                                 }
-                                Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                                ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "");
+
+                                ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "","0","0",item_group.getCategoryIp(),"false",resultp.get_unit_id(),);
                                 Globals.cart.add(cartItem);
                                 Globals.SRNO = Globals.SRNO + 1;
+
                                 Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));
                                 Globals.TotalItem = Globals.TotalItem + 1;
                                 Globals.TotalQty = Globals.TotalQty + 1;
@@ -564,6 +1148,7 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             jsonObject.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                             dsPacket = UPacketFactory.buildShowText(
                                                     DSKernel.getDSDPackageName(), jsonObject.toString(), callback1);
+                                            Globals.AppLogWrite("inside bfound json" + jsonObject.toString());
                                             mDSKernel.sendData(dsPacket);
                                         } catch (Exception ex) {
                                             progressBar.setVisibility(View.GONE);
@@ -578,6 +1163,10 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                             json.put("title", resultp.get_item_name() + " " + salePrice);
                                             json.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                                             String titleContentJsonStr = json.toString();
+                                            dsPacket = UPacketFactory.buildShowText(
+                                                    DSKernel.getDSDPackageName(), json.toString(), callback1);
+                                            Globals.AppLogWrite("inside bfound else json" + json.toString());
+                                            mDSKernel.sendData(dsPacket);
                                             mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, path1, new ISendCallback() {
                                                 @Override
                                                 public void onSendSuccess(long fileId) {
@@ -607,8 +1196,12 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                                 }
 
                             }
+                          //  SRNO= myCart.get(count).get_SRNO();
                         }
                         Globals.cart = myCart;
+
+                        notifyDataSetChanged();
+                        //  Collections.reverse(myCart);
                         String item_price;
                         item_price = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
                         ((MainActivity) context).setTextView(item_price, Globals.TotalQty + "");
@@ -617,9 +1210,25 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                         progressBar.setVisibility(View.GONE);
                         String ab = ex.getMessage();
                     }
-                }
+                }*/
+
                 progressBar.setVisibility(View.GONE);
-            }
+
+
+                String itemcode=resultp.get_item_code();
+
+                receipemodifierlist= ReceipeModifier.getAllReceipeModifier(context,"Where item_code = '"+itemcode+"'",database);
+                if(receipemodifierlist.size()>0){
+                    Intent i= new Intent(context, ItemModifierSelection.class);
+                    i.putExtra("itemcode",resultp.get_item_code());
+                    i.putExtra("opr", Globals.Operation);
+                    i.putExtra("srno",Globals.SRNO);
+                    i.putExtra("odr_code", Globals.Order_Code);
+                    context.startActivity(i);
+                    // return;
+                }
+
+        }
         });
 
         itemView.setOnLongClickListener(new View.OnLongClickListener() {
@@ -650,7 +1259,7 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
         return itemView;
     }
 
-    private ArrayList<String> calculateTax() {
+  /*  private ArrayList<String> calculateTax() {
         ArrayList<Tax_Detail> taxIdAarry = new ArrayList<Tax_Detail>();
         ArrayList<String> taxIdFinalAarry = new ArrayList<String>();
         ArrayList<Item_Group_Tax> item_group_taxList = new ArrayList<Item_Group_Tax>();
@@ -706,9 +1315,10 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
                 }
             }
         } catch (Exception ex) {
+            System.out.println(ex.getMessage());
         }
         return taxIdFinalAarry;
-    }
+    }*/
 
     private void showQRCode(long fileId) {
 
@@ -720,20 +1330,7 @@ public class MainItemListAdapter extends BaseAdapter implements Animation.Animat
         }
     }
 
-    @Override
-    public void onAnimationStart(Animation animation) {
 
-    }
-
-    @Override
-    public void onAnimationEnd(Animation animation) {
-
-    }
-
-    @Override
-    public void onAnimationRepeat(Animation animation) {
-
-    }
 
     private void setAnimation(View viewToAnimate, int position) {
         AlphaAnimation anim = new AlphaAnimation(0.0f, 1.0f);

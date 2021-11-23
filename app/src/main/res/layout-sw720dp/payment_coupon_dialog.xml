@@ -1,0 +1,31 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent" android:layout_height="match_parent"
+    android:orientation="vertical">
+
+    <EditText
+        android:id="@+id/edt_code"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="40dp"
+        android:hint="Promo Code"
+        android:layout_marginLeft="20dp"
+        android:layout_marginRight="20dp"/>
+
+    <LinearLayout
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_marginTop="40dp">
+        <Button
+            android:id="@+id/btn_save"
+            style="@style/AppTheme.HorizontalButton"
+            android:text="@string/save" />
+        <Button
+            android:id="@+id/btn_cancel"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="@string/Cancel"
+            android:visibility="visible" />
+    </LinearLayout>
+</LinearLayout>

@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_retail"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.RetailActivity"
+    tools:showIn="@layout/activity_retail">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:text="@string/Empty_Bucket"
+        style="@style/AppTheme.NoListfoundText"/>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+
+        android:id="@+id/retail_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:itemTextAppearanceActive="@style/BottomNavigationView_600dpland"
+        app:menu="@menu/retail_bottom_nav_menu" />
+
+
+    <LinearLayout
+        android:id="@+id/retail_linear"
+        android:layout_above="@+id/retail_bottom_navigation"
+        style="@style/AppTheme.FooterButtonLayout"
+        >
+
+        <Button
+            android:id="@+id/btn_retail_1"
+            android:text="10.00"
+            style="@style/AppTheme.FooterButton"/>
+
+        <Button
+            android:id="@+id/btn_retail_2"
+            android:text="20.00"
+            android:layout_marginLeft="1dp"
+            style="@style/AppTheme.FooterButton"/>
+
+    </LinearLayout>
+
+    <ListView
+
+        android:id="@+id/retail_list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginBottom="110dp">
+
+    </ListView>
+
+
+
+</RelativeLayout>

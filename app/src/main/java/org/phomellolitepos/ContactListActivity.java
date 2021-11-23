@@ -14,22 +14,24 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.DefaultItemAnimator;
-import android.support.v7.widget.DividerItemDecoration;
-import android.support.v7.widget.LinearLayoutManager;
-import android.support.v7.widget.RecyclerView;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+import androidx.appcompat.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -38,37 +40,35 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.phomellolitepos.Adapter.ContactListAdapter;
-import org.phomellolitepos.Adapter.ItemAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.RecyclerTouchListener;
-import org.phomellolitepos.Util.UserPermission;
-import org.phomellolitepos.database.Acc_Customer;
 import org.phomellolitepos.database.Address;
 import org.phomellolitepos.database.Address_Lookup;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Contact_Bussiness_Group;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Lite_POS_Device;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Sys_Sycntime;
 
@@ -84,11 +84,10 @@ public class ContactListActivity extends AppCompatActivity {
     ProgressDialog pDialog;
     Database db;
     SQLiteDatabase database;
-    Lite_POS_Registration lite_pos_registration;
+    //Lite_POS_Registration lite_pos_registration;
     Settings settings;
     private RecyclerView recyclerView;
-    Lite_POS_Device liteposdevice;
-    String liccustomerid;
+
     String serial_no, android_id, myKey, device_id,imei_no;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -102,6 +101,32 @@ public class ContactListActivity extends AppCompatActivity {
         database = db.getWritableDatabase();
         settings = Settings.getSettings(getApplicationContext(), database, "");
         edt_toolbar_contact_list = (EditText) findViewById(R.id.edt_toolbar_contact_list);
+        edt_toolbar_contact_list.setMaxLines(1);
+
+        edt_toolbar_contact_list.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_toolbar_contact_list.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        edt_toolbar_contact_list.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFilter = edt_toolbar_contact_list.getText().toString().trim();
+                    strFilter = " and ( contact_code Like '%" + strFilter + "%'  Or name Like '%" + strFilter + "%' Or contact_1 Like '%" + strFilter + "%' Or email_1 Like '%" + strFilter + "%' )";
+                    edt_toolbar_contact_list.selectAll();
+                    getContactList(strFilter);
+                    return true;
+                }
+                return false;
+            }
+        });
+
+
         contact_title = (TextView) findViewById(R.id.contact_title);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         recyclerView = (RecyclerView) findViewById(R.id.item_list);
@@ -126,7 +151,7 @@ public class ContactListActivity extends AppCompatActivity {
 
         myKey = serial_no + android_id;
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager mTelephony = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -136,10 +161,25 @@ public class ContactListActivity extends AppCompatActivity {
             // to handle the case where the user grants the permission. See the documentation
             // for ActivityCompat#requestPermissions for more details.
 
+
             return;
         }
-        device_id = telephonyManager.getDeviceId();
-        imei_no=telephonyManager.getImei();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            device_id = android.provider.Settings.Secure.getString(
+                    getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        } else {
+            if (mTelephony.getDeviceId() != null) {
+                device_id = mTelephony.getDeviceId();
+            } else {
+                device_id = android.provider.Settings.Secure.getString(
+                        getApplicationContext().getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+            }
+
+        }
+       /* device_id = telephonyManager.getDeviceId();
+        imei_no=telephonyManager.getImei();*/
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
         if (id == 0) {
@@ -148,56 +188,62 @@ public class ContactListActivity extends AppCompatActivity {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
         }
 
-        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-        try {
-            if (liteposdevice != null) {
-                liccustomerid = liteposdevice.getLic_customer_license_id();
-            }
-        } catch (Exception e) {
 
-        }
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pDialog = new ProgressDialog(ContactListActivity.this);
+             /*   pDialog = new ProgressDialog(ContactListActivity.this);
                 pDialog.setCancelable(false);
                 pDialog.setMessage(getString(R.string.Wait_msg));
                 pDialog.show();
 
                 Thread timerThread = new Thread() {
-                    public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(ContactListActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(ContactListActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }
+                    public void run() {*/
 
+                if(Globals.objLPR.getIndustry_Type().equals("4")){
+                    Intent intent = new Intent(ContactListActivity.this, ParkingIndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(ContactListActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            // pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            //pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            // pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
+
+                }
+                   /* }
                 };
-                timerThread.start();
+                timerThread.start();*/
 
             }
         });
@@ -213,15 +259,20 @@ public class ContactListActivity extends AppCompatActivity {
                 finish();
             }
         });
-        // Getting contect list here
-        getContactList("");
+        try {
+            // Getting contect list here
+            getContactList("");
+        }
+        catch(Exception e){
+
+        }
     }
 
     private void getContactList(String strFilter) {
         if (settings.get_Is_Device_Customer_Show().equals("true")) {
-            arrayList = Contact.getAllContact(getApplicationContext(), database, db, "WHERE contact_code like  '"+ Globals.objLPD.getDevice_Symbol() +"-CT-%' and is_active = '1'  and  contact_code IN (Select contact_code from contact_business_group where business_group_code = 'BGC-1') " + strFilter + " Order By lower(name) asc limit "+Globals.ListLimit+"");
+            arrayList = Contact.getAllContact(getApplicationContext(), database, db, "WHERE  contact_1!='' and contact_code like  '"+ Globals.objLPD.getDevice_Symbol() +"-CT-%' and is_active = '1'  and  contact_code IN (Select contact_code from contact_business_group where business_group_code = 'BGC-1') " + strFilter + " Order By lower(name) asc limit "+Globals.ListLimit+"");
         } else {
-            arrayList = Contact.getAllContact(getApplicationContext(), database, db, "WHERE is_active = '1'  and  contact_code IN (Select contact_code from contact_business_group where business_group_code = 'BGC-1') " + strFilter + " Order By lower(name) asc limit "+Globals.ListLimit+"");
+            arrayList = Contact.getAllContact(getApplicationContext(), database, db, "WHERE  contact_1!='' and is_active = '1'  and  contact_code IN (Select contact_code from contact_business_group where business_group_code = 'BGC-1') " + strFilter + " Order By lower(name) asc limit "+Globals.ListLimit+"");
         }
 
         if (arrayList.size() > 0) {
@@ -231,8 +282,8 @@ public class ContactListActivity extends AppCompatActivity {
             contact_title.setVisibility(View.GONE);
             RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
             recyclerView.setLayoutManager(mLayoutManager);
-            recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
-            recyclerView.setItemAnimator(new DefaultItemAnimator());
+           // recyclerView.addItemDecoration(new DividerItemDecoration(this, LinearLayoutManager.VERTICAL));
+           // recyclerView.setItemAnimator(new DefaultItemAnimator());
             recyclerView.setAdapter(contactListAdapter);
         } else {
             recyclerView.setVisibility(View.GONE);
@@ -271,15 +322,21 @@ public class ContactListActivity extends AppCompatActivity {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
+        // search filter
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_contact_list.getText().toString().trim();
             strFilter = " and ( contact_code Like '%" + strFilter + "%'  Or name Like '%" + strFilter + "%' Or contact_1 Like '%" + strFilter + "%' Or email_1 Like '%" + strFilter + "%' )";
             edt_toolbar_contact_list.selectAll();
             getContactList(strFilter);
+            View view = getCurrentFocus();
+            InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+            imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
             return true;
         }
 
-        if (id == R.id.action_send) {
+        // Sync Code
+        if (id == R.id.action_send)
+        {
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
                     ContactListActivity.this);
             alertDialog.setTitle(getString(R.string.Contact));
@@ -322,10 +379,21 @@ public class ContactListActivity extends AppCompatActivity {
                                                 new Thread() {
                                                     @Override
                                                     public void run() {
-                                                        //Get contact from server
-                                                        String result = send_online_contact();
 
-                                                        if(result.equals("3")){
+                                                        String suss="";
+                                                        JSONObject result;
+                                                        try {
+                                                            // send contact to server
+                                                            result = send_online_contact();
+
+                                                          /*  if(result!=null){
+                                                                send_contact_json_on_server(result.toString(),strContactCode,serial_no,Globals.syscode2,android_id,myKey,lic);
+                                                            }*/
+                                                        }
+                                                        catch(Exception e){
+
+                                                        }
+                                                       /* if(result.equals("3")){
 
                                                             runOnUiThread(new Runnable() {
                                                                 public void run() {
@@ -347,61 +415,25 @@ public class ContactListActivity extends AppCompatActivity {
 
                                                                 }
                                                             });
+                                                        }*/
+                                                        try {
+                                                            //Get contact from server
+                                                            Sys_Sycntime sys_sycntime = Sys_Sycntime.getSys_Sycntime(getApplicationContext(), database, db, "WHERE table_name='contact'");
+
+
+                                                            //Call get contact api here
+                                                            if (sys_sycntime==null){
+                                                                getcontact_from_server("",serial_no,android_id,myKey,pDialog);
+                                                            }else {
+                                                                getcontact_from_server(sys_sycntime.get_datetime(),serial_no,android_id,myKey,pDialog);
+                                                            }
+
                                                         }
-                                                        String suss = getContact();
-                                                        pDialog.dismiss();
+                                                        catch(Exception e){
 
-                                                        switch (suss) {
-                                                            case "1":
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-                                                                        getContactList("");
-                                                                        Toast.makeText(getApplicationContext(), R.string.Contact_download, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-
-                                                                break;
-
-                                                            case "2":
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-                                                                        getContactList("");
-                                                                        Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                                break;
-
-
-                                                            case "3":
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-                                                                        if (Globals.responsemessage.equals("Device Not Found")) {
-
-                                                                            Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-                                                                            lite_pos_device.setStatus("Out");
-                                                                            long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
-                                                                            if (ct > 0) {
-
-                                                                                Intent intent_category = new Intent(ContactListActivity.this, LoginActivity.class);
-                                                                                startActivity(intent_category);
-                                                                                finish();
-                                                                            }
-
-
-                                                                        }
-                                                                    }
-                                                                });
-                                                                break;
-
-                                                            default:
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-
-                                                                        Toast.makeText(getApplicationContext(), R.string.Contact_not_found, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                                break;
                                                         }
+                                                      //  pDialog.dismiss();
+
 
                                                     }
                                                 }.start();
@@ -429,18 +461,18 @@ public class ContactListActivity extends AppCompatActivity {
 
                 @Override
                 public void onShow(DialogInterface dialog) {
-                    lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                    String ck_project_type = lite_pos_registration.getproject_id();
+                    //lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                    String ck_project_type = Globals.objLPR.getproject_id();
 
                     if (ck_project_type.equals("standalone")) {
                         ((AlertDialog) dialog).getButton(
                                 AlertDialog.BUTTON_POSITIVE).setEnabled(false);
                         ((AlertDialog) dialog).getButton(
                                 AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
-                    }else if (lite_pos_registration.getIndustry_Type().equals("3")||lite_pos_registration.getIndustry_Type().equals("6")){
+                    }/*else if (lite_pos_registration.getIndustry_Type().equals("3")||lite_pos_registration.getIndustry_Type().equals("6")){
                         ((AlertDialog) dialog).getButton(
                                 AlertDialog.BUTTON_NEGATIVE).setEnabled(false);
-                    }
+                    }*/
 
                 }
 
@@ -454,7 +486,7 @@ public class ContactListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private String getAccContact() {
+  /*  private String getAccContact() {
         String succ = "0";
         String serverData = get_Acc_Customer_server();
         try {
@@ -492,13 +524,13 @@ public class ContactListActivity extends AppCompatActivity {
         }
         return succ;
     }
-
-    private String get_Acc_Customer_server() {
+*/
+  /*  private String get_Acc_Customer_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/customer_summary");
+               Globals.App_IP_URL + "customer_summary");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
@@ -520,26 +552,24 @@ public class ContactListActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
-    private String send_online_contact() {
+    private JSONObject send_online_contact() {
+        Sys_Sycntime sys_sycntime = Sys_Sycntime.getSys_Sycntime(getApplicationContext(), database, db, "WHERE table_name='contact'");
+        JSONObject conList;
 
-        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,serial_no,android_id,myKey);
+        conList=   Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id,modified_date,is_taxable from contact where is_push='N'", Globals.license_id, serial_no, android_id, myKey);
+
         return conList;
     }
 
-    private String getContact() {
-        String serverData;
+    private String getContact(String serverData) {
+
         Sys_Sycntime sys_sycntime = Sys_Sycntime.getSys_Sycntime(getApplicationContext(), database, db, "WHERE table_name='contact'");
 
         String succ_bg = "0";
         database.beginTransaction();
         //Call get contact api here
-        if (sys_sycntime==null){
-            serverData = get_contact_from_server("");
-        }else {
-            serverData = get_contact_from_server(sys_sycntime.get_datetime());
-        }
 
         try {
             final JSONObject jsonObject_contact = new JSONObject(serverData);
@@ -548,18 +578,19 @@ public class ContactListActivity extends AppCompatActivity {
             if (strStatus.equals("true")) {
 
                 JSONArray jsonArray_contact = jsonObject_contact.getJSONArray("result");
+                if (sys_sycntime!=null){
+                    sys_sycntime.set_datetime(jsonArray_contact.getJSONObject(0).getString("modified_date"));
+                    long l1 = sys_sycntime.updateSys_Sycntime("table_name=?", new String[]{"contact"}, database);
+                }
                 for (int i = 0; i < jsonArray_contact.length(); i++) {
                     JSONObject jsonObject_contact1 = jsonArray_contact.getJSONObject(i);
                     String contact_code = jsonObject_contact1.getString("contact_code");
                     contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_code ='" + contact_code + "'");
-                    if (sys_sycntime!=null){
-                        sys_sycntime.set_datetime(jsonObject_contact1.getString("modified_date"));
-                        long l1 = sys_sycntime.updateSys_Sycntime("table_name=?", new String[]{"contact"}, database);
-                    }
+
 
 
                     if (contact == null) {
-                        contact = new Contact(getApplicationContext(), null, jsonObject_contact1.getString("device_code"), jsonObject_contact1.getString("contact_code"), jsonObject_contact1.getString("title"), jsonObject_contact1.getString("name"), jsonObject_contact1.getString("gender"), jsonObject_contact1.getString("dob"), jsonObject_contact1.getString("company_name"), jsonObject_contact1.getString("description"), jsonObject_contact1.getString("contact_1"), jsonObject_contact1.getString("contact_2"), jsonObject_contact1.getString("email_1"), jsonObject_contact1.getString("email_2"), jsonObject_contact1.getString("is_active"), jsonObject_contact1.getString("modified_by"), "Y", "0", jsonObject_contact1.getString("modified_date"), "0", jsonObject_contact1.getString("gstin"), jsonObject_contact1.getString("country_id"), jsonObject_contact1.getString("zone_id"));
+                        contact = new Contact(getApplicationContext(), null, jsonObject_contact1.getString("device_code"), jsonObject_contact1.getString("contact_code"), jsonObject_contact1.getString("title"), jsonObject_contact1.getString("name"), jsonObject_contact1.getString("gender"), jsonObject_contact1.getString("dob"), jsonObject_contact1.getString("company_name"), jsonObject_contact1.getString("description"), jsonObject_contact1.getString("contact_1"), jsonObject_contact1.getString("contact_2"), jsonObject_contact1.getString("email_1"), jsonObject_contact1.getString("email_2"), jsonObject_contact1.getString("is_active"), jsonObject_contact1.getString("modified_by"), "Y", "0", jsonObject_contact1.getString("modified_date"), "0", jsonObject_contact1.getString("gstin"), jsonObject_contact1.getString("country_id"), jsonObject_contact1.getString("zone_id"),jsonObject_contact1.getString("is_taxable"));
                         long l = contact.insertContact(database);
                         if (l > 0) {
                             succ_bg = "1";
@@ -614,7 +645,7 @@ public class ContactListActivity extends AppCompatActivity {
                     } else {
 
                         // Edit on 18-Oct-2017
-                        contact = new Contact(getApplicationContext(), contact.get_contact_id(), jsonObject_contact1.getString("device_code"), jsonObject_contact1.getString("contact_code"), jsonObject_contact1.getString("title"), jsonObject_contact1.getString("name"), jsonObject_contact1.getString("gender"), jsonObject_contact1.getString("dob"), jsonObject_contact1.getString("company_name"), jsonObject_contact1.getString("description"), jsonObject_contact1.getString("contact_1"), jsonObject_contact1.getString("contact_2"), jsonObject_contact1.getString("email_1"), jsonObject_contact1.getString("email_2"), jsonObject_contact1.getString("is_active"), jsonObject_contact1.getString("modified_by"), "Y", "0", jsonObject_contact1.getString("modified_date"), "0", jsonObject_contact1.getString("gstin"), jsonObject_contact1.getString("country_id"), jsonObject_contact1.getString("zone_id"));
+                        contact = new Contact(getApplicationContext(), contact.get_contact_id(), jsonObject_contact1.getString("device_code"), jsonObject_contact1.getString("contact_code"), jsonObject_contact1.getString("title"), jsonObject_contact1.getString("name"), jsonObject_contact1.getString("gender"), jsonObject_contact1.getString("dob"), jsonObject_contact1.getString("company_name"), jsonObject_contact1.getString("description"), jsonObject_contact1.getString("contact_1"), jsonObject_contact1.getString("contact_2"), jsonObject_contact1.getString("email_1"), jsonObject_contact1.getString("email_2"), jsonObject_contact1.getString("is_active"), jsonObject_contact1.getString("modified_by"), "Y", "0", jsonObject_contact1.getString("modified_date"), "0", jsonObject_contact1.getString("gstin"), jsonObject_contact1.getString("country_id"), jsonObject_contact1.getString("zone_id"),jsonObject_contact1.getString("is_taxable"));
 
                         long l = contact.updateContact("contact_code=? And contact_id=?", new String[]{contact_code, contact.get_contact_id()}, database);
 
@@ -675,6 +706,7 @@ public class ContactListActivity extends AppCompatActivity {
                         }
                     }
                 }
+
             }
             else if (strStatus.equals("false")) {
 
@@ -702,11 +734,11 @@ public class ContactListActivity extends AppCompatActivity {
         return succ_bg;
     }
 
-    private String get_contact_from_server(String datetime) {
+ /*   private String get_contact_from_server(String datetime) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/contact");
+                Globals.App_IP_URL + "contact");
         ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("modified_date", datetime));
@@ -715,7 +747,7 @@ public class ContactListActivity extends AppCompatActivity {
         nameValuePairs.add(new BasicNameValuePair("sys_code_3", android_id));
         nameValuePairs.add(new BasicNameValuePair("sys_code_4", myKey));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
-        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", liccustomerid));
+        nameValuePairs.add(new BasicNameValuePair("lic_customer_license_id", Globals.license_id));
         try {
             httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
         } catch (UnsupportedEncodingException e1) {
@@ -734,7 +766,140 @@ public class ContactListActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
+    }*/
+    public void getcontact_from_server(final String datetime,final String serial_no,final String android_id,final String myKey,final ProgressDialog pDialog) {
+
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+        String server_url = Globals.App_IP_URL + "contact";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            String result=getContact(response);
+
+                            switch (result) {
+                                case "1":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getContactList("");
+                                            Toast.makeText(getApplicationContext(), R.string.Contact_download, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    break;
+
+                                case "2":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getContactList("");
+                                            Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    break;
+
+
+                                case "3":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                                Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
+                                                lite_pos_device.setStatus("Out");
+                                                long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                                if (ct > 0) {
+
+                                                    Intent intent_category = new Intent(ContactListActivity.this, LoginActivity.class);
+                                                    startActivity(intent_category);
+                                                    finish();
+                                                }
+
+
+                                            }
+                                        }
+                                    });
+                                    break;
+
+                                default:
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+
+                                            Toast.makeText(getApplicationContext(), R.string.Contact_not_found, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    break;
+                            }
+                            pDialog.dismiss();
+
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("modified_date", datetime);
+                params.put("sys_code_1", serial_no);
+                params.put("sys_code_2", Globals.syscode2);
+                params.put("sys_code_3", android_id);
+                params.put("sys_code_4", myKey);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", Globals.objLPR.getLicense_No());
+
+
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
+
+
+
+
+
 
     private boolean isNetworkStatusAvialable(Context applicationContext) {
         // TODO Auto-generated method stub
@@ -758,34 +923,49 @@ public class ContactListActivity extends AppCompatActivity {
 
         Thread timerThread = new Thread() {
             public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(ContactListActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(ContactListActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
+
+                if (Globals.objLPR.getIndustry_Type().equals("4")) {
+                    Intent intent = new Intent(ContactListActivity.this, ParkingIndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    pDialog.dismiss();
+                    finish();
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(ContactListActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                }
+                else {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(ContactListActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
                 }
             }

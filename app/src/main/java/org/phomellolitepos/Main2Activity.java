@@ -8,6 +8,7 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.app.SearchManager;
 import android.bluetooth.BluetoothDevice;
+import android.content.ActivityNotFoundException;
 import android.content.ComponentName;
 import android.content.ContentValues;
 import android.content.Context;
@@ -19,6 +20,9 @@ import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.location.Address;
 import android.location.Geocoder;
 import android.net.ConnectivityManager;
@@ -32,32 +36,35 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.TabLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentStatePagerAdapter;
-import android.support.v4.content.FileProvider;
-import android.support.v4.view.MenuItemCompat;
-import android.support.v4.view.ViewPager;
-import android.support.v7.widget.SearchView;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+import com.google.android.material.tabs.TabLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.fragment.app.Fragment;
+import androidx.fragment.app.FragmentManager;
+import androidx.fragment.app.FragmentStatePagerAdapter;
+import androidx.core.content.FileProvider;
+import androidx.core.view.MenuItemCompat;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.widget.SearchView;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.support.design.widget.NavigationView;
-import android.support.v4.view.GravityCompat;
-import android.support.v4.widget.DrawerLayout;
-import android.support.v7.app.ActionBarDrawerToggle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.navigation.NavigationView;
+import androidx.core.view.GravityCompat;
+import androidx.drawerlayout.widget.DrawerLayout;
+import androidx.appcompat.app.ActionBarDrawerToggle;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -79,12 +86,9 @@ import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 import com.hoin.btsdk.BluetoothService;
 import com.hoin.btsdk.PrintPic;
+import com.itextpdf.text.ExceptionConverter;
+import com.toptoche.searchablespinnerlibrary.SearchableSpinner;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -96,13 +100,13 @@ import org.phomellolitepos.Adapter.RetailListAdapter;
 import org.phomellolitepos.Fragment.ItemFragment;
 import org.phomellolitepos.Fragment.ItemFragment2;
 import org.phomellolitepos.Mail.GMailSender;
-import org.phomellolitepos.Util.BottomNavigationViewHelper;
+import org.phomellolitepos.Util.Base64;
 import org.phomellolitepos.Util.DateUtill;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
+import org.phomellolitepos.Util.JavaEncryption;
 import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.Util.ZipManager;
-import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Customer_Image;
 import org.phomellolitepos.database.Database;
@@ -119,6 +123,7 @@ import org.phomellolitepos.database.Order_Payment;
 import org.phomellolitepos.database.Order_Tax;
 import org.phomellolitepos.database.Order_Type;
 import org.phomellolitepos.database.Orders;
+import org.phomellolitepos.database.ReceipeModifier;
 import org.phomellolitepos.database.Sys_Tax_Type;
 import org.phomellolitepos.database.Tax_Detail;
 import org.phomellolitepos.database.Tax_Master;
@@ -126,20 +131,21 @@ import org.phomellolitepos.database.User;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.ShoppingCart;
 import org.phomellolitepos.database.Table;
+import org.phomellolitepos.database.VoidShoppingCart;
 import org.phomellolitepos.printer.MemInfo;
 import org.phomellolitepos.printer.ThreadPoolManager;
+import org.phomellolitepos.printer.WifiPrintDriver;
 import org.phomellolitepos.zbar.Result;
 import org.phomellolitepos.zbar.ZBarScannerView;
 
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileInputStream;
+import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.FileWriter;
 import java.io.IOException;
-import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.OutputStreamWriter;
 import java.nio.channels.FileChannel;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -156,8 +162,6 @@ import javax.mail.MessagingException;
 
 import au.com.bytecode.opencsv.CSVWriter;
 import in.gauriinfotech.commons.Commons;
-import me.srodrigo.androidhintspinner.HintAdapter;
-import me.srodrigo.androidhintspinner.HintSpinner;
 import sunmi.bean.SecondScreenData;
 import sunmi.ds.DSKernel;
 import sunmi.ds.callback.IConnectionCallback;
@@ -172,22 +176,30 @@ import sunmi.ds.data.UPacketFactory;
 import woyou.aidlservice.jiuiv5.ICallback;
 import woyou.aidlservice.jiuiv5.IWoyouService;
 
+import static org.phomellolitepos.Util.Globals.StringSplit;
+
 public class Main2Activity extends AppCompatActivity
         implements NavigationView.OnNavigationItemSelectedListener, ZBarScannerView.ResultHandler {
-
+ProgressDialog p;
     TabLayout tabLayout;
     ViewPager viewPager;
+    private long pressedTime;
+    RetailListAdapter retailListAdapter;
     MenuItem items;
+    String versionname;
+    JavaEncryption javaEncryption;
     Dialog listDialog;
     Dialog listDialog1;
     Dialog listDialog2;
     Dialog listDialog_table;
     Item item;
+    ArrayList<String> arrayListcategoryStr;
+    SearchableSpinner spn_item_category;
     TextView list_title, my_company_name, my_company_email, txt_user_name, txt_version;
     Button btn_Item_Price, btn_Qty;
     Item_Group item_group;
     ArrayList<Item> arrayList;
-    ArrayList<android.support.v4.app.Fragment> fragList;
+    ArrayList<Fragment> fragList;
     private SearchView searchView;
     String operation = "";
     String code_category = "";
@@ -200,6 +212,8 @@ public class Main2Activity extends AppCompatActivity
     ArrayList<Table> table_ArrayList;
     Order_Type order_type;
     MenuItem orertype;
+    ListView retail_list;
+    TextView tv_subcategory;
     DialogContactMainListAdapter dialogContactMainListAdapter;
     DialogOrderTypeListAdapter dialogOrderTypeListAdapter;
     DialogTableMainListAdapter dialogTableMainListAdapter;
@@ -210,6 +224,7 @@ public class Main2Activity extends AppCompatActivity
     ArrayList<Order_Tax> order_tax = new ArrayList<Order_Tax>();
     ArrayList<Order_Detail_Tax> order_detail_tax = new ArrayList<Order_Detail_Tax>();
     String date, modified_by;
+   // String strKitchenFlag="";
     String serial_no, android_id, myKey, device_id, imei_no;
     private static final int REQUEST_CONNECT_DEVICE = 1;
     private static final int REQUEST_ENABLE_BT = 2;
@@ -217,14 +232,20 @@ public class Main2Activity extends AppCompatActivity
     //    BluetoothService mService = null;
     public static BluetoothService mService;
     public static BluetoothDevice con_dev;
-    private Settings settings;
-    private String PrinterType = "";
+   // private Settings settings;
+   ArrayList<Item> itemArrayList;
     String strRemarks = "";
     ArrayList<String> arrayListGetFile;
 String reg_code;
     //Customer display variables
     DSKernel mDSKernel;
     DataPacket dsPacket;
+    String ip = null;
+
+    private ArrayList<String> mylist = new ArrayList<String>();
+    ArrayList<String> ipAdd = new ArrayList<String>();
+    ArrayList<Item_Group> itemgroup_catArrayList;
+    private ArrayList<String> catId = new ArrayList<String>();
     JSONObject jsonObject;
     String displayTilte, line_total_af, line_total_bf;
     ProgressDialog pDialog;
@@ -255,7 +276,7 @@ String reg_code;
     SyncDialogCaller obj_syncdialog;
     Lite_POS_Device liteposdevice;
    String company_email,company_password;
-    AppLocationService appLocationService;
+    //AppLocationService appLocationService;
     /**
      * 发送消息的回调
      */
@@ -429,6 +450,7 @@ String reg_code;
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         OrintValue = getApplicationContext().getResources().getConfiguration().orientation;
+        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
 
         if (OrintValue == Configuration.ORIENTATION_PORTRAIT) {
             Globals.OrientValue = OrintValue;
@@ -452,14 +474,21 @@ String reg_code;
         Toolbar toolbar = (Toolbar) findViewById(R.id.toolbar);
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle("");
-        Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
-        db = new Database(getApplicationContext());
-        database = db.getWritableDatabase();
         try {
+            db = new Database(getApplicationContext());
+            database = db.getWritableDatabase();
+        }
+        catch(Exception e){
+
+        }
+
+        javaEncryption = new JavaEncryption();
+
+      /*  try {
             appLocationService = new AppLocationService(
                     Main2Activity.this);
         } catch (Exception e) {
-        }
+        }*/
         liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
         try {
             if (liteposdevice != null) {
@@ -474,21 +503,32 @@ String reg_code;
         company_password= Globals.objLPR.getPassword();
         final Intent intent = getIntent();
         listDialog2 = new Dialog(this);
-        settings = Settings.getSettings(getApplicationContext(), database, "");
-        if (settings == null) {
-            PrinterType = "";
+        Globals.objsettings = Settings.getSettings(getApplicationContext(), database, "");
+        if (Globals.objsettings == null) {
+            Globals.PrinterType = "";
         } else {
             try {
-                PrinterType = settings.getPrinterId();
+
+                Globals.PrinterType = Globals.objsettings.getPrinterId();
+                Globals.strIsBarcodePrint = Globals.objsettings.get_Is_BarcodePrint();
+                Globals.strIsDenominationPrint = Globals.objsettings.get_Is_Denomination();
+                Globals.strIsDiscountPrint = Globals.objsettings.get_Is_Discount();
+                Globals.GSTNo = Globals.objsettings.get_Gst_No();
+                Globals.GSTLbl = Globals.objsettings.get_GST_Label();
+                Globals.PrintOrder = Globals.objsettings.get_Print_Order();
+                Globals.PrintCashier = Globals.objsettings.get_Print_Cashier();
+                Globals.PrintInvNo = Globals.objsettings.get_Print_InvNo();
+                Globals.PrintInvDate = Globals.objsettings.get_Print_InvDate();
+                Globals.PrintDeviceID = Globals.objsettings.get_Print_DeviceID();
             } catch (Exception ex) {
-                PrinterType = "";
+                Globals.PrinterType  = "";
             }
         }
         if(Globals.objLPR.getproject_id().equals("cloud")){
 
             item = Item.getItem(getApplicationContext(), "", database, db);
             if(item==null){
-                android.support.v7.app.AlertDialog.Builder builder = new android.support.v7.app.AlertDialog.Builder(Main2Activity.this);
+                androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(Main2Activity.this);
 
                 builder.setTitle(getString(R.string.alerttitle));
                 builder.setMessage(getString(R.string.alert_syncdata));
@@ -511,8 +551,8 @@ String reg_code;
                                         try {
                                             try {
                                                 sleep(200);
-                                                obj_syncdialog = new SyncDialogCaller(getApplicationContext(), database,db);
-                                                obj_syncdialog.sync_all(getApplicationContext(), database, serial_no, android_id, myKey, liccustomerid);
+                                                obj_syncdialog = new SyncDialogCaller(Main2Activity.this, database,db);
+                                                obj_syncdialog.sync_all(progressDialog,Main2Activity.this, database, serial_no, android_id, myKey, liccustomerid);
 
                                                 progressDialog.dismiss();
 
@@ -567,7 +607,7 @@ String reg_code;
                     }
                 });
 
-                android.support.v7.app.AlertDialog alert = builder.create();
+                androidx.appcompat.app.AlertDialog alert = builder.create();
                 alert.show();
 
 
@@ -580,7 +620,7 @@ String reg_code;
             SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             date = df.format(d);
 
-
+/*
             if (appLocationService.canGetLocation()) {
 
 
@@ -594,7 +634,7 @@ String reg_code;
                 if (Globals.gpsFlag == true) {
                     appLocationService.showSettingsAlert();
                 }
-            }
+            }*/
             try {
                 backgroundLocationJson();
             } catch (JSONException e) {
@@ -607,48 +647,59 @@ String reg_code;
             startService(serviceIntent);
         } catch (Exception e) {
         }
-        mScannerView = new ZBarScannerView(Main2Activity.this);
-        mScannerView.setResultHandler(Main2Activity.this);
 
-        if (settings.get_Is_Customer_Display()==null){
-        }else {
-            if (settings.get_Is_Customer_Display().equals("true")) {
-                ArrayList<Customer_Image> arrayList = Customer_Image.getAllCustomer_Image(getApplicationContext(), "", database);
-                if (arrayList.size() > 0) {
-                    for (int count = 0; count < arrayList.size(); count++) {
-                        ArrayList<String> arrayListImages = new ArrayList<>();
-                        arrayListImages.add(arrayList.get(count).get_image_Path());
-                        Globals.CMD_Images = arrayListImages;
-                    }
-                }
+        try {
+            if(mScannerView!=null) {
+                mScannerView = new ZBarScannerView(Main2Activity.this);
+                mScannerView.setResultHandler(Main2Activity.this);
             }
+        }catch(Exception e){
 
-            if (settings.get_Is_Customer_Display().equals("true")) {
-                mDSKernel = DSKernel.newInstance();
-                mDSKernel.checkConnection();
-                mDSKernel.init(getApplicationContext(), mConnCallback);
-                mDSKernel.addReceiveCallback(mReceiveCallback);
-                Thread timerThread = new Thread() {
-                    public void run() {
-                        try {
-                            lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                            displayTilte = lite_pos_registration.getCompany_Name();
-                            if (settings.get_CustomerDisplay().equals("1")) {
-                                call_CMD();
-                                call_MN();
-                            } else {
-                                call_customer_disply_title(displayTilte);
-                                call_MN();
-                            }
-                        } finally {
-                        }
-                    }
-                };
-                timerThread.start();
+        }
+try {
+    if (Globals.objsettings.get_Is_Customer_Display() == null) {
+    } else {
+        if (Globals.objsettings.get_Is_Customer_Display().equals("true")) {
+            ArrayList<Customer_Image> arrayList = Customer_Image.getAllCustomer_Image(getApplicationContext(), "", database);
+            if (arrayList.size() > 0) {
+                for (int count = 0; count < arrayList.size(); count++) {
+                    ArrayList<String> arrayListImages = new ArrayList<>();
+                    arrayListImages.add(arrayList.get(count).get_image_Path());
+                    Globals.CMD_Images = arrayListImages;
+                }
             }
         }
 
-        if (PrinterType.equals("3")||PrinterType.equals("4")||PrinterType.equals("5")) {
+        if (Globals.objsettings.get_Is_Customer_Display().equals("true")) {
+            mDSKernel = DSKernel.newInstance();
+            mDSKernel.checkConnection();
+            mDSKernel.init(getApplicationContext(), mConnCallback);
+            mDSKernel.addReceiveCallback(mReceiveCallback);
+            Thread timerThread = new Thread() {
+                public void run() {
+                    try {
+                        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                        displayTilte = lite_pos_registration.getCompany_Name();
+                        if (Globals.objsettings.get_CustomerDisplay().equals("1")) {
+                            call_CMD();
+                            call_MN();
+                        } else {
+                            call_customer_disply_title(displayTilte);
+                            call_MN();
+                        }
+                    } finally {
+                    }
+                }
+            };
+            timerThread.start();
+        }
+    }
+
+}
+catch(Exception e){
+
+}
+        if (Globals.PrinterType .equals("3")||Globals.PrinterType .equals("4")||Globals.PrinterType .equals("5")) {
                 if (Globals.strIsBlueService.equals("utc")) {
                     mService = new BluetoothService(getApplicationContext(), mHandler);
                     Intent serverIntent = new Intent(getApplicationContext(), BluetoothDeviceListActivity.class);
@@ -662,15 +713,17 @@ String reg_code;
 
         root = findViewById(R.id.anim_root);
         topNavigationView = (BottomNavigationView) findViewById(R.id.top_navigation);
-        BottomNavigationViewHelper.disableShiftMode(topNavigationView);
+        spn_item_category=(SearchableSpinner)findViewById(R.id.spinner_item_category);
+       // BottomNavigationViewHelper.disableShiftMode(topNavigationView);
         bottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
+        tv_subcategory=(TextView)findViewById(R.id.txt_subcategory);
         modified_by = Globals.user;
         serial_no = Build.SERIAL;
         android_id = android.provider.Settings.Secure.getString(getApplicationContext().getContentResolver(), android.provider.Settings.Secure.ANDROID_ID);
 
         myKey = serial_no + android_id;
 
-        TelephonyManager telephonyManager = (TelephonyManager) getSystemService(Context.TELEPHONY_SERVICE);
+        final TelephonyManager mTelephony = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
         if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
             // TODO: Consider calling
             //    ActivityCompat#requestPermissions
@@ -682,8 +735,22 @@ String reg_code;
 
             return;
         }
-        device_id = telephonyManager.getDeviceId();
-        imei_no = telephonyManager.getImei();
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            device_id = android.provider.Settings.Secure.getString(
+                    getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        } else {
+            if (mTelephony.getDeviceId() != null) {
+                device_id = mTelephony.getDeviceId();
+            } else {
+                device_id = android.provider.Settings.Secure.getString(
+                        getApplicationContext().getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+            }
+
+        }
+        /*device_id = telephonyManager.getDeviceId();
+        imei_no = telephonyManager.getImei();*/
         if (intent != null) {
             operation = intent.getStringExtra("operation");
             code_category = intent.getStringExtra("code");
@@ -696,7 +763,7 @@ String reg_code;
 
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
-            qty_decimal_check = settings.get_Qty_Decimal();
+            qty_decimal_check = Globals.objsettings.get_Qty_Decimal();
         } catch (Exception ex) {
             decimal_check = "1";
         }
@@ -744,8 +811,15 @@ String reg_code;
                 for (int i = 0; i < order_detail.size(); i++) {
                     String strItemCode = order_detail.get(i).get_item_code();
                     Item item = Item.getItem(getApplicationContext(), " WHERE item_code = '" + strItemCode + "'", database, db);
-                    cartItem = new ShoppingCart(getApplicationContext(), order_detail.get(i).get_sr_no(), order_detail.get(i).get_item_code(), item.get_item_name(), order_detail.get(i).get_quantity(), order_detail.get(i).get_cost_price(), order_detail.get(i).get_sale_price(), order_detail.get(i).get_tax(), "0", order_detail.get(i).get_line_total());
-                    Globals.cart.add(cartItem);
+                    Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + item.get_item_group_code() + "'");
+                    String masterCode="0";
+                    if(item.getIs_modifier().equals("1")){
+                        ReceipeModifier dtl_modifier = ReceipeModifier.getReceipemOdifier(getApplicationContext(), database,db," where modifier_code='" + item.get_item_code() + "'");
+
+                        masterCode= dtl_modifier.getItem_code();
+                    }
+                    cartItem = new ShoppingCart(getApplicationContext(), order_detail.get(i).get_sr_no(), order_detail.get(i).get_item_code(), item.get_item_name(), order_detail.get(i).get_quantity(), order_detail.get(i).get_cost_price(), order_detail.get(i).get_sale_price(), order_detail.get(i).get_tax(), "0", order_detail.get(i).get_line_total(),item.getIs_modifier(),masterCode,item_group.getCategoryIp(),order_detail.get(i).getIs_KitchenPrintFlag(),item.get_unit_id(),order_detail.get(i).getBeforeTaxPrice());
+                    Globals.cart.add(cartItem);;
                     Globals.TotalItemPrice = Globals.TotalItemPrice + Double.parseDouble(order_detail.get(i).get_line_total());
 //                    Globals.TotalItemPrice = Globals.TotalItemPrice +( Double.parseDouble(order_detail.get(i).get_sale_price())* Double.parseDouble(order_detail.get(i).get_quantity()));
                     Globals.TotalQty = Globals.TotalQty + Integer.parseInt(order_detail.get(i).get_quantity());
@@ -831,10 +905,16 @@ String reg_code;
         btn_Qty = (Button) findViewById(R.id.btn_Qty);
         tabLayout = (TabLayout) findViewById(R.id.tabs);
         viewPager = (ViewPager) findViewById(R.id.viewpager);
+        viewPager.beginFakeDrag();
         list_title = (TextView) findViewById(R.id.list_title);
-        fragList = new ArrayList<android.support.v4.app.Fragment>();
+        fragList = new ArrayList<Fragment>();
         if (!Globals.Industry_Type.equals("3")) {
-            setupViewPager(viewPager, "Main", "", "", "");
+            try{
+                setCategoryAdapter();
+            }
+            catch(ExceptionConverter e)
+            { }
+          //  setupViewPager(viewPager, "Main", "", "", "");
             btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
             String itemPrice;
             itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
@@ -864,7 +944,7 @@ String reg_code;
             @Override
             public void onTabReselected(TabLayout.Tab tab) {
                 String ItemCategoryCode = arrayListcategory.get(tab.getPosition()).get_item_group_code();
-                call_parent_dialog(ItemCategoryCode);
+              //  call_parent_dialog(ItemCategoryCode);
             }
         });
 
@@ -881,12 +961,15 @@ String reg_code;
         my_company_email = (TextView) hView.findViewById(R.id.my_company_email);
         txt_user_name = (TextView) hView.findViewById(R.id.txt_user_name);
         txt_version = (TextView) hView.findViewById(R.id.txt_version);
+
         Menu menu = navigationView.getMenu();
         MenuItem nav_item;
         try {
             lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
             if (lite_pos_registration.getproject_id().equals("cloud")) {
 
+                nav_item = menu.findItem(R.id.nav_payment);
+                nav_item.setVisible(false);
             } else {
                 nav_item = menu.findItem(R.id.nav_return);
                 nav_item.setVisible(false);
@@ -903,48 +986,7 @@ String reg_code;
         // Industry_Type 1 for restruant
         // Industry_Type 2 for saloon
         // Industry_Type 5 for retail
-        if (Globals.Industry_Type.equals("3")) {
-            nav_item = menu.findItem(R.id.nav_item_category);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_item);
-            nav_item.setVisible(false);
-
-            nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-
-
-            nav_item = menu.findItem(R.id.nav_recepts);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_man);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_resv);
-            nav_item.setVisible(false);
-
-//            nav_item = menu.findItem(R.id.nav_item_tax);
-//            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_acc);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_stock_adjest);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_purchese);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_return);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_manufacture);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_class);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_destination);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_ticketing);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_setup);
-            nav_item.setVisible(false);
-
-            bottomNavigationView.setVisibility(View.GONE);
-            topNavigationView.setVisibility(View.GONE);
-
-        } else if (Globals.Industry_Type.equals("1")) {
+       if (Globals.Industry_Type.equals("1")) {
             nav_item = menu.findItem(R.id.nav_resv);
             nav_item.setVisible(false);
             nav_item = menu.findItem(R.id.nav_pay_collection);
@@ -960,98 +1002,6 @@ String reg_code;
             nav_item = menu.findItem(R.id.nav_setup);
             nav_item.setVisible(false);
             nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-        } else if (Globals.Industry_Type.equals("2")) {
-//            nav_item = menu.findItem(R.id.nav_resv);
-//            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_pay_collection);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_manufacture);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_class);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_destination);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_ticketing);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_setup);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-        } else if (Globals.Industry_Type.equals("5")) {
-            nav_item = menu.findItem(R.id.nav_pay_collection);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_resv);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_class);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_destination);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_ticketing);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_setup);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_manufacture);
-            nav_item.setVisible(false);
-        } else if (Globals.Industry_Type.equals("4")) {
-            nav_item = menu.findItem(R.id.nav_pay_collection);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_resv);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_manufacture);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_class);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_destination);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_ticketing);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_setup);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_resv);
-            nav_item.setVisible(false);
-//            nav_item = menu.findItem(R.id.nav_item_tax);
-//            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_acc);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_stock_adjest);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_purchese);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_return);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_pay_collection);
-            nav_item.setVisible(false);
-        } else if (Globals.Industry_Type.equals("6")) {
-
-            nav_item = menu.findItem(R.id.nav_item_category);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_item);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_search_order);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_recepts);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_man);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_resv);
-            nav_item.setVisible(false);
-
-//            nav_item = menu.findItem(R.id.nav_item_tax);
-//            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_acc);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_stock_adjest);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_purchese);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_return);
-            nav_item.setVisible(false);
-            nav_item = menu.findItem(R.id.nav_pay_collection);
             nav_item.setVisible(false);
         }
         NavigationView navigationViewRight = (NavigationView) findViewById(R.id.right_nav_view2);
@@ -1071,6 +1021,9 @@ String reg_code;
             nav_item1.setVisible(false);
             nav_item1 = menu1.findItem(R.id.nav_loyalty);
             nav_item1.setVisible(false);
+            menu1.findItem(R.id.nav_get_itemimages).setVisible(false);
+
+
         } else {
             nav_item1 = menu1.findItem(R.id.nav_coupon);
             nav_item1.setVisible(false);
@@ -1084,19 +1037,7 @@ String reg_code;
 //            nav_item1.setVisible(false);
 //        }
 
-        if (Globals.Industry_Type.equals("3")) {
-            nav_item1 = menu1.findItem(R.id.nav_unit);
-            nav_item1.setVisible(false);
-            nav_item1 = menu1.findItem(R.id.nav_tax);
-            nav_item1.setVisible(false);
-            nav_item1 = menu1.findItem(R.id.nav_get_file);
-            nav_item1.setVisible(false);
-        } else if (Globals.Industry_Type.equals("6")) {
-            nav_item1 = menu1.findItem(R.id.nav_unit);
-            nav_item1.setVisible(false);
-            nav_item1 = menu1.findItem(R.id.nav_get_file);
-            nav_item1.setVisible(false);
-        }
+
 
         navigationView.setNavigationItemSelectedListener(this);
 
@@ -1105,6 +1046,8 @@ String reg_code;
         try {
             PackageInfo pInfo = null;
             pInfo = getPackageManager().getPackageInfo(getPackageName(), 0);
+            versionname= pInfo.versionName;
+
             my_company_name.setText(Globals.objLPR.getCompany_Name());
             my_company_email.setText(Globals.objLPR.getEmail());
             txt_user_name.setText(user.get_name());
@@ -1135,7 +1078,7 @@ String reg_code;
                                     Thread timerThread = new Thread() {
                                         public void run() {
                                             try {
-                                                sleep(1000);
+                                                sleep(100);
                                                 pDialog.dismiss();
                                                 Globals.Order_Code = "";
                                                 Globals.Operation = "";
@@ -1160,7 +1103,7 @@ String reg_code;
                                 }
                                 break;
                             case R.id.action_save:
-                                if (settings.get_Is_Customer_Display().equals("true")) {
+                                if (Globals.objsettings.get_Is_Customer_Display().equals("true")) {
                                     mDSKernel = DSKernel.newInstance();
                                     mDSKernel.checkConnection();
                                     mDSKernel.init(getApplicationContext(), mConnCallback);
@@ -1170,7 +1113,7 @@ String reg_code;
                                             try {
                                                 Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                                                 displayTilte = lite_pos_registration.getCompany_Name();
-                                                if (settings.get_CustomerDisplay().equals("1")) {
+                                                if (Globals.objsettings.get_CustomerDisplay().equals("1")) {
                                                     call_MN();
                                                     call_CMD();
                                                 } else {
@@ -1194,7 +1137,7 @@ String reg_code;
                                     Thread timerThread = new Thread() {
                                         public void run() {
                                             try {
-                                                sleep(1000);
+                                                sleep(100);
                                                 pDialog.dismiss();
                                                 Globals.Order_Code = "";
                                                 Globals.CMDItemPrice = 0;
@@ -1203,6 +1146,37 @@ String reg_code;
                                                     public void run() {
                                                         if (opr.equals("Edit")) {
                                                             save_order(strRemarks);
+                                                            progressDialog = new ProgressDialog(Main2Activity.this);
+                                                            progressDialog.setTitle("");
+                                                            progressDialog.setMessage(getString(R.string.waiting));
+                                                            progressDialog.setCancelable(false);
+                                                            progressDialog.show();
+                                                            Thread t = new Thread(){
+                                                                @Override
+                                                                public void run() {
+                                                                    try {
+                                                                        printKOT(strOrderCode, progressDialog);
+                                                                        progressDialog.dismiss();
+                                                                        Globals.setEmpty();
+                                                                        try {
+                                                                            Intent i = new Intent(getApplicationContext(),Main2Activity.class);
+                                                                            startActivity(i);
+                                                                              /*  btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
+                                                                                String itemPrice;
+                                                                                itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
+                                                                                btn_Item_Price.setText(itemPrice);*/
+                                                                        }
+                                                                        catch(Exception e){
+                                                                            System.out.println(e.getMessage());
+                                                                        }
+
+                                                                    }
+                                                                    catch(Exception e){
+                                                                        System.out.println(e.getMessage());
+                                                                    }
+
+                                                                }
+                                                            };t.start();
                                                         } else {
                                                             showdialogremarksdialog();
                                                         }
@@ -1218,7 +1192,7 @@ String reg_code;
                                 }
                                 break;
                             case R.id.action_clear:
-                                if (settings.get_Is_Customer_Display().equals("true")) {
+                                if (Globals.objsettings.get_Is_Customer_Display().equals("true")) {
                                     mDSKernel = DSKernel.newInstance();
                                     mDSKernel.checkConnection();
                                     mDSKernel.init(getApplicationContext(), mConnCallback);
@@ -1228,7 +1202,7 @@ String reg_code;
                                             try {
                                                 Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                                                 displayTilte = lite_pos_registration.getCompany_Name();
-                                                if (settings.get_CustomerDisplay().equals("1")) {
+                                                if (Globals.objsettings.get_CustomerDisplay().equals("1")) {
                                                     call_MN();
                                                     call_CMD();
                                                 } else {
@@ -1261,6 +1235,9 @@ String reg_code;
                                     }
                                 }
                                 break;
+                            case R.id.action_whatsapphelp:
+                                openWhatsApp();
+                                break;
                         }
                         return true;
                     }
@@ -1279,7 +1256,7 @@ String reg_code;
                         }
                         break;
                     case R.id.action_category:
-                        if (settings.get_Is_BR_Scanner_Show().equals("true")) {
+                        if (Globals.objsettings.get_Is_BR_Scanner_Show().equals("true")) {
                             try {
                                 Globals.BarcodeReslt = "";
                                 mScannerView.startCamera(); // Programmatically initialize the scanner view
@@ -1297,8 +1274,8 @@ String reg_code;
                         break;
                     case R.id.action_music:
                         Intent intent_retail = new Intent(Main2Activity.this, RetailActivity.class);
-                        intent_retail.putExtra("opr1", opr);
-                        intent_retail.putExtra("order_code1", strOrderCode);
+                        intent_retail.putExtra("opr", opr);
+                        intent_retail.putExtra("order_code", strOrderCode);
                         startActivity(intent_retail);
                         finish();
                         break;
@@ -1324,7 +1301,7 @@ String reg_code;
 
                 if (id == R.id.nav_tax) {
                     userPermission = new UserPermission();
-                    Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Tax), TaxListActivity.class);
+                    Boolean result = userPermission.Permission(Main2Activity.this, "Tax", TaxListActivity.class);
                     if (result == null) {
                         Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -1343,7 +1320,7 @@ String reg_code;
                     }
                 } else if (id == R.id.nav_unit) {
                     userPermission = new UserPermission();
-                    Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Unit), UnitListActivity.class);
+                    Boolean result = userPermission.Permission(Main2Activity.this, "Unit", UnitListActivity.class);
                     if (result == null) {
                         Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -1353,7 +1330,7 @@ String reg_code;
 
                 } else if (id == R.id.nav_database) {
                     userPermission = new UserPermission();
-                    Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Database), DataBaseActivity.class);
+                    Boolean result = userPermission.Permission(Main2Activity.this, "Database", DataBaseActivity.class);
                     if (result == null) {
                         Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -1363,7 +1340,7 @@ String reg_code;
 
                 } else if (id == R.id.nav_lic) {
                     userPermission = new UserPermission();
-                    Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Update_License), ActivateActivity.class);
+                    Boolean result = userPermission.Permission(Main2Activity.this, "Update License", ActivateActivity.class);
                     if (result == null) {
                         Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -1373,7 +1350,7 @@ String reg_code;
 
                 } else if (id == R.id.nav_profile) {
                     userPermission = new UserPermission();
-                    Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Profile), ProfileActivity.class);
+                    Boolean result = userPermission.Permission(Main2Activity.this, "Profile", ProfileActivity.class);
                     if (result == null) {
                         Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                         DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -1391,7 +1368,27 @@ String reg_code;
                     startActivity(intent_about);
                     finish();
 
-                } else if (id == R.id.nav_get_file) {
+                }
+
+                else if (id == R.id.nav_privacy) {
+                    try {
+                        String url = "http://www.pegasustech.net/privacy";
+                        Intent i = new Intent(Intent.ACTION_VIEW);
+                        i.setData(Uri.parse(url));
+
+
+                        startActivity(i);
+                    }
+                    catch (ActivityNotFoundException e) {
+                        // Chrome is probably not installed
+                        // Try with the default browser
+                        Toast.makeText(Main2Activity.this,"There is no default browser Installed",Toast.LENGTH_LONG).show();
+                        //i.setPackage(null);
+                        //startActivity(i);
+                    }
+                    //finish();
+                }
+                else if (id == R.id.nav_get_file) {
                     if (isNetworkStatusAvialable(getApplicationContext())) {
                         arrayListGetFile = new ArrayList<String>();
                         arrayListGetFile.add("itemgroup.csv");
@@ -1408,7 +1405,7 @@ String reg_code;
                                 //downloading thread
                                 for (int i = 0; i < arrayListGetFile.size(); i++) {
                                     try {
-                                        DownloadFileFromURL("http://" + Globals.App_IP + "/lite-pos-lic/upload/demo_files/" + arrayListGetFile.get(i) + "", "" + arrayListGetFile.get(i) + "");
+                                      //  DownloadFileFromURL("http://" + Globals.App_IP + "/trigger-pos/upload/demo_files/" + arrayListGetFile.get(i) + "", "" + arrayListGetFile.get(i) + "");
                                     } catch (Exception e) {
                                         e.printStackTrace();
                                     }
@@ -1425,7 +1422,14 @@ String reg_code;
                     } else {
                         Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
                     }
-                } else if (id == R.id.nav_send_db) {
+                }
+                else if(id==R.id.nav_get_itemimages){
+                    if (isNetworkStatusAvialable(getApplicationContext())) {
+                        new DownlaodImageAsyncTask().execute();
+                    }
+                }
+
+                else if (id == R.id.nav_send_db) {
                     if (isNetworkStatusAvialable(getApplicationContext())) {
                         DatabaseBackUp();
 
@@ -1458,13 +1462,20 @@ String reg_code;
         });
     }
 
-    public void call_parent_dialog(String ItemCategoryCode) {
+    public void call_parent_dialog(String ItemCategoryCode,String itemgroupname) {
         listDialog = new Dialog(Main2Activity.this);
         listDialog.setTitle("Select Category");
         LayoutInflater li = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
         View v = li.inflate(R.layout.order_type_list, null, false);
         listDialog.setContentView(v);
         listDialog.setCancelable(true);
+        if(itemgroupname!="") {
+            tv_subcategory.setVisibility(View.VISIBLE);
+            tv_subcategory.setText(itemgroupname);
+        }
+        else{
+            tv_subcategory.setVisibility(View.GONE);
+        }
         //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(),database,db," where item_group_code = '"+ItemCategoryCode+"'");
         final ArrayList<Item_Group> item_groupArrayList = Item_Group.getAllItem_Group(getApplicationContext(), "where parent_code IN ('" + ItemCategoryCode + "') order by item_group_name ASC", database, db);
         ListView list1 = (ListView) listDialog.findViewById(R.id.lv_custom_ortype);
@@ -1476,7 +1487,7 @@ String reg_code;
             listDialog.show();
         }
 
-        Globals.TabPos = viewPager.getCurrentItem();
+       // Globals.TabPos = viewPager.getCurrentItem();
         setupViewPager(viewPager, "Main", "", ItemCategoryCode, "Parent");
     }
 
@@ -1493,7 +1504,7 @@ String reg_code;
         }
     }
 
-
+/*
     public void DownloadFileFromURL(String strUrl, String fileName) {
 
         HttpEntity entity;
@@ -1542,13 +1553,13 @@ String reg_code;
         if (!back.equals("false")) {
             //ReadFile(back);
         }
-    }
+    }*/
 
     private void defult_ordertype() {
         Menu menu = topNavigationView.getMenu();
         orertype = menu.findItem(R.id.action_order_type);
 
-        switch (settings.get_Default_Ordertype()) {
+        switch (Globals.objsettings.get_Default_Ordertype()) {
             case "1":
                 orertype.setIcon(R.drawable.deliver);
                 break;
@@ -1569,7 +1580,7 @@ String reg_code;
                 break;
         }
 
-        Globals.strOrder_type_id = settings.get_Default_Ordertype();
+        Globals.strOrder_type_id = Globals.objsettings.get_Default_Ordertype();
         String strOrder_type = Globals.strOrder_type_id;
         order_type = Order_Type.getOrder_Type(getApplicationContext(), "WHERE order_type_id ='" + strOrder_type + "'", database, db);
         try {
@@ -1652,7 +1663,7 @@ String reg_code;
             objOrder = new Orders(getApplicationContext(), objOrder.get_order_id(),liccustomerid, locCode, Globals.strOrder_type_id, strOrderCode, objOrder.get_order_date(), Globals.strContact_Code,
                     "0", Globals.TotalItem + "", Globals.TotalQty + "",
                     Globals.TotalItemPrice + "", "0", "0", Globals.TotalItemPrice + "", "",
-                    "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, objOrder.get_remarks(), Globals.strTable_Code, "");
+                    "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, objOrder.get_remarks(), Globals.strTable_Code, "",null);
             long l = objOrder.updateOrders("order_code=? And order_id=?", new String[]{strOrderCode, objOrder.get_order_id()}, database);
             if (l > 0) {
                 strFlag1 = "1";
@@ -1661,7 +1672,7 @@ String reg_code;
                     ShoppingCart mCart = myCart.get(count);
                     objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderCode,
                             "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
-                            mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
+                            mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0","false",mCart.getUnitId(),"");
                     long o = objOrderDetail.insertOrder_Detail(database);
                     if (o > 0) {
                         strFlag1 = "1";
@@ -1703,7 +1714,7 @@ String reg_code;
             objOrder = new Orders(getApplicationContext(), null, liccustomerid, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strContact_Code,
                     "0", Globals.TotalItem + "", Globals.TotalQty + "",
                     Globals.TotalItemPrice + "", "0", "0", Globals.TotalItemPrice + "", "",
-                    "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, strRemarks, Globals.strTable_Code, "");
+                    "0", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, strRemarks, Globals.strTable_Code, "",null);
             long l = objOrder.insertOrders(database);
 
             if (l > 0) {
@@ -1712,7 +1723,7 @@ String reg_code;
                     ShoppingCart mCart = myCart.get(count);
                     objOrderDetail = new Order_Detail(getApplicationContext(), null, liccustomerid, strOrderNo,
                             "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
-                            mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
+                            mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0","false",mCart.getUnitId(),"");
                     long o = objOrderDetail.insertOrder_Detail(database);
                     if (o > 0) {
                         strFlag1 = "1";
@@ -1737,7 +1748,15 @@ String reg_code;
         if (strFlag1.equals("1")) {
             database.setTransactionSuccessful();
             database.endTransaction();
-            Globals.setEmpty();
+            if (Globals.objLPR.getproject_id().equals("cloud") && Globals.objsettings.get_IsOnline().equals("true")) {
+                Sendorder_BackgroundAsyncTask order = new Sendorder_BackgroundAsyncTask();
+                order.execute();
+            }
+
+
+            if(!opr.equals("Edit")) {
+                strOrderCode = strOrderNo;
+            }
             opr = "Add";
             Globals.Operation = opr;
             btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
@@ -1746,11 +1765,52 @@ String reg_code;
             btn_Item_Price.setText(itemPrice);
             defult_ordertype();
             clear_btn_enable();
-            Toast.makeText(getApplicationContext(), R.string.Orders_Saved_Successfully, Toast.LENGTH_SHORT).show();
             if (OrintValue == Configuration.ORIENTATION_LANDSCAPE) {
 
                 retail_list_load();
             }
+            change_customer_icon();
+            Toast.makeText(getApplicationContext(), R.string.Orders_Saved_Successfully, Toast.LENGTH_SHORT).show();
+            if(!Globals.objsettings.getIs_KitchenPrint().equals("true")){
+                Globals.setEmpty();
+                try {
+                    Intent i = new Intent(getApplicationContext(),Main2Activity.class);
+                    startActivity(i);
+                               /* btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
+                                String itemPrice;
+                                itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
+                                btn_Item_Price.setText(itemPrice);*/
+                }
+                catch(Exception e){
+                    System.out.println(e.getMessage());
+                }
+            }
+
+
+/*            if(opr.equals("Edit")){
+                            if(Globals.objsettings.getIs_KitchenPrint().equals("true")){
+               // pDialog.dismiss();
+               // listDialog2.dismiss();
+
+                progressDialog = new ProgressDialog(MainActivity.this);
+                progressDialog.setTitle("");
+                progressDialog.setMessage(getString(R.string.waiting));
+                progressDialog.setCancelable(false);
+                progressDialog.show();
+                Thread t = new Thread(){
+                    @Override
+                    public void run() {
+                        printKOT(strOrderCode,progressDialog);
+
+                    }
+                };t.start();
+             *//*  PrintKOT_BackgroundAsyncTask order = new PrintKOT_BackgroundAsyncTask();
+                order.execute();*//*
+
+
+
+            }
+            }*/
         }
     }
 
@@ -1758,6 +1818,849 @@ String reg_code;
         Menu menu = bottomNavigationView.getMenu();
         orertype = menu.findItem(R.id.action_clear);
         orertype.setEnabled(true);
+    }
+
+    private void printKOT(String strOrderNo,ProgressDialog pdialog) {
+        boolean flag = false;
+        getIP();
+        try {
+
+
+            for (int i = 0; i < ipAdd.size(); i++) {
+                ip = ipAdd.get(i).toString();
+
+                try {
+                    final Orders orders = Orders.getOrders(Main2Activity.this, database, "WHERE order_code = '" +strOrderNo + "'");
+                    final Order_Detail order_detail1 = Order_Detail.getOrder_Detail(Main2Activity.this, "WHERE order_code = '" + strOrderNo + "'",database);
+
+                    performOperationEn(ipAdd.get(i), 0, "Order",orders,order_detail1,pdialog);
+                    performOperationEn(ipAdd.get(i), 0, "Void",orders,order_detail1,pdialog);
+
+                } catch (Exception ex) {
+                    //   GlobleVar.isSendOnline = true;
+                    ex.getStackTrace();
+                    //Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+                }
+                //String last = ipAdd.get(ipAdd.size() - 1);
+
+
+            }
+
+
+/******************************** Master Print ***************************/
+
+  /*          try {
+                String result = getMasterPrint_from_server();
+                JSONObject jsonObject = new JSONObject(result);
+
+                String message = jsonObject.getString("Message");
+                String printername = jsonObject.getString("PrinterName");
+
+
+                if (message.equals("Success")) {
+                    // Toast.makeText(getApplicationContext(), message.toString(), Toast.LENGTH_SHORT).show();
+                    performOperationEn(printername, 1, "Order");
+                    performOperationEn(printername, 1, "Void");
+                } else {
+                    Toast.makeText(getApplicationContext(), "Master Print json" + result, Toast.LENGTH_SHORT).show();
+                }
+            } catch (Exception e) {
+
+            }*/
+            // pDialog.dismiss();
+
+
+        } catch (Exception e) {
+            //  GlobleVar.isSendOnline = true;
+            Toast.makeText(getApplicationContext(), "Something Went Wrong", Toast.LENGTH_SHORT).show();
+        }
+    }
+
+    public Boolean CheckprinterConnection(String ipp) {
+
+
+        if (!ipp.equals("")) {
+            String ipAddress = "";
+            String tmpPort = "";
+            int port = 9100;
+            String[] strings = StringSplit(ipp, ":");
+            ipAddress = strings[0];
+            tmpPort = strings[1];
+            port = Integer.parseInt(tmpPort);
+
+            if (!WifiPrintDriver.WIFISocket(ipAddress, port)) {
+                WifiPrintDriver.Close();
+                return false;
+            } else {
+                if (WifiPrintDriver.IsNoConnection()) {
+                    return false;
+                }
+                return true;
+            }
+
+        } else {
+            return false;
+        }
+    }
+
+    private void getIP() {
+        try {
+            ipAdd.clear();
+
+            String sqlQuery=  "Select Distinct(categoryIp ) from item_group where item_group_code IN (Select item_group_code from item where item_code IN (Select item_code from order_detail Where order_code='"+strOrderCode+"'))";
+
+            Cursor cursor = database.rawQuery(sqlQuery, null);
+
+            // looping through all rows and adding to list
+            if (cursor.moveToFirst()) {
+                do {
+                    String categoryIps = cursor.getString(0);
+                    ipAdd.add(categoryIps);
+
+                    ///arrayListTable.add(new Table(this, null, tablecode, tablename, zone_id, zone_name, "", "", "",""));
+                } while (cursor.moveToNext());
+
+            }
+
+            cursor.close();
+
+            // Old Code
+
+     /*       itemgroup_catArrayList = Item_Group.getAllItem_Group(getApplicationContext(), "WHERE is_active ='1' and parent_code = '0' and categoryIp!='' Group BY [categoryIp]", database, db);
+            if (itemgroup_catArrayList.size() > 0) {
+                for (int i = 0; i < itemgroup_catArrayList.size(); i++) {
+
+                   // if(itemgroup_catArrayList.get(i).getCategoryIp().equals(ip)) {
+                        ipAdd.add(itemgroup_catArrayList.get(i).getCategoryIp());
+                    //}
+                }
+            }*/
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+    private void performOperationEn(String ip, int iOperation, String strMode,Orders orders,Order_Detail order_detail,ProgressDialog pDialog) {
+        try {
+            mylist.clear();
+
+            try {
+                getItemCategoryForPrint(ip, iOperation, strMode);
+            } catch (Exception e) {
+                System.out.println(e.getMessage());
+
+            }
+            if (catId.size() > 0) {
+                try {
+                    mylist = getlistTest(iOperation, strMode, ip,orders);
+                } catch (Exception e) {
+
+                    System.out.println(e.getMessage());
+                }
+                Globals.AppLogWrite(mylist);
+                if (mylist.size() > 0) {
+                    try {
+
+
+                        ArrayList<String> lPrintLog1 = new ArrayList<>();
+                        lPrintLog1.add("Operation :" + iOperation);
+                        lPrintLog1.add("Mode :" + strMode);
+                        lPrintLog1.add("Current Printer :" + ip);
+                        lPrintLog1.add("Total Item   :" + Globals.cart.size() + "");
+                       /* for (int lCount = 0; lCount < Globals.cart.size(); lCount++) {
+                            lPrintLog1.add("Count   :" + (lCount + 1) + "");
+                            ShoppingCart cartitem = Globals.cart.get(lCount);
+                            try {
+                                lPrintLog1.add("Item IP :  " + cartitem.getCategoryIp().toString());
+                            } catch (Exception ex) {
+                                lPrintLog1.add("Item IP :  " + ex.getMessage().toString());
+                            }
+
+                 *//*           try {
+                                lPrintLog1.add("Item Print Flag :  " + cartitem.getPrintFlag().toString());
+                            } catch (Exception ex) {
+                                lPrintLog1.add("Item Print Falg :  " + ex.getMessage().toString());
+                            }
+                            try {
+                                lPrintLog1.add("Item New :  " + cartitem.isNew() + "");
+                            } catch (Exception ex) {
+                                lPrintLog1.add("Item New Falg :  " + ex.getMessage().toString());
+                            }*//*
+                            try {
+                                lPrintLog1.add("Item  :  " + cartitem.get_Item_Name().toString());
+                            } catch (Exception ex) {
+                                lPrintLog1.add("Item Name :  " + ex.getMessage().toString());
+                            }
+                        }
+*/
+         /*               if (iOperation == 0 && strMode.equals("Order")) {
+                            for (int lCount = 0; lCount < Globals.cart.size(); lCount++) {
+                                ShoppingCart cartItem = Globals.cart.get(lCount);
+                                try {
+                                    if (cartItem.getCategoryIp().equals(ip)) {
+                                        if (order_detail.getIs_KitchenPrintFlag().equals("false")) {
+                                           // lPrintLog.add(cartItem.get_Item_Name());
+                                            order_detail.setIs_KitchenPrintFlag("true");
+                                        }
+                                    }
+                                } catch (Exception e) {
+
+                                }
+
+
+                            }
+                        }*/
+                        Globals.AppLogWrite(lPrintLog1);
+
+
+                        if (CheckprinterConnection(ip.trim())) {
+                            try {
+                                String bill = "";
+                                for (String data : mylist) {
+                                    bill = bill + data;
+                                }
+                                for (int k = 1; k <= Integer.parseInt(Globals.objsettings.get_No_Of_Print()); k++) {
+                                    WifiPrintDriver.Begin();
+                                    WifiPrintDriver.ImportData(bill);
+                                    WifiPrintDriver.ImportData("\r");
+                                    WifiPrintDriver.excute();
+                                    WifiPrintDriver.ClearData();
+                                    String str = "\r\n\r\n\r\n\r\n";
+                                    byte[] feed = str.getBytes();
+                                    WifiPrintDriver.SPPWrite(feed);
+                                    byte[] paramString1 = new byte[]{27, 109, 2};
+                                    WifiPrintDriver.SPPWrite(paramString1);
+                                    WifiPrintDriver.excute();
+                                    WifiPrintDriver.ClearData();
+
+                                    ArrayList<String> lPrintLog = new ArrayList<>();
+                                    lPrintLog.add(ip);
+                                    lPrintLog.add(" Printing time ip ------------------");
+
+                                    if (iOperation == 0 && strMode.equals("Order")) {
+                                        for (int lCount = 0; lCount < Globals.cart.size(); lCount++) {
+                                            ShoppingCart cartItem = Globals.cart.get(lCount);
+                                            try {
+                                                if (cartItem.getCategoryIp().equals(ip)) {
+                                                    if (cartItem.getKitchenprintflag().equals("false")) {
+                                                        lPrintLog.add(cartItem.get_Item_Name());
+                                                        String sql= "UPDATE order_detail SET is_KitchenPrintFlag = 'true' where item_code= '"+cartItem.get_Item_Code()+"' and order_code='"+strOrderCode+"'";
+                                                        db.executeDML(sql,database);
+                                                        //  order_detail.setIs_KitchenPrintFlag("true");
+                                                    }
+                                                }
+                                            } catch (Exception e) {
+
+                                            }
+
+
+                                        }
+
+                                        // pDialog.dismiss();
+                                      /*  Globals.setEmpty1();
+                                        Globals.strContact_Code = "";
+                                        Globals.strResvContact_Code = "";*/
+                                    }
+                                    else  if (iOperation == 0 && strMode.equals("Void")) {
+                                        for (int lCount = 0; lCount < Globals.voidcart.size(); lCount++) {
+                                            VoidShoppingCart cartItem = Globals.voidcart.get(lCount);
+                                            try {
+                                                if (cartItem.getCategoryIp().equals(ip)) {
+                                                    if (cartItem.getVoidkitchenflag().equals("false")) {
+                                                        String sql = "UPDATE Void SET print_flag = 'true' where item_code= '" + cartItem.get_Item_Code() + "' and order_no='" + strOrderCode + "'";
+                                                        db.executeDML(sql, database);
+                                                    }
+                                                    //  order_detail.setIs_KitchenPrintFlag("true");
+                                                }
+                                            } catch (Exception e) {
+
+                                            }
+
+
+                                        }
+
+                                        // pDialog.dismiss();
+                                   /*     Globals.setEmpty1();
+                                        Globals.strContact_Code = "";
+                                        Globals.strResvContact_Code = "";*/
+                                    }
+                                    Globals.AppLogWrite(lPrintLog);
+
+
+                                }
+
+
+                                // Globals.isSendOnline = true;
+                            } catch (Exception e) {
+                                //GlobleVar.isSendOnline = true;
+
+                            }
+
+                        }
+
+
+                    } catch (Exception ex) {
+                        //  GlobleVar.isSendOnline = true;
+                        Toast.makeText(getApplicationContext(), "Please Check Printer Connection", Toast.LENGTH_SHORT).show();
+                    }
+
+                    // pDialog.dismiss();
+                    //  Globals.setEmpty();
+
+                } else {
+                    // GlobleVar.isSendOnline = true;
+                }
+
+
+            } else {
+
+                //GlobleVar.isSendOnline = true;
+            }
+        } catch (Exception ex) {
+            // GlobleVar.isSendOnline = true;
+            ex.getStackTrace();
+        }
+
+    }
+
+    private void getItemCategoryForPrint(String ip, int iOperation, String strMoString) {
+        catId.clear();
+        final ArrayList<ShoppingCart> myCart = Globals.cart;
+        if (strMoString.equals("Order")) {
+            if (iOperation == 0) {
+                itemgroup_catArrayList = Item_Group.getAllItem_Group(getApplicationContext(), "WHERE is_active ='1' and parent_code = '0' and categoryIp!='' Group BY [categoryIp]", database, db);
+            } else {
+                itemgroup_catArrayList = Item_Group.getAllItem_Group(getApplicationContext(), "WHERE is_active ='1' and parent_code = '0'", database, db);
+            }
+
+            for (int a = 0; a < ipAdd.size(); a++) {
+                for (int i = 0; i < myCart.size(); i++) {
+                    ShoppingCart cartitem = myCart.get(i);
+                    ReceipeModifier dtl_modifier = ReceipeModifier.getReceipemOdifier(getApplicationContext(), database,db," where modifier_code='" + cartitem.get_Item_Code() + "'");
+
+
+                    if (cartitem.getIs_modifier().equals("1")) {
+                        if (dtl_modifier != null) {
+                            Order_Detail categoryitem = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + dtl_modifier.getModifier_code() + "'",database);
+
+                            Item item = Item.getItem(getApplicationContext(), " where item_code = '" + categoryitem.get_item_code() + "'", database,db);
+                            if (categoryitem != null) {
+                                if (iOperation == 0) {
+                                    if (!categoryitem.getIs_KitchenPrintFlag().equals("true")) {
+                                        if (!catId.contains(item.get_item_group_code()) && cartitem.getCategoryIp().equals(ipAdd.get(a))) {
+                                            catId.add(item.get_item_group_code());
+                                        }
+                                    } /*else {
+                                        if (!categoryitem.getIsmaster_PrintFlag().equals("true")) {
+                                            if (!catId.contains(categoryitem.get_item_group_code())) {
+                                                catId.add(categoryitem.get_item_group_code());
+                                            }
+                                        }
+                                    }*/
+
+                                }
+
+                            }
+                        }
+                    } else {
+                        Order_Detail categoryitem = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + myCart.get(i).get_Item_Code() + "'",database);
+                        Item item = Item.getItem(getApplicationContext(), " where item_code = '" + categoryitem.get_item_code()+ "'", database,db);
+
+                        if (categoryitem != null) {
+                            if (iOperation == 0) {
+                                if (!categoryitem.getIs_KitchenPrintFlag().equals("true")) {
+                                    if (!catId.contains(item.get_item_group_code())&& cartitem.getCategoryIp().equals(ipAdd.get(a))){
+                                        catId.add(item.get_item_group_code());
+                                    }
+                                }
+                            } /*else {
+                                if (!categoryitem.getIsmaster_PrintFlag().equals("true")) {
+                                    if (!catId.contains(categoryitem.get_item_group_code())) {
+                                        catId.add(categoryitem.get_item_group_code());
+                                    }
+                                }
+                            }*/
+                        }
+
+                    }
+                }
+            }
+
+
+        } else {
+            if (iOperation == 0) {
+
+
+                itemgroup_catArrayList = Item_Group.getAllItem_Group(getApplicationContext(), " where categoryIp = '" + ip.trim() + "' and (is_active ='1' and parent_code = '0')", database,db);
+            } else {
+                itemgroup_catArrayList = Item_Group.getAllItem_Group(getApplicationContext(), " where (Active='1' or Active='1')", database,db);
+            }
+
+            for (int a = 0; a < ipAdd.size(); a++) {
+                for (int i = 0; i < Globals.voidcart.size(); i++) {
+                    VoidShoppingCart cartitem = Globals.voidcart.get(i);
+                    ReceipeModifier dtl_modifier = ReceipeModifier.getReceipemOdifier(getApplicationContext(), database,db," where modifier_code='" + cartitem.get_Item_Code() + "'");
+
+                    if (cartitem.getIs_modifier().equals("1")) {
+
+
+                        if (dtl_modifier != null) {
+                            Order_Detail categoryitemorder = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + dtl_modifier.getItem_code() + "'",database);
+
+                            Item categoryitem = Item.getItem(getApplicationContext(), " where item_code = '" + cartitem.get_Item_Code() + "'", database,db);
+                            if (categoryitem != null) {
+                                if (iOperation == 0) {
+                                    if (!cartitem.getVoidkitchenflag().equals("true")) {
+                                        if (!catId.contains(categoryitem.get_item_group_code()) && cartitem.getCategoryIp().equals(ipAdd.get(a))) {
+                                            catId.add(categoryitem.get_item_group_code());
+                                        }
+                                    }
+                                } else {
+                                    if (!cartitem.getVoidkitchenflag().equals("true")) {
+                                        if (!catId.contains(categoryitem.get_item_group_code()) && cartitem.getCategoryIp().equals(ipAdd.get(a))) {
+                                            catId.add(categoryitem.get_item_group_code());
+                                        }
+                                    }
+
+                                }
+                            }
+                        }
+                    } else {
+                        //  Order_Detail categoryitemorder = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + cartitem.get_Item_Code() + "'",database);
+
+                        Item categoryitem = Item.getItem(getApplicationContext(), " where item_code = '" + cartitem.get_Item_Code() + "'", database,db);
+
+                        if (categoryitem != null) {
+                            if (iOperation == 0) {
+                                // if (!item.getPrintFlag().equals("true")) {
+                                if (!cartitem.getVoidkitchenflag().equals("true")) {
+                                    if (!catId.contains(categoryitem.get_item_group_code()) && cartitem.getCategoryIp().equals(ipAdd.get(a))) {
+                                        catId.add(categoryitem.get_item_group_code());
+                                    }
+                                }
+                                // }
+                            } else {
+                                if (!cartitem.getVoidkitchenflag().equals("true")) {
+                                    if (!catId.contains(categoryitem.get_item_group_code()) && cartitem.getCategoryIp().equals(ipAdd.get(a))) {
+                                        catId.add(categoryitem.get_item_group_code());
+                                    }
+                                }
+                            }
+
+                        }
+
+                    }
+                }
+            }
+
+
+
+        }
+
+    }
+
+    private ArrayList<String> getlistTest(int iOperation, String strMode, String Ip,Orders orders) {
+        order_type = Order_Type.getOrder_Type(getApplicationContext(), "WHERE order_type_id='" + orders.get_order_type_id() + "'", database, db);
+
+        if (strMode.equals("Order")) {
+
+
+            ArrayList<String> mylist = new ArrayList<String>();
+            mylist.add("------------------------------------------------\n");
+            int ln = "KOT".length();
+            int rem = 48 - ln;
+            int part = rem / 2;
+            String tt1 = "";
+            for (int k = 0; k < part; k++) {
+                tt1 = tt1 + " ";
+            }
+            tt1 = tt1 + "KOT";
+            for (int j = 0; j < part; j++) {
+                tt1 = tt1 + " ";
+            }
+            mylist.add(tt1);
+            mylist.add("\n------------------------------------------------");
+            mylist.add("\nDate&Time :" + new DateUtill().currentDate());
+            mylist.add("\nPOS       :" + orders.get_device_code());
+            mylist.add("\nOrder No. :" + orders.get_order_code());
+            mylist.add("\nOrder Type     :" + order_type.get_name() );
+
+            mylist.add("\n------------------------------------------------\n");
+            mylist.add("Qty  * Item                             " + "\n");
+            mylist.add("------------------------------------------------");
+            String qty = "", name = "", raw;
+            boolean bCheck = true;
+            boolean bFinalCheck = true;
+            for (int a = 0; a < catId.size(); a++) {
+                for (int i = 0; i < Globals.cart.size(); i++) {
+
+
+                    ShoppingCart cartitem = Globals.cart.get(i);
+                    ReceipeModifier dtl_modifier = ReceipeModifier.getReceipemOdifier(getApplicationContext(), database, db, " where modifier_code='" + cartitem.get_Item_Code() + "'");
+
+                    if (cartitem.getIs_modifier().equals("1")) {
+
+
+                        if (dtl_modifier != null) {
+                            //Item categoryitem = Item.getItem(getApplicationContext(), " where item_code = '" + dtl_modifier.getItem_code() + "' and item_group_code = '" + itemgroup_catArrayList.get(a).get_item_group_code()+ "'", database,db);
+                            Order_Detail aetSet_pos_menu_item = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + dtl_modifier.getModifier_code() + "'", database);
+                            Item item = Item.getItem(getApplicationContext(), " where item_code = '" + aetSet_pos_menu_item.get_item_code() + "'", database, db);
+
+                            //     Item aetSet_pos_menu_item = Item.getItem(getApplicationContext(), " where item_code = '" + dtl_modifier.getItem_code() + "' and item_group_code = '" + catId.get(a) + "'", database,db);
+                            if (aetSet_pos_menu_item != null) {
+                                if (iOperation == 0) {
+                                    if (aetSet_pos_menu_item.getIs_KitchenPrintFlag().equals("true")) {
+                                    } else {
+                                        //item.setPrintFlag("true");
+
+                                        qty = cartitem.get_Quantity() + "";
+                                        // cartitem.setCategoryIp(Ip);
+                                        name = cartitem.get_Item_Name();
+                                        if (name == null) {
+                                        } else {
+
+                                            if (ip.equals(cartitem.getCategoryIp())) {
+                                                if (catId.get(a).equals(item.get_item_group_code())) {
+                                                    bFinalCheck = false;
+                                                    bCheck = false;
+                                                    raw = qty + "   " + name + "(M)";
+                                                    mylist.add("\n" + raw);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    qty = cartitem.get_Quantity() + "";
+
+                                    name = cartitem.get_Item_Name();
+                                    if (name == null) {
+                                    } else {
+
+                                        if (ip.equals(cartitem.getCategoryIp())) {
+                                            if (catId.get(a).equals(item.get_item_group_code())) {
+                                                bFinalCheck = false;
+                                                bCheck = false;
+                                                raw = qty + "   " + name + " (M)";
+                                                mylist.add("\n" + raw);
+                                            }
+                                        }
+                                    }
+                                }
+
+                            }
+                        }
+                    } else {
+                        Order_Detail aetSet_pos_menu_item = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + cartitem.get_Item_Code() + "'", database);
+
+                        Item item = Item.getItem(getApplicationContext(), " where item_code = '" + aetSet_pos_menu_item.get_item_code() + "'", database, db);
+                        if (aetSet_pos_menu_item != null) {
+                            if (iOperation == 0) {
+                                if (strMode.equals("Order")) {
+                                    if (aetSet_pos_menu_item.getIs_KitchenPrintFlag().equals("true")) {
+                                    } else {
+                                   /* ArrayList<String> lPrintLog1 = new ArrayList<>();
+                                    lPrintLog1.add(ip);
+                                    lPrintLog1.add("-------- get item operation 0");
+                                    GlobleVar.AppLogWrite(lPrintLog1);*/
+                                        qty = cartitem.get_Quantity() + "";
+                                        // cartitem.setCategoryIp(Ip);
+
+                               /*     ArrayList<String> lPrintLog = new ArrayList<>();
+                                    lPrintLog.add("-------- get item 2");
+                                    lPrintLog.add(Ip);
+                                    GlobleVar.AppLogWrite(lPrintLog);*/
+                                        name = cartitem.get_Item_Name();
+                                        if (name == null) {
+                                        } else {
+
+                                            if (ip.equals(cartitem.getCategoryIp())) {
+                                                if (catId.get(a).equals(item.get_item_group_code())) {
+                                                    bFinalCheck = false;
+                                                    bCheck = false;
+                                                    raw = qty + "   " + name;
+                                                    mylist.add("\n" + raw);
+                                                }
+                                            }
+                                        }
+                                    }
+
+                                } else {
+                                    qty = cartitem.get_Quantity() + "";
+                                    //cartitem.setCategoryIp(Ip);
+
+                               /*     ArrayList<String> lPrintLog = new ArrayList<>();
+                                    lPrintLog.add("-------- get item 2");
+                                    lPrintLog.add(Ip);
+                                    GlobleVar.AppLogWrite(lPrintLog);*/
+                                    name = cartitem.get_Item_Name();
+                                    if (name == null) {
+                                    } else {
+
+                                        if (ip.equals(cartitem.getCategoryIp())) {
+                                            if (catId.get(a).equals(item.get_item_group_code())) {
+                                                bFinalCheck = false;
+                                                bCheck = false;
+                                                raw = qty + "   " + name;
+                                                mylist.add("\n" + raw);
+                                            }
+                                        }
+                                    }
+                                }
+
+                            } else {
+                               /* ArrayList<String> lPrintLog = new ArrayList<>();
+                                lPrintLog.add("-------- get item operation 1");
+                                lPrintLog.add(Ip);
+                                GlobleVar.AppLogWrite(lPrintLog);*/
+
+                                // working code
+//                                if (cartitem.getIsmaster_PrintFlag().equals("true")) {
+//                                } else {
+//                                    qty = cartitem.get_Quantity() + "";
+//                                    //item.setCatIp(Ip);
+//                                    name = cartitem.get_Item_Name();
+//                                    if (name == null) {
+//                                    } else {
+//                                        bFinalCheck = false;
+//                                        bCheck = false;
+//                                        raw = qty + "   " + name;
+//                                        mylist.add("\n" + raw);
+//                                    }
+//
+//                                }
+                            }
+
+                        }
+                    }
+
+                }
+            }
+            mylist.add("\n");
+            Globals.AppLogWrite("Order"+ mylist);
+            if (bFinalCheck) {
+                mylist.clear();
+            }
+
+            return mylist;
+        }
+        else
+        {
+            ArrayList<String> mylist = new ArrayList<String>();
+            mylist.add("------------------------------------------------\n");
+            int ln = "Void KOT".length();
+            int rem = 48 - ln;
+            int part = rem / 2;
+            String tt1 = "";
+            for (int k = 0; k < part; k++) {
+                tt1 = tt1 + " ";
+            }
+            tt1 = tt1 + "Void KOT";
+            for (int j = 0; j < part; j++) {
+                tt1 = tt1 + " ";
+            }
+            mylist.add(tt1);
+            mylist.add("\n------------------------------------------------");
+            mylist.add("\nDate&Time :" + new DateUtill().currentDate());
+            mylist.add("\nPOS       :" + orders.get_device_code());
+            mylist.add("\nOrder No. :" + orders.get_order_code());
+            mylist.add("\nOrder Type     :" + order_type.get_name());
+
+
+            mylist.add("\n------------------------------------------------\n");
+            mylist.add("Qty  * Item                             " + "\n");
+            mylist.add("------------------------------------------------");
+            String qty = "", name = "", raw;
+            boolean bCheck = true;
+            boolean bFinalCheck = true;
+            for (int a = 0; a < catId.size(); a++) {
+                for (int i = 0; i < Globals.voidcart.size(); i++) {
+                    VoidShoppingCart cartitem = Globals.voidcart.get(i);
+
+
+                    if (cartitem.getIs_modifier().equals("1")) {
+                        ReceipeModifier dtl_modifier = ReceipeModifier.getReceipemOdifier(getApplicationContext(), database, db, " where modifier_code='" + cartitem.get_Item_Code() + "'");
+                        if (dtl_modifier != null) {
+
+                            Order_Detail aetSet_pos_menu_item = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + dtl_modifier.getModifier_code() + "'", database);
+                            Item item = Item.getItem(getApplicationContext(), " where item_code = '" + cartitem.get_Item_Code()+ "'", database, db);
+                            if (cartitem != null) {
+                                if (iOperation == 0) {
+                                    if (strMode.equals("Order")) {
+                                        if (aetSet_pos_menu_item.getIs_KitchenPrintFlag().equals("true")) {
+                                        } else {
+//                                        item.setPrintFlag("true");
+                                            qty = cartitem.get_Quantity() + "";
+
+                                            name = cartitem.get_Item_Name();
+                                            if (name == null) {
+                                            } else {
+                                                if (ip.equals(cartitem.getCategoryIp())) {
+                                                    if (catId.get(a).equals(item.get_item_group_code())) {
+                                                        bFinalCheck = false;
+                                                        bCheck = false;
+                                                        raw = qty + "   " + name + " (M)";
+                                                        mylist.add("\n" + raw);
+                                                    }}
+                                            }
+                                        }
+                                    } else {
+                                        qty = cartitem.get_Quantity() + "";
+
+                                        name = item.get_item_name();
+                                        if (name == null) {
+                                        } else {
+                                            if (ip.equals(cartitem.getCategoryIp())) {
+                                                if (catId.get(a).equals(item.get_item_group_code())) {
+                                                    bFinalCheck = false;
+                                                    bCheck = false;
+                                                    raw = qty + "   " + name + " (M)";
+                                                    mylist.add("\n" + raw);
+                                                }}
+                                        }
+                                    }
+                                } else {
+                                    // item.setPrintFlag("true");
+                                    qty = cartitem.get_Quantity() + "";
+
+                                    name = cartitem.get_Item_Name();
+                                    ;
+                                    if (name == null) {
+                                    } else {
+                                        if (ip.equals(cartitem.getCategoryIp())) {
+                                            if (catId.get(a).equals(item.get_item_group_code())) {
+                                                bFinalCheck = false;
+                                                bCheck = false;
+                                                raw = qty + "   " + name + "(M)";
+                                                mylist.add("\n" + raw);
+                                            }
+                                        }}
+                                }
+
+                            }
+                        }
+                    } else {
+                        //  Order_Detail aetSet_pos_menu_item = Order_Detail.getOrder_Detail(getApplicationContext(), "WHERE item_code = '" + cartitem.get_Item_Code() + "'",database);
+
+                        Item item = Item.getItem(getApplicationContext(), " where item_code = '" + cartitem.get_Item_Code() + "'", database, db);
+                        if (cartitem != null) {
+                            if (iOperation == 0) {
+                                if (strMode.equals("Order")) {
+                                    if (cartitem.getVoidkitchenflag().equals("true")) {
+                                    } else {
+                                        //  item.setPrintFlag("true");
+                                        qty = cartitem.get_Quantity() + "";
+                                        // cartitem.setCategoryIp(Ip);
+                                        name = cartitem.get_Item_Name();
+                                        if (name == null) {
+                                        } else {
+
+                                            if (ip.equals(cartitem.getCategoryIp())) {
+                                                if (catId.get(a).equals(item.get_item_group_code())) {
+                                                    bFinalCheck = false;
+                                                    bCheck = false;
+                                                    raw = qty + "   " + name;
+                                                    mylist.add("\n" + raw);
+                                                }
+                                            }
+                                        }
+                                    }
+                                } else {
+                                    qty = cartitem.get_Quantity() + "";
+                                    //cartitem.setCategoryIp(Ip);
+                                    name = cartitem.get_Item_Name();
+                                    if (name == null) {
+                                    } else {
+
+                                        if (ip.equals(cartitem.getCategoryIp())) {
+                                            if (catId.get(a).equals(item.get_item_group_code())) {
+                                                bFinalCheck = false;
+                                                bCheck = false;
+                                                raw = qty + "   " + name;
+                                                mylist.add("\n" + raw);
+                                            }
+                                        }
+                                    }
+                                }
+
+                            } else {
+
+                                //   item.setPrintFlag("true");
+                                qty = cartitem.get_Quantity() + "";
+                                //cartitem.setCategoryIp(Ip);
+                                name = cartitem.get_Item_Name();
+                                if (name == null) {
+                                } else {
+
+                                    if (ip.equals(cartitem.getCategoryIp())) {
+                                        if (catId.get(a).equals(item.get_item_group_code())) {
+                                            bFinalCheck = false;
+                                            bCheck = false;
+                                            raw = qty + "   " + name;
+                                            mylist.add("\n" + raw);
+                                        }
+                                    }
+                                }
+
+                            }
+
+                        }
+                    }
+
+                }
+            }
+            mylist.add("\n");
+            Globals.AppLogWrite("VOID"+mylist);
+            if (bFinalCheck) {
+                mylist.clear();
+            }
+
+            return mylist;
+
+        }
+//return  mylist;
+    }
+
+
+
+    class Sendorder_BackgroundAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        Main2Activity activity;
+
+        public Sendorder_BackgroundAsyncTask() {
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+
+                Orders order=new Orders(getApplicationContext());
+
+                order.sendOn_Server(getApplicationContext(), database, db, "Select * From orders WHERE is_push = 'N'",Globals.objLPD.getLic_customer_license_id(),serial_no,android_id,myKey);
+
+                           /* if(result_order.equals("1")){
+                                Toast.makeText(activity, "Data Post Successfully", Toast.LENGTH_SHORT).show();
+                            }*/
+                //Toast.makeText(getApplicationContext(), "Email sent.", Toast.LENGTH_SHORT).show();
+
+
+//                    activity.displayMessage("Email sent.");
+
+
+                return true;
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //Toast.makeText(getApplicationContext(), "Unexpected error occured.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+//                activity.displayMessage("Unexpected error occured.");
+                return false;
+            }
+        }
+
     }
 
     public void setTextView(String price, String qty) {
@@ -1799,6 +2702,11 @@ String reg_code;
                             }
                             json.put("content", "Total : " + Globals.myNumberFormat2Price(Globals.TotalItemPrice, decimal_check));
                             String titleContentJsonStr = json.toString();
+                            dsPacket = UPacketFactory.buildShowText(
+                                    DSKernel.getDSDPackageName(), json.toString(), callback);
+
+                            mDSKernel.sendData(dsPacket);
+                            Globals.AppLogWrite("Item onclick Json"+ json.toString());
                             mDSKernel.sendFile(DSKernel.getDSDPackageName(), titleContentJsonStr, Globals.CMD_Images.get(i), new ISendCallback() {
                                 @Override
                                 public void onSendSuccess(long fileId) {
@@ -1842,20 +2750,14 @@ String reg_code;
         MenuItem searchItem = menu.findItem(R.id.search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 //        if (searchItem.getItemId()== R.id.search) {
-        if (Globals.Industry_Type.equals("3")) {
-            searchView.setVisibility(View.GONE);
-            searchItem = menu.findItem(R.id.table);
-            searchItem.setVisible(false);
-            searchItem = menu.findItem(R.id.search);
-            searchItem.setVisible(false);
-        }
+
 
         if (searchView != null) {
             searchView.setSearchableInfo(searchManager.getSearchableInfo(getComponentName()));
             searchView.setIconifiedByDefault(true);
             searchView.setSubmitButtonEnabled(true);
             ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
-            searchEditText = (EditText) searchView.findViewById(android.support.v7.appcompat.R.id.search_src_text);
+            searchEditText = (EditText) searchView.findViewById(R.id.search_src_text);
             searchEditText.setTextColor(getResources().getColor(R.color.black));
             searchEditText.setBackgroundColor(getResources().getColor(R.color.white));
             searchEditText.setHintTextColor(getResources().getColor(R.color.search_hint_color));
@@ -1912,7 +2814,7 @@ String reg_code;
                                                                     lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                                                                     ck_project_type = lite_pos_registration.getproject_id();
 
-                                                                    if (settings.get_Is_Stock_Manager().equals("false")) {
+                                                                    if (Globals.objsettings.get_Is_Stock_Manager().equals("false")) {
                                                                         Item resultp = arrayList.get(0);
                                                                         String item_code = resultp.get_item_code();
 
@@ -1966,7 +2868,10 @@ String reg_code;
                                                                                 Globals.order_item_tax.add(order_item_tax);
                                                                             }
                                                                             Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                                                                            ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "");
+                                                                            Double spricewdtax= Double.parseDouble(sale_priceStr)-iTaxTotal;
+                                                                            Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + resultp.get_item_code() + "'");
+
+                                                                            ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "","0","0",item_group.getCategoryIp(),"false",resultp.get_unit_id(),spricewdtax+"");
                                                                             Globals.cart.add(cartItem);
                                                                             Globals.SRNO = Globals.SRNO + 1;
                                                                             Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));
@@ -2040,7 +2945,13 @@ String reg_code;
                                                                                     Globals.order_item_tax.add(order_item_tax);
                                                                                 }
                                                                                 Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                                                                                ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "");
+                                                                                Double spricewdtax= Double.parseDouble(sale_priceStr)-iTaxTotal;
+                                                                                Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + resultp.get_item_code() + "'");
+                                                                            /*    Order_Detail order_detail = Order_Detail.getOrder_Detail(getApplicationContext(), " WHERE order_code='" + strOrderCode + "'", database);
+                                                                                if(order_detail!=null){
+                                                                                    strKitchenFlag= order_detail.getIs_KitchenPrintFlag();
+                                                                                }*/
+                                                                                ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "","0","0",item_group.getCategoryIp(),"false",resultp.get_unit_id(),spricewdtax+"");
                                                                                 Globals.cart.add(cartItem);
                                                                                 Globals.SRNO = Globals.SRNO + 1;
                                                                                 Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));
@@ -2073,6 +2984,14 @@ String reg_code;
             } catch (Exception e) {
 
             }
+
+            if (Globals.objLPR.getproject_id().equals("standalone")) {
+
+                menu.setGroupVisible(R.id.overFlowtabbleToHide, false);
+            } else {
+                menu.setGroupVisible(R.id.overFlowtabbleToHide, true);
+
+            }
             return true;
         }
         return super.onCreateOptionsMenu(menu);
@@ -2082,284 +3001,26 @@ String reg_code;
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
         if (id == R.id.table) {
-            Table table = Table.getTable(getApplicationContext(), database, db, "");
-            if (table == null) {
-                AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
-
-                builder.setTitle(getString(R.string.alerttitle));
-                builder.setMessage(getString(R.string.alert_impexpmsg));
-
-                builder.setPositiveButton(getString(R.string.Import_CSV), new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
-                        try {
-
-                            String[] mimeTypes = {"text/*"};
-                            // File file= new File(Environment.getExternalStorageDirectory()+"");
-                            Intent intent;
-
-                            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT) {
-                                intent = new Intent(Intent.ACTION_OPEN_DOCUMENT);
-
-                                // intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                intent.setType(mimeTypes.length == 1 ? mimeTypes[0] : "*/*");
-                                if (mimeTypes.length > 0) {
-                                    intent.putExtra(Intent.EXTRA_MIME_TYPES, mimeTypes);
-                                    //   intent.putExtra(DocumentsContract.EXTRA_INITIAL_URI, mimeTypes);
-                                }
-                            } else {
-                                intent = new Intent(Intent.ACTION_GET_CONTENT);
-
-                                intent.addCategory(Intent.CATEGORY_OPENABLE);
-                                String mimeTypesStr = "";
-                                for (String mimeType : mimeTypes) {
-                                    mimeTypesStr += mimeType + "|";
-                                }
-                                intent.setType(mimeTypesStr.substring(0, mimeTypesStr.length() - 1));
-                            }
-                            startActivityForResult(Intent.createChooser(intent, "ChooseFile"), 7);
-
-                            //  postDeviceInfo(lite_pos_registration.getEmail(), lite_pos_registration.getPassword(), Globals.isuse, Globals.master_product_id, "", Globals.Device_Code, serial_no,  Globals.syscode2, android_id, myKey,lite_pos_registration.getRegistration_Code(),"1");
-                        } catch (Exception e) {
-
-                        }
-                        dialog.dismiss();
-                    }
-                });
-
-
-                builder.setNegativeButton(getString(R.string.Export_csv), new DialogInterface.OnClickListener() {
-
-                    @Override
-                    public void onClick(DialogInterface dialog, int which) {
-
-                        // Do nothing
-                        pDialog = new ProgressDialog(Main2Activity.this);
-                        pDialog.setTitle("");
-                        pDialog.setMessage("Exporting data.....");
-                        pDialog.setCancelable(false);
-                        pDialog.show();
-                        final Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    try {
-                                        // sleep(200);
-
-
-                                        String succ = export();
-
-                                        if (succ.equals("success")) {
-
-                                            runOnUiThread(new Runnable() {
-                                                public void run() {
-
-                                                    try {
-                                                        File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export" + ".csv");
-
-                                                        //  Toast.makeText(getApplicationContext(), "CSV Exported Successfully " + fileWithinMyDir, Toast.LENGTH_LONG).show();
-                                                        AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
-
-                                                        builder.setTitle(getString(R.string.alerttitle));
-                                                        builder.setMessage(getString(R.string.alert_sharemsg));
-
-                                                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
-
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                // Do nothing but close the dialog
-
-                                                                try {
-                                                                    //  Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-                                                                    File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export.csv");
-
-                                                                    Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-
-                                                                    File f = new File(fileWithinMyDir.getAbsolutePath());
-
-                                                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                                                    shareIntent.setType("message/rfc822");
-                                                                    Uri fileUri = FileProvider.getUriForFile(getApplicationContext(), "com.org.phomellolitepos.myfileprovider", new File(fileWithinMyDir.getAbsolutePath()));
-                                                                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Phomello Litepos Table CSV");
-                                                                    shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                                                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hello, Please find attached  Table.csv");
-                                                                    startActivity(Intent.createChooser(shareIntent, f.getName()));
-
-                                                                } catch (Exception e) {
-                                                                    System.out.println(e.getMessage());
-                                                                }
-                                                            }
-                                                        });
-
-                                                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
-
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-
-                                                                // Do nothing
-
-                                                                dialog.dismiss();
-
-                                                            }
-                                                        });
-
-                                                        AlertDialog alert = builder.create();
-                                                        alert.show();
-
-                                                        pDialog.dismiss();
-                                                    } catch (Exception e) {
-
-                                                    }
-
-
-                                                }
-                                            });
-
-                                        }
-                                    } catch (final Exception e) {
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                pDialog.dismiss();
-                                                Toast.makeText(getApplicationContext(), e.getMessage(),
-                                                        Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                } catch (Exception ex) {
-
-
-                                    runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            pDialog.dismiss();
-                                        }
-                                    });
-                                    // TODO Auto-generated catch block
-                                    ex.printStackTrace();
-                                }
-                            }
-                        };
-                        t.start();
-                    }
-                });
-                builder.setNeutralButton(getString(R.string.downloadfiles), new DialogInterface.OnClickListener() {
-
-                    public void onClick(DialogInterface dialog, int which) {
-                        // Do nothing but close the dialog
-
-                        pDialog = new ProgressDialog(Main2Activity.this);
-                        pDialog.setTitle("");
-                        pDialog.setMessage("Exporting data.....");
-                        pDialog.setCancelable(false);
-                        pDialog.show();
-                        final Thread t = new Thread() {
-                            @Override
-                            public void run() {
-                                try {
-                                    try {
-                                        // sleep(200);
-
-
-                                        String succ = Globals.export_sample();
-
-                                        if (succ.equals("success")) {
-
-                                            runOnUiThread(new Runnable() {
-                                                public void run() {
-
-                                                    try {
-                                                        File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export_sample" + ".csv");
-
-                                                        //  Toast.makeText(getApplicationContext(), "CSV Exported Successfully " + fileWithinMyDir, Toast.LENGTH_LONG).show();
-                                                        AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
-
-                                                        builder.setTitle(getString(R.string.alerttitle));
-                                                        builder.setMessage(getString(R.string.alert_sharemsg));
-
-                                                        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
-
-                                                            public void onClick(DialogInterface dialog, int which) {
-                                                                // Do nothing but close the dialog
-
-                                                                try {
-                                                                    //  Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-                                                                    File fileWithinMyDir = new File(Environment.getExternalStorageDirectory(), "" + "table_export_sample.csv");
-
-                                                                    Intent intentShareFile = new Intent(Intent.ACTION_SEND);
-
-                                                                    File f = new File(fileWithinMyDir.getAbsolutePath());
-
-                                                                    Intent shareIntent = new Intent(Intent.ACTION_SEND);
-                                                                    shareIntent.setType("message/rfc822");
-                                                                    Uri fileUri = FileProvider.getUriForFile(getApplicationContext(), "com.org.phomellolitepos.myfileprovider", new File(fileWithinMyDir.getAbsolutePath()));
-                                                                    shareIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
-                                                                    shareIntent.putExtra(Intent.EXTRA_SUBJECT, "Phomello Litepos Item Sample CSV");
-                                                                    shareIntent.putExtra(Intent.EXTRA_STREAM, fileUri);
-                                                                    shareIntent.putExtra(Intent.EXTRA_TEXT, "Hello, Please find attached  item_export_sample.csv");
-                                                                    startActivity(Intent.createChooser(shareIntent, f.getName()));
-
-                                                                } catch (Exception e) {
-                                                                    System.out.println(e.getMessage());
-                                                                }
-                                                            }
-                                                        });
-
-                                                        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
-
-                                                            @Override
-                                                            public void onClick(DialogInterface dialog, int which) {
-
-                                                                // Do nothing
-
-                                                                dialog.dismiss();
-
-                                                            }
-                                                        });
-
-                                                        AlertDialog alert = builder.create();
-                                                        alert.show();
-
-                                                        pDialog.dismiss();
-                                                    } catch (Exception e) {
-
-                                                    }
-
-
-                                                }
-                                            });
-
-                                        }
-                                    } catch (final Exception e) {
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                pDialog.dismiss();
-                                                Toast.makeText(getApplicationContext(), e.getMessage(),
-                                                        Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
-                                } catch (Exception ex) {
-
-
-                                    runOnUiThread(new Runnable() {
-                                        public void run() {
-                                            pDialog.dismiss();
-                                        }
-                                    });
-                                    // TODO Auto-generated catch block
-                                    ex.printStackTrace();
-                                }
-                            }
-                        };
-                        t.start();
-                    }
-                });
-                AlertDialog alert = builder.create();
-                alert.show();
-               // Toast.makeText(getApplicationContext(), R.string.No_Table_Fnd, Toast.LENGTH_SHORT).show();
-            } else {
-                showdialogTable();
+            if(Globals.objsettings.get_Default_Ordertype().equals("5") || Globals.strOrder_type_id.equals("5")){
+
+                Intent table=new Intent(getApplicationContext(),TableMangement.class);
+                startActivity(table);
+                // finish();
             }
+
+            else
+            {
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(this);
+                builder.setMessage("Please Select Order Type DINE IN to proceed!")
+                        .setCancelable(false)
+                        .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog, int id) {
+                                //do things
+                            }
+                        });
+                AlertDialog alert = builder.create();
+                alert.show();                }
             return true;
 
         } else if (id == R.id.action_openRight) {
@@ -2378,7 +3039,7 @@ String reg_code;
 
         if (id == R.id.nav_item) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Item), ItemListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Item", ItemListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ItemListActivity.class);
@@ -2391,7 +3052,7 @@ String reg_code;
 
         } else if (id == R.id.nav_item_category) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Item_Category), CategoryListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this,"Item Category", CategoryListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, CategoryListActivity.class);
@@ -2404,7 +3065,7 @@ String reg_code;
 
         } else if (id == R.id.nav_recepts) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Receipt), ReceptActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Order", ReceptActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent recept_intent = new Intent(Main2Activity.this, ReceptActivity.class);
@@ -2417,7 +3078,7 @@ String reg_code;
 
         } else if (id == R.id.nav_settings) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Settings), SetttingsActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Settings", SetttingsActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, SetttingsActivity.class);
@@ -2430,7 +3091,7 @@ String reg_code;
 
         } else if (id == R.id.nav_lic) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Update_License), ActivateActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this,"Update License", ActivateActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ActivateActivity.class);
@@ -2443,7 +3104,7 @@ String reg_code;
 
         } else if (id == R.id.nav_Report) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Report), ReportActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Report", ReportActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ReportActivity.class);
@@ -2454,7 +3115,14 @@ String reg_code;
                 return false;
             }
 
-        } else if (id == R.id.nav_logout) {
+        }
+
+        else if (id == R.id.nav_printtest) {
+            Intent it=new Intent(getApplicationContext(),PrintTestActivity.class);
+            startActivity(it);
+        }
+
+        else if (id == R.id.nav_logout) {
             Globals.user = " ";
             Globals.setEmpty();
             getAlertDialog();
@@ -2465,8 +3133,9 @@ String reg_code;
 
         else if (id == R.id.nav_contact) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Contact), ContactListActivity.class);
-            if (result == null) {
+            Boolean result = userPermission.Permission(Main2Activity.this, "Contact", ContactListActivity.class);
+
+            if(result==null){
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ContactListActivity.class);
 //                startActivity(item_intent);
@@ -2476,9 +3145,20 @@ String reg_code;
                 return false;
             }
 
-        } else if (id == R.id.nav_search_order) {
+        }
+        else if (id == R.id.nav_payment) {
+
+            Intent intent_payment = new Intent(Main2Activity.this, PaymentListActivity.class);
+            startActivity(intent_payment);
+            finish();
+
+
+        }
+
+
+        else if (id == R.id.nav_search_order) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.search_order), SearchOrderActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Search Order", SearchOrderActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, SearchOrderActivity.class);
@@ -2491,7 +3171,7 @@ String reg_code;
 
         } else if (id == R.id.nav_man) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.Manager), ManagerActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this,"Manager", ManagerActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ManagerActivity.class);
@@ -2504,7 +3184,7 @@ String reg_code;
 
         } else if (id == R.id.nav_resv) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.reservation), ReservationListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Reservation", ReservationListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, ReservationListActivity.class);
@@ -2517,7 +3197,7 @@ String reg_code;
 
         } else if (id == R.id.nav_pay_collection) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.payment_collection), PayCollectionListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this,"Payment Collection", PayCollectionListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, PayCollectionListActivity.class);
@@ -2530,7 +3210,7 @@ String reg_code;
 
         } else if (id == R.id.nav_acc) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.accounts), AccountsListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Accounts", AccountsListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, PayCollectionListActivity.class);
@@ -2543,7 +3223,7 @@ String reg_code;
 
         } else if (id == R.id.nav_stock_adjest) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.stock_adjustment), StockAdjestmentListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Stock Adjustment", StockAdjestmentListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, PayCollectionListActivity.class);
@@ -2556,7 +3236,7 @@ String reg_code;
 
         } else if (id == R.id.nav_return) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this,"Return", CustomerReturnListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this,"Return", ReturnOptionActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
 //                Intent item_intent = new Intent(Main2Activity.this, PayCollectionListActivity.class);
@@ -2569,7 +3249,7 @@ String reg_code;
 
         } else if (id == R.id.nav_purchese) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.purchase), PurchaseListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Purchase", PurchaseListActivity.class);
             if (result == null) {
                 Toast.makeText(getApplicationContext(), "This user don't have permission to access this form", Toast.LENGTH_SHORT).show();
                 DrawerLayout drawer = (DrawerLayout) findViewById(R.id.drawer_layout2);
@@ -2579,7 +3259,7 @@ String reg_code;
 
         } else if (id == R.id.nav_class) {
             userPermission = new UserPermission();
-            Boolean result = userPermission.Permission(Main2Activity.this, getString(R.string.class_category), ClassDestinationListActivity.class);
+            Boolean result = userPermission.Permission(Main2Activity.this, "Class/Category", ClassDestinationListActivity.class);
             Globals.TicketCategory = "Class";
             if (result == null) {
                 Globals.TicketCategory = "";
@@ -2646,7 +3326,7 @@ String reg_code;
             for (int i = 0; i < fragList.size(); i++) {
                 fragMan.beginTransaction().remove(fragList.get(i)).commit();
                 fragList.clear();
-                fragList = new ArrayList<android.support.v4.app.Fragment>();
+                fragList = new ArrayList<Fragment>();
                 adapter.notifyDataSetChanged();
             }
         }
@@ -2689,7 +3369,7 @@ String reg_code;
 
         viewPager.setAdapter(adapter);
         adapter.notifyDataSetChanged();
-        viewPager.setCurrentItem(Globals.TabPos);
+       // viewPager.setCurrentItem(Globals.TabPos);
 
 //        if (fragList.size() > 0) {
 //            for (int i = 0; i < fragList.size(); i++) {
@@ -2734,7 +3414,7 @@ String reg_code;
         }
 
         @Override
-        public android.support.v4.app.Fragment getItem(int position) {
+        public Fragment getItem(int position) {
             return fragList.get(position);
         }
 
@@ -2841,12 +3521,28 @@ String reg_code;
         } else {
             groupCode = "and business_group_code='" + str + "'";
         }
-
-        if (settings.get_Is_Device_Customer_Show().equals("true")) {
+        if (Globals.objsettings.get_Is_Device_Customer_Show().equals("true")) {
             contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where contact.contact_code like  '" + Globals.objLPD.getDevice_Symbol() + "-CT-%' and is_active ='1'  AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
         } else {
-            contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1'  AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+
+            if ((Globals.Taxwith_state.equals("")) && (Globals.NoTax.equals("")) && (Globals.Taxdifferent_state.equals(""))) {
+                contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1'  AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+            } else {
+                if (Globals.cart.size() > 0) {
+                    if (Globals.Taxwith_state.equals("1")) {
+                        contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1' AND contact.is_taxable='1' And contact.zone_id = '"+Globals.objLPR.getZone_Id()+"' AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+                    } else if (Globals.NoTax.equals("0")) {
+                        contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1' AND contact.is_taxable='0' AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+                    } else if (Globals.Taxdifferent_state.equals("2")) {
+                        contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1' AND contact.is_taxable='1' And contact.zone_id != '"+Globals.objLPR.getZone_Id()+"' AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+                    }
+                }
+                else{
+                    contact_ArrayList = Contact.getAllContact(getApplicationContext(), database, db, " LEFT join contact_business_group on contact.contact_code = contact_business_group.contact_code where is_active ='1'  AND  contact_business_group.business_group_code = 'BGC-1'   " + groupCode + " " + strFilter + " Group by contact.contact_code Order By lower(name) asc");
+                }
+            }
         }
+
 
         dialogContactMainListAdapter = new DialogContactMainListAdapter(Main2Activity.this, contact_ArrayList, listDialog1);
         list11.setVisibility(View.VISIBLE);
@@ -2902,7 +3598,44 @@ String reg_code;
                     strRemarks = edt_remark.getText().toString();
                 }
                 save_order(strRemarks);
-                listDialog2.dismiss();
+                if(Globals.objsettings.getIs_KitchenPrint().equals("true")){
+                    pDialog.dismiss();
+                    listDialog2.dismiss();
+
+                    progressDialog = new ProgressDialog(Main2Activity.this);
+                    progressDialog.setTitle("");
+                    progressDialog.setMessage(getString(R.string.waiting));
+                    progressDialog.setCancelable(false);
+                    progressDialog.show();
+                    Thread t = new Thread(){
+                        @Override
+                        public void run() {
+                            printKOT(strOrderCode,progressDialog);
+                            progressDialog.dismiss();
+                            Globals.setEmpty();
+                            try {
+                                Intent i = new Intent(getApplicationContext(),MainActivity.class);
+                                startActivity(i);
+                               /* btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
+                                String itemPrice;
+                                itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
+                                btn_Item_Price.setText(itemPrice);*/
+                            }
+                            catch(Exception e){
+                                System.out.println(e.getMessage());
+                            }
+
+                        }
+                    };t.start();
+             /*  PrintKOT_BackgroundAsyncTask order = new PrintKOT_BackgroundAsyncTask();
+                order.execute();*/
+
+
+
+                }
+                else{
+                    listDialog2.dismiss();
+                }
             }
         });
     }
@@ -3005,7 +3738,7 @@ String reg_code;
                                     int count = 0;
                                     ContentValues contentValues = new ContentValues();
                                     ArrayList<Table> plist = new ArrayList<Table>();
-                                    Table table = new Table(getApplicationContext(), null,"", "");
+                                    Table table = new Table(getApplicationContext(), null,"", "","","","","","");
 
                                     bValidate = true;
                                     while (((aDataRow = myReader.readLine()) != null) && bValidate) {
@@ -3028,7 +3761,7 @@ String reg_code;
                                                 String tablecode= myList.get(0).toString().replace("\"","");
                                                 String tablename= myList.get(1).toString().replace("\"","");
                                                 plist.add(new Table(getApplicationContext(),null,
-                                                        tablecode, tablename));
+                                                        tablecode, tablename,"","","","",""));
 
 
                                             } catch (Exception ex) {
@@ -3173,12 +3906,37 @@ String reg_code;
     @Override
     public void onBackPressed() {
         Globals.strContact_Code = "";
-        mScannerView.stopCameraPreview(); //stopPreview
-        mScannerView.stopCamera();
-        Intent intent = new Intent(Main2Activity.this, Main2Activity.class);
+        try {
+            mScannerView.stopCameraPreview(); //stopPreview
+            mScannerView.stopCamera();
+        }catch(Exception e)
+        { }
+
+        if (pressedTime + 2000 > System.currentTimeMillis()) {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Main2Activity.super.onBackPressed();
+                    finish();
+                }
+            });
+
+        } else {
+            runOnUiThread(new Runnable() {
+                @Override
+                public void run() {
+
+                    Toast.makeText(getBaseContext(), "Press back again to exit", Toast.LENGTH_SHORT).show();
+
+                }
+            });
+            pressedTime = System.currentTimeMillis();
+        }
+  /*      Intent intent = new Intent(Main2Activity.this, Main2Activity.class);
         intent.putExtra("opr", "Add");
         intent.putExtra("order_code", "");
-        startActivity(intent);
+        startActivity(intent);*/
     }
 
 
@@ -3190,7 +3948,7 @@ String reg_code;
     private void retail_list_load() {
 
         ArrayList<ShoppingCart> myCart = Globals.cart;
-        ListView retail_list = (ListView) findViewById(R.id.retail_list);
+         retail_list = (ListView) findViewById(R.id.retail_list);
         TextView txt_title = (TextView) findViewById(R.id.txt_title);
         if (myCart.size() > 0) {
 //            MainListLandScapAdapter mainListLandScapAdapter = new MainListLandScapAdapter(Main2Activity.this, myCart,"MainLand");
@@ -3198,9 +3956,10 @@ String reg_code;
 //            txt_title.setVisibility(View.GONE);
 //            retail_list.setAdapter(mainListLandScapAdapter);
 //            mainListLandScapAdapter.notifyDataSetChanged();
-            RetailListAdapter retailListAdapter = new RetailListAdapter(Main2Activity.this, myCart, opr, strOrderCode, "MainLand");
+          retailListAdapter = new RetailListAdapter(Main2Activity.this, myCart, opr, strOrderCode, "MainLand");
             retail_list.setVisibility(View.VISIBLE);
             txt_title.setVisibility(View.GONE);
+            scrollMyListViewToBottom();
             retail_list.setAdapter(retailListAdapter);
             retailListAdapter.notifyDataSetChanged();
         } else {
@@ -3211,11 +3970,21 @@ String reg_code;
 
     }
 
+
+    private void scrollMyListViewToBottom() {
+        retail_list.post(new Runnable() {
+            @Override
+            public void run() {
+                // Select the last row so it will scroll into view...
+                retail_list.setSelection(retailListAdapter.getCount() - 1);
+            }
+        });
+    }
     private String DatabaseBackUp() {
         File backupDB = null;
         String backupDBPath = null;
         try {
-            File sd = new File(Environment.getExternalStorageDirectory(), "LitePOS/Backup");
+            File sd = new File(Environment.getExternalStorageDirectory(), "TriggerPOS/Backup");
 
             if (!sd.exists()) {
                 sd.mkdirs();
@@ -3224,7 +3993,7 @@ String reg_code;
             FileChannel source = null;
             FileChannel destination = null;
             String currentDBPath = Database.DATABASE_FILE_PATH + File.separator + Database.DBNAME;
-            backupDBPath = "LitePOS" + DateUtill.currentDatebackup() + ".db";
+            backupDBPath = "TriggerPOS" + DateUtill.currentDatebackup() + ".db";
             File currentDB = new File(currentDBPath);
             backupDB = new File(sd, backupDBPath);
 
@@ -3246,7 +4015,7 @@ String reg_code;
                 // calling the zip function
 
 
-                zipManager.zip(s, Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "Backup" + "/" + "DatabaseLitePOS.zip");
+                zipManager.zip(s, Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "Backup" + "/" + "DatabaseTriggerPOS.zip");
 
                 send_email_manager();
 
@@ -3265,16 +4034,16 @@ String reg_code;
 
     private void send_email_manager() {
         try {
-            String[] recipients = {"pegasusq8@gmail.com", "paliwalneeraj.pegasus@gmail.com"};
+            String[] recipients = {"developer.pegasus@gmail.com"};
             final Main2Activity.SendEmailAsyncTask email = new Main2Activity.SendEmailAsyncTask();
             email.activity = this;
 
-            email.m = new GMailSender("pegasusq8@gmail.com", "@Neeraj@99534388", "smtp.gmail.com", "465");
-            email.m.set_from("pegasusq8@gmail.com");
-            email.m.setBody("Phomello-LitePOSDB");
+            email.m = new GMailSender("developer.pegasus@gmail.com", "Passw0rd@", "smtp.gmail.com", "465");
+            email.m.set_from("developer.pegasus@gmail.com");
+            email.m.setBody("Phomello-TriggerPOSDB");
             email.m.set_to(recipients);
-            email.m.set_subject("Phomello-LitePOSDB ( " + date + " )");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "Backup" + "/" + "DatabaseLitePOS.zip");
+            email.m.set_subject("Phomello-TriggerPOSDB ( " + date + " )");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "Backup" + "/" + "DatabaseTriggerPOS.zip");
             email.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -3487,10 +4256,10 @@ String reg_code;
 
         AlertDialog.Builder builder = new AlertDialog.Builder(Main2Activity.this);
 
-        builder.setTitle("Do you want to logout from server");
-        builder.setMessage("Are you sure?");
+        builder.setTitle(getString(R.string.alertlogtitle));
+        builder.setMessage(getString(R.string.alert_loginmsg));
 
-        builder.setPositiveButton("YES", new DialogInterface.OnClickListener() {
+        builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
 
             public void onClick(DialogInterface dialog, int which) {
                 lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
@@ -3503,16 +4272,14 @@ String reg_code;
             }
         });
 
-        builder.setNegativeButton("NO", new DialogInterface.OnClickListener() {
+        builder.setNegativeButton(getString(R.string.alert_nobtn), new DialogInterface.OnClickListener() {
 
             @Override
             public void onClick(DialogInterface dialog, int which) {
 
                 // Do nothing
                 dialog.dismiss();
-                Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                startActivity(i);
-                finish();
+
             }
         });
 
@@ -3525,7 +4292,7 @@ String reg_code;
         pDialog.setMessage("Logging Out....");
         pDialog.show();
         String server_url = Globals.App_Lic_Base_URL+ "/index.php?route=api/license_product_1/device_login";
-        HttpsTrustManager.allowAllSSL();
+      /*  HttpsTrustManager.allowAllSSL();*/
         // String server_url =  Gloabls.server_url;
         StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
                 new Response.Listener<String>() {
@@ -3655,22 +4422,16 @@ String reg_code;
                     @Override
                     public void onErrorResponse(VolleyError error) {
                         if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                             Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
                         } else if (error instanceof AuthFailureError) {
                             Toast.makeText(getApplicationContext(), "Authentication issue", Toast.LENGTH_LONG).show();
                         } else if (error instanceof ServerError) {
                             Toast.makeText(getApplicationContext(), "Server not available", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                         } else if (error instanceof NetworkError) {
                             Toast.makeText(getApplicationContext(), "Network not available", Toast.LENGTH_LONG).show();
-                            Intent i = new Intent(getApplicationContext(), LoginActivity.class);
-                            startActivity(i);
-                            finish();
+
                         } else if (error instanceof ParseError) {
 
                         }
@@ -3841,6 +4602,449 @@ String reg_code;
         }
 
         return strResult;
+
+    }
+
+    private class DownlaodImageAsyncTask extends AsyncTask<String, String, String> {
+        @Override
+        protected void onPreExecute() {
+            super.onPreExecute();
+            p = new ProgressDialog(Main2Activity.this);
+            p.setMessage("Please wait...It is downloading");
+          /*  p.setIndeterminate(false);
+            p.setCancelable(false);
+            p.show();*/
+            Toast.makeText(getApplicationContext(),"Images downloading started",Toast.LENGTH_SHORT).show();
+
+
+        }
+        @Override
+        protected String doInBackground(String... strings) {
+
+
+            String result="0";
+            try {
+
+
+                try {
+
+                    itemArrayList = Item.getAllItem(getApplicationContext(), " WHERE is_active ='1'", database);
+                    String item_code="";
+                    String item_id="";
+                    for(int i=0; i<itemArrayList.size();i++) {
+
+                        item_code=  itemArrayList.get(i).get_item_code();
+                        item_id=  itemArrayList.get(i).get_item_id();
+                        GetImage_PosItem(item_code);
+                    }
+                    //insertImagePosmenu_Item();
+                    result ="1";
+                    /*  if(result.equals("1")){
+                          Toast.makeText(getApplicationContext(),"Images downloaded successfully",Toast.LENGTH_SHORT).show();
+
+                      }*/
+               /* ImageUrl = new URL(strings[0]);
+                HttpURLConnection conn = (HttpURLConnection) ImageUrl.openConnection();
+                conn.setDoInput(true);
+                conn.connect();
+                is = conn.getInputStream();
+                BitmapFactory.Options options = new BitmapFactory.Options();
+                options.inPreferredConfig = Bitmap.Config.RGB_565;
+                bmImg = BitmapFactory.decodeStream(is, null, options);*/
+                } catch (Exception e) {
+                    e.printStackTrace();
+
+                }
+
+
+
+            } catch(Exception e) {
+            }
+            return  result;
+        }
+        @Override
+        protected void onPostExecute(String result) {
+            super.onPostExecute(result);
+            if(result!=null) {
+                if(result.equals("1")){
+                    Toast.makeText(getApplicationContext(),"Images downloaded successfully",Toast.LENGTH_SHORT).show();
+
+                    p.hide();}
+
+
+            }else {
+                p.show();
+            }
+        }
+    }
+
+    public void insertImagePosmenu_Item(String itemcode, String serverdata) throws IllegalStateException, IOException, JSONException {
+
+
+        byte[] img = null;
+        try {
+
+            final JSONObject jsonObject_bg = new JSONObject(serverdata);
+            final String strStatus = jsonObject_bg.getString("status");
+
+            if (strStatus.equals("true")) {
+
+                JSONArray jarray = jsonObject_bg.getJSONArray("result");
+                for (int i = 0; i < jarray.length(); i++) {
+
+                    ContentValues cv = new ContentValues();
+                    JSONObject json = jarray.getJSONObject(i);
+
+                    String stringimage = json.getString("image");
+                    String stringitemcode = json.getString("item_code");
+                          /*  Bitmap bitmap=null;
+                    ByteArrayOutputStream baos = new ByteArrayOutputStream();
+                    bitmap.compress(Bitmap.CompressFormat.JPEG, 100, baos); // Could be Bitmap.CompressFormat.PNG or Bitmap.CompressFormat.WEBP
+                    byte[] bai = baos.toByteArray();
+
+                    String base64Image = Base64.encodeToString(bai, Base64.DEFAULT);*/
+                    if(itemcode.equals(stringitemcode)) {
+                        try {
+
+                            if (stringimage != null) {
+                                byte imgArr[] = Base64.decode(stringimage);
+                                Bitmap decodedByte = BitmapFactory.decodeByteArray(imgArr, 0, imgArr.length);
+
+                               /* decodedByte = Globals.getResizedBitmap(decodedByte, 100, 100);
+                                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+                                decodedByte.compress(Bitmap.CompressFormat.PNG, 80, bos);
+                                img = bos.toByteArray();*/
+                                File path = new File(Environment.getExternalStorageDirectory(), "TriggerPOS/ItemImages");
+                                if (!path.exists()) {
+                                    path.mkdirs();
+                                }
+                                File outFile = new File(path, itemcode + ".jpeg");
+                                FileOutputStream outputStream = new FileOutputStream(outFile);
+                                decodedByte.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                                outputStream.close();
+                            }
+                        } catch (FileNotFoundException e) {
+                            Toast.makeText(getApplicationContext(),"File Not Found", Toast.LENGTH_LONG).show();
+
+                        } catch (IOException e1) {
+
+                        }
+
+                        catch (OutOfMemoryError e2) {
+                            Toast.makeText(getApplicationContext(),"Out of Memory", Toast.LENGTH_LONG).show();
+                        }
+                        catch (Exception e3) {
+
+                        }
+
+
+                        /*} catch (Exception e) {
+                            e.printStackTrace();
+                        }*/
+                    }
+                   /* try {
+
+                       // Bitmap bitmap = BitmapFactory.decodeByteArray(imgArr, 0, numberOfBytes);
+                        File path = new File(Environment.getExternalStorageDirectory(), "TriggerPOS/ItemImages" + File.separator + bitmap);
+                        if(!path.exists()){
+                            path.mkdirs();
+                        }
+                        File outFile = new File(path, itemcode + ".jpg");
+                        FileOutputStream outputStream = new FileOutputStream(outFile);
+                       // decodedByte.compress(Bitmap.CompressFormat.JPEG, 100, outputStream);
+                        outputStream.close();
+                    } catch (FileNotFoundException e) {
+
+                    } catch (IOException e) {
+
+                    }*/
+                    //if(itemCode.equals(stringitemcode)) {
+                    // cv.put("item_image", stringimage);
+                    //item.get_item_id();
+                    // plist.add(stringstr);
+                    // item.setItem_image(img);
+                    //long l = item.updateItem("item_code=?", new String[]{itemCode}, database);
+                     /*   long l = database.update("item", cv, "item_id=?", new String[]{itemid});
+
+                        if (l > 0) {
+                            // succ_bg = "1";
+                        } else {
+                        }*/
+                    // }
+                }
+            }
+            else{
+
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
+    }
+
+/*    public  String GetImage_PosItem(String itemcode) throws IllegalStateException,
+            IOException  {
+        String result = null;
+        InputStream ies = null;
+        // Creating Http Object..
+        HttpParams myParams = new BasicHttpParams();
+        HttpConnectionParams.setConnectionTimeout(myParams, 15000);
+        HttpConnectionParams.setSoTimeout(myParams, 15000);
+        HttpConnectionParams.setTcpNoDelay(myParams, true);
+        DefaultHttpClient httpclient = new DefaultHttpClient(myParams);
+        // "http://192.168.2.72/trigger-pos-ar/index.php/api/item/get_items_images"
+
+        HttpPost httppost = new HttpPost(Globals.App_IP_URL + "item/get_items_images");
+        ArrayList<NameValuePair> namevaluepair = new ArrayList<NameValuePair>();
+        namevaluepair.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
+        namevaluepair.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+        namevaluepair.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
+        namevaluepair.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
+        namevaluepair.add(new BasicNameValuePair("sys_code_3", Globals.androidid));
+        namevaluepair.add(new BasicNameValuePair("sys_code_4", Globals.mykey));
+        namevaluepair.add(new BasicNameValuePair("lic_customer_license_id", Globals.license_id));
+        namevaluepair.add(new BasicNameValuePair("item_code", itemcode));
+//        namevaluepair.add(new BasicNameValuePair("brandid", GlobleVar.brandID));
+        // Details of server
+        try {
+            httppost.setEntity(new UrlEncodedFormEntity(namevaluepair));
+        } catch (UnsupportedEncodingException e1) {
+            // TODO Auto-generated catch block
+            e1.printStackTrace();
+        }
+        try {
+            HttpResponse httpResponse = httpclient.execute(httppost);
+            HttpEntity httpEntity = httpResponse.getEntity();
+
+            ies = httpEntity.getContent();
+            // converting in to string
+
+            BufferedReader br = new BufferedReader(new InputStreamReader(ies,
+                    "UTF-8"), 8);
+            StringBuilder sb = new StringBuilder();
+            String line = null;
+            while ((line = br.readLine()) != null) {
+                sb.append(line + "\n");
+            }
+            ies.close();
+            result = sb.toString();
+            // result = EntityUtils.toString(httpEntity);
+            Log.d("response", result);
+
+        } catch (ClientProtocolException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        return result;
+    }*/
+
+    public void GetImage_PosItem(String itemcode) {
+
+        pDialog = new ProgressDialog(Main2Activity.this);
+        pDialog.setMessage(getString(R.string.loggingin));
+        pDialog.show();
+        String server_url = Globals.App_IP_URL + "item/get_items_images";
+        // HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            insertImagePosmenu_Item(itemcode,response);
+
+                            //  Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+
+
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code", Globals.objLPR.getRegistration_Code());
+                params.put("device_code", Globals.objLPD.getDevice_Code());
+                params.put("sys_code_1", Globals.serialno);
+                params.put("sys_code_2", Globals.syscode2);
+                params.put("sys_code_3", Globals.androidid);
+                params.put("sys_code_4", Globals.mykey);
+                params.put("lic_customer_license_id", Globals.license_id);
+                params.put("item_code", itemcode);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
+
+    public void openWhatsApp(){
+        try {
+            String text = "Hello Sir.\n I am Using Trigger POS Application Version "+ versionname+"\n\n Company Name : "+ Globals.objLPR.getCompany_Name()+"\n User name: "+ Globals.objLPR.getContact_Person()+"\n Reg. Code :"+ Globals.objLPR.getRegistration_Code()+"\n License Mode :"+ Globals.objLPR.getproject_id()+"\n Expiry Date :"+ javaEncryption.decrypt(Globals.objLPD.getExpiry_Date(), "12345678") +"\n";
+            ;
+            String toNumber="";
+            //India
+            if(Globals.objLPR.getCountry_Id().equals("99")) {
+
+                toNumber = "919530047775"; // Replace with mobile phone number without +Sign or leading zeros, but with country code
+                //Suppose your country is India and your phone number is “xxxxxxxxxx”, then you need to send “91xxxxxxxxxx”.
+            }
+            // Kuwait
+            else if(Globals.objLPR.getCountry_Id().equals("114")){
+                toNumber = "96569029773";
+            }
+            // UAE
+            else if(Globals.objLPR.getCountry_Id().equals("221")){
+                toNumber = "971558838749";
+            }
+
+            else {
+                toNumber = "919530047775";
+            }
+
+
+            Intent intent = new Intent(Intent.ACTION_VIEW);
+            intent.setData(Uri.parse("http://api.whatsapp.com/send?phone="+toNumber +"&text="+text));
+            startActivity(intent);
+        }
+        catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+
+    public void setCategoryAdapter(){
+        arrayListcategoryStr = Item_Group.getAllItem_GroupSpinner(getApplicationContext(), " WHERE is_active ='1' and parent_code = '0' Order By item_group_name asc");
+
+        if(arrayListcategoryStr!=null) {
+            // arrayListcategoryStr.add(0,"All Items");
+            //  arrayListcategory.get(0).set_item_group_name("All Items");
+            ArrayAdapter<String> spinadapter = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_spinner_dropdown_item, arrayListcategoryStr);
+            spn_item_category.setAdapter(spinadapter);
+
+
+        }
+        else{
+            // arrayListcategoryStr.add(0,"Select");
+            ArrayAdapter<String> adapter = new ArrayAdapter<String>(Main2Activity.this, android.R.layout.simple_spinner_dropdown_item, arrayListcategoryStr);
+            spn_item_category.setAdapter(adapter);
+        }
+
+        spn_item_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+
+            @Override
+            public void onItemSelected(AdapterView<?> adapter, View v, int position, long id) {
+                // On selecting a spinner item
+
+                try {
+                    ((TextView) adapter.getChildAt(0)).setTextColor(Color.BLACK);
+                }
+                catch(Exception e){
+
+                }
+                spn_item_category.setTitle("Select Category");
+                spn_item_category.setPositiveButton("CLOSE");
+                Bundle bundle = new Bundle();
+                arrayListcategory = Item_Group.getAllItem_Group(getApplicationContext(), "WHERE is_active ='1' and parent_code = '0' Order By lower(item_group_name) asc", database, db);
+
+                String ItemCategoryCode = arrayListcategory.get(position).get_item_group_code();
+                String ItemCategoryName = arrayListcategory.get(position).get_item_group_name();
+
+                if(spn_item_category.getSelectedItem().equals("All Items")){
+
+
+                    call_parent_dialog("","");
+                }
+                else {
+
+                    call_parent_dialog(ItemCategoryCode,"");
+                }
+
+
+
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> arg0) {
+                // TODO Auto-generated method stub
+            }
+        });
+    }
+
+    public  class PrintKOT_BackgroundAsyncTask extends AsyncTask<Void, Void, Boolean> {
+
+        MainActivity activity;
+
+        public PrintKOT_BackgroundAsyncTask() {
+        }
+
+        @Override
+        protected Boolean doInBackground(Void... params) {
+            try {
+
+              //  printKOT(strOrderCode);
+
+                           /* if(result_order.equals("1")){
+                                Toast.makeText(activity, "Data Post Successfully", Toast.LENGTH_SHORT).show();
+                            }*/
+                //Toast.makeText(getApplicationContext(), "Email sent.", Toast.LENGTH_SHORT).show();
+
+
+//                    activity.displayMessage("Email sent.");
+
+
+                return true;
+
+
+            } catch (Exception e) {
+                e.printStackTrace();
+                runOnUiThread(new Runnable() {
+                    public void run() {
+                        //Toast.makeText(getApplicationContext(), "Unexpected error occured.", Toast.LENGTH_SHORT).show();
+                    }
+                });
+
+//                activity.displayMessage("Unexpected error occured.");
+                return false;
+            }
+        }
 
     }
 }

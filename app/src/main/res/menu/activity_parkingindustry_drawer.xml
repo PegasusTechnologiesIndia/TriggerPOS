@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+    <item
+        android:id="@+id/nav_item_category"
+        android:icon="@drawable/item_category"
+        android:visible="false"
+        android:title="@string/Item_Category" />
+    <item
+        android:id="@+id/nav_item"
+        android:icon="@drawable/item"
+        android:title="@string/Item" />
+
+    <item
+        android:id="@+id/nav_contact"
+        android:icon="@drawable/contact_gray"
+        android:title="@string/Contact" />
+
+
+
+    <item
+        android:id="@+id/nav_recepts"
+        android:icon="@drawable/receipt"
+        android:title="@string/vehiclehistory" />
+
+
+    <item
+        android:id="@+id/nav_settings"
+        android:icon="@drawable/setting"
+        android:title="@string/Settings">
+
+    </item>
+
+
+    <item
+        android:id="@+id/nav_Report"
+        android:icon="@drawable/report"
+        android:title="@string/Report" />
+
+    <item
+        android:id="@+id/nav_printtest"
+        android:icon="@drawable/report"
+        android:title="@string/printtest" />
+
+    <item
+        android:id="@+id/nav_logout"
+        android:icon="@drawable/logout"
+        android:title="@string/Logout" />
+</menu>

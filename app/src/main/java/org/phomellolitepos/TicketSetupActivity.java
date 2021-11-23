@@ -11,10 +11,9 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
@@ -29,16 +28,11 @@ import android.widget.TimePicker;
 import android.widget.Toast;
 
 import org.phomellolitepos.Adapter.FromAdapter;
-import org.phomellolitepos.Adapter.ItemAdapter;
 import org.phomellolitepos.Adapter.ManufactureSpiinerAdapter;
-import org.phomellolitepos.TicketSolution.TicketActivity;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
-import org.phomellolitepos.database.Item_Group;
-import org.phomellolitepos.database.Item_Location;
-import org.phomellolitepos.database.Item_Supplier;
 import org.phomellolitepos.database.Manufacture;
 import org.phomellolitepos.database.Ticket_Setup;
 

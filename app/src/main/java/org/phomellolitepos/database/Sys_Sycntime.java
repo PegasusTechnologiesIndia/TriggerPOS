@@ -89,7 +89,7 @@ public class Sys_Sycntime {
 
 
     public static Sys_Sycntime getSys_Sycntime(Context context, SQLiteDatabase database, Database db, String WhereClasue) {
-        String Query = "Select * FROM " + tableName + " " + WhereClasue;
+        String Query = "Select id,table_name,max(datetime) FROM " + tableName + " " + WhereClasue;
         Sys_Sycntime master = null;
         Cursor cursor = database.rawQuery(Query, null);
         if (cursor.moveToFirst()) {

@@ -1,11 +1,25 @@
 package org.phomellolitepos.database;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,7 +35,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
+import org.phomellolitepos.AppController;
+import org.phomellolitepos.LoginActivity;
+import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 
 /**
@@ -45,6 +64,12 @@ public class Pos_Balance {
     private Database db;
     private ContentValues value;
 
+
+    public Pos_Balance(Context ctx){
+        db = new Database(ctx);
+        value = new ContentValues();
+
+    }
     public Pos_Balance(Context context, String pos_balance_id, String pos_balance_code, String device_code, String type,
                        String date, String amount, String remarks, String z_code,
                        String is_active, String modified_by, String modified_date, String is_push) {
@@ -273,7 +298,129 @@ public class Pos_Balance {
     }
 
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String serialno,String androidid,String mykey) {
+    public static String send_OnServer(ProgressDialog progressDialog, Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String serialno,String androidid,String mykey) {
+        //        Database db = new Database(context);
+        //        SQLiteDatabase database = db.getReada,bleDatabase();
+        String strZ_Code = "", resultStr = "0";
+        // Cursor cursor = database.rawQuery(strTableQry, null);
+        Cursor cursor_z_close = database.rawQuery(strTableQry, null);
+        try {
+            int columnCount = cursor_z_close.getColumnCount();
+            //            while (cursor.moveToNext()) {
+            JSONObject sender = new JSONObject();
+            //                JSONObject result = new JSONObject();
+            //                JSONObject row = new JSONObject();
+            JSONArray array_pos_balance = new JSONArray();
+            JSONObject row_pos_balance = new JSONObject();
+            JSONArray array_z_close = new JSONArray();
+            JSONObject z_close_row = new JSONObject();
+            JSONArray array_z_detail = new JSONArray();
+            JSONObject z_detail_row = new JSONObject();
+            JSONArray array_acc_detail = new JSONArray();
+            JSONObject acc_detail_row = new JSONObject();
+
+            int columnCount_z_close = cursor_z_close.getColumnCount();
+;;
+                while (cursor_z_close.moveToNext()) {
+                    if(cursor_z_close.getCount()!=0) {
+                    strZ_Code = cursor_z_close.getString(1);
+                    z_close_row = new JSONObject();
+                    for (int index = 0; index < columnCount_z_close; index++) {
+                        z_close_row.put(cursor_z_close.getColumnName(index).toLowerCase(), cursor_z_close.getString(index));
+                    }
+                    array_z_close.put(z_close_row);
+
+                    String z_balance_qry = "Select pos_balance_id,pos_balance_code, device_code,type,date,amount,remarks,z_code,is_active,modified_by  FROM  pos_balance WHERE is_push = 'N' AND  z_code = '" + strZ_Code + "'";
+                    Cursor cursor_balance_qry = database.rawQuery(z_balance_qry, null);
+
+                    int columnCount_pos_balance = cursor_balance_qry.getColumnCount();
+                    while (cursor_balance_qry.moveToNext()) {
+
+                        row_pos_balance = new JSONObject();
+                        for (int index = 0; index < columnCount_pos_balance; index++) {
+                            row_pos_balance.put(cursor_balance_qry.getColumnName(index).toLowerCase(), cursor_balance_qry.getString(index));
+                        }
+                        array_pos_balance.put(row_pos_balance);
+                    }
+                    cursor_balance_qry.close();
+
+
+                    String z_detail_qry = "SELECT device_code,z_code,sr_no,type,amount,is_active,modified_by FROM  z_detail Where z_code = '" + strZ_Code + "'";
+                    Cursor cursor_z_detail = database.rawQuery(z_detail_qry, null);
+
+                    int columnCount_z_detail = cursor_z_detail.getColumnCount();
+                    while (cursor_z_detail.moveToNext()) {
+                        z_detail_row = new JSONObject();
+                        for (int index = 0; index < columnCount_z_detail; index++) {
+                            z_detail_row.put(cursor_z_detail.getColumnName(index).toLowerCase(), cursor_z_detail.getString(index));
+                        }
+                        array_z_detail.put(z_detail_row);
+                    }
+                    cursor_z_detail.close();
+
+                    String acc_detail_qry = "SELECT voucher_no FROM  Acc_Customer_Credit Where z_no = '" + strZ_Code + "'";
+                    Cursor cursor_acc_detail = database.rawQuery(acc_detail_qry, null);
+
+                    int columnCount_acc_detail = cursor_acc_detail.getColumnCount();
+                    while (cursor_acc_detail.moveToNext()) {
+                        acc_detail_row = new JSONObject();
+                        for (int index = 0; index < columnCount_acc_detail; index++) {
+                            acc_detail_row.put(cursor_acc_detail.getColumnName(index).toLowerCase(), cursor_acc_detail.getString(index));
+                        }
+                        array_acc_detail.put(acc_detail_row);
+                    }
+                    cursor_acc_detail.close();
+                }
+            else{
+                    strZ_Code = "0";
+                    z_close_row = new JSONObject();
+                    for (int index = 0; index < columnCount_z_close; index++) {
+                        z_close_row.put(cursor_z_close.getColumnName(index).toLowerCase(), "0");
+                    }
+                    array_z_close.put(z_close_row);
+                }
+                    sender.put("pos_balance", array_pos_balance);
+                    sender.put("z_close", array_z_close);
+                    sender.put("z_detail", array_z_detail);
+                    sender.put("account_detail", array_acc_detail);
+//                    sender.put("pos_balance".toLowerCase(), sender);
+                    //send_Posbalance_on_server(progressDialog,context,database,db,sender.toString(),strZ_Code,serialno,androidid,mykey,liccustomerid);
+
+                    String serverData = send_item_json_on_server(sender.toString(), liccustomerid, serialno, androidid, mykey);
+                    final JSONObject collection_jsonObject1 = new JSONObject(serverData);
+                    final String strStatus = collection_jsonObject1.getString("status");
+                    if (strStatus.equals("true")) {
+                        database.beginTransaction();
+                        String Query = "Update  pos_balance Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
+                        long or_result = db.executeDML(Query, database);
+                        if (or_result > 0) {
+                            resultStr = "1";
+                        } else {
+                            database.endTransaction();
+                        }
+
+                        String Query1 = "Update z_close Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
+                        long or_result1 = db.executeDML(Query1, database);
+                        if (or_result1 > 0) {
+                            resultStr = "1";
+                            database.setTransactionSuccessful();
+                            database.endTransaction();
+                        } else {
+                            database.endTransaction();
+                        }
+                    }
+                }
+
+            cursor_z_close.close();
+        } catch (Exception ex) {
+System.out.println(ex.getMessage());
+
+        }
+        return resultStr;
+    }
+
+
+    public static String sendOnServer(ProgressDialog progressDialog, Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String serialno,String androidid,String mykey) {
         //        Database db = new Database(context);
         //        SQLiteDatabase database = db.getReada,bleDatabase();
         String strZ_Code = "", resultStr = "0";
@@ -347,43 +494,21 @@ public class Pos_Balance {
                 sender.put("pos_balance", array_pos_balance);
                 sender.put("z_close", array_z_close);
                 sender.put("z_detail", array_z_detail);
-               sender.put("account_detail", array_acc_detail);
+                sender.put("account_detail", array_acc_detail);
 //                    sender.put("pos_balance".toLowerCase(), sender);
-                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid,serialno,androidid,mykey);
-                final JSONObject collection_jsonObject1 = new JSONObject(serverData);
-                final String strStatus = collection_jsonObject1.getString("status");
-                if (strStatus.equals("true")) {
-                    database.beginTransaction();
-                    String Query = "Update  pos_balance Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
-                    long or_result = db.executeDML(Query, database);
-                    if (or_result > 0) {
-                        resultStr = "1";
-                    } else {
-                        database.endTransaction();
-                    }
+                send_POSbalance_on_server(progressDialog,context,database,db,sender.toString(),strZ_Code,serialno,androidid,mykey,liccustomerid);
 
-                    String Query1 = "Update z_close Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
-                    long or_result1 = db.executeDML(Query1, database);
-                    if (or_result1 > 0) {
-                        resultStr = "1";
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
-                    } else {
-                        database.endTransaction();
-                    }
-                }
             }
             cursor_z_close.close();
         } catch (Exception ex) {}
         return resultStr;
     }
-
     private static String send_item_json_on_server(String JsonString,String liccustomerid,String serialno,String androidid,String mykey) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/pos_balance/data");
+                 Globals.App_IP_URL + "pos_balance/data");
         ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
@@ -403,7 +528,7 @@ public class Pos_Balance {
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
             serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
+            Log.d( "response", serverData);
 
         } catch (ClientProtocolException e) {
             e.printStackTrace();
@@ -412,6 +537,142 @@ public class Pos_Balance {
         }
         return serverData;
     }
+   public String response_var="0";
+    public static void send_POSbalance_on_server(final ProgressDialog pdialog, Context context, SQLiteDatabase database, Database db, final String JsonString, String strZ_Code, final String syscode1, final String syscode3, final String syscode4, final String liccustomerid) {
 
+    /*    pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url = Globals.App_IP_URL + "pos_balance/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject collection_jsonObject1 = new JSONObject(response);
+                            final String strStatus = collection_jsonObject1.getString("status");
+                            if (strStatus.equals("true")) {
+                                database.beginTransaction();
+                                String Query = "Update  pos_balance Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
+                                long or_result = db.executeDML(Query, database);
+                                if (or_result > 0) {
+                                   // resultStr = "1";
+                                } else {
+                                    database.endTransaction();
+                                }
+
+                                String Query1 = "Update z_close Set is_push = 'Y' Where z_code = '" + strZ_Code + "'";
+                                long or_result1 = db.executeDML(Query1, database);
+                                if (or_result1 > 0) {
+                                    //resultStr = "1";
+
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                } else {
+                                    database.endTransaction();
+                                }
+                                pdialog.dismiss();
+                               // Toast.makeText(context, R.string.Data_pst_succ, Toast.LENGTH_SHORT).show();
+
+
+
+
+
+
+
+
+                            }
+                            else if(strStatus.equals("false")){
+                                //resultStr = "2";
+
+
+
+                                if (Globals.responsemessage.equals("Device Not Found")) {
+
+                                    Lite_POS_Device lite_pos_device = Lite_POS_Device.getDevice(context, "", database);
+                                    lite_pos_device.setStatus("Out");
+                                    long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                                    if (ct > 0) {
+
+                                        Intent intent_category = new Intent(context, LoginActivity.class);
+                                        context.startActivity(intent_category);
+
+                                    }
+
+
+                                }
+
+                                else {
+
+                                   Toast.makeText(context, R.string.srvr_error, Toast.LENGTH_SHORT).show();
+
+                                }
+
+
+
+                            }
+                        } catch (Exception e) {
+                        }
+                        // pDialog.dismiss();
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", Globals.syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", liccustomerid);
+
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+
+    }
 
 }

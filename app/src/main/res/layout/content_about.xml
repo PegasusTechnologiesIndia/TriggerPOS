@@ -7,12 +7,28 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.phomellolitepos.AboutActivity"
     tools:showIn="@layout/activity_about">
+    <ImageView
+        android:id="@+id/about_image"
+        android:layout_width="100dp"
+        android:layout_height="60dp"
+        android:background="@drawable/triggerposlogo"
+        android:layout_marginTop="13dp"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true" />
+    <ScrollView
+        android:id="@+id/SCROLLER_ID"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:scrollbars="vertical"
+        android:fadeScrollbars="true"
+        android:layout_below="@+id/about_image"
+        android:layout_above="@+id/txt_version"
+        android:fillViewport="true">
 
     <LinearLayout
         android:id="@+id/ll"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/about_image"
         android:weightSum="1"
         android:layout_margin="10dp"
         android:orientation="horizontal">
@@ -22,16 +38,18 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:layout_marginTop="15sp"
+            android:scrollbars="vertical"
+
             android:text="@string/about_contant"
             android:textSize="16sp"/>
     </LinearLayout>
 
-
+    </ScrollView>
     <ImageView
         android:id="@+id/pegasus_image"
         android:layout_width="50dp"
         android:layout_height="30dp"
-        android:background="@drawable/logo3"
+        android:background="@drawable/triggerposlogo"
         android:layout_above="@+id/txt_footer"
         android:layout_centerHorizontal="true"
         />
@@ -52,17 +70,12 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:textSize="12sp"
-        android:text="Copyright © 2017 www.PegasusTech.net. All right reserved."
+        android:singleLine="true"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:text="@string/copyright"
         android:layout_alignParentBottom="true"
         android:layout_centerHorizontal="true"/>
 
-    <ImageView
-        android:id="@+id/about_image"
-        android:layout_width="100dp"
-        android:layout_height="60dp"
-        android:background="@drawable/logo3"
-        android:layout_marginTop="13dp"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+
 
 </RelativeLayout>

@@ -6,6 +6,18 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -21,9 +33,12 @@ import org.json.JSONObject;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 import java.util.concurrent.ExecutionException;
 
 
+import org.phomellolitepos.AppController;
 import org.phomellolitepos.Util.Globals;
 
 /**
@@ -223,11 +238,13 @@ public class User {
 
     public static User getUser(Context context, String WhereClasue, SQLiteDatabase database) {
         User master = null;
+
         try {
             String Query = "Select * FROM " + tableName + " " + WhereClasue;
 
-//        Database db = new Database(context);
-//        SQLiteDatabase database = db.getReadableDatabase();
+            // database.close();
+        Database db = new Database(context);
+         database = db.getReadableDatabase();
             Cursor cursor = database.rawQuery(Query, null);
             if (cursor.moveToFirst()) {
                 do {
@@ -240,8 +257,38 @@ public class User {
                 } while (cursor.moveToNext());
             }
             cursor.close();
-//        database.close();
-//        db.close();
+        database.close();
+        db.close();
+        }
+        catch (Exception ex)
+        {
+            String  strError  = ex.getMessage();
+             Log.d("User Error: ",strError);
+        }
+        return master;
+    }
+
+
+    public static User getdbUser(Context context, String WhereClasue, SQLiteDatabase database) {
+        User master = null;
+
+        try {
+            String Query = "Select * FROM " + tableName + " " + WhereClasue;
+
+
+            Cursor cursor = database.rawQuery(Query, null);
+            if (cursor.moveToFirst()) {
+                do {
+                    master = new User(context, cursor.getString(0),
+                            cursor.getString(1), cursor.getString(2),
+                            cursor.getString(3), cursor.getString(4),
+                            cursor.getString(5), cursor.getString(6),
+                            cursor.getString(7), cursor.getString(8), cursor.getString(9), cursor.getString(10)
+                            , cursor.getString(11), cursor.getString(12));
+                } while (cursor.moveToNext());
+            }
+            cursor.close();
+
         }
         catch (Exception ex)
         {
@@ -322,21 +369,8 @@ public class User {
                 }
                 result.put(row);
                 sender.put("user".toLowerCase(), result);
-                String serverData = send_user_json_on_server(sender.toString());
-                final JSONObject jsonObject1 = new JSONObject(serverData);
-                final String strStatus = jsonObject1.getString("status");
-                if (strStatus.equals("true")) {
-                    database.beginTransaction();
-                    String Query = "Update  user Set is_push = 'Y' Where user_code = '" + struserCode + "'";
-                    long check = db.executeDML(Query, database);
-                    if (check > 0) {
-                        resultStr="1";
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
-                    } else {
-                        database.endTransaction();
-                    }
-                }
+                send_user_json_on_server(context,database,db,sender.toString(),struserCode);
+
             }
             cursor.close();
         } catch (Exception ex) {
@@ -345,12 +379,12 @@ public class User {
     }
 
 
-    private static String send_user_json_on_server(String JsonString) {
+    /*private static String send_user_json_on_server(String JsonString) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/user/data");
+                Globals.App_IP_URL + "user/data");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
@@ -371,6 +405,85 @@ public class User {
             e.printStackTrace();
         }
         return serverData;
+    }*/
+    public static void send_user_json_on_server(Context context, SQLiteDatabase database,Database db,final String JsonString,String struserCode){
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url =Globals.App_IP_URL + "user/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject jsonObject1 = new JSONObject(response);
+                            final String strStatus = jsonObject1.getString("status");
+                            if (strStatus.equals("true")) {
+                                database.beginTransaction();
+                                String Query = "Update  user Set is_push = 'Y' Where user_code = '" + struserCode + "'";
+                                long check = db.executeDML(Query, database);
+                                if (check > 0) {
+                                   //resultStr="1";
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                } else {
+                                    database.endTransaction();
+                                }
+                            }
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
 }

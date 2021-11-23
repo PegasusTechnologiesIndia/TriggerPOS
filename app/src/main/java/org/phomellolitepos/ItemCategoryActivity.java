@@ -6,13 +6,14 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
@@ -30,31 +31,17 @@ import android.widget.LinearLayout;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 
-import org.phomellolitepos.Adapter.CustomAdapter;
 import org.phomellolitepos.Adapter.SpinnerAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Group;
-import org.phomellolitepos.database.Lite_POS_Device;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Settings;
 
 /**
@@ -71,11 +58,12 @@ public class ItemCategoryActivity extends AppCompatActivity {
     Settings settings;
     String JsonString;
     Database db;
+    String item_groupId;
     SQLiteDatabase database;
     String date;
-    Lite_POS_Registration lite_pos_registration;
+
     ProgressDialog pDialog;
-    String Item_category_name = "";
+    String Item_category_name = "",CategoryIP="";
     String strIGCode = "";
     AlertDialog.Builder alertDialog;
     Button nbutton;
@@ -88,8 +76,8 @@ public class ItemCategoryActivity extends AppCompatActivity {
     String flag = "0";
     private boolean isSpinnerInitial = true;
     MenuItem menuItem;
-    Lite_POS_Device liteposdevice;
-    String liccustomerid;
+EditText edt_categoryIp;
+
     String itemgroup_name;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -118,14 +106,15 @@ public class ItemCategoryActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            //sleep(100);
 
                             Intent intent = new Intent(ItemCategoryActivity.this, CategoryListActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
 
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
 
                         } finally {
@@ -138,20 +127,12 @@ public class ItemCategoryActivity extends AppCompatActivity {
         });
         Intent intent = getIntent();
         getSupportActionBar().setTitle(R.string.Item_Category);
-        code = intent.getStringExtra("code");
         operation = intent.getStringExtra("operation");
+        code = intent.getStringExtra("code");
+
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
-        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-        System.out.println("lic data"+ liteposdevice);
-        try {
-            if (liteposdevice != null) {
-                liccustomerid = liteposdevice.getLic_customer_license_id();
-                System.out.println("lic data"+ liccustomerid);
-            }
-        } catch (Exception e) {
 
-        }
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
@@ -162,6 +143,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
         edt_layout_item_ct_code = (TextInputLayout) findViewById(R.id.edt_layout_item_ct_code);
         edt_item_ct_name = (EditText) findViewById(R.id.edt_item_ct_name);
         edt_item_ct_code = (EditText) findViewById(R.id.edt_item_ct_code);
+        edt_categoryIp = (EditText) findViewById(R.id.edt_item_ct_ip);
         spn_parent_category = (Spinner) findViewById(R.id.spn_parent_category);
         btn_save = (Button) findViewById(R.id.btn_save);
         btn_delete = (Button) findViewById(R.id.btn_delete);
@@ -178,7 +160,9 @@ public class ItemCategoryActivity extends AppCompatActivity {
                     } else {
                         Item_Group item_group_parent1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code = '" + arrayList_custom.get(position) + "'");
                         spn_parent_code = item_group_parent1.get_item_group_code();
-                        if (spn_parent_code.equals(code)) {
+                        fill_parent_code(spn_parent_code);
+                    }
+/*                        if (spn_parent_code.equals(code)) {
                             Toast toast = Toast.makeText(getApplicationContext(), R.string.Canparent, Toast.LENGTH_SHORT);
                             toast.setGravity(Gravity.CENTER, 0, 0);
                             toast.show();
@@ -209,7 +193,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
                                 }
                             }
                         }
-                    }
+                    }*/
                 }
             }
 
@@ -230,6 +214,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
             if (item_group != null) {
                 edt_item_ct_name.setText(item_group.get_item_group_name());
                 edt_item_ct_code.setText(item_group.get_item_group_code());
+                edt_categoryIp.setText(item_group.getCategoryIp());
                 edt_item_ct_code.setEnabled(false);
                 Item_Group item_group_parent = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code = '" + item_group.get_parent_code() + "'");
                 if (item_group_parent != null) {
@@ -287,13 +272,39 @@ public class ItemCategoryActivity extends AppCompatActivity {
                                         public void run() {
                                             try {
                                                 sleep(1000);
+                     String sqlQuery="select ig.item_group_code from item_group ig left join item it ON it.item_group_code = ig.item_group_code  where ig.item_group_code = '"+code+"' and ig.is_active ='1'";
+                                          //  database = db.getReadableDatabase();
+                                            Cursor cursor = database.rawQuery(sqlQuery, null);
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                    item_groupId=cursor.getString(0);
+                                                   // Unitid = cursor.getString(1);
+                                                } while (cursor.moveToNext());
+
+                                            }
+
+                                            // closing connection
+                                            cursor.close();
+
+                                            if(item_groupId!=null){
+                                                runOnUiThread(new Runnable() {
+                                                    public void run() {
+                                                        pDialog.dismiss();
+                                                        Toast.makeText(getApplicationContext(), getString(R.string.deletemsg), Toast.LENGTH_LONG).show();
+
+
+                                                    }
+                                                });
+                                            }
+                                            else {
+
                                                 item_group.set_is_active("0");
                                                 long l = item_group.updateItem_Group("item_group_code=?", new String[]{code}, database);
                                                 if (l > 0) {
-                                                    for (int i=0;i<item_array.size();i++){
-                                                        Item item = Item.getItem(getApplicationContext(),"where item_group_code = '"+item_array.get(i).get_item_group_code()+"'",database,db);
+                                                    for (int i = 0; i < item_array.size(); i++) {
+                                                        Item item = Item.getItem(getApplicationContext(), "where item_group_code = '" + item_array.get(i).get_item_group_code() + "'", database, db);
                                                         item.set_item_group_code("");
-                                                        item.updateItem("item_code=?",new String[]{item.get_item_code()},database);
+                                                        item.updateItem("item_code=?", new String[]{item.get_item_code()}, database);
                                                     }
                                                     pDialog.dismiss();
                                                     runOnUiThread(new Runnable() {
@@ -304,7 +315,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
                                                             finish();
                                                         }
                                                     });
-                                                    } else {
+                                                } else {
 //                                                    database.endTransaction();
                                                     pDialog.dismiss();
                                                     runOnUiThread(new Runnable() {
@@ -314,7 +325,7 @@ public class ItemCategoryActivity extends AppCompatActivity {
                                                     });
                                                 }
 
-
+                                            }
 
                                             } catch (InterruptedException e) {
                                                 pDialog.dismiss();
@@ -415,35 +426,42 @@ public class ItemCategoryActivity extends AppCompatActivity {
     }
 
     private void fill_parent_code(String compare_parent_name) {
-        arrayList = Item_Group.getAllItem_GroupSpinner_All(getApplicationContext(), " WHERE is_active ='1' Order By item_group_name asc");
-        arrayList_custom = new ArrayList<>();
-        for (int i = 0; i < arrayList.size(); i++) {
-            if (i == 0) {
-                arrayList_custom.add("Select Category");
+        try {
+            arrayList = Item_Group.getAllItem_GroupSpinner_All(getApplicationContext(), " WHERE is_active ='1' Order By lower(item_group_name) asc");
+            arrayList_custom = new ArrayList<>();
+            for (int i = 0; i < arrayList.size(); i++) {
+                if (i == 0) {
+                    arrayList_custom.add("Select Category");
+                }
+                arrayList_custom.add(arrayList.get(i).get_item_group_code());
             }
-            arrayList_custom.add(arrayList.get(i).get_item_group_code());
-        }
 
-        SpinnerAdapter spinnerAdapter = new SpinnerAdapter(getApplicationContext(), arrayList_custom);
-        spn_parent_category.setAdapter(spinnerAdapter);
+            SpinnerAdapter spinnerAdapter = new SpinnerAdapter(getApplicationContext(), arrayList_custom);
+            spn_parent_category.setAdapter(spinnerAdapter);
 
-        if (!compare_parent_name.equals("")) {
-            for (int i = 0; i < spinnerAdapter.getCount(); i++) {
+            if (!compare_parent_name.equals("")) {
+                for (int i = 0; i < spinnerAdapter.getCount(); i++) {
 //                int h = (int) spn_parent_category.getAdapter().getItemId(i);
-                String iname = arrayList_custom.get(i);
-                if (compare_parent_name.equals(iname)) {
-                    spn_parent_category.setSelection(i);
-                    break;
+                    String iname = arrayList_custom.get(i);
+                    if (compare_parent_name.equals(iname)) {
+                        spn_parent_category.setSelection(i);
+                        break;
+                    }
                 }
             }
         }
+        catch(Exception e){
+
+        }
     }
 
-    private void Update_Item_category(String code, String item_category_name, String item_category_code) {
+    // used for edit mode on updating Item Group
+    private void Update_Item_category(String code, String item_category_name, String item_category_code,String itemcatgoryIP) {
         database.beginTransaction();
         item_group.set_item_group_name(item_category_name);
         item_group.set_item_group_code(item_category_code);
         item_group.set_parent_code(spn_parent_code);
+        item_group.setCategoryIp(itemcatgoryIP);
         item_group.set_is_push("N");
         long l = item_group.updateItem_Group("item_group_code=?", new String[]{code}, database);
         if (l > 0) {
@@ -471,37 +489,44 @@ public class ItemCategoryActivity extends AppCompatActivity {
         }
     }
 
-    private void Fill_Item_category(String item_category_name, String item_category_code) {
+    // First time adding Item group
+    private void Fill_Item_category(String item_category_name, String item_category_code, String categoryIP) {
         String modified_by = Globals.user;
         database.beginTransaction();
         System.out.println("DATE String"+ date);
-        System.out.println("license customer id"+ liccustomerid);
+        System.out.println("license customer id"+ Globals.license_id);
+try {
+    item_group = new Item_Group(getApplicationContext(), null, Globals.license_id, item_category_code, spn_parent_code, item_category_name, "0", "1", modified_by, date, "N",categoryIP);
+    long l = item_group.insertItem_Group(database);
+    if (l > 0) {
+        database.setTransactionSuccessful();
+        database.endTransaction();
+        pDialog.dismiss();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
+                Intent intent_category = new Intent(ItemCategoryActivity.this, CategoryListActivity.class);
+                startActivity(intent_category);
+                finish();
+            }
+        });
 
-        item_group = new Item_Group(getApplicationContext(), null, liccustomerid, item_category_code, spn_parent_code, item_category_name, "0", "1", modified_by, date, "N");
-        long l = item_group.insertItem_Group(database);
-        if (l > 0) {
-            database.setTransactionSuccessful();
-            database.endTransaction();
-            pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
-                    Intent intent_category = new Intent(ItemCategoryActivity.this, CategoryListActivity.class);
-                    startActivity(intent_category);
-                    finish();
-                }
-            });
+    } else {
+        database.endTransaction();
+        pDialog.dismiss();
+        runOnUiThread(new Runnable() {
+            public void run() {
+                Toast.makeText(getApplicationContext(), R.string.Record_Not_Inserted, Toast.LENGTH_SHORT).show();
+            }
+        });
 
-        } else {
-            database.endTransaction();
-            pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), R.string.Record_Not_Inserted, Toast.LENGTH_SHORT).show();
-                }
-            });
+    }
+}
+catch(Exception e){
 
-        }
+}
+
+
     }
 
     @Override
@@ -537,7 +562,14 @@ public class ItemCategoryActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                save();
+                try {
+                    // Item Group saved based on this save function
+                    save();
+
+                }
+                catch(Exception e){
+
+                }
             }
         });
         return true;
@@ -566,123 +598,144 @@ public class ItemCategoryActivity extends AppCompatActivity {
     private void save() {
 
         if (operation.equals("Edit")) {
-            final String Item_category_name = edt_item_ct_name.getText().toString().trim();
-            final String Item_category_code = edt_item_ct_code.getText().toString().trim();
 
-            pDialog = new ProgressDialog(ItemCategoryActivity.this);
-            pDialog.setCancelable(false);
-            pDialog.setMessage(getString(R.string.Wait_msg));
-            pDialog.show();
+            try {
+                final String Item_category_name = edt_item_ct_name.getText().toString().trim();
+                final String Item_category_code = edt_item_ct_code.getText().toString().trim();
+                final String Item_category_IP = edt_categoryIp.getText().toString().trim();
+                pDialog = new ProgressDialog(ItemCategoryActivity.this);
+                pDialog.setCancelable(false);
+                pDialog.setMessage(getString(R.string.Wait_msg));
+                pDialog.show();
 
-            Thread timerThread = new Thread() {
-                public void run() {
-                    try {
-                        sleep(1000);
+                Thread timerThread = new Thread() {
+                    public void run() {
                         try {
-                            Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_name='" + edt_item_ct_name.getText().toString() + "' and  item_group_code != '"+  edt_item_ct_code.getText().toString() +"'");
+                            sleep(1000);
+                            try {
+                                Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code !='" + edt_item_ct_code.getText().toString() + "' and item_group_name='" + edt_item_ct_name.getText().toString().toLowerCase() + "' COLLATE NOCASE");
 
-                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
-                            itemgroup_name = objIG1.get_item_group_name();
-                        }
-                        catch(Exception e){
+                                //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                                itemgroup_name = objIG1.get_item_group_name();
+                            } catch (Exception e) {
+                                      System.out.println(e.getMessage());
+                            }
 
-                        }
-
-                        if(edt_item_ct_name.getText().toString().equals(itemgroup_name)){
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    pDialog.dismiss();
-                                   edt_item_ct_name.setText(item_group.get_item_group_name());
-                                   edt_item_ct_name.selectAll();
-                                    Toast.makeText(ItemCategoryActivity.this, "Item Group already present", Toast.LENGTH_SHORT).show();
+                            if (edt_item_ct_name.getText().toString().equalsIgnoreCase(itemgroup_name)) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pDialog.dismiss();
+                                        edt_item_ct_name.setText(item_group.get_item_group_name());
+                                        edt_categoryIp.setText(item_group.getCategoryIp());
+                                        edt_item_ct_name.selectAll();
+                                        Toast.makeText(ItemCategoryActivity.this, getString(R.string.itemgrppresent), Toast.LENGTH_SHORT).show();
 //                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            } else {
+                                try {
+                                    Update_Item_category(code, Item_category_name, Item_category_code,Item_category_IP);
                                 }
-                            });
+                                catch(Exception e){
 
-                        }
-                        else {
-                            Update_Item_category(code, Item_category_name, Item_category_code);
-                        }
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
+                                }
+                            }
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
 
-                    } finally {
+                        } finally {
+                        }
+                    }
+                };
+                timerThread.start();
+            }
+            catch(Exception e){
+
+            }
+        } else if (operation.equals("Add")) {
+            try {
+                if (edt_item_ct_code.getText().toString().equals("")) {
+                    Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "  order By item_group_id Desc LIMIT 1");
+
+                    if (objIG1 == null) {
+                        strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + 1;
+                    } else {
+                        strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + (Integer.parseInt(objIG1.get_item_group_id()) + 1);
+                    }
+                } else {
+
+                    if (edt_item_ct_code.getText().toString().contains(" ")) {
+                        edt_item_ct_code.setError(getString(R.string.Cant_Enter_Space));
+                        edt_item_ct_code.requestFocus();
+                        return;
+                    } else {
+                        strIGCode = edt_item_ct_code.getText().toString();
                     }
                 }
-            };
-            timerThread.start();
 
-        } else if (operation.equals("Add")) {
-            if (edt_item_ct_code.getText().toString().equals("")) {
-                Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "  order By item_group_id Desc LIMIT 1");
-
-                if (objIG1 == null) {
-                    strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + 1;
-                } else {
-                    strIGCode = Globals.objLPD.getDevice_Symbol() + "IG-" + (Integer.parseInt(objIG1.get_item_group_id()) + 1);
-                }
-            } else {
-
-                if (edt_item_ct_code.getText().toString().contains(" ")) {
-                    edt_item_ct_code.setError(getString(R.string.Cant_Enter_Space));
-                    edt_item_ct_code.requestFocus();
+                if (edt_item_ct_name.getText().toString().equals("")) {
+                    edt_item_ct_name.setError(getString(R.string.Category_name_is_required));
+                    edt_item_ct_name.requestFocus();
                     return;
                 } else {
-                    strIGCode = edt_item_ct_code.getText().toString();
+                    Item_category_name = edt_item_ct_name.getText().toString().trim();
                 }
-            }
+                if (edt_categoryIp.getText().toString().equals("")) {
+                    CategoryIP = "";
+                } else {
+                    CategoryIP = edt_categoryIp.getText().toString().trim();
+                }
+                pDialog = new ProgressDialog(ItemCategoryActivity.this);
+                pDialog.setCancelable(false);
+                pDialog.setMessage(getString(R.string.Wait_msg));
+                pDialog.show();
 
-            if (edt_item_ct_name.getText().toString().equals("")) {
-                edt_item_ct_name.setError(getString(R.string.Category_name_is_required));
-                edt_item_ct_name.requestFocus();
-                return;
-            } else {
-                Item_category_name = edt_item_ct_name.getText().toString().trim();
-            }
-
-            pDialog = new ProgressDialog(ItemCategoryActivity.this);
-            pDialog.setCancelable(false);
-            pDialog.setMessage(getString(R.string.Wait_msg));
-            pDialog.show();
-
-            Thread timerThread = new Thread() {
-                public void run() {
-                    try {
-                        sleep(1000);
+                Thread timerThread = new Thread() {
+                    public void run() {
                         try {
-                            Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_name='" + edt_item_ct_name.getText().toString() + "'");
+                            sleep(1000);
+                            try {
+                                Item_Group objIG1 = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_name='" + edt_item_ct_name.getText().toString() + "' COLLATE NOCASE" );
 
-                            //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
-                            itemgroup_name = objIG1.get_item_group_name();
-                        }
-                        catch(Exception e){
+                                //Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code='" + code + "'");
+                                itemgroup_name = objIG1.get_item_group_name();
+                            } catch (Exception e) {
 
-                        }
+                            }
 
 
-                        if(edt_item_ct_name.getText().toString().equals(itemgroup_name)){
-                            runOnUiThread(new Runnable() {
-                                public void run() {
-                                    pDialog.dismiss();
-                                    edt_item_ct_name.setText("");
-                                    Toast.makeText(ItemCategoryActivity.this, "Item Group already present", Toast.LENGTH_SHORT).show();
+                            if (edt_item_ct_name.getText().toString().equalsIgnoreCase(itemgroup_name)) {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        pDialog.dismiss();
+                                        edt_item_ct_name.setText("");
+                                        Toast.makeText(ItemCategoryActivity.this, getString(R.string.itemgrppresent), Toast.LENGTH_SHORT).show();
 //                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+
+                            } else {
+
+                                try {
+                                    Fill_Item_category(Item_category_name, strIGCode,CategoryIP);
                                 }
-                            });
+                                catch(Exception e){
+
+                                }
+                            }
+
+                        } catch (InterruptedException e) {
+                            e.printStackTrace();
 
                         }
-                        else {
-                            Fill_Item_category(Item_category_name, strIGCode);
-                        }
-
-                    } catch (InterruptedException e) {
-                        e.printStackTrace();
-
                     }
-                }
-            };
-            timerThread.start();
+                };
+                timerThread.start();
+            }
+            catch(Exception e){
 
+            }
 
         }
     }

@@ -35,7 +35,7 @@
             android:spinnerMode="dropdown">
         </Spinner>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_tax_name"
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
@@ -47,7 +47,7 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Tax_Name" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/lbl_spinner_type"
@@ -66,7 +66,7 @@
         </Spinner>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_value"
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
@@ -79,10 +79,10 @@
                 android:hint="@string/Value"
                 android:inputType="numberDecimal" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_comment"
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
@@ -94,7 +94,7 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Comment" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <LinearLayout

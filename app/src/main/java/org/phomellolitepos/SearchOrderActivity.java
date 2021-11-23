@@ -15,8 +15,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
@@ -25,14 +25,6 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -52,8 +44,6 @@ import org.phomellolitepos.printer.ThreadPoolManager;
 import org.phomellolitepos.zbar.Result;
 import org.phomellolitepos.zbar.ZBarScannerView;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import woyou.aidlservice.jiuiv5.ICallback;
@@ -204,9 +194,9 @@ public class SearchOrderActivity extends AppCompatActivity implements ZBarScanne
         btn_print_kot = (Button) findViewById(R.id.btn_print_kot);
         img_search = (ImageView) findViewById(R.id.img_search);
         list_search = (ListView) findViewById(R.id.list_search);
-        if (Globals.Industry_Type.equals("4")){
+       /* if (Globals.Industry_Type.equals("4")){
             btn_print_kot.setVisibility(View.GONE);
-        }
+        }*/
 
         edt_barcode.setText(Globals.BarcodeReslt);
         mScannerView = new ZBarScannerView(SearchOrderActivity.this);
@@ -436,7 +426,8 @@ public class SearchOrderActivity extends AppCompatActivity implements ZBarScanne
 
     private ArrayList<SearchOrders> getOrder() {
         String succ_bg = "0";
-        String serverData = get_order_from_server();
+        String serverData = "";
+                //get_order_from_server();
         final ArrayList<SearchOrders> ordersArrayList = new ArrayList<>();
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
@@ -472,11 +463,11 @@ public class SearchOrderActivity extends AppCompatActivity implements ZBarScanne
         return ordersArrayList;
     }
 
-    private String get_order_from_server() {
+  /*  private String get_order_from_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/Check_order");
+                Globals.App_IP_URL + "Check_order");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("order_code", edt_barcode.getText().toString().trim()));
@@ -501,7 +492,7 @@ public class SearchOrderActivity extends AppCompatActivity implements ZBarScanne
 
 
     }
-
+*/
     private void print_kot_mobilepos(final Orders strOrderNo) {
         ThreadPoolManager.getInstance().executeTask(new Runnable() {
             @Override

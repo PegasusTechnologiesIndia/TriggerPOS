@@ -1,155 +1,47 @@
-CREATE TABLE [pro_loyalty_setup](
-    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [min_purchase_value] DECIMAL(18, 6),
-    [base_value] DECIMAL(18, 6),
-    [earn_point] INTEGER(11),
-    [earn_value] DECIMAL(18, 6),
-    [mis_redeem_value] DECIMAL(18, 6),
-    [loyalty_type] NVARCHAR(150),
-    [name] NVARCHAR(150),
-    [valid_from] DATETIME,
-    [valid_to] DATETIME);
-
-    CREATE TABLE [order_loyalty_earn](
-                  [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                  [order_code] NVARCHAR(50),
-                  [customer_code] NVARCHAR(50),
-                  [earn_point] INTEGER(11),
-                  [earn_value] DECIMAL(18, 6),
-                  [redeem_point] DECIMAL(18, 6)
-                  );
-
-    CREATE TABLE [coupon_detail](
-        [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-        [card_id] INTEGER(11),
-        [card_no] NVARCHAR(50),
-        [is_used] BOOLEAN,
-        CONSTRAINT [card_no_unique] UNIQUE([card_no]));
-
-CREATE TABLE [ticket_setup](
-    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [menufacture_id] NVARCHAR(50),
-    [tck_from] NVARCHAR(150),
-    [tck_to] NVARCHAR(150),
-    [price] DECIMAL(18, 6),
-    [departure] DATETIME,
-    [arrival] DATETIME,
-    [is_inclusive_tax] BOOLEAN,
-    [new_price] DECIMAL(18, 6),
-    [bus_number] NVARCHAR(150),
-    [is_active] BOOLEAN);
-
-    CREATE TABLE [ticket_setup_category](
-        [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-        [ref_id] NVARCHAR(50),
-        [category_id] NVARCHAR(50));
-
-    CREATE TABLE [ticket_setup_days](
-        [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-        [ref_id] NVARCHAR(50),
-        [days] NVARCHAR(50));
-
-
-    CREATE TABLE [ticket_setup_tax](
-         [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-         [ref_id] NVARCHAR(50),
-         [tax_id] NVARCHAR(50));
 
 CREATE TABLE [acc_customer](
     [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [contact_code] NVARCHAR(50),
+    [contact_code] NVARCHAR(50),d
     [amount] DECIMAL(18, 6));
 
-CREATE TABLE [purchase](
+
+CREATE TABLE [returns](
     [id] INTEGER PRIMARY KEY AUTOINCREMENT,
     [contact_code] NVARCHAR(50) REFERENCES contact([contact_code]),
     [voucher_no] NVARCHAR(50),
-    [ref_voucher_code] NVARCHAR(50),
     [date] DATETIME,
     [remarks] NVARCHAR(50),
     [total] DECIMAL(18, 6),
+    [z_code] NVARCHAR(50),
     [is_post] BOOLEAN,
     [is_cancel] BOOLEAN,
     [is_active] BOOLEAN,
     [is_push] BOOLEAN,
     [modified_by] NVARCHAR(50),
-    [modified_date] DATETIME);
+    [modified_date] DATETIME,
+    [order_code] NVARCHAR(50),
+    [return_type] NVARCHAR(2),
+    [payment_id] NVARCHAR(2));
 
-	CREATE TABLE [purchase_detail](
+CREATE TABLE [return_detail](
     [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [ref_voucher_no] NVARCHAR(50),
+    [ref_voucher_no] NVARCHAR(50) REFERENCES returns([voucher_no]),
     [s_no] INTEGER(11),
     [item_code] Varchar(50) REFERENCES item([item_code]),
     [qty] Decimal(18, 6),
     [price] Decimal(18, 6),
     [line_total] Decimal(18, 6));
 
-CREATE TABLE [purchase_payment](
-    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [device_code] NVARCHAR(50),
-    [ref_voucher_no] NVARCHAR(50),
+CREATE TABLE [return_detail_tax](
+    [order_return_detail_tax_id] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [order_return_voucher_no] NVARCHAR(50),
     [sr_no] INTEGER(11),
-    [pay_amount] [DECIMAL(15,3)],
-    [payment_id] INTEGER(11),
-    [currency_id] INTEGER(11),
-    [currency_value] [DECIMAL(15,6)],
-    [card_number] NVARCHAR(50),
-    [card_name] NVARCHAR(50),
-    [field1] TEXT,
-    [field2] TEXT);
-
-             CREATE TABLE [returns](
-                                       [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                                       [contact_code] NVARCHAR(50),
-                                       [voucher_no] NVARCHAR(50),
-                                       [date] [DATETIME],
-                                       [remarks] NVARCHAR(50),
-                                       [total] DECIMAL(18, 6),
-                                       [z_code] NVARCHAR(50),
-                                       [is_post] [BOOLEAN],
-                                       [is_cancel] [BOOLEAN],
-                                       [is_active] [BOOLEAN],
-                                       [is_push] [BOOLEAN],
-                                       [modified_by] NVARCHAR(50),
-                                       [modified_date] [DATETIME],
-                                       [order_code] NVARCHAR(50),
-                                       [return_type] NVARCHAR(2),
-                                       [payment_id] NVARCHAR(2));
-
-	CREATE TABLE [return_detail](
-    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [ref_voucher_no] NVARCHAR(50),
-    [s_no] INTEGER(11),
-    [item_code] Varchar(50) REFERENCES item([item_code]),
-    [qty] Decimal(18, 6),
-    [price] Decimal(18, 6),
-    [line_total] Decimal(18, 6));
-
-        CREATE TABLE [stock_adjustment_header](
-                               [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                               [voucher_no] NVARCHAR(50),
-                               [date] [DATETIME],
-                               [remarks] NVARCHAR(50),
-                               [is_post] [BOOLEAN],
-                               [is_cancel] [BOOLEAN],
-                               [is_active] [BOOLEAN],
-                               [modified_by] NVARCHAR(50),
-                               [modified_date] [DATETIME]);
-
-CREATE TABLE [stock_adjustment_detail](
-    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [ref_voucher_no] NVARCHAR(50),
-    [s_no] INTEGER(11),
-    [item_code] Varchar(50) REFERENCES item([item_code]),
-    [qty] Decimal(18, 6),
-    [in_out_flag] Varchar(1));
-
-    CREATE TABLE [customer_price_book](
-                           [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                           [contact_code] NVARCHAR(50),
-                           [item_code] NVARCHAR(50),
-                           [sale_price] DECIMAL(18, 6),
-                           [modified_date] [DATETIME]);
+    [item_code] NVARCHAR(50),
+    [tax_id] INTEGER(11),
+    [tax_type] NVARCHAR(50),
+    [rate] [DECIMAL(15,2)],
+    [tax_value] [DECIMAL(15,3)],
+    UNIQUE([order_return_voucher_no], [item_code], [tax_id]));
 
     CREATE TABLE [acc_customer_dedit](
                        [id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -169,8 +61,28 @@ CREATE TABLE [stock_adjustment_detail](
                     [is_active] [BOOLEAN],
                     [modified_by] NVARCHAR(50),
                     [modified_date] [DATETIME],
-                    [voucher_no] NVARCHAR(50));
+                    [voucher_no] NVARCHAR(50),
+                    [payment_id] INTEGER(11));
 
+                     CREATE TABLE [customer_price_book](
+                                               [id] INTEGER PRIMARY KEY AUTOINCREMENT,
+                                               [contact_code] NVARCHAR(50),
+                                               [item_code] NVARCHAR(50),
+                                               [sale_price] DECIMAL(18, 6),
+                                               [modified_date] [DATETIME]);
+ CREATE TABLE [Bank](
+            	[bank_id] INTEGER PRIMARY KEY AUTOINCREMENT,
+            	[device_code] NVARCHAR(50),
+            	[bank_code] NVARCHAR(50),
+            	[bank_name] NVARCHAR(50),
+            	[email] 	NVARCHAR(50),
+            	[mobile] NVARCHAR(50),
+                [address] NVARCHAR(50),
+                [bank_ref_code] NVARCHAR(50),
+                [is_active][BOOLEAN],
+                [modified_by] NVARCHAR(50),
+                [modified_date] [DATETIME],
+                [is_push] [BOOLEAN]);
     CREATE TABLE [Sys_Tax_Group](
                    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
                    [tax_master_id] INTEGER(11),
@@ -186,74 +98,26 @@ CREATE TABLE [stock_adjustment_detail](
                  [table_name] NVARCHAR(50),
                  [datetime] DATETIME);
 
-      CREATE TABLE [Sys_Tax_Type](
-                [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                [type] NVARCHAR(20),
-                [is_active] [BOOLEAN]);
+ CREATE TABLE [Time_Calculation](
+                 [tcalid] INTEGER PRIMARY KEY AUTOINCREMENT,
+                 [range1] INTEGER(11),
+                 [range2] INTEGER(11),
+                 [actualvalue] INTEGER(11));
 
        CREATE TABLE [Tax_Detail](
                  [id] INTEGER PRIMARY KEY AUTOINCREMENT,
                  [tax_id] INTEGER(11),
                  [tax_type_id] INTEGER(11));
 
-        CREATE TABLE [Pay_Collection_Detail](
-                [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                [collection_code] NVARCHAR(50),
-                [invoice_no] NVARCHAR(50),
-                [amount] NVARCHAR(50));
 
-        CREATE TABLE [Pay_Collection_Setup](
-                [id] INTEGER PRIMARY KEY AUTOINCREMENT,
-                [contact_code] NVARCHAR(50),
-                [invoice_no] NVARCHAR(50),
-                [invoice_date] NVARCHAR(50),
-                [amount] NVARCHAR(50));
 
-        CREATE TABLE [Bank](
-            	[bank_id] INTEGER PRIMARY KEY AUTOINCREMENT,
-            	[device_code] NVARCHAR(50),
-            	[bank_code] NVARCHAR(50),
-            	[bank_name] NVARCHAR(50),
-            	[email] 	NVARCHAR(50),
-            	[mobile] NVARCHAR(50),
-                [address] NVARCHAR(50),
-                [bank_ref_code] NVARCHAR(50),
-                [is_active][BOOLEAN],
-                [modified_by] NVARCHAR(50),
-                [modified_date] [DATETIME],
-                [is_push] 		 [BOOLEAN]);
 
-        CREATE TABLE [Pay_Collection](
-            	[id] INTEGER PRIMARY KEY AUTOINCREMENT,
-            	[contact_code] NVARCHAR(50),
-            	[collection_code] NVARCHAR(50),
-            	[collection_date] [DATETIME],
-            	[amount] [DECIMAL(15,3)],
-                [payment_mode] NVARCHAR(50),
-                [ref_no] NVARCHAR(50),
-                [ref_type] 	NVARCHAR(50),
-                [on_account] NVARCHAR(50) ,
-                [remarks] NVARCHAR(50) ,
-                [is_active] [BOOLEAN] ,
-                [modified_by] NVARCHAR(50),
-                [modified_date] [DATETIME],
-                [is_push] 		 [BOOLEAN]);
 
 CREATE TABLE [Customer_Image](
 [id] INTEGER PRIMARY KEY AUTOINCREMENT,
 [image_Path] [NVARCHAR(255)]);
 
-CREATE TABLE [Reservation](
-    	[_id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    	[date_time] NVARCHAR(50) ,
-    	[customer_code] NVARCHAR(50) ,
-    	[user_code] NVARCHAR(50) ,
-    	[table_code] 	NVARCHAR(50));
 
-CREATE TABLE [Reservation_detail](
-    [_id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [ref_id] NVARCHAR(50) REFERENCES Reservation([_id]),
-    [item_code] NVARCHAR(50));
 
 CREATE TABLE [address](
     	[address_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -329,6 +193,7 @@ CREATE TABLE [contact](
     [gstin] VARCHAR(25),
     [country_id] INT,
     [zone_id] INT,
+     [is_taxable] BOOLEAN,
     CONSTRAINT [contact_code_unique] UNIQUE([contact_code]));
 
 CREATE TABLE [contact_business_group](
@@ -352,7 +217,7 @@ CREATE TABLE [item](
     [device_code] NVARCHAR(50),
     [item_code] NVARCHAR(50),
     [parent_code] NVARCHAR(50),
-    [item_group_code] NVARCHAR(50),
+    [item_group_code] NVARCHAR(50) REFERENCES item_group([item_group_code]),
     [manufacture_code] NVARCHAR(50),
     [item_name] NVARCHAR(50),
     [description] TEXT,
@@ -361,7 +226,7 @@ CREATE TABLE [item](
     [hsn_sac_code] VARCHAR(25),
     [image] TEXT,
     [item_type] NVARCHAR(50),
-    [unit_id] INTEGER,
+    [unit_id] INTEGER REFERENCES unit([unit_id]),
     [is_return_stockable] BOOLEAN,
     [is_service] BOOLEAN,
     [is_active] BOOLEAN,
@@ -369,7 +234,8 @@ CREATE TABLE [item](
     [modified_date] DATETIME,
     [is_push] BOOLEAN,
     [is_inclusive_tax] BOOLEAN,
-    [item_image] NVARCHAR(50),
+    [item_image] Text,
+    [is_modifier] Text,
     CONSTRAINT [item_code_unique] UNIQUE([item_code]));
 
 CREATE TABLE [item_group](
@@ -383,13 +249,13 @@ CREATE TABLE [item_group](
     [modified_by] INTEGER(11),
     [modified_date] DATETIME,
     [is_push] BOOLEAN,
+     [categoryIp] TEXT,
     CONSTRAINT [item_group_code_unique] UNIQUE([item_group_code]));
 
 CREATE TABLE [item_group_tax](
     [location_id] INTEGER(11),
-    [tax_id] INTEGER(11),
-    [item_group_code] NVARCHAR(50),
-    FOREIGN KEY(tax_id) REFERENCES tax(tax_id));
+    [tax_id] INTEGER(11) REFERENCES tax([tax_id]),
+    [item_group_code] NVARCHAR(50) REFERENCES item([item_code]));
 
 CREATE TABLE [item_location](
     [item_location_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -436,7 +302,8 @@ CREATE TABLE [Lite_POS_Device](
         [lic_code] [TEXT],
         [license_key] [TEXT],
         [license_type] [TEXT],
-        [Status] [TEXT]
+        [Status] [TEXT],
+        [Location_name] [TEXT]
     	);
 
  CREATE TABLE [Lite_POS_Registration](
@@ -454,7 +321,10 @@ CREATE TABLE [Lite_POS_Device](
 	 [Project_Id] 	 [TEXT],
 	 [Registration_Code] 	 [TEXT],
 	 [service_code_tariff] 	 NVARCHAR(25),
-	 [Industry_Type] 	 [TEXT]);
+	 [Industry_Type] 	 [TEXT],
+	 [Short_companyname] 	 [TEXT],
+	 [Country_name] [TEXT],
+	 [Zone_name] [TEXT]);
 
  CREATE TABLE [location](
         	[location_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -479,26 +349,16 @@ CREATE TABLE [location_type](
             [modified_date] [DATETIME],
             [is_push] 		 [BOOLEAN]);
 
-CREATE TABLE [manufacture](
-    [manufacture_id] INTEGER PRIMARY KEY AUTOINCREMENT,
-    [device_code] NVARCHAR(50),
-    [manufacture_code] NVARCHAR(50),
-    [manufacture_name] NVARCHAR(50),
-    [image] TEXT,
-    [is_active] BOOLEAN,
-    [modified_by] INTEGER(11),
-    [modified_date] DATETIME,
-    [is_push] BOOLEAN,
-    CONSTRAINT [manufacture_code_unique] UNIQUE([manufacture_code]));
+
 
 CREATE TABLE [orders](
     [order_id] INTEGER PRIMARY KEY AUTOINCREMENT,
     [device_code] NVARCHAR(50),
     [location_id] INTEGER(11),
-    [order_type_id] INTEGER(11),
+    [order_type_id] INTEGER(11) REFERENCES order_type([order_type_id]),
     [order_code] NVARCHAR(50),
     [order_date] DATETIME,
-    [contact_code] NVARCHAR(50),
+    [contact_code] NVARCHAR(50) REFERENCES contact([contact_code]),
     [emp_code] NVARCHAR(50),
     [total_item] INTEGER(11),
     [total_quantity] [DECIMAL(15,6)],
@@ -519,6 +379,7 @@ CREATE TABLE [orders](
     [remarks] TEXT,
     [table_code] TEXT,
     [delivery_date] DATETIME,
+    [RFID] NVARCHAR(50),
     CONSTRAINT [item_location_unique] UNIQUE([device_code], [order_code]));
 
 CREATE TABLE [order_detail](
@@ -535,7 +396,11 @@ CREATE TABLE [order_detail](
     [return_quantity] INTEGER(11),
     [discount] [DECIMAL(18,3)],
     [line_total] [DECIMAL(15,3)],
-    [is_combo] BOOLEAN);
+    [is_combo] BOOLEAN,
+    [is_KitchenPrintFlag] BOOLEAN,
+    [unit_id] INTEGER REFERENCES unit([unit_id]),
+    [BeforeTaxPrice] [DECIMAL(15,3)],
+    FOREIGN KEY([device_code], [order_code]) REFERENCES orders([device_code], [order_code]));
 
 CREATE TABLE [order_detail_tax](
     [order_detail_tax_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -554,13 +419,14 @@ CREATE TABLE [order_payment](
     [order_code] NVARCHAR(50),
     [sr_no] INTEGER(11),
     [pay_amount] [DECIMAL(15,3)],
-    [payment_id] INTEGER(11),
+    [payment_id] INTEGER(11) REFERENCES payments([payment_id]),
     [currency_id] INTEGER(11),
     [currency_value] [DECIMAL(15,6)],
     [card_number] NVARCHAR(50),
     [card_name] NVARCHAR(50),
     [field1] TEXT,
-    [field2] TEXT);
+    [field2] TEXT,
+    FOREIGN KEY([device_code], [order_code]) REFERENCES orders([device_code], [order_code]));
 
 CREATE TABLE [order_tax](
     [order_tax_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -581,8 +447,20 @@ CREATE TABLE [order_type](
 
 CREATE TABLE [order_type_tax](
     [location_id] INTEGER(11),
-    [tax_id] INTEGER(11),
-    [order_type_id] INTEGER(11));
+    [tax_id] INTEGER(11) REFERENCES tax([tax_id]),
+    [order_type_id] INTEGER(11) REFERENCES order_type([order_type_id]));
+CREATE TABLE [Void](
+    [vId] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [order_no] NVARCHAR(50),
+    [device_code] NVARCHAR(50),
+    [item_code] NVARCHAR(50),
+    [is_modifier] BOOLEAN,
+    [Qty] NVARCHAR(50),
+    [vDateTime] DATETIME,
+    [print_flag] BOOLEAN,
+    [is_post] BOOLEAN,
+     [user_id] NVARCHAR(50)
+   );
 
 CREATE TABLE [payments](
     [payment_id] INTEGER(11) PRIMARY KEY,
@@ -592,6 +470,20 @@ CREATE TABLE [payments](
     [modified_by] INTEGER(11),
     [modified_date] DATETIME,
     [is_push] BOOLEAN);
+
+
+CREATE TABLE [manufacture](
+    [manufacture_id] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [device_code] NVARCHAR(50),
+    [manufacture_code] NVARCHAR(50),
+    [manufacture_name] NVARCHAR(50),
+    [image] TEXT,
+    [is_active] BOOLEAN,
+    [modified_by] INTEGER(11),
+    [modified_date] DATETIME,
+    [is_push] BOOLEAN,
+    CONSTRAINT [manufacture_code_unique] UNIQUE([manufacture_code]));
+
 
 CREATE TABLE [pos_balance](
     [pos_balance_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -660,13 +552,53 @@ CREATE TABLE [Settings](
                 [Default_Ordertype] NVARCHAR(2),
                 [Print_Memo] NVARCHAR(2),
                 [Is_Cost_Show] BOOLEAN,
-                [QR_Type] NVARCHAR(2));
+                [QR_Type] NVARCHAR(2),
+                [Is_singleWindow] BOOLEAN,
+                [Is_FillAdvanceAmnt] BOOLEAN,
+                [Is_ValidateVehNo] BOOLEAN,
+                [Is_ValidateMobNo] BOOLEAN,
+                [Is_NFC] BOOLEAN,
+                [Is_KitchenPrint] BOOLEAN,
+                 [is_saveprint] BOOLEAN,
+                 [is_cloudprint] BOOLEAN,
+                 [is_deliverydate] BOOLEAN,
+                 [is_selfpos_KOT] BOOLEAN,
+                 [is_paymentmethod] BOOLEAN,
+                 [Api_Ip] TEXT,
+                 [param1] BOOLEAN,
+                 [param2] TEXT,
+                 [param3] TEXT
+                 );
 
 CREATE TABLE [tables](
     [table_id] INTEGER PRIMARY KEY AUTOINCREMENT,
     [table_code] NVARCHAR(50),
     [table_name] NVARCHAR(50),
-    CONSTRAINT [table_code_unique] UNIQUE([table_code]));
+    [Zone_id] NVARCHAR(50),
+    [Zone_name] NVARCHAR(50),
+    [is_active] BOOLEAN,
+    [modified_by] INTEGER(11),
+    [modified_date] DATETIME,
+   CONSTRAINT [table_code_unique] UNIQUE([table_code]));
+
+
+CREATE TABLE [Receipe_Modifier](
+    [id] INTEGER PRIMARY KEY AUTOINCREMENT,
+    [item_code] NVARCHAR(50),
+    [modifier_code] NVARCHAR(50));
+
+
+CREATE TABLE [Scale_Setup](
+	[id] INTEGER PRIMARY KEY AUTOINCREMENT,
+	[name] NVARCHAR(100),
+	[Plu_value] NVARCHAR(10),
+	[Plu_len] INTEGER(11),
+	[ITEM_CODE_LEN] INTEGER(11),
+	[Wp_LEN] INTEGER(11),
+	[Wp_CALC] INTEGER(11),
+	[Is_WEIGHT] BOOLEAN,
+	[PCS_UNIT_ID] INTEGER(11),
+	[PLU_BARCODE_LEN] INTEGER(11));
 
 CREATE TABLE [tax](
     [tax_id] INTEGER PRIMARY KEY AUTOINCREMENT,
@@ -741,9 +673,9 @@ CREATE TABLE [z_detail](
     INSERT into Sys_Sycntime (table_name,datetime) values ('business_group','1990-01-01');
     INSERT into Sys_Sycntime (table_name,datetime) values ('tax','1990-01-01');
     INSERT into Sys_Sycntime (table_name,datetime) values ('manufacture','1990-01-01');
+    INSERT into Sys_Sycntime (table_name,datetime) values ('unit ','1990-01-01');
 
-    INSERT into Sys_Support (name,vedio_url) values ('Phomello LitePOS Manager','https://www.youtube.com/watch?v=GlAFWX3VSzQ');
-    INSERT into Sys_Support (name,vedio_url) values ('Business Group Creation and Modification','https://www.youtube.com/watch?v=StBQ2n3_Lyo');
+    INSERT into Sys_Support (name,vedio_url) values ('Phomello TriggerPOS Manager','https://www.youtube.com/watch?v=GlAFWX3VSzQ');
     INSERT into Sys_Support (name,vedio_url) values ('Contact creation and Modification','https://www.youtube.com/watch?v=wTSi5-lG7Og');
     INSERT into Sys_Support (name,vedio_url) values ('Tax Creation and Modification','https://www.youtube.com/watch?v=CWziXsSHPPI');
     INSERT into Sys_Support (name,vedio_url) values ('Creating an order','https://www.youtube.com/watch?v=dPkSh8lVLIQ');
@@ -751,7 +683,7 @@ CREATE TABLE [z_detail](
     INSERT into Sys_Support (name,vedio_url) values ('Profile and License Update','https://www.youtube.com/watch?v=T7OV10m8SZI');
     INSERT into Sys_Support (name,vedio_url) values ('Receipt reprint cancel and save','https://www.youtube.com/watch?v=hGoYroSyoxc');
     INSERT into Sys_Support (name,vedio_url) values ('Reports Details','https://www.youtube.com/watch?v=LtoXWqUsVws');
-    INSERT into Sys_Support (name,vedio_url) values ('Phomello LitePOS Settings','https://www.youtube.com/watch?v=i3wAQ-K7vTA');
+    INSERT into Sys_Support (name,vedio_url) values ('Phomello TriggerPOS Settings','https://www.youtube.com/watch?v=i3wAQ-K7vTA');
 
 	CREATE INDEX `IX_ACC_CUSTOMER_CREDIT` ON `Acc_Customer_Credit` (
 	`contact_code`	ASC,
@@ -787,20 +719,7 @@ ON [Sys_Sycntime](
     [table_name] ASC);
 
 
-CREATE UNIQUE INDEX [ux_stock_adjustmenr_header]
-ON [stock_adjustment_header](
-    [voucher_no] ASC);
 
-CREATE INDEX [ix_stock_adjustment_header]
-ON [stock_adjustment_header](
-    [is_post] ASC,
-    [is_active] ASC);
-
-
-CREATE UNIQUE INDEX [uk_stock_adjustment_detail]
-ON [stock_adjustment_detail](
-    [ref_voucher_no] ASC,
-    [s_no] ASC);
 
 	CREATE INDEX [ix_returns]
 ON [returns](
@@ -814,10 +733,6 @@ ON [returns](
     [voucher_no] ASC);
 
 
-CREATE INDEX [ix_stock_adjustment_detail]
-ON [stock_adjustment_detail](
-    [item_code] ASC,
-    [in_out_flag] ASC);
 
 
 	CREATE INDEX [ix_return_detail]
@@ -829,42 +744,7 @@ ON [return_detail](
     [ref_voucher_no] ASC,
     [s_no] ASC);
 
-CREATE INDEX [ix_reservation]
-ON [Reservation](
-    [date_time] ASC,
-    [customer_code] ASC,
-    [user_code] ASC,
-    [table_code] ASC);
 
-CREATE UNIQUE INDEX [uk_purchase]
-ON [purchase](
-    [voucher_no] ASC);
-
-CREATE INDEX [ix_purchase]
-ON [purchase](
-    [contact_code] ASC,
-    [date] ASC,
-    [is_post] ASC);
-
-CREATE UNIQUE INDEX [uk_purcahse_detail]
-ON [purchase_detail](
-    [ref_voucher_no] ASC,
-    [s_no] ASC);
-
-CREATE INDEX [ix_purchase_detail]
-ON [purchase_detail](
-    [item_code] ASC);
-
-
-
-CREATE UNIQUE INDEX [uk_purchase_payment]
-ON [purchase_payment](
-    [ref_voucher_no] ASC,
-    [sr_no] ASC);
-
-CREATE INDEX [ix_purchase_payment]
-ON [purchase_payment](
-    [payment_id] ASC);
 
 
 CREATE INDEX [ix_order_type_tax]
@@ -880,10 +760,7 @@ ON [order_payment](
     [sr_no] ASC);
 
 
-CREATE UNIQUE INDEX [uk_customer_price_book]
-ON [customer_price_book](
-    [contact_code] ASC,
-    [item_code] ASC);
+
 
 CREATE INDEX [ix_business_group]
 ON [business_group](
@@ -925,6 +802,12 @@ CREATE INDEX [ix_order_detail]
 ON [order_detail](
     [item_code]);
 
+CREATE INDEX [ix_Receipe_Modifier]
+ON [Receipe_Modifier](
+    [item_code] ASC,
+    [modifier_code] ASC
+    );
+
 CREATE INDEX [ix_order_detail_tax]
 ON [order_detail_tax](
     [order_code] ASC,
@@ -935,7 +818,10 @@ CREATE INDEX [ix_order_payment]
 ON [order_payment](
     [device_code],
     [order_code]);
-
+CREATE UNIQUE INDEX [uk_manufacture]
+ON [manufacture](
+    [device_code],
+    [manufacture_code]);
 CREATE INDEX [ix_order_tax]
 ON [order_tax](
     [order_code],
@@ -997,6 +883,8 @@ ON [item_group](
     [device_code],
     [item_group_code]);
 
+
+
 CREATE UNIQUE INDEX [uk_item_group_tax]
 ON [item_group_tax](
     [location_id],
@@ -1008,21 +896,13 @@ ON [item_supplier](
     [item_code],
     [contact_code]);
 
-CREATE UNIQUE INDEX [uk_manufacture]
-ON [manufacture](
-    [device_code],
-    [manufacture_code]);
+
 
 CREATE UNIQUE INDEX [uk_orders]
 ON [orders](
     [device_code],
     [order_code]);
 
-CREATE UNIQUE INDEX [uk_order_detail]
-ON [order_detail](
-    [device_code],
-    [order_code],
-    [sr_no]);
 
 CREATE UNIQUE INDEX [uk_order_type_tax]
 ON [order_type_tax](

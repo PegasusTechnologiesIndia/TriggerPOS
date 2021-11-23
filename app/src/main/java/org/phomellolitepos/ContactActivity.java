@@ -16,10 +16,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.view.Menu;
@@ -27,10 +27,12 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.DatePicker;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,6 +48,7 @@ import java.util.Locale;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import org.json.JSONObject;
 import org.phomellolitepos.Adapter.CountryAdapter;
 import org.phomellolitepos.Adapter.ZoneAdapter;
 import org.phomellolitepos.CheckBoxClass.BusinessGroupCheck;
@@ -58,8 +61,6 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Contact_Bussiness_Group;
 import org.phomellolitepos.database.Country;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Lite_POS_Device;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Zone;
 
 import static org.phomellolitepos.R.id.edt_pd_amt;
@@ -89,7 +90,7 @@ public class ContactActivity extends AppCompatActivity {
     Calendar myCalendar;
     Address address_class;
     Address_Lookup address_lookup;
-    Lite_POS_Registration lite_pos_registration;
+
     ProgressDialog pDialog;
     String contact_code = "", contact_name = "", dob = "", gstn = "", company_name = "", contact_1 = "", contact_2 = "", description = "", email_1 = "", email_2 = "", addresss = "";
     String strCTCode = "";
@@ -102,12 +103,13 @@ public class ContactActivity extends AppCompatActivity {
     LinearLayout.LayoutParams lp;
     ImageView img_expand;
     LinearLayout ll_othr_info;
-    boolean flag=false;
+    boolean flag = false;
     MenuItem menuItem;
-    Contact_Bussiness_Group  contact_bussiness_group;
-    Lite_POS_Device liteposdevice;
-    String liccustomerid;
-    String serial_no, android_id, myKey, device_id,imei_no;
+    Contact_Bussiness_Group contact_bussiness_group;
+    String contactnumber,contactname;
+    String serial_no, android_id, myKey, device_id, imei_no;
+    String stristaxable;
+    CheckBox chk_istaxable;
     @SuppressLint("NewApi")
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -142,10 +144,34 @@ public class ContactActivity extends AppCompatActivity {
                     public void run() {
                         try {
                             sleep(1000);
-                            Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
-                            startActivity(intent);
-                            pDialog.dismiss();
-                            finish();
+                            if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                pDialog.dismiss();
+                                finish();
+                            }else
+                            if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                pDialog.dismiss();
+                                finish();
+                            }
+                           else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                                Intent intent = new Intent(ContactActivity.this, PaymentCollection_MainScreen.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                pDialog.dismiss();
+                                finish();
+                            }
+                            else if(Globals.objLPR.getIndustry_Type().equals("4")) {
+                                Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                startActivity(intent);
+                                pDialog.dismiss();
+                                finish();
+                            }
 
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -163,14 +189,7 @@ public class ContactActivity extends AppCompatActivity {
         myCalendar = Calendar.getInstance();
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
-        liteposdevice = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
-        try {
-            if (liteposdevice != null) {
-                liccustomerid = liteposdevice.getLic_customer_license_id();
-            }
-        } catch (Exception e) {
 
-        }
         code = intent.getStringExtra("contact_code");
         operation = intent.getStringExtra("operation");
         if (operation == null) {
@@ -194,8 +213,35 @@ public class ContactActivity extends AppCompatActivity {
 
             return;
         }
-        device_id = telephonyManager.getDeviceId();
-        imei_no=telephonyManager.getImei();
+       /* device_id = telephonyManager.getDeviceId();
+        imei_no = telephonyManager.getImei();*/
+        final TelephonyManager mTelephony = (TelephonyManager) getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+        if (ActivityCompat.checkSelfPermission(this, Manifest.permission.READ_PHONE_STATE) != PackageManager.PERMISSION_GRANTED) {
+            // TODO: Consider calling
+            //    ActivityCompat#requestPermissions
+            // here to request the missing permissions, and then overriding
+            //   public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            //                                          int[] grantResults)
+            // to handle the case where the user grants the permission. See the documentation
+            // for ActivityCompat#requestPermissions for more details.
+
+
+            return;
+        }
+        if (android.os.Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q) {
+            device_id = android.provider.Settings.Secure.getString(
+                    getApplicationContext().getContentResolver(),
+                    android.provider.Settings.Secure.ANDROID_ID);
+        } else {
+            if (mTelephony.getDeviceId() != null) {
+                device_id = mTelephony.getDeviceId();
+            } else {
+                device_id = android.provider.Settings.Secure.getString(
+                        getApplicationContext().getContentResolver(),
+                        android.provider.Settings.Secure.ANDROID_ID);
+            }
+
+        }
         edt_layout_contact_code = (TextInputLayout) findViewById(R.id.edt_layout_contact_code);
         edt_layout_contact_name = (TextInputLayout) findViewById(R.id.edt_layout_contact_name);
         edt_layout_dob = (TextInputLayout) findViewById(R.id.edt_layout_dob);
@@ -210,12 +256,19 @@ public class ContactActivity extends AppCompatActivity {
 
         edt_contact_code = (EditText) findViewById(R.id.edt_contact_code);
         edt_contact_name = (EditText) findViewById(R.id.edt_contact_name);
+        edt_contact_name.setMaxLines(1);
+        edt_contact_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_contact_name.setImeOptions(EditorInfo.IME_ACTION_GO);
 
         edt_dob = (EditText) findViewById(R.id.edt_dob);
         edt_company_name = (EditText) findViewById(R.id.edt_company_name);
         edt_contact_1 = (EditText) findViewById(R.id.edt_contact_1);
         edt_contact_2 = (EditText) findViewById(R.id.edt_contact_2);
         edt_email_1 = (EditText) findViewById(R.id.edt_email_1);
+        edt_email_1.setMaxLines(1);
+        edt_email_1.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_email_1.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         edt_email_2 = (EditText) findViewById(R.id.edt_email_2);
         edt_description = (EditText) findViewById(R.id.edt_description);
         edt_address = (EditText) findViewById(R.id.edt_address);
@@ -229,9 +282,10 @@ public class ContactActivity extends AppCompatActivity {
         btn_next = (Button) findViewById(R.id.btn_next);
         img_expand = (ImageView) findViewById(R.id.img_expand);
         ll_othr_info = (LinearLayout) findViewById(R.id.ll_othr_info);
+        chk_istaxable=(CheckBox)findViewById(R.id.chk_istaxable);
         btn_next.setVisibility(View.GONE);
-        if (!flag){
-            flag=true;
+        if (!flag) {
+            flag = true;
             img_expand.setBackground(getResources().getDrawable(R.drawable.arrow_up));
             ll_othr_info.setVisibility(View.GONE);
         }
@@ -240,13 +294,13 @@ public class ContactActivity extends AppCompatActivity {
             @Override
             public void onClick(View view) {
 
-                if (!flag){
-                    flag=true;
+                if (!flag) {
+                    flag = true;
                     img_expand.setBackground(getResources().getDrawable(R.drawable.arrow_up));
                     ll_othr_info.setVisibility(View.GONE);
 
-                }else {
-                    flag=false;
+                } else {
+                    flag = false;
                     img_expand.setBackground(getResources().getDrawable(R.drawable.arrow_down));
                     ll_othr_info.setVisibility(View.VISIBLE);
                 }
@@ -312,14 +366,15 @@ public class ContactActivity extends AppCompatActivity {
         });
 
         if (operation.equals("Edit")) {
-            getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
-            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+            try {
+                getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_VISIBLE);
+                if (!Globals.objLPR.getproject_id().equals("cloud")) {
 
-                btn_contact_delete.setVisibility(View.VISIBLE);
-            }
+                    btn_contact_delete.setVisibility(View.VISIBLE);
+                }
 
-            contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_code = '" + code + "'");
-            String compare_title = contact.get_title();
+                contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_code = '" + code + "'");
+                String compare_title = contact.get_title();
 //            ArrayAdapter<String> dataAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, title);
 //            dataAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
 //            spinner_title.setAdapter(dataAdapter);
@@ -328,72 +383,89 @@ public class ContactActivity extends AppCompatActivity {
 //                spinner_title.setSelection(spinnerPosition);
 //            }
 
-            String compare_gender = contact.get_gender();
-            ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, gender);
-            dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
-            spinner_gender.setAdapter(dataAdapter1);
-            try {
-                if (!compare_gender.equals(null)) {
-                    int spinnerPosition = dataAdapter1.getPosition(compare_gender);
-                    spinner_gender.setSelection(spinnerPosition);
+                String compare_gender = contact.get_gender();
+                ArrayAdapter<String> dataAdapter1 = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, gender);
+                dataAdapter1.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
+                spinner_gender.setAdapter(dataAdapter1);
+                try {
+                    if (!compare_gender.equals(null)) {
+                        int spinnerPosition = dataAdapter1.getPosition(compare_gender);
+                        spinner_gender.setSelection(spinnerPosition);
+                    }
+                } catch (Exception ex) {
                 }
-            }catch (Exception ex){}
+                String cntryid = contact.get_country_id();
+                try {
 
+                    country = Country.getCountry(getApplicationContext(), "WHERE country_id ='" + cntryid + "'", database);
+                    if (country == null) {
+                        // lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                        country = Country.getCountry(getApplicationContext(), "WHERE country_id='" + Globals.objLPR.getCountry_Id() + "'", database);
+                        get_country(country.get_name(), Globals.objLPR.getCountry_Id());
+                    } else {
+                        get_country(country.get_name(), cntryid);
+                    }
+                } catch (Exception e) {
 
-            String cntryid = contact.get_country_id();
-            country = Country.getCountry(getApplicationContext(), "WHERE country_id ='" + cntryid + "'", database);
-            if (country == null) {
-                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                country = Country.getCountry(getApplicationContext(), "WHERE country_id='" + lite_pos_registration.getCountry_Id() + "'", database);
-                get_country(country.get_name(), lite_pos_registration.getCountry_Id());
-            } else {
-                get_country(country.get_name(), cntryid);
+                }
+
+                try {
+                    String zoneid = contact.get_zone_id();
+                    zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + zoneid + "'");
+                    if (zone == null) {
+                        //  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                        zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + Globals.objLPR.getZone_Id() + "'");
+                        get_zone(Globals.objLPR.getCountry_Id());
+                    } else {
+                        get_zone(cntryid);
+                    }
+                } catch (Exception e) {
+
+                }
+
+                edt_contact_code.setText(contact.get_contact_code());
+
+                edt_contact_name.setText(contact.get_name());
+                edt_dob.setText(contact.get_dob());
+                edt_gstn.setText(contact.get_gstin());
+                edt_company_name.setText(contact.get_company_name());
+                edt_contact_1.setText(contact.get_contact_1());
+                String contactCk = contact.get_contact_2();
+                if (contactCk.equals("0")) {
+                    edt_contact_2.setText("");
+                } else {
+                    edt_contact_2.setText(contact.get_contact_2());
+                }
+                edt_email_1.setText(contact.get_email_1());
+                String emailCk = contact.get_email_2();
+                if (emailCk.equals("0")) {
+                    edt_email_2.setText("");
+                } else {
+                    edt_email_2.setText(contact.get_email_2());
+                }
+                edt_description.setText(contact.get_description());
+                edt_address.setText(contact.get_address());
+
+                if(contact.getIs_taxable().equals("1")){
+                    chk_istaxable.setChecked(true);
+                }
+                else if(contact.getIs_taxable().equals("0")){
+                    chk_istaxable.setChecked(false);
+                }
+                contact_id = contact.get_contact_id();
+            } catch (Exception e) {
+
             }
-
-            String zoneid = contact.get_zone_id();
-            zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + zoneid + "'");
-            if (zone == null) {
-                lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + lite_pos_registration.getZone_Id() + "'");
-                get_zone(lite_pos_registration.getCountry_Id());
-            } else {
-                get_zone(cntryid);
-            }
-
-
-            edt_contact_code.setText(contact.get_contact_code());
-
-            edt_contact_name.setText(contact.get_name());
-            edt_dob.setText(contact.get_dob());
-            edt_gstn.setText(contact.get_gstin());
-            edt_company_name.setText(contact.get_company_name());
-            edt_contact_1.setText(contact.get_contact_1());
-            String contactCk = contact.get_contact_2();
-            if (contactCk.equals("0")) {
-                edt_contact_2.setText("");
-            } else {
-                edt_contact_2.setText(contact.get_contact_2());
-            }
-            edt_email_1.setText(contact.get_email_1());
-            String emailCk = contact.get_email_2();
-            if (emailCk.equals("0")) {
-                edt_email_2.setText("");
-            } else {
-                edt_email_2.setText(contact.get_email_2());
-            }
-            edt_description.setText(contact.get_description());
-            edt_address.setText(contact.get_address());
-            contact_id = contact.get_contact_id();
         } else {
             btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
 //            fill_title_spinner();
 
             fill_gender_spinner();
-            lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-            country = Country.getCountry(getApplicationContext(), "WHERE country_id='" + lite_pos_registration.getCountry_Id() + "'", database);
-            get_country(country.get_name(), lite_pos_registration.getCountry_Id());
-            zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + lite_pos_registration.getZone_Id() + "'");
-            get_zone(lite_pos_registration.getCountry_Id());
+            //  lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+            country = Country.getCountry(getApplicationContext(), "WHERE country_id='" + Globals.objLPR.getCountry_Id() + "'", database);
+            get_country(country.get_name(), Globals.objLPR.getCountry_Id());
+            zone = Zone.getZone(getApplicationContext(), "WHERE zone_id='" + Globals.objLPR.getZone_Id() + "'");
+            get_zone(Globals.objLPR.getCountry_Id());
         }
 
 
@@ -541,80 +613,104 @@ public class ContactActivity extends AppCompatActivity {
         spinner_title.setAdapter(dataAdapter);
     }
 
-    private void Fill_Item(String contact_id, final String contact_code, String contact_name, String str_gender, String dob, String company_name, String contact_1, String contact_2, String email_1, String email_2, String description, String address, String date, String gstn, String strSelectedCountryCode, String strSelectedZoneCode) {
+    private void Fill_Item(String contact_id, final String contact_code, String contact_name, String str_gender, String dob, String company_name, String contact_1, String contact_2, String email_1, String email_2, String description, String address, String date, String gstn, String strSelectedCountryCode, String strSelectedZoneCode,String stris_taxable) {
         String modified_by = Globals.user;
 
         if (operation.equals("Edit")) {
-            contact = new Contact(getApplicationContext(), contact_id, liccustomerid, contact_code, str_title,
-                    contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode);
-            database.beginTransaction();
-            long l = contact.updateContact("contact_code=?", new String[]{code}, database);
-            if (l > 0) {
+            try {
+                contact = new Contact(getApplicationContext(), contact_id, Globals.license_id, contact_code, str_title,
+                        contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode,stris_taxable);
+                database.beginTransaction();
+                long l = contact.updateContact("contact_code=? And contact_id=?", new String[]{contact_code, contact_id}, database);
+                if (l > 0) {
 
-                contact_bussiness_group = new Contact_Bussiness_Group(getApplicationContext(), contact_code, "BGC-1");
-                long a1 = contact_bussiness_group.insertContact_Bussiness_Group(database);
-                if (a1 > 0) {
-                }
+                    contact_bussiness_group = new Contact_Bussiness_Group(getApplicationContext(), contact_code, "BGC-1");
+                    long a1 = contact_bussiness_group.insertContact_Bussiness_Group(database);
+                    if (a1 > 0) {
+                    }
 
-                String add_id, add_code;
-                address_lookup = Address_Lookup.getAddress_Lookup(getApplicationContext(), "WHERE refrence_code = '" + code + "'", database);
+                    String add_id, add_code;
+                    address_lookup = Address_Lookup.getAddress_Lookup(getApplicationContext(), "WHERE refrence_code = '" + code + "'", database);
 
-                if (address_lookup == null) {
-                    add_code = "";
+                    if (address_lookup == null) {
+                        add_code = "";
+                    } else {
+                        add_code = address_lookup.get_address_code();
+                    }
+                    address_class = Address.getAddress(getApplicationContext(), "WHERE address_code = '" + add_code + "'", database);
+
+                    if (address_class == null) {
+                        add_id = "null";
+                    } else {
+                        add_id = address_class.get_address_id();
+                    }
+                    long c = 0;
+                    if (!add_code.equals("")) {
+                        address_class = new Address(getApplicationContext(), add_id, Globals.license_id, contact_code, "AC-1",
+                                "0", address, "0", "0", "0", "0", "0", "1", modified_by, date, "N");
+
+                        c = address_class.updateAddress("address_code=?", new String[]{add_code}, database);
+                    } else {
+                        c = 1;
+                    }
+                    if (c > 0) {
+                        database.setTransactionSuccessful();
+                        database.endTransaction();
+                        pDialog.dismiss();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                               else if(Globals.objLPR.getIndustry_Type().equals("2")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                               else if(Globals.objLPR.getIndustry_Type().equals("4")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                                    Intent intent_category = new Intent(ContactActivity.this, PaymentCollection_MainScreen.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                            }
+                        });
+
+
+                    } else {
+                        database.endTransaction();
+                        pDialog.dismiss();
+                        runOnUiThread(new Runnable() {
+                            public void run() {
+                                Toast.makeText(getApplicationContext(), R.string.Record_Not_Updated, Toast.LENGTH_SHORT).show();
+                            }
+                        });
+
+
+                    }
                 } else {
-                    add_code = address_lookup.get_address_code();
-                }
-                address_class = Address.getAddress(getApplicationContext(), "WHERE address_code = '" + add_code + "'", database);
-
-                if (address_class == null) {
-                    add_id = "null";
-                } else {
-                    add_id = address_class.get_address_id();
-                }
-                long c=0;
-                if (!add_code.equals("")) {
-                    address_class = new Address(getApplicationContext(), add_id, liccustomerid, contact_code, "AC-1",
-                            "0", address, "0", "0", "0", "0", "0", "1", modified_by, date, "N");
-
-                    c = address_class.updateAddress("address_code=?", new String[]{add_code}, database);
-                }
-                else
-                {
-                    c=1;
-                }
-                if (c > 0) {
-                    database.setTransactionSuccessful();
-                    database.endTransaction();
                     pDialog.dismiss();
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
-                            intent_category.putExtra("contact_code", contact_code);
-                            intent_category.putExtra("operation", operation);
-                            startActivity(intent_category);
-                        }
-                    });
-
-
-                } else {
                     database.endTransaction();
-                    pDialog.dismiss();
-                    runOnUiThread(new Runnable() {
-                        public void run() {
-                            Toast.makeText(getApplicationContext(), R.string.Record_Not_Updated, Toast.LENGTH_SHORT).show();
-                        }
-                    });
-
 
                 }
-            } else {
-                pDialog.dismiss();
-                database.endTransaction();
+            }
+            catch(Exception e){
 
             }
         } else {
-            contact = new Contact(getApplicationContext(), contact_id, liccustomerid, contact_code, str_title,
-                    contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode);
+            contact = new Contact(getApplicationContext(), contact_id, Globals.license_id, contact_code, str_title,
+                    contact_name, str_gender, dob, company_name, description, contact_1, contact_2, email_1, email_2, "1", modified_by, "N", address, date, "0", gstn, strSelectedCountryCode, strSelectedZoneCode,stris_taxable);
             database.beginTransaction();
             long l = contact.insertContact(database);
             if (l > 0) {
@@ -623,11 +719,11 @@ public class ContactActivity extends AppCompatActivity {
                 long a1 = contact_bussiness_group.insertContact_Bussiness_Group(database);
                 if (a1 > 0) {
                 }
-                address_class = new Address(getApplicationContext(), null, liccustomerid, contact_code, "AC-1",
+                address_class = new Address(getApplicationContext(), null, Globals.license_id, contact_code, "AC-1",
                         "0", address, "0", "0", "0", "0", "0", "1", modified_by, date, "N");
                 long a = address_class.insertAddress(database);
                 if (a > 0) {
-                    address_lookup = new Address_Lookup(getApplicationContext(), null, liccustomerid, contact_code, "1",
+                    address_lookup = new Address_Lookup(getApplicationContext(), null, Globals.license_id, contact_code, "1",
                             contact_code, "N");
                     long b = address_lookup.insertAddress_Lookup(database);
 
@@ -637,11 +733,31 @@ public class ContactActivity extends AppCompatActivity {
                         pDialog.dismiss();
                         runOnUiThread(new Runnable() {
                             public void run() {
-                                Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
-                                intent_category.putExtra("contact_code", contact_code);
-                                intent_category.putExtra("operation", operation);
-                                startActivity(intent_category);
-                                finish();
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                    finish();
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("4")) {
+                                    Intent intent_category = new Intent(ContactActivity.this, ContactListActivity.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                                    Intent intent_category = new Intent(ContactActivity.this, PaymentCollection_MainScreen.class);
+                                    intent_category.putExtra("contact_code", contact_code);
+                                    intent_category.putExtra("operation", operation);
+                                    startActivity(intent_category);
+                                }
                             }
                         });
 
@@ -688,12 +804,34 @@ public class ContactActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(1000);
-
-                    Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
-                    startActivity(intent);
-                    pDialog.dismiss();
-                    finish();
-
+if(Globals.objLPR.getIndustry_Type().equals("1")) {
+    Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    startActivity(intent);
+    pDialog.dismiss();
+    finish();
+}
+                   else if(Globals.objLPR.getIndustry_Type().equals("2")) {
+                        Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        pDialog.dismiss();
+                        finish();
+                    }
+else if(Globals.objLPR.getIndustry_Type().equals("3")){
+    Intent intent = new Intent(ContactActivity.this, PaymentCollection_MainScreen.class);
+    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+    startActivity(intent);
+    pDialog.dismiss();
+    finish();
+}
+                  else  if(Globals.objLPR.getIndustry_Type().equals("4")) {
+                        Intent intent = new Intent(ContactActivity.this, ContactListActivity.class);
+                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                        startActivity(intent);
+                        pDialog.dismiss();
+                        finish();
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
 
@@ -715,22 +853,22 @@ public class ContactActivity extends AppCompatActivity {
     }
 
 
-    private String check_online_mode() {
-        String con = "";
+    private JSONObject check_online_mode() {
+        JSONObject con =null;
         if (isNetworkStatusAvialable(getApplicationContext())) {
             String ck_projct_type = "";
 
 
-            lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+            // lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
 
             try {
-                ck_projct_type = lite_pos_registration.getproject_id();
+                ck_projct_type = Globals.objLPR.getproject_id();
             } catch (Exception e) {
                 ck_projct_type = "";
             }
 
             if (ck_projct_type.equals("cloud")) {
-                con = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by from contact where is_push='N'",liccustomerid,serial_no,android_id,myKey);
+                con = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by from contact where is_push='N'", Globals.license_id, serial_no, android_id, myKey);
             }
 
         } else {
@@ -794,7 +932,11 @@ public class ContactActivity extends AppCompatActivity {
         imageView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                save();
+                try {
+                    save();
+                } catch (Exception e) {
+                   System.out.println(e.getMessage());
+                }
             }
         });
         return true;
@@ -817,15 +959,25 @@ public class ContactActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
+    // Contact Save Code
     private void save() {
-
+        contact = Contact.getContact(getApplicationContext(), database, db, "WHERE contact_1 = '" + edt_contact_1.getText().toString() + "'");
+        if(contact!=null){
+ contactnumber= contact.get_contact_1();
+ contactname=contact.get_name();
+        }
         if (edt_contact_code.getText().toString().trim().equals("")) {
             // Auto-generate code here for contact code
-            Contact objCT1 = Contact.getContact(getApplicationContext(), database, db, " Where contact_code like  '"+ Globals.objLPD.getDevice_Symbol() +"-CT-%'  order By contact_id Desc LIMIT 1");
-            if (objCT1 == null) {
-                strCTCode = Globals.objLPD.getDevice_Symbol() + "-"+"CT-" + 1;
+
+            String objCT = Contact.getContactdata(getApplicationContext(), database, db, " Where contact_code like  '" + Globals.objLPD.getDevice_Symbol() + "-CT-%'  order By REPLACE(contact_code,  '"+Globals.objLPD.getDevice_Symbol()+"-CT','') Desc LIMIT 1");
+            Contact objCT1 = Contact.getContact(getApplicationContext(), database, db, " Where contact_code like  '" + Globals.objLPD.getDevice_Symbol() + "-CT-%'  order By contact_id Desc LIMIT 1");
+           int code_no=0;
+            if (objCT == null) {
+                strCTCode = Globals.objLPD.getDevice_Symbol() + "-" + "CT-" + 1;
             } else {
-                strCTCode = Globals.objLPD.getDevice_Symbol() + "-"+"CT-" + (Integer.parseInt(objCT1.get_contact_code().toString().replace(Globals.objLPD.getDevice_Symbol() + "-CT-","")) + 1);
+                code_no +=Integer.parseInt(objCT)+1;
+                strCTCode = Globals.objLPD.getDevice_Symbol() + "-" + "CT-" + code_no;
+
             }
         } else {
 //            if (edt_contact_code.getText().toString().contains("")) {
@@ -833,7 +985,7 @@ public class ContactActivity extends AppCompatActivity {
 //                edt_contact_code.requestFocus();
 //                return;
 //            } else {
-                strCTCode = edt_contact_code.getText().toString().trim();
+            strCTCode = edt_contact_code.getText().toString().trim();
 //            }
         }
 
@@ -842,18 +994,48 @@ public class ContactActivity extends AppCompatActivity {
             edt_contact_name.setError(getString(R.string.Contact_name_is_required));
             edt_contact_name.requestFocus();
             return;
-        } else {
+        }
+        else if(edt_contact_name.getText().toString().equalsIgnoreCase(contactname)){
+            if(operation.equals("Add")) {
+                edt_contact_name.setError(getString(R.string.Contact_name_duplicate));
+                edt_contact_name.requestFocus();
+
+                return;
+            } else {
+                contact_name = edt_contact_name.getText().toString();
+            }
+
+
+        }
+        else {
             contact_name = edt_contact_name.getText().toString();
         }
 
-        if (edt_contact_1.getText().toString().equals("")) {
-            edt_contact_1.setError(getString(R.string.Contact_is_required));
-            edt_contact_1.requestFocus();
-            return;
-        } else {
-            contact_1 = edt_contact_1.getText().toString().trim();
-        }
+        if(!operation.equals("Edit")) {
+            if (edt_contact_1.getText().toString().equals("")) {
+                edt_contact_1.setError(getString(R.string.Contact_is_required));
+                edt_contact_1.requestFocus();
+                return;
+            } else if (edt_contact_1.getText().toString().equals(contactnumber)) {
+                edt_contact_1.setError(getString(R.string.noalreadyexist));
+                edt_contact_1.requestFocus();
+                return;
+            }
 
+            else {
+                contact_1 = edt_contact_1.getText().toString().trim();
+            }
+
+        }
+        else{
+            if (edt_contact_1.getText().toString().equals("")) {
+                edt_contact_1.setError(getString(R.string.Contact_is_required));
+                edt_contact_1.requestFocus();
+                return;
+            } else {
+                contact_1 = edt_contact_1.getText().toString().trim();
+            }
+        }
         dob = edt_dob.getText().toString().trim();
         company_name = edt_company_name.getText().toString().trim();
         gstn = edt_gstn.getText().toString().trim();
@@ -871,8 +1053,8 @@ public class ContactActivity extends AppCompatActivity {
             contact_2 = edt_contact_2.getText().toString();
         }
         email_1 = edt_email_1.getText().toString().trim();
-        if (edt_email_1.getText().toString().trim().equals("")){
-        }else {
+        if (edt_email_1.getText().toString().trim().equals("")) {
+        } else {
             final String email1 = edt_email_1.getText().toString();
             if (!isValidEmail(email1)) {
                 edt_email_1.setError(getString(R.string.Invalid_Email));
@@ -883,16 +1065,23 @@ public class ContactActivity extends AppCompatActivity {
         description = edt_description.getText().toString();
         addresss = edt_address.getText().toString();
 
-        if (str_gender==null){
+        if (str_gender == null) {
             str_gender = "Male";
         }
 
-        if (strSelectedCountryCode==null){
-            strSelectedCountryCode = lite_pos_registration.getCountry_Id();
+        if (strSelectedCountryCode == null) {
+            strSelectedCountryCode = Globals.objLPR.getCountry_Id();
         }
 
-        if (strSelectedZoneCode==null){
-            strSelectedZoneCode = lite_pos_registration.getZone_Id();
+        if (strSelectedZoneCode == null) {
+            strSelectedZoneCode = Globals.objLPR.getZone_Id();
+        }
+        if(chk_istaxable.isChecked()){
+            stristaxable="1";
+
+        }
+        else{
+            stristaxable="0";
         }
 
         pDialog = new ProgressDialog(ContactActivity.this);
@@ -904,7 +1093,7 @@ public class ContactActivity extends AppCompatActivity {
                 try {
                     sleep(1000);
                     Fill_Item(contact_id, strCTCode, contact_name, str_gender, dob, company_name, contact_1, contact_2,
-                            email_1, email_2, description, addresss, date, gstn, strSelectedCountryCode, strSelectedZoneCode);
+                            email_1, email_2, description, addresss, date, gstn, strSelectedCountryCode, strSelectedZoneCode,stristaxable);
                 } catch (InterruptedException e) {
                     e.printStackTrace();
                 } finally {

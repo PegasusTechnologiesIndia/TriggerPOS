@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+    <TextView
+        android:id="@+id/txt_item_name"
+        style="@style/AppTheme.ListItemTextSize_720dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="name"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/txt_item_code"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/txt_item_name"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="code"
+        android:textSize="20sp" />
+
+    <TextView
+        android:id="@+id/txt_price"
+        style="@style/AppTheme.ListItemTextSize_720dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="line"
+        android:textColor="#ff0000" />
+
+    <TextView
+        android:id="@+id/txt_qty"
+        style="@style/AppTheme.ListItemTextSize"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Qty"
+        android:textColor="#ff0000"
+        android:layout_toRightOf="@+id/txt_item_code"
+        android:layout_alignBaseline="@+id/txt_item_code"
+        android:textSize="18sp"/>
+
+</RelativeLayout>

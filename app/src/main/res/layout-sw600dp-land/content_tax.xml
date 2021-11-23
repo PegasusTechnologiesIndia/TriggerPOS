@@ -1,0 +1,124 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_tax"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.TaxActivity"
+    tools:showIn="@layout/activity_tax">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <TextView
+            style="@style/AppTheme.LabelText_600dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/tax_group" />
+
+        <Spinner
+            android:id="@+id/spinner_tax_group"
+            style="@style/AppTheme.Spinner_720dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text"
+            android:foreground="@drawable/border">
+
+        </Spinner>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_tax_name"
+            style="@style/AppTheme.TextInputLayout_600dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="30dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_tax_name"
+                style="@style/AppTheme.EditText_600dp"
+                android:hint="@string/Tax_Name"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TextView
+            android:id="@+id/lbl_spinner_type"
+            style="@style/AppTheme.LabelText_600dp"
+            android:layout_marginTop="15dp"
+            android:text="@string/Type" />
+
+        <Spinner
+            android:id="@+id/spinner__type"
+            style="@style/AppTheme.Spinner_720dp"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text"
+            android:foreground="@drawable/border">
+
+        </Spinner>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_value"
+            style="@style/AppTheme.TextInputLayout_600dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="30dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_value"
+                style="@style/AppTheme.EditText_600dp"
+                android:hint="@string/Value"
+                android:inputType="numberDecimal"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_comment"
+            style="@style/AppTheme.TextInputLayout_600dp"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="30dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_comment"
+                style="@style/AppTheme.EditText_600dp"
+                android:hint="@string/Comment"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_below="@+id/edt_layout_value"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:text="@string/Next" />
+
+            <Button
+                android:id="@+id/btn_tax_delete"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

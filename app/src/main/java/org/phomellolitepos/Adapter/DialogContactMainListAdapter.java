@@ -3,7 +3,6 @@ package org.phomellolitepos.Adapter;
 import android.app.Dialog;
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.design.widget.BottomNavigationView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -13,18 +12,16 @@ import android.widget.TextView;
 
 import java.util.ArrayList;
 
-import org.phomellolitepos.ContactActivity;
-import org.phomellolitepos.CusReturnHeaderActivity;
 import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.MainActivity;
-import org.phomellolitepos.PaymentCollectionActivity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.ReservationActivity;
+import org.phomellolitepos.RetailActivity;
+import org.phomellolitepos.Retail_IndustryActivity;
 import org.phomellolitepos.TicketSolution.TicketPaymentActivity;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Settings;
 
 
@@ -86,38 +83,55 @@ public class DialogContactMainListAdapter extends BaseAdapter {
             public void onClick(View arg0) {
                 Contact resultp = data.get(position);
                 String id = resultp.get_contact_code();
-                Globals.strContact_Code = id;
-                Globals.strResvContact_Code = id;
-                if (settings.get_Home_Layout().equals("0")) {
 
-                    try {
-                        ((MainActivity) context).change_customer_icon();
-                    } catch (Exception ex) {
+               // if(Globals.cart.size()>0 || Globals.strContact_Code!="") {
+
+
+                    Globals.strContact_Code = id;
+                    Globals.strResvContact_Code = id;
+                    if (Globals.objLPR.getIndustry_Type().equals("2")) {
+                        try {
+                            ((Retail_IndustryActivity) context).change_customer_icon(Globals.strContact_Code);
+                        } catch (Exception ex) {
+                        }
+                    } else {
+                        if (settings.get_Home_Layout().equals("0")) {
+
+                            try {
+                                ((MainActivity) context).change_customer_icon();
+                            } catch (Exception ex) {
+                            }
+                        } else if (settings.get_Home_Layout().equals("2")) {
+                            try {
+                                ((RetailActivity) context).change_customer_icon();
+                            } catch (Exception ex) {
+                            }
+                        } else {
+                            try {
+                                ((Main2Activity) context).change_customer_icon();
+                            } catch (Exception ex) {
+                            }
+                        }
                     }
-                } else {
-                    try {
-                        ((Main2Activity) context).change_customer_icon();
-                    } catch (Exception ex) {
-                    }
-                }
                /* try {
                     ((CusReturnHeaderActivity) context).setCustomer(resultp.get_name(),resultp.get_contact_code());
 
                 } catch (Exception ex) {
                 }*/
-                try {
-                    ((ReservationActivity) context).setCustomer(resultp.get_name());
+                    try {
+                        ((ReservationActivity) context).setCustomer(resultp.get_name());
 
-                } catch (Exception ex) {
-                }
+                    } catch (Exception ex) {
+                    }
 
-                try {
-                    ((TicketPaymentActivity) context).setCustomer(resultp.get_name(),resultp.get_contact_1());
-                } catch (Exception ex) {
-                }
+                    try {
+                        ((TicketPaymentActivity) context).setCustomer(resultp.get_name(), resultp.get_contact_1());
+                    } catch (Exception ex) {
+                    }
 
-                Globals.strContact_Name = resultp.get_name();
-                dialog.dismiss();
+                    Globals.strContact_Name = resultp.get_name();
+                    dialog.dismiss();
+                //}
             }
         });
         return itemView;

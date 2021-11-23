@@ -9,9 +9,9 @@ import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.LayoutInflater;
@@ -31,13 +31,10 @@ import com.itextpdf.text.Phrase;
 import com.itextpdf.text.Rectangle;
 import com.itextpdf.text.pdf.PdfPCell;
 import com.itextpdf.text.pdf.PdfPTable;
-import com.itextpdf.text.pdf.codec.Base64;
 
 import org.phomellolitepos.Adapter.DialogContactMainListAdapter;
 import org.phomellolitepos.Adapter.PaymentListAdapter;
-import org.phomellolitepos.PaymentActivity;
 import org.phomellolitepos.R;
-import org.phomellolitepos.ReservationActivity;
 import org.phomellolitepos.TicketingActivity;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Address;
@@ -54,7 +51,6 @@ import org.phomellolitepos.database.OrderTaxArray;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Order_Payment;
 import org.phomellolitepos.database.Order_Tax;
-import org.phomellolitepos.database.Order_Type_Tax;
 import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Payment;
 import org.phomellolitepos.database.Settings;
@@ -78,10 +74,6 @@ import com.itextpdf.text.Font;
 import com.itextpdf.text.Image;
 import com.itextpdf.text.PageSize;
 import com.itextpdf.text.Paragraph;
-import com.itextpdf.text.Phrase;
-import com.itextpdf.text.Rectangle;
-import com.itextpdf.text.pdf.PdfPCell;
-import com.itextpdf.text.pdf.PdfPTable;
 import com.itextpdf.text.pdf.PdfWriter;
 
 import org.phomellolitepos.Util.HeaderAndFooter;
@@ -413,7 +405,7 @@ public class TicketPaymentActivity extends AppCompatActivity {
         Orders objOrder = new Orders(getApplicationContext(), null, Globals.Device_Code, locCode, Globals.strOrder_type_id, strOrderNo, date, Globals.strResvContact_Code,
                 "0","1", count_qty.getText().toString(),
                 txt_totl_amt.getText().toString(), "", "", txt_totl_amt.getText().toString(), txt_totl_amt.getText().toString(),
-                "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, "", Globals.strTable_Code, "");
+                "", "0", "0", "0", "1", modified_by, date, "N", strOrdeeStatus, "", Globals.strTable_Code, "",null);
 
         long l = objOrder.insertOrders(database);
         if (l > 0) {
@@ -421,7 +413,7 @@ public class TicketPaymentActivity extends AppCompatActivity {
         }
 
         order_detail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo, "1",strId,
-                "1", ticket_setup.get_price(),ticket_setup.get_price(), "",count_qty.getText().toString(),"","",txt_totl_amt.getText().toString(),"");
+                "1", ticket_setup.get_price(),ticket_setup.get_price(), "",count_qty.getText().toString(),"","",txt_totl_amt.getText().toString(),"","false","","");
 
         long op = order_detail.insertOrder_Detail(database);
         if (op > 0) {
@@ -793,7 +785,7 @@ public class TicketPaymentActivity extends AppCompatActivity {
 
             } else {
                 contact = new Contact(getApplicationContext(), null, Globals.Device_Code, strCTCode, "",
-                        name, "", "", "", mobile, mobile, "", email, "", "1", modified_by, "N", "", date, "0", "", "", "");
+                        name, "", "", "", mobile, mobile, "", email, "", "1", modified_by, "N", "", date, "0", "", "", "","true");
                 database.beginTransaction();
                 long l1 = contact.insertContact(database);
                 if (l1 > 0) {

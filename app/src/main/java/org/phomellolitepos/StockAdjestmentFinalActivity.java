@@ -6,11 +6,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.BottomNavigationView;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.KeyEvent;
 import android.view.Menu;
@@ -28,26 +27,18 @@ import android.widget.ListView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.phomellolitepos.Adapter.RetailListAdapter;
 import org.phomellolitepos.Adapter.StockAdjestmentFinalListAdapter;
 import org.phomellolitepos.StockAdjestment.StockAdjectmentDetailList;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.database.Acc_Customer_Debit;
-import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Location;
-import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Order_Item_Tax;
 import org.phomellolitepos.database.Settings;
-import org.phomellolitepos.database.ShoppingCart;
 import org.phomellolitepos.database.Stock_Adjustment_Detail;
 import org.phomellolitepos.database.Stock_Adjustment_Header;
-import org.phomellolitepos.database.Tax_Master;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
 
@@ -699,6 +690,7 @@ public class StockAdjestmentFinalActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_retail, menu);
+        menu.setGroupVisible(R.id.grp_retail, false);
         return true;
     }
 

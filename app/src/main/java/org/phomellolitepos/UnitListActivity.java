@@ -10,16 +10,18 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -28,29 +30,29 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.phomellolitepos.Adapter.UnitListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Unit;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 public class UnitListActivity extends AppCompatActivity {
     EditText edt_toolbar_unit_list;
@@ -58,11 +60,11 @@ public class UnitListActivity extends AppCompatActivity {
     Unit unit;
     ArrayList<Unit> arrayList;
     UnitListAdapter unitListAdapter;
-    Lite_POS_Registration lite_pos_registration;
+  //  Lite_POS_Registration lite_pos_registration;
     ProgressDialog pDialog;
     Database db;
     SQLiteDatabase database;
-    Settings settings;
+    //Settings settings;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -74,10 +76,34 @@ public class UnitListActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
-        settings = Settings.getSettings(getApplicationContext(), database, "");
-        edt_toolbar_unit_list = (EditText) findViewById(R.id.edt_toolbar_unit_list);
-
+      //  settings = Settings.getSettings(getApplicationContext(), database, "");
         unit_title = (TextView) findViewById(R.id.unit_title);
+        edt_toolbar_unit_list = (EditText) findViewById(R.id.edt_toolbar_unit_list);
+        edt_toolbar_unit_list.setMaxLines(1);
+
+        edt_toolbar_unit_list.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_toolbar_unit_list.setImeOptions(EditorInfo.IME_ACTION_SEARCH);
+        edt_toolbar_unit_list.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFilter = edt_toolbar_unit_list.getText().toString().trim();
+                    strFilter = " and ( name Like '%" + strFilter + "%' )";
+                    edt_toolbar_unit_list.selectAll();
+                    getUnitList(strFilter);
+                    return true;
+
+                }
+                return false;
+            }
+        });
 
         edt_toolbar_unit_list.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -106,45 +132,52 @@ public class UnitListActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pDialog = new ProgressDialog(UnitListActivity.this);
+         /*       pDialog = new ProgressDialog(UnitListActivity.this);
                 pDialog.setCancelable(false);
                 pDialog.setMessage(getString(R.string.Wait_msg));
                 pDialog.show();
 
                 Thread timerThread = new Thread() {
-                    public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(UnitListActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(UnitListActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(UnitListActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }
+                    public void run() {*/
+                         if(Globals.objLPR.getIndustry_Type().equals("2")){
 
-                    }
+            Intent intent = new Intent(UnitListActivity.this, Retail_IndustryActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+           else {
+                             if (Globals.objsettings.get_Home_Layout().equals("0")) {
+                                 try {
+                                     Intent intent = new Intent(UnitListActivity.this, MainActivity.class);
+                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                     startActivity(intent);
+                                     //pDialog.dismiss();
+                                     finish();
+                                 } finally {
+                                 }
+                             } else if (Globals.objsettings.get_Home_Layout().equals("2")) {
+                                 try {
+                                     Intent intent = new Intent(UnitListActivity.this, RetailActivity.class);
+                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                     startActivity(intent);
+                                     ////pDialog.dismiss();
+                                     finish();
+                                 } finally {
+                                 }
+                             } else {
+                                 try {
+                                     Intent intent = new Intent(UnitListActivity.this, Main2Activity.class);
+                                     intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                                     startActivity(intent);
+                                     //pDialog.dismiss();
+                                     finish();
+                                 } finally {
+                                 }
+                             }
+                         }
+                  /*  }
                 };
-                timerThread.start();
+                timerThread.start();*/
 
             }
         });
@@ -163,7 +196,12 @@ public class UnitListActivity extends AppCompatActivity {
             }
         });
 
-        getUnitList("");
+        try {
+            getUnitList("");
+        }
+        catch(Exception e){
+
+        }
     }
 
 
@@ -193,6 +231,9 @@ public class UnitListActivity extends AppCompatActivity {
     public boolean onCreateOptionsMenu(Menu menu) {
         // Inflate the menu; this adds items to the action bar if it is present.
         getMenuInflater().inflate(R.menu.list_menu, menu);
+        if(Globals.objLPR.getproject_id().equals("standalone")) {
+            menu.setGroupVisible(R.id.overFlowItemsToHide, false);
+        }
         return true;
     }
 
@@ -204,6 +245,7 @@ public class UnitListActivity extends AppCompatActivity {
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
+        // Search filter by name
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_unit_list.getText().toString().trim();
             strFilter = " and ( name Like '%" + strFilter + "%' )";
@@ -211,6 +253,8 @@ public class UnitListActivity extends AppCompatActivity {
             getUnitList(strFilter);
             return true;
         }
+
+        // Sync code
         if (id == R.id.action_send) {
 
             final AlertDialog.Builder alertDialog = new AlertDialog.Builder(
@@ -263,38 +307,25 @@ public class UnitListActivity extends AppCompatActivity {
                                                 new Thread() {
                                                     @Override
                                                     public void run() {
-                                                        String result = send_online_unit();
-                                                        String suss = getUnit();
-                                                      
-                                                        pDialog.dismiss();
+                                                        String suss="";
+                                                        String result="";
 
-                                                        switch (suss) {
-                                                            case "1":
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-                                                                        getUnitList("");
-                                                                        Toast.makeText(getApplicationContext(), R.string.Unit_Download, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-
-                                                                break;
-                                                            case "2":
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-
-                                                                        Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                                break;
-                                                            default:
-                                                                runOnUiThread(new Runnable() {
-                                                                    public void run() {
-
-                                                                        Toast.makeText(getApplicationContext(), R.string.Unit_not_found, Toast.LENGTH_SHORT).show();
-                                                                    }
-                                                                });
-                                                                break;
+                                                        try {
+                                                             result = send_online_unit();
                                                         }
+                                                        catch(Exception e){
+
+                                                        }
+                                                        try {
+                                                        get_unit_from_server(pDialog);
+                                                        }
+                                                        catch(Exception e){
+
+                                                        }
+                                                      
+
+
+
 
                                                     }
                                                 }.start();
@@ -329,8 +360,8 @@ public class UnitListActivity extends AppCompatActivity {
                 @Override
                 public void onShow(DialogInterface dialog) {
 
-                    lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-                    String ck_project_type = lite_pos_registration.getproject_id();
+                    //lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                    String ck_project_type = Globals.objLPR.getproject_id();
 
                     if (ck_project_type.equals("standalone")) {
                         ((AlertDialog)dialog).getButton(
@@ -358,11 +389,11 @@ public class UnitListActivity extends AppCompatActivity {
     }
 
 
-    private String getUnit() {
+    private String getUnit(String serverData) {
 
         String succ_manu = "0";
         database.beginTransaction();
-        String serverData = get_unit_from_server();
+
         try {
 
             final JSONObject jsonObject_unit = new JSONObject(serverData);
@@ -414,12 +445,12 @@ public class UnitListActivity extends AppCompatActivity {
         return succ_manu;
     }
 
-    private String get_unit_from_server() {
+  /*  private String get_unit_from_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/unit");
+                Globals.App_IP_URL + "unit");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("modified_data",""));
@@ -442,8 +473,100 @@ public class UnitListActivity extends AppCompatActivity {
         }
         return serverData;
 
-    }
+    }*/
 
+    public void get_unit_from_server(final ProgressDialog pDialog) {
+
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+        String server_url = Globals.App_IP_URL + "unit";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            String result = getUnit(response);
+                            switch (result) {
+                                case "1":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+                                            getUnitList("");
+                                            Toast.makeText(getApplicationContext(), R.string.Unit_Download, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+
+                                    break;
+                                case "2":
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+
+                                            Toast.makeText(getApplicationContext(), R.string.srvr_error, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    break;
+                                default:
+                                    runOnUiThread(new Runnable() {
+                                        public void run() {
+
+                                            Toast.makeText(getApplicationContext(), R.string.Unit_not_found, Toast.LENGTH_SHORT).show();
+                                        }
+                                    });
+                                    break;
+                            }
+                        } catch (Exception e) {
+                        }
+
+pDialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("modified_data","");
+                System.out.println("params" + params);
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
 
     private String send_online_unit() {
 
@@ -470,44 +593,53 @@ public class UnitListActivity extends AppCompatActivity {
     @Override
     public void onBackPressed() {
 
-        pDialog = new ProgressDialog(UnitListActivity.this);
+        /*pDialog = new ProgressDialog(UnitListActivity.this);
         pDialog.setCancelable(false);
         pDialog.setMessage(getString(R.string.Wait_msg));
         pDialog.show();
 
         Thread timerThread = new Thread() {
-            public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(UnitListActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(UnitListActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(UnitListActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }
-            }
+            public void run() {*/
+
+           if(Globals.objLPR.getIndustry_Type().equals("2")){
+
+            Intent intent = new Intent(UnitListActivity.this, Retail_IndustryActivity.class);
+            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+            startActivity(intent);
+        }
+           else {
+               if (Globals.objsettings.get_Home_Layout().equals("0")) {
+                   try {
+                       Intent intent = new Intent(UnitListActivity.this, MainActivity.class);
+                       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                       startActivity(intent);
+                       //  pDialog.dismiss();
+                       finish();
+                   } finally {
+                   }
+               } else if (Globals.objsettings.get_Home_Layout().equals("2")) {
+                   try {
+                       Intent intent = new Intent(UnitListActivity.this, RetailActivity.class);
+                       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                       startActivity(intent);
+                       // pDialog.dismiss();
+                       finish();
+                   } finally {
+                   }
+               } else {
+                   try {
+                       Intent intent = new Intent(UnitListActivity.this, Main2Activity.class);
+                       intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                       startActivity(intent);
+                       // pDialog.dismiss();
+                       finish();
+                   } finally {
+                   }
+               }
+           }
+          /*  }
         };
-        timerThread.start();
+        timerThread.start();*/
     }
 
 }

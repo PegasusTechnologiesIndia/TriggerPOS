@@ -6,8 +6,8 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -18,6 +18,7 @@ import android.widget.Toast;
 
 import java.util.ArrayList;
 
+import org.json.JSONObject;
 import org.phomellolitepos.Adapter.BussinessGroupCheckListAdapter;
 import org.phomellolitepos.CheckBoxClass.BusinessGroupCheck;
 import org.phomellolitepos.Util.ExceptionHandler;
@@ -183,7 +184,7 @@ public class BussinessGroupCheckListActivity extends AppCompatActivity {
                         database.endTransaction();
                         if (Globals.objLPR.getproject_id().equals("cloud")) {
                             try {
-                                String result = send_online_contact();
+                                JSONObject result = send_online_contact();
                             } catch (Exception ex) {}
                         }
                         pDialog.dismiss();
@@ -335,9 +336,9 @@ public class BussinessGroupCheckListActivity extends AppCompatActivity {
         return super.onOptionsItemSelected(item);
     }
 
-    private String send_online_contact() {
-
-        String conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,"","","");
+    private JSONObject send_online_contact() {
+JSONObject conList;
+        conList = Contact.sendOnServer(getApplicationContext(), database, db, "Select device_code, contact_code,title,name,gender,dob,company_name,description,contact_1,contact_2,email_1,email_2,is_active,modified_by,credit_limit,gstin,country_id,zone_id from contact where is_push='N'",liccustomerid,"","","");
         return conList;
     }
 

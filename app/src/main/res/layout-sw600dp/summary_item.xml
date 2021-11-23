@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    >
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:orientation="vertical"
+        android:paddingRight="20dp"
+        >
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="50dp"
+            android:gravity="center_vertical">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_marginTop="5dp"
+                android:weightSum="60"
+                android:layout_marginLeft="20dp">
+
+                <TextView
+                    android:id="@+id/txt_sr_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:text="S_No."
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_invoice_no"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="8.6"
+                    android:text="Invoice No."
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="17"
+                    android:text="Date"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_amount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="16"
+                    android:text="Amount"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+
+                <TextView
+                    android:id="@+id/txt_tax"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:text="Tax"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_discount"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:text="Discount"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_total"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="10"
+                    android:text="Total"
+                    android:textColor="#333333"
+                    android:textSize="17sp" />
+
+
+            </TableRow>
+
+        </TableLayout>
+    </LinearLayout>
+
+</LinearLayout>

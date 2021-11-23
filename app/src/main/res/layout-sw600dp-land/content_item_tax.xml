@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ItemTaxActivity"
+    tools:showIn="@layout/activity_item_tax">
+
+    <TextView
+        android:id="@+id/txt_filter"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:text="@string/Item_Category"
+        android:textSize="25sp"
+        android:layout_marginTop="25dp"
+        />
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_below="@+id/txt_filter"
+        android:layout_marginTop="20dp"
+        >
+
+        <Spinner
+            android:id="@+id/spn_filter"
+            android:layout_width="0dp"
+            android:layout_height="40dp"
+            android:layout_weight="0.7"
+            />
+
+        <TextView
+            android:id="@+id/txt_reset"
+            android:layout_width="0dp"
+            android:layout_height="match_parent"
+            android:text="@string/reset"
+            android:layout_weight="0.3"
+            android:gravity="center_vertical"
+            android:paddingLeft="30dp"
+            android:textColor="#fb7c3e"
+            android:textSize="25dp"
+            />
+    </LinearLayout>
+
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edt_layout_hsn_code"
+        style="@style/AppTheme.TextInputLayout"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+        android:layout_below="@+id/ll"
+        android:layout_marginTop="30dp">
+
+        <EditText
+            android:id="@+id/edt_hsn_code"
+            style="@style/AppTheme.EditText_600dp"
+            android:hint="@string/hsn_code" />
+
+    </com.google.android.material.textfield.TextInputLayout>
+
+    <LinearLayout
+
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_below="@+id/edt_layout_hsn_code"
+        android:layout_marginBottom="30dp"
+        android:layout_marginTop="40dp"
+        >
+
+        <Button
+
+            android:id="@+id/btn_next"
+            style="@style/AppTheme.HorizontalButton_600dp"
+            android:text="@string/Next" />
+
+        <Button
+            android:id="@+id/btn_item_delete"
+            style="@style/AppTheme.HorizontalButton_600dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="@string/delete"
+            android:visibility="gone" />
+
+
+    </LinearLayout>
+</RelativeLayout>

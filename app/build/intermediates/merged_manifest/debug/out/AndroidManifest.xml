@@ -1,0 +1,910 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+    package="org.phomellolitepos"
+    android:versionCode="111"
+    android:versionName="11.28" >
+
+    <uses-sdk
+        android:minSdkVersion="16"
+        android:targetSdkVersion="30" />
+
+    <uses-permission android:name="android.permission.INTERNET" />
+    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+    <uses-permission android:name="android.permission.READ_CONTACTS" />
+    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> <!-- <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
+    <uses-permission android:name="android.permission.CAMERA" />
+    <uses-permission android:name="android.permission.WAKE_LOCK" />
+    <uses-permission android:name="com.pos.permission.PRINTER" />
+    <uses-permission android:name="com.pos.permission.COMMUNICATION" />
+    <uses-permission android:name="com.pos.permission.SECURITY" />
+    <uses-permission android:name="com.pos.permission.ACCESSORY_RFREGISTER" />
+    <uses-permission android:name="com.pos.permission.EMVCORE" />
+    <uses-permission android:name="com.pos.permission.ACCESSORY_DATETIME" />
+    <uses-permission android:name="com.pos.permission.ACCESSORY_LED" />
+    <uses-permission android:name="com.pos.permission.ACCESSORY_BEEP" />
+    <uses-permission android:name="com.pos.permission.CARD_READER_ICC" />
+    <uses-permission android:name="com.pos.permission.CARD_READER_PICC" />
+    <uses-permission android:name="com.pos.permission.CARD_READER_MAG" />
+    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+    <uses-permission android:name="android.permission.NFC" />
+
+    <!-- 获取手机任务信息（进程,app列表） -->
+    <uses-permission android:name="android.permission.GET_TASKS" /> <!-- 拨打电话 -->
+    <uses-permission android:name="android.permission.CALL_PHONE" />
+    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+
+    <application
+        android:name="org.phomellolitepos.AppController"
+        android:allowBackup="true"
+        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+        android:debuggable="true"
+        android:hardwareAccelerated="false"
+        android:icon="@drawable/app_icon_192"
+        android:label="@string/app_name"
+        android:largeHeap="true"
+        android:networkSecurityConfig="@xml/network_security_config"
+        android:requestLegacyExternalStorage="true"
+        android:supportsRtl="true"
+        android:testOnly="true"
+        android:theme="@style/AppTheme"
+        android:usesCleartextTraffic="true" >
+        <activity
+            android:name="org.phomellolitepos.Reports.VatOrderItemReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.VatOrderHeaderReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.GstOrderItemReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.GstOrderHeaderReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.OrderTaxReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ItemTaxReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.TaxReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.CancelReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ItemReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ItemProfitReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.UserReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ContactReport_view"
+            android:exported="true"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.DailySales_Report"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.MonthlySalesReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.SalesByItemGroupReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.SalesByItemReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.OrderHeaderReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.OrderPaymentReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.OrderDetailReport_View"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ZeroReportView"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Reports.ItemGroupReport_view"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <uses-library
+            android:name="org.apache.http.legacy"
+            android:required="false" />
+
+        <activity
+            android:name="org.phomellolitepos.VehicleOutList"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name="org.phomellolitepos.VehicleIN_OutReport" />
+        <activity
+            android:name="org.phomellolitepos.Retail_IndustryActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.VehicleInReport"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.VehicleHistoryScreen"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ParkingIndustryActivity"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+            </intent-filter>
+            <intent-filter>
+                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+            </intent-filter>
+
+            <meta-data
+                android:name="android.nfc.action.TECH_DISCOVERED"
+                android:resource="@xml/filter_nfc" />
+            <meta-data
+                android:name="android.nfc.action.NDEF_DISCOVERED"
+                android:resource="@xml/filter_nfc" />
+            <meta-data
+                android:name="android.nfc.action.TAG_DISCOVERED"
+                android:resource="@xml/filter_nfc" />
+        </activity>
+        <activity
+            android:name="org.phomellolitepos.PrintTestActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.MainSpinneActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.NewRegistrationActivity"
+            android:label="@string/title_activity_newregistration"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemModifierSelection"
+            android:label="@string/title_activity_itemmodifier"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity android:name="org.phomellolitepos.CrashActivity" />
+
+        <meta-data
+            android:name="firebase_analytics_collection_enabled"
+            android:value="true" />
+        <meta-data
+            android:name="firebase_crashlytics_collection_enabled"
+            android:value="true" />
+
+        <activity
+            android:name="org.phomellolitepos.ModiferCheckListActivity"
+            android:label="@string/title_activity_modifier"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TableMangement"
+            android:label="@string/title_activity_table"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PdfWebView"
+            android:excludeFromRecents="true"
+            android:theme="@style/Theme.AppCompat.Dialog.Alert"
+            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <uses-library android:name ="org.apache.http.legacy" android:required ="false"/> -->
+        <activity
+            android:name="org.phomellolitepos.PaymentCollection_MainScreen"
+            android:label="@string/title_activity_paymentcollection"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <uses-library android:name ="org.apache.http.legacy" android:required ="false"/> -->
+        <activity
+            android:name="org.phomellolitepos.AddPaymentActivity"
+            android:label="@string/title_activity_item_payment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PaymentListActivity"
+            android:label="@string/Payment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <provider
+            android:name="androidx.core.content.FileProvider"
+            android:authorities="com.org.phomellolitepos.myfileprovider"
+            android:exported="false"
+            android:grantUriPermissions="true" >
+            <meta-data
+                android:name="android.support.FILE_PROVIDER_PATHS"
+                android:resource="@xml/filepaths" />
+        </provider>
+
+        <service android:name="org.phomellolitepos.BackgroundApiService" />
+
+        <activity
+            android:name="org.phomellolitepos.InvReturnItemListActivity"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <uses-library
+            android:name="com.odm"
+            android:required="false" />
+        <uses-library
+            android:name="com.pos.sdk"
+            android:required="false" />
+
+        <activity
+            android:name="org.phomellolitepos.MainActivity"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateAlwaysHidden" />
+        <activity
+            android:name="org.phomellolitepos.ItemCategoryActivity"
+            android:label="@string/title_activity_item_category"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemActivity"
+            android:label="@string/title_activity_item"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReceptActivity"
+            android:label="@string/title_activity_recept"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ViewOrderActivity"
+            android:label="@string/title_activity_view_order"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.SetttingsActivity"
+            android:label="@string/title_activity_setttings"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ProfileActivity"
+            android:label="@string/title_activity_profile"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ChangePriceActivity"
+            android:label="@string/title_activity_change_price"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.RegistrationActivity"
+            android:label="@string/title_activity_registration"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CategoryListActivity"
+            android:label="@string/title_activity_category_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemListActivity"
+            android:label="@string/title_activity_item_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ActivateEmailActivity"
+            android:label="@string/title_activity_activate_email"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ActivateActivity"
+            android:label="@string/title_activity_activate"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.RetailActivity"
+            android:label="@string/title_activity_retail"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.MainCategoryListActivity"
+            android:label="@string/title_activity_mian_category_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.SplashScreen"
+            android:label="@string/app_name"
+            android:theme="@style/AppTheme.NoActionBar" >
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+
+                <category android:name="android.intent.category.LAUNCHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.phomellolitepos.printer.PrintLayout"
+            android:excludeFromRecents="true"
+            android:theme="@android:style/Theme.Holo.Light.Dialog"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PaymentActivity"
+            android:label="@string/title_activity_payment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="org.phomellolitepos.ReceptDetailActivity"
+            android:label="@string/title_activity_recept_detail"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="org.phomellolitepos.TestActivity"
+            android:label="@string/title_activity_test"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.DataBaseActivity"
+            android:label="@string/title_activity_data_base"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReportActivity"
+            android:label="@string/title_activity_report"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <!--
+<activity
+            android:name=".ItemSummaryActivity"
+            android:label="@string/title_activity_item_summary"
+            android:theme="@style/AppTheme.NoActionBar" />
+        <activity
+            android:name=".MiniPOSTestActivity"
+            android:label="@string/title_activity_mini_postest"
+            android:theme="@style/AppTheme.NoActionBar" />
+        -->
+        <activity
+            android:name="org.phomellolitepos.LoginActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReadJson"
+            android:label="@string/title_activity_read_json"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.BussinessGroupActivity"
+            android:label="@string/title_activity_bussiness_group"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ContactActivity"
+            android:label="@string/title_activity_contact"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.BussinessGroupListActivity"
+            android:label="@string/title_activity_bussiness_group_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ContactListActivity"
+            android:label="@string/title_activity_contact_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.BussinessGroupCheckListActivity"
+            android:label="@string/title_activity_bussiness_group_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ManufactureActivity"
+            android:label="@string/title_activity_manufacture"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ManufactureListActivity"
+            android:label="@string/title_activity_manufacture_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemCheckListActivity"
+            android:label="@string/title_activity_item_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TaxActivity"
+            android:label="@string/title_activity_tax"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TaxListActivity"
+            android:label="@string/title_activity_tax_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.OrderTypeListActivity"
+            android:label="@string/title_activity_order_type_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemGroupCheckListActivity"
+            android:label="@string/title_activity_item_group_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.OrderTypeCheckListActivity"
+            android:label="@string/title_activity_order_type_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ContactCheckListActivity"
+            android:label="@string/title_activity_suppier_group_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ManagerActivity"
+            android:label="@string/title_activity_manager"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.OpeningBalanceActivity"
+            android:label="@string/title_activity_opening_balance"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ExpensesListActivity"
+            android:label="@string/title_activity_expenses_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ExpensesActivity"
+            android:label="@string/title_activity_expenses"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.X_ZActivity"
+            android:label="@string/title_activity_x__z"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.UserListActivity"
+            android:label="@string/title_activity_user_llist"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.UserActivity"
+            android:label="@string/title_activity_user"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.BluetoothDeviceListActivity"
+            android:label="@string/title_activity_bluetooth_device_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+
+        <receiver android:name="sunmi.ds.MsgReceiver" >
+            <intent-filter>
+                <action android:name="com.sunmi.hcservice" />
+                <action android:name="com.sunmi.hcservice.status" />
+            </intent-filter>
+        </receiver>
+        <receiver android:name="org.phomellolitepos.ShutDownBroadcastRecevier" >
+            <intent-filter android:priority="1000" >
+                <action android:name="com.sunmi.action_shutdown_client" />
+            </intent-filter>
+        </receiver>
+
+        <activity
+            android:name="org.phomellolitepos.AboutActivity"
+            android:label="@string/title_activity_about"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TaxCheckListActivity"
+            android:label="@string/title_activity_tax_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReservationActivity"
+            android:label="@string/title_activity_reservation"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReservationListActivity"
+            android:label="@string/title_activity_reservation_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReservationItemCheckListActivity"
+            android:label="@string/title_activity_reservation_item_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CustomerImageActivity"
+            android:label="@string/title_activity_customer_image"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PaymentCollectionActivity"
+            android:label="@string/title_activity_payment_collection"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <receiver -->
+        <!-- android:name=".Util.BootStartUpReciever" -->
+        <!-- android:enabled="true" -->
+        <!-- android:exported="true"> -->
+        <!-- <intent-filter> -->
+        <!-- <action android:name="android.intent.action.BOOT_COMPLETED" /> -->
+        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+        <!-- </intent-filter> -->
+        <!-- </receiver> -->
+        <activity
+            android:name="org.phomellolitepos.PayCollectionListActivity"
+            android:label="@string/title_activity_pay_collection_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ItemTaxActivity"
+            android:label="@string/title_activity_item_tax"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PaymentSplitActivity"
+            android:label="@string/title_activity_payment_split"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.Main2Activity"
+            android:configChanges="orientation|keyboardHidden"
+            android:label="@string/title_activity_main2"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateHidden" />
+        <activity
+            android:name="org.phomellolitepos.SearchOrderActivity"
+            android:label="@string/title_activity_search_order"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.UnitListActivity"
+            android:label="@string/title_activity_unit_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.UnitActivity"
+            android:label="@string/title_activity_unit"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.UserParmissionCheckListActivity"
+            android:label="@string/title_activity_user_parmission_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReportViewerActivity"
+            android:label="@string/title_activity_report_viewer"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.YouTubeVideoListActivity"
+            android:label="@string/title_activity_you_tube_video_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.AccountsListActivity"
+            android:label="@string/title_activity_accounts_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.AccountsActivity"
+            android:label="@string/title_activity_accounts"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.StockAdjestmentListActivity"
+            android:label="@string/title_activity_stock_adjestment_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.StockAdjestmentHeaderActivity"
+            android:label="@string/title_activity_stock_adjestment_header"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.StockAdjestmentFinalActivity"
+            android:label="@string/title_activity_stock_adjestment_final"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CustomerReturnListActivity"
+            android:label="@string/title_activity_return_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CusReturnHeaderActivity"
+            android:label="@string/title_activity_return_header"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CusReturnFinalActivity"
+            android:label="@string/title_activity_return_final"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PurchaseListActivity"
+            android:label="@string/title_activity_purchase_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PurchaseHeaderActivity"
+            android:label="@string/title_activity_purchase_header"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PurchaseFinalActivity"
+            android:label="@string/title_activity_purchase_final"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.PusrchasePaymentActivity"
+            android:label="@string/title_activity_pusrchase_payment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.SendLogActivity"
+            android:textAppearance="@android:style/TextAppearance.Large"
+            android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name=".SendLogActivity" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+        </activity>
+        <activity
+            android:name="org.phomellolitepos.TicketSolution.TicketActivity"
+            android:label="@string/title_activity_login"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <!--
+     Add this activity to your manifest
+     it comes with the Paytm SDK
+        -->
+        <activity
+            android:name="com.paytm.pgsdk.PaytmPGActivity"
+            android:configChanges="keyboardHidden|orientation|keyboard"
+            android:screenOrientation="portrait"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSolution.TicketListActivity"
+            android:label="@string/title_activity_ticket_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSolution.TicketPaymentActivity"
+            android:label="@string/title_activity_ticket_payment"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketCategoryActivity"
+            android:label="@string/title_activity_ticket_category"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSetupActivity"
+            android:label="@string/title_activity_ticket_setup"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSetupListActivity"
+            android:label="@string/title_activity_ticket_setup_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSetupTaxCheckListActivity"
+            android:label="@string/title_activity_ticket_setup_tax_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSetupCategoryCheckListActivity"
+            android:label="@string/title_activity_ticket_setup_category_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketSetupDaysCheckListActivity"
+            android:label="@string/title_activity_ticket_setup_days_check_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ClassDestinationListActivity"
+            android:label="@string/title_activity_class_destination_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.TicketingActivity"
+            android:label="@string/title_activity_ticteting"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ProLoyaltySetupActivity"
+            android:label="@string/title_activity_pro_loyalty_setup"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CouponListActivity"
+            android:label="@string/title_activity_coupon_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CouponSetupActivity"
+            android:label="@string/title_activity_coupon_setup"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.CouponGenerateActivity"
+            android:label="@string/title_activity_coupon_generate"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.ReturnOptionActivity"
+            android:label="@string/title_activity_return_option"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.InvReturnListActivity"
+            android:label="@string/title_activity_inv_return_list"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.InvReturnHeaderActivity"
+            android:label="@string/title_activity_inv_return_header"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="org.phomellolitepos.InvReturnFinalActivity"
+            android:label="@string/title_activity_inv_return_final"
+            android:theme="@style/AppTheme.NoActionBar"
+            android:windowSoftInputMode="stateVisible|adjustResize" />
+        <activity
+            android:name="cn.finalteam.galleryfinal.PhotoSelectActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.finalteam.galleryfinal.PhotoEditActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+        <activity
+            android:name="cn.finalteam.galleryfinal.PhotoPreviewActivity"
+            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+            android:screenOrientation="portrait" />
+
+        <receiver
+            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+            android:enabled="true"
+            android:exported="false" >
+        </receiver>
+
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementService"
+            android:enabled="true"
+            android:exported="false" />
+        <service
+            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+            android:enabled="true"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" />
+        <service
+            android:name="com.google.firebase.components.ComponentDiscoveryService"
+            android:directBootAware="true"
+            android:exported="false" >
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+            <!--
+                This registrar is not defined in the dynamic-module-support sdk itself to allow non-firebase
+                clients to use it as well, by defining this registrar in their own core/common library.
+            -->
+            <meta-data
+                android:name="com.google.firebase.components:com.google.firebase.dynamicloading.DynamicLoadingRegistrar"
+                android:value="com.google.firebase.components.ComponentRegistrar" />
+        </service>
+
+        <provider
+            android:name="com.google.firebase.provider.FirebaseInitProvider"
+            android:authorities="org.phomellolitepos.firebaseinitprovider"
+            android:directBootAware="true"
+            android:exported="false"
+            android:initOrder="100" />
+
+        <meta-data
+            android:name="com.google.android.gms.version"
+            android:value="@integer/google_play_services_version" />
+        <meta-data
+            android:name="SUNMI_APPKEY"
+            android:value="DEFAULT" />
+
+        <service
+            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+            android:exported="false" >
+            <meta-data
+                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+                android:value="cct" />
+        </service>
+        <service
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+            android:exported="false"
+            android:permission="android.permission.BIND_JOB_SERVICE" >
+        </service>
+
+        <receiver
+            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+            android:exported="false" />
+    </application>
+
+</manifest>

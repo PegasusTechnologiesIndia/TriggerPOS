@@ -6,11 +6,13 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.Button;
 
+import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Settings;
 
@@ -29,6 +31,7 @@ public class ReturnOptionActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.return_option);
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         int id = pref.getInt("id", 0);
         if (id == 0) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
@@ -39,45 +42,54 @@ public class ReturnOptionActivity extends AppCompatActivity {
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                pDialog = new ProgressDialog(ReturnOptionActivity.this);
+             /*   pDialog = new ProgressDialog(ReturnOptionActivity.this);
                 pDialog.setCancelable(false);
                 pDialog.setMessage(getString(R.string.Wait_msg));
                 pDialog.show();
 
                 Thread timerThread = new Thread() {
-                    public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(ReturnOptionActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(ReturnOptionActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(ReturnOptionActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }
+                    public void run() {*/
+                 if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(ReturnOptionActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
 
-                    }
+                    finish();
+                }
+                 else {
+                     if (settings.get_Home_Layout().equals("0")) {
+                         try {
+                             Intent intent = new Intent(ReturnOptionActivity.this, MainActivity.class);
+                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                             startActivity(intent);
+                             // pDialog.dismiss();
+                             finish();
+                         } finally {
+                         }
+                     } else if (settings.get_Home_Layout().equals("2")) {
+                         try {
+                             Intent intent = new Intent(ReturnOptionActivity.this, RetailActivity.class);
+                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                             startActivity(intent);
+                             //pDialog.dismiss();
+                             finish();
+                         } finally {
+                         }
+                     } else {
+                         try {
+                             Intent intent = new Intent(ReturnOptionActivity.this, Main2Activity.class);
+                             intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                             startActivity(intent);
+                             //pDialog.dismiss();
+                             finish();
+                         } finally {
+                         }
+                     }
+                 }
+
+                   /* }
                 };
-                timerThread.start();
+                timerThread.start();*/
             }
         });
 
@@ -116,35 +128,44 @@ public class ReturnOptionActivity extends AppCompatActivity {
 
         Thread timerThread = new Thread() {
             public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(ReturnOptionActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(ReturnOptionActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(ReturnOptionActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
+
+                if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(ReturnOptionActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                    startActivity(intent);
+                    pDialog.dismiss();
+                    finish();
+                }
+                else {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Intent intent = new Intent(ReturnOptionActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(ReturnOptionActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(ReturnOptionActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
                 }
-
             }
         };
         timerThread.start();

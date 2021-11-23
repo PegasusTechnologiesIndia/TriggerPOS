@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto"
+    android:orientation="vertical">
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        card_view:cardCornerRadius="20dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        card_view:cardElevation="@dimen/_10sdp"
+        card_view:cardMaxElevation="@dimen/_10sdp"
+        card_view:contentPadding="@dimen/_10sdp">
+
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical">
+            <LinearLayout
+                android:id="@+id/lbl_netamont"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Sr.No"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_itemNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text=""
+                    android:gravity="right"
+                    android:textColor="@color/black"
+                    android:layout_weight=".5"
+                    ></TextView>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/lbl_tinv"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Group Code"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_invoiceNo"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/black"
+                    android:layout_weight=".5"
+                    android:text=""
+                    ></TextView>
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/lbl_netamnt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:weightSum="1"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:text="Group Name"
+                    android:textColor="@color/black"></TextView>
+
+                <TextView
+                    android:id="@+id/txt_devicename"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:gravity="right"
+                    android:textColor="@color/black"
+                    android:layout_weight=".5"
+                    android:text=""
+
+                    ></TextView>
+
+            </LinearLayout>
+
+
+        </LinearLayout>
+    </androidx.cardview.widget.CardView>
+
+</LinearLayout>

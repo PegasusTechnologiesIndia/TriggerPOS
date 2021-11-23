@@ -1,0 +1,76 @@
+{
+    "result": [
+        {
+            "contact_id": "1",
+            "device_code": "TRRIGER_POS",
+            "contact_code": "TRRIGER_POS-C-1",
+            "title": "Mrs.",
+            "name": "Customer1",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "919530047775",
+            "contact_2": "",
+            "email_1": "ssin2@pegasustech.net",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:11:07",
+            "gstin": "",
+            "country_id": "99",
+            "zone_id": "1501",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "TRRIGER_POS-C-1",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        },
+        {
+            "contact_id": "2",
+            "device_code": "TRRIGER_POS",
+            "contact_code": "TRRIGER_POS-C-2",
+            "title": "Mr.",
+            "name": "Customer2",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "919799104472",
+            "contact_2": "",
+            "email_1": "prahlad@pegasustech.net",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-12-25 00:12:18",
+            "gstin": "",
+            "country_id": "99",
+            "zone_id": "1501",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "TRRIGER_POS-C-2",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        }
+    ]
+}

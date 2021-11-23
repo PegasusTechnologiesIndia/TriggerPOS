@@ -35,7 +35,11 @@
             android:id="@+id/nav_contact"
             android:icon="@drawable/contact_gray"
             android:title="@string/Contact" />
+        <item
+            android:id="@+id/nav_payment"
+            android:icon="@drawable/payment_collection"
 
+            android:title="@string/Payment" />
         <item
         android:id="@+id/nav_manufacture"
         android:icon="@drawable/manufacture"
@@ -100,7 +104,10 @@
             android:id="@+id/nav_Report"
             android:icon="@drawable/report"
             android:title="@string/Report" />
-
+        <item
+            android:id="@+id/nav_printtest"
+            android:icon="@drawable/report"
+            android:title="@string/printtest" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"

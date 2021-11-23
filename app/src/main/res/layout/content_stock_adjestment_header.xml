@@ -16,7 +16,7 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -26,7 +26,7 @@
                 android:hint="Voucher No (Auto Generated)"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -65,7 +65,7 @@
 
         </TableLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -75,7 +75,7 @@
                 android:hint="Remarks"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
 

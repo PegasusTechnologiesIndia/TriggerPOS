@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<commu>
+    <type>socket</type>
+    <ip>192.168.0.1</ip>
+    <port>10000</port>
+    <timeout>60</timeout>
+    <!-- 是否启用SSL -->
+    <ifSSL>1</ifSSL>
+    <!-- 证书名称，需要放在资源文件raw文件夹下面,如果设置为null，将信任所有证书 -->
+    <cer>null</cer>
+</commu>
+  

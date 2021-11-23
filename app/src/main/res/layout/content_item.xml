@@ -51,7 +51,7 @@
         </Spinner>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_code"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -60,11 +60,22 @@
                 android:id="@+id/edt_item_code"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/item_code_auto_generated"
-                android:selectAllOnFocus="true"/>
+                android:selectAllOnFocus="true"
+                android:focusable="false"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <CheckBox
+            android:id="@+id/chk_ismodifier"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:textSize="20sp"
+
+            android:text="IsModifier">
+
+        </CheckBox>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_name"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -77,8 +88,8 @@
                 android:hint="@string/ItemName"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
-        <android.support.design.widget.TextInputLayout
+        </com.google.android.material.textfield.TextInputLayout>
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_description"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -90,10 +101,10 @@
                 android:selectAllOnFocus="true"
                 />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_sku"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -106,9 +117,9 @@
                 android:hint="@string/SKU"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_barcode"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -119,9 +130,9 @@
                 android:hint="@string/Barcode"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_hsn_code"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -132,8 +143,12 @@
                 android:hint="@string/hsn_code"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
-
+        </com.google.android.material.textfield.TextInputLayout>
+<LinearLayout
+    android:id="@+id/ll_ittype"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
         <TextView
             android:id="@+id/lbl_spn_item_type"
             style="@style/AppTheme.LabelText"
@@ -163,7 +178,7 @@
             android:inputType="text">
         </Spinner>
 
-
+    </LinearLayout>
         <CheckBox
             android:id="@+id/ck_stockable"
             android:layout_width="match_parent"
@@ -180,7 +195,7 @@
             android:text="@string/IsService"
             android:visibility="gone"/>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_cost_price"
             style="@style/AppTheme.TextInputLayout"
             android:layout_marginTop="10dp"
@@ -194,10 +209,10 @@
                 android:selectAllOnFocus="true">
             </EditText>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_item_sales_price"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -209,7 +224,7 @@
                 android:inputType="numberDecimal"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <CheckBox
             android:id="@+id/ck_PIT"

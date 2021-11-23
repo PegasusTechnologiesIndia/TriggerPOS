@@ -12,12 +12,12 @@
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.phomellolitepos.SplashScreen"
     tools:showIn="@layout/activity_spash_screen"
-    android:background="@drawable/new_splash">
+    android:background="@drawable/triggerpos_splash">
 
     <TextView
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="Phomello-LitePOS"
+        android:text="Phomello-TriggerPOS"
         android:textSize="40sp"
         android:textColor="#ffffff"
         android:layout_centerHorizontal="true"

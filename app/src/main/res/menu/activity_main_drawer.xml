@@ -7,21 +7,25 @@
         <item
             android:id="@+id/nav_class"
             android:icon="@drawable/item_category"
+            android:visible="false"
             android:title="Class/Category" />
 
         <item
             android:id="@+id/nav_destination"
             android:icon="@drawable/destination"
+            android:visible="false"
             android:title="Area/Destination" />
 
         <item
             android:id="@+id/nav_setup"
             android:icon="@drawable/ticketing_setup"
+            android:visible="false"
             android:title="Setup" />
 
         <item
             android:id="@+id/nav_ticketing"
             android:icon="@drawable/ticketing"
+            android:visible="false"
             android:title="Ticketing" />
 
         <item
@@ -37,15 +41,21 @@
             android:id="@+id/nav_contact"
             android:icon="@drawable/contact_gray"
             android:title="@string/Contact" />
+        <item
+            android:id="@+id/nav_payment"
+            android:icon="@drawable/payment_collection"
 
+            android:title="@string/Payment" />
         <item
             android:id="@+id/nav_manufacture"
             android:icon="@drawable/manufacture"
+            android:visible="false"
             android:title="@string/Manufacture" />
 
         <item
             android:id="@+id/nav_search_order"
             android:icon="@drawable/search_order"
+            android:visible="false"
             android:title="@string/search_order" />
 
 
@@ -65,14 +75,17 @@
             android:id="@+id/nav_acc"
             android:icon="@drawable/account"
             android:title="@string/accounts" />
+
         <item
             android:id="@+id/nav_resv"
             android:icon="@drawable/reservation"
+            android:visible="false"
             android:title="@string/reservation" />
 
         <item
             android:id="@+id/nav_stock_adjest"
             android:icon="@drawable/stock_adjustment"
+            android:visible="false"
             android:title="@string/stock_adjustment" />
 
         <item
@@ -83,6 +96,7 @@
         <item
             android:id="@+id/nav_purchese"
             android:icon="@drawable/purchase"
+            android:visible="false"
             android:title="@string/purchase" />
         <!--<item-->
             <!--android:id="@+id/nav_customer_image"-->
@@ -91,6 +105,7 @@
 
         <item
             android:id="@+id/nav_pay_collection"
+            android:visible="false"
             android:icon="@drawable/payment_collection"
             android:title="@string/payment_collection" />
 
@@ -107,7 +122,10 @@
             android:icon="@drawable/report"
             android:title="@string/Report" />
 
-
+        <item
+            android:id="@+id/nav_printtest"
+            android:icon="@drawable/report"
+            android:title="@string/printtest" />
         <item
             android:id="@+id/nav_logout"
             android:icon="@drawable/logout"

@@ -6,9 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
@@ -111,8 +111,8 @@ public class ExpensesActivity extends AppCompatActivity {
 
         edt_expenses.setOnTouchListener(new View.OnTouchListener() {
             @Override
-            public boolean onTouch(View v, MotionEvent event) {
-
+            public boolean onTouch(View v, MotionEvent event)
+            {
                 if (edt_expenses.getText().toString().trim().equals("")) {
                     return false;
                 } else {
@@ -209,7 +209,7 @@ public class ExpensesActivity extends AppCompatActivity {
                     expense_name = edt_expense_name.getText().toString().trim();
                 }
 
-                if (edt_expenses.getText().toString().equals("")) {
+                if (edt_expenses.getText().toString().equals("")||edt_expenses.getText().toString().equals(".")) {
                     edt_expenses.setError(getString(R.string.Amount_is_required));
                     edt_expenses.requestFocus();
                     return;

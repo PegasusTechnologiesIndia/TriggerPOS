@@ -15,11 +15,12 @@ import android.net.NetworkInfo;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.cardview.widget.CardView;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -28,6 +29,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -43,42 +45,24 @@ import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.phomellolitepos.Adapter.ItemUnitListAdapter;
 import org.phomellolitepos.Adapter.PagingAdapter;
 import org.phomellolitepos.Mail.GMailSender;
 import org.phomellolitepos.Util.DateUtill;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.Paging;
-import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Orders;
-import org.phomellolitepos.database.Settings;
-import org.phomellolitepos.database.Unit;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.Locale;
 
 import javax.mail.AuthenticationFailedException;
 import javax.mail.MessagingException;
 
-import me.srodrigo.androidhintspinner.HintAdapter;
-import me.srodrigo.androidhintspinner.HintSpinner;
-
-public class ReportViewerActivity extends AppCompatActivity {
+public class ReportViewerActivity extends AppCompatActivity
+{
     Button btn_clr_fltr;
     TextView txt_total;
     Spinner spn_paging;
@@ -86,13 +70,14 @@ public class ReportViewerActivity extends AppCompatActivity {
     Database db;
     SQLiteDatabase database;
     LinearLayout ll;
+
     ScrollView sv;
     HorizontalScrollView hsv;
     int r;
     TableRow tableRow;
     ProgressDialog progressDialog;
     Dialog listDialog;
-    Settings settings;
+
     String sql, sqlFooter, json, str_type;
     ArrayList<Integer> numCols;
     ArrayList<Integer> dateCols;
@@ -122,6 +107,7 @@ public class ReportViewerActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.report_viewer);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
         listDialog = new Dialog(this);
@@ -136,7 +122,7 @@ public class ReportViewerActivity extends AppCompatActivity {
         to = intent3.getStringExtra("to");
         operation = intent3.getStringExtra("operation");
         operation = "Edit";
-        settings = Settings.getSettings(getApplicationContext(), database, "");
+     //   settings = Settings.getSettings(getApplicationContext(), database, "");
 
 
         toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
@@ -166,7 +152,7 @@ public class ReportViewerActivity extends AppCompatActivity {
                             intent.putExtra("from", from);
                             intent.putExtra("to", to);
                             intent.putExtra("operation", operation);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             progressDialog.dismiss();
                             finish();
@@ -223,12 +209,22 @@ public class ReportViewerActivity extends AppCompatActivity {
 
         if (Globals.pageNO == 0) {
             try {
-                record_count = getTotalRecords(sql);
+                if((name.equals("Customer Summary Report"))|| (name.equals("Customer Statement Report"))){
+                    sql = intent3.getStringExtra("qry");
+                    txt_total.setText(getResources().getString(R.string.total2)+" "+sql+"");
+                }
+                else {
+                    record_count = getTotalRecords(sql);
+                    txt_total.setText(getResources().getString(R.string.total2)+" "+record_count+"");
+
+
+                }
             }catch (Exception ex){
                 record_count = 0;
+                txt_total.setText(getResources().getString(R.string.total2)+" "+record_count+"");
+
             }
 
-                txt_total.setText(getResources().getString(R.string.total2)+" "+record_count+"");
 
             nop = Math.round(Float.parseFloat(record_count+"") / Float.parseFloat(limit+""));
             Float compare = (Float.parseFloat(record_count+"") / Float.parseFloat(limit+""));
@@ -269,54 +265,61 @@ public class ReportViewerActivity extends AppCompatActivity {
                                 });
                             } else {
                                 final String dtt = name + DateUtill.Reportnamedate();
-                                Globals.ExportItem(cursor, dtt, numCols, dateCols);
+                                final String namestr=name;
+                                Globals.ExportItem(cursor, dtt,namestr, numCols, dateCols);
                                 progressDialog.dismiss();
                                 runOnUiThread(new Runnable() {
                                     public void run() {
                                         Globals.online_report_cursor = null;
                                         Toast.makeText(getApplicationContext(), R.string.excel_export_succ, Toast.LENGTH_LONG).show();
-                                        listDialog.setTitle("Send Email?");
-                                        LayoutInflater li1 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
-                                        View v1 = li1.inflate(R.layout.add_remarks_dialog, null, false);
-                                        listDialog.setContentView(v1);
-                                        listDialog.setCancelable(true);
-                                        final EditText edt_remark = (EditText) listDialog.findViewById(R.id.edt_remark);
-                                        edt_remark.setHint(R.string.Enter_Email);
-                                        edt_remark.setHintTextColor(Color.parseColor("#cccccc"));
-                                        edt_remark.setVisibility(View.GONE);
-                                        Button btnPDF = (Button) listDialog.findViewById(R.id.btn_save);
-                                        Button btnEXL = (Button) listDialog.findViewById(R.id.btn_clear);
-                                        btnEXL.setVisibility(View.VISIBLE);
-                                        btnPDF.setText("Email(Yes)");
-                                        btnPDF.setTextColor(Color.parseColor("#ffffff"));
-                                        btnEXL.setText("Email(No)");
-                                        btnEXL.setTextColor(Color.parseColor("#ffffff"));
-                                        listDialog.show();
+                                        if (Globals.objsettings.get_Is_email().equals("true")) {
 
-                                        btnPDF.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                if (isNetworkStatusAvialable(getApplicationContext())) {
-                                                    if (settings.get_Is_email().equals("true")) {
-                                                        if (settings.get_Manager_Email().equals("")) {
+                                            listDialog.setTitle("Send Email?");
+                                            LayoutInflater li1 = (LayoutInflater) getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                            View v1 = li1.inflate(R.layout.add_remarks_dialog, null, false);
+                                            listDialog.setContentView(v1);
+                                            listDialog.setCancelable(true);
+                                            final EditText edt_remark = (EditText) listDialog.findViewById(R.id.edt_remark);
+                                            edt_remark.setHint(R.string.Enter_Email);
+                                            edt_remark.setHintTextColor(Color.parseColor("#cccccc"));
+                                            edt_remark.setVisibility(View.GONE);
+                                            Button btnPDF = (Button) listDialog.findViewById(R.id.btn_save);
+                                            Button btnEXL = (Button) listDialog.findViewById(R.id.btn_clear);
+                                            btnEXL.setVisibility(View.VISIBLE);
+                                            btnPDF.setText("Email(Yes)");
+                                            btnPDF.setTextColor(Color.parseColor("#ffffff"));
+                                            btnEXL.setText("Email(No)");
+                                            btnEXL.setTextColor(Color.parseColor("#ffffff"));
+                                            listDialog.show();
+
+                                            btnPDF.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    if (isNetworkStatusAvialable(getApplicationContext())) {
+                                                        if (Globals.objsettings.get_Is_email().equals("true")) {
+                                                            if (Globals.objsettings.get_Manager_Email().equals("")) {
+                                                            } else {
+                                                                String strEmail = Globals.objsettings.get_Manager_Email();
+                                                                send_email_manager(strEmail, dtt, name);
+                                                            }
                                                         } else {
-                                                            String strEmail = settings.get_Manager_Email();
-                                                            send_email_manager(strEmail, dtt, name);
-                                                        }
-                                                    }
-                                                } else {
-                                                    Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
-                                                }
-                                                listDialog.dismiss();
-                                            }
-                                        });
+                                                            Toast.makeText(getApplicationContext(), "Email Configuration not set from App Settings", Toast.LENGTH_SHORT).show();
 
-                                        btnEXL.setOnClickListener(new View.OnClickListener() {
-                                            @Override
-                                            public void onClick(View view) {
-                                                listDialog.dismiss();
-                                            }
-                                        });
+                                                        }
+                                                    } else {
+                                                        Toast.makeText(getApplicationContext(), getResources().getString(R.string.nointernet), Toast.LENGTH_SHORT).show();
+                                                    }
+                                                    listDialog.dismiss();
+                                                }
+                                            });
+
+                                            btnEXL.setOnClickListener(new View.OnClickListener() {
+                                                @Override
+                                                public void onClick(View view) {
+                                                    listDialog.dismiss();
+                                                }
+                                            });
+                                        }
                                     }
                                 });
                             }
@@ -448,10 +451,12 @@ public class ReportViewerActivity extends AppCompatActivity {
                         sv = new ScrollView(ReportViewerActivity.this);
                         hsv = new HorizontalScrollView(ReportViewerActivity.this);
                         ll = (LinearLayout) findViewById(R.id.ll);
+                        //cardView=(CardView)findViewById(R.id.cardView);
 
                         final TextView textView1 = new TextView(ReportViewerActivity.this);
                         textView1.setText(name);
                         textView1.setGravity(Gravity.CENTER);
+                        ll.setGravity(Gravity.CENTER);
                         textView1.setPadding(0, 10, 0, 10);
                         textView1.setTextColor(Color.parseColor("#333333"));
                         textView1.setTextSize(20);
@@ -466,15 +471,15 @@ public class ReportViewerActivity extends AppCompatActivity {
                         }
 
 
-                        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                                TableLayout.LayoutParams.MATCH_PARENT);
+                        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT,
+                                TableLayout.LayoutParams.FILL_PARENT);
                         tableLayout = new TableLayout(ReportViewerActivity.this);
                         tableLayout.setBackgroundColor(Color.BLACK);
 
 
                         // 2) create tableRow params
-                        TableRow.LayoutParams tableRowParams = new TableRow.LayoutParams(TableRow.LayoutParams.MATCH_PARENT,
-                                TableRow.LayoutParams.MATCH_PARENT, 1f);
+                        TableRow.LayoutParams tableRowParams = new TableRow.LayoutParams(TableRow.LayoutParams.FILL_PARENT,
+                                TableRow.LayoutParams.FILL_PARENT, 1f);
                         tableRowParams.setMargins(1, 1, 1, 1);
                         tableRowParams.weight = 1;
 
@@ -638,6 +643,7 @@ public class ReportViewerActivity extends AppCompatActivity {
                         hsv = new HorizontalScrollView(ReportViewerActivity.this);
                         ll = (LinearLayout) findViewById(R.id.ll);
 
+                      ll.setGravity(Gravity.CENTER);
                         TextView textView1 = new TextView(ReportViewerActivity.this);
                         textView1.setText(name);
                         textView1.setGravity(Gravity.CENTER);
@@ -653,8 +659,8 @@ public class ReportViewerActivity extends AppCompatActivity {
                             decimal_check = "2";
                         }
 
-                        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.MATCH_PARENT,
-                                TableLayout.LayoutParams.MATCH_PARENT);
+                        TableLayout.LayoutParams tableLayoutParams = new TableLayout.LayoutParams(TableLayout.LayoutParams.FILL_PARENT,
+                                TableLayout.LayoutParams.FILL_PARENT);
                         tableLayout = new TableLayout(ReportViewerActivity.this);
                         tableLayout.setBackgroundColor(Color.BLACK);
 
@@ -912,12 +918,12 @@ public class ReportViewerActivity extends AppCompatActivity {
             final ReportViewerActivity.SendEmailAsyncTask email = new ReportViewerActivity.SendEmailAsyncTask();
             email.activity = this;
 
-            email.m = new GMailSender(settings.get_Email(), settings.get_Password(), settings.get_Host(), settings.get_Port());
-            email.m.set_from(settings.get_Email());
+            email.m = new GMailSender(Globals.objsettings.get_Email(), Globals.objsettings.get_Password(), Globals.objsettings.get_Host(), Globals.objsettings.get_Port());
+            email.m.set_from(Globals.objsettings.get_Email());
             email.m.setBody(strReportName);
             email.m.set_to(recipients);
             email.m.set_subject(Globals.objLPD.getDevice_Name() + ":" + strReportName + "");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "Exportxls" + "/" + strFileName + ".xls");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "Exportxls" + "/" + strFileName + ".xls");
 
 
             email.execute();
@@ -1004,6 +1010,7 @@ public class ReportViewerActivity extends AppCompatActivity {
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
         getMenuInflater().inflate(R.menu.menu_retail, menu);
+        menu.setGroupVisible(R.id.grp_retail, false);
         return true;
     }
 
@@ -1300,7 +1307,7 @@ public class ReportViewerActivity extends AppCompatActivity {
                     Intent intent = new Intent(ReportViewerActivity.this, ReportActivity.class);
                     intent.putExtra("from", from);
                     intent.putExtra("to", to);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     progressDialog.dismiss();
                     finish();
@@ -1313,7 +1320,8 @@ public class ReportViewerActivity extends AppCompatActivity {
 
     private Cursor getCustomerSummery() {
         MatrixCursor mc = null;
-        String serverData = get_CustomerSummery_server();
+        String serverData = "";
+              //  get_CustomerSummery_server();
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
@@ -1337,11 +1345,11 @@ public class ReportViewerActivity extends AppCompatActivity {
         return mc;
     }
 
-    private String get_CustomerSummery_server() {
+    /*private String get_CustomerSummery_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/customer_summary");
+                 Globals.App_IP_URL + "customer_summary");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
@@ -1367,12 +1375,13 @@ public class ReportViewerActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
 
     private Cursor getCustomerStatment() {
         MatrixCursor mc = null;
-        String serverData = get_CustomerStatment_server();
+        String serverData = "";
+                //get_CustomerStatment_server();
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
@@ -1397,12 +1406,12 @@ public class ReportViewerActivity extends AppCompatActivity {
 
     }
 
-    private String get_CustomerStatment_server() {
+    /*private String get_CustomerStatment_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/customer_statements");
+             Globals.App_IP_URL + "customer_statements");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
@@ -1431,7 +1440,7 @@ public class ReportViewerActivity extends AppCompatActivity {
         }
         return serverData;
 
-    }
+    }*/
 }
 
 

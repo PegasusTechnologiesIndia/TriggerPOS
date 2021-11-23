@@ -44,8 +44,19 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/Opening_Balance"
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
+
+                <TextView
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.2"
+                    android:text=""
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
@@ -55,7 +66,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="right"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2.2"
+                    android:layout_weight="1.5"
                     android:ems="10"
                     android:enabled="false"
 
@@ -86,7 +97,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/Expenses"
                     android:textColor="#333333"
                     android:textSize="16sp" />
@@ -109,7 +120,7 @@
                     android:layout_marginRight="1dp"
                     android:layout_gravity="right"
                     android:gravity="right"
-                    android:layout_weight="2.1"
+                    android:layout_weight="1.5"
                     android:ems="10"
                     android:enabled="false"
                     android:maxLength="100"
@@ -122,6 +133,7 @@
             </TableRow>
 
             <TableRow
+                android:id="@+id/tb_cash"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
                 android:layout_gravity="center_vertical"
@@ -136,7 +148,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/Cash"
                     android:textColor="#333333"
                     android:textSize="16sp" />
@@ -157,7 +169,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2.1"
+                    android:layout_weight="1.5"
                     android:ems="10"
                     android:layout_gravity="right"
                     android:gravity="right"
@@ -250,7 +262,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="2dp"
-                        android:layout_weight="0.8"
+                        android:layout_weight="1.3"
                         android:text="@string/acc_cash"
                         android:textColor="#333333"
                         android:textSize="16sp" />
@@ -271,7 +283,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="1dp"
-                        android:layout_weight="2"
+                        android:layout_weight="1.5"
                         android:layout_gravity="right"
                         android:gravity="right"
                         android:ems="10"
@@ -320,7 +332,7 @@
                         android:layout_height="wrap_content"
                         android:layout_gravity="center_vertical"
                         android:layout_marginLeft="2dp"
-                        android:layout_weight="0.8"
+                        android:layout_weight="1.3"
                         android:text="@string/return_cash"
                         android:textColor="#333333"
                         android:textSize="16sp" />
@@ -341,7 +353,7 @@
                         android:layout_width="0dp"
                         android:layout_height="wrap_content"
                         android:layout_marginRight="1dp"
-                        android:layout_weight="2"
+                        android:layout_weight="1.5"
                         android:layout_gravity="right"
                         android:gravity="right"
                         android:ems="10"
@@ -434,11 +446,22 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/net_cash"
                     android:textColor="#333333"
                     android:textSize="@dimen/_16sdp"
                     android:textStyle="bold" />
+
+                <TextView
+
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.2"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="16sp" />
 
 
                 <EditText
@@ -446,7 +469,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2.2"
+                    android:layout_weight="1.5"
                     android:layout_gravity="right"
                     android:gravity="right"
                     android:ems="10"
@@ -469,6 +492,7 @@
         </View>
 
         <TextView
+            android:id="@+id/txt_salesdetail_heading"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
@@ -545,6 +569,35 @@
                 android:textSize="16sp"></EditText>
 
         </TableRow>
+        <View
+            android:id="@+id/viewaccnt"
+            android:layout_width="match_parent"
+            android:layout_height="1dp"
+            android:background="#333333"></View>
+        <TextView
+            android:id="@+id/txt_accountheading"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="10dp"
+            android:text="@string/account_detail"
+            android:textSize="18sp"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/total_account"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+
+            android:text=""
+            android:textColor="#333333"
+            android:textSize="16sp" />
+        <TableLayout
+            android:id="@+id/ll1"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+        </TableLayout>
 
         <View
             android:layout_width="match_parent"
@@ -583,13 +636,13 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/Cash"
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
                 <TextView
-                    android:id="@+id/lbl_returnplus"
+                    android:id="@+id/lbl_menu"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
@@ -604,7 +657,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:ems="10"
                     android:enabled="false"
                     android:layout_gravity="right"
@@ -634,7 +687,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/credit_amount"
                     android:textColor="#333333"
                     android:textSize="16sp" />
@@ -655,7 +708,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:ems="10"
                     android:layout_gravity="right"
                     android:gravity="right"
@@ -684,7 +737,7 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1.3"
                     android:text="@string/total_return"
                     android:textColor="#333333"
                     android:textSize="16sp" />
@@ -705,7 +758,7 @@
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_marginRight="1dp"
-                    android:layout_weight="2"
+                    android:layout_weight="1.5"
                     android:layout_gravity="right"
                     android:gravity="right"
                     android:ems="10"
@@ -717,6 +770,35 @@
 
             </TableRow>
 
+        </LinearLayout>
+        <LinearLayout
+            android:id="@+id/layout_print"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:layout_marginTop="10dp"
+            android:weightSum="1">
+            <Button
+                android:id="@+id/btn_exp_print"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                style="@style/AppTheme.Button"
+                android:layout_margin="5dp"
+                android:layout_centerHorizontal="true"
+                android:background="#403c3c"
+                android:text="@string/Expense_Print"></Button>
+
+            <Button
+                android:id="@+id/btn_xz_print"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight=".5"
+                style="@style/AppTheme.Button"
+                android:layout_margin="5dp"
+                android:layout_centerHorizontal="true"
+                android:background="#403c3c"
+                android:text="@string/print_x_to_z"></Button>
         </LinearLayout>
 <LinearLayout
     android:id="@+id/layout_post"
@@ -748,34 +830,7 @@
             android:text="@string/post1"></Button>
 
 </LinearLayout>
-    <LinearLayout
-        android:id="@+id/layout_print"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:orientation="horizontal"
-        android:weightSum="1">
-        <Button
-            android:id="@+id/btn_exp_print"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            style="@style/AppTheme.Button"
-            android:layout_margin="5dp"
-            android:layout_centerHorizontal="true"
-            android:background="#403c3c"
-            android:text="@string/Expense_Print"></Button>
 
-        <Button
-            android:id="@+id/btn_xz_print"
-            android:layout_width="0dp"
-            android:layout_height="wrap_content"
-            android:layout_weight=".5"
-            style="@style/AppTheme.Button"
-            android:layout_margin="5dp"
-            android:layout_centerHorizontal="true"
-            android:background="#403c3c"
-            android:text="@string/print_x_to_z"></Button>
-    </LinearLayout>
 
     </LinearLayout>
 </ScrollView>

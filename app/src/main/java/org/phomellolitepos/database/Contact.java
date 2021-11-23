@@ -6,6 +6,19 @@ import android.database.Cursor;
 import android.database.sqlite.SQLiteConstraintException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Log;
+import android.widget.Toast;
+
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+import com.google.gson.JsonObject;
 
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -17,11 +30,14 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONObject;
+import org.phomellolitepos.AppController;
 import org.phomellolitepos.Util.Globals;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -53,6 +69,7 @@ public class Contact {
     private String gstin;
     private String country_id;
     private String zone_id;
+    private String is_taxable;
 
 
     private Database db;
@@ -60,7 +77,7 @@ public class Contact {
 
 
     public Contact(Context context, String contact_id, String device_code,
-                   String contact_code, String title, String name, String gender, String dob, String company_name, String description, String contact_1, String contact_2, String email_1, String email_2, String is_active, String modified_by, String is_push,String address,String modified_date,String credit_limit,String gstin,String country_id,String zone_id) {
+                   String contact_code, String title, String name, String gender, String dob, String company_name, String description, String contact_1, String contact_2, String email_1, String email_2, String is_active, String modified_by, String is_push,String address,String modified_date,String credit_limit,String gstin,String country_id,String zone_id,String is_taxble) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -87,9 +104,19 @@ public class Contact {
         this.set_gstin(gstin);
         this.set_country_id(country_id);
         this.set_zone_id(zone_id);
+        this.setIs_taxable(is_taxble);
 
     }
 
+
+    public String getIs_taxable() {
+        return is_taxable;
+    }
+
+    public void setIs_taxable(String is_taxable) {
+        this.is_taxable = is_taxable;
+        value.put("is_taxable", is_taxable);
+    }
 
     public String get_contact_id() {
         return contact_id;
@@ -355,7 +382,7 @@ public class Contact {
                         cursor.getString(18),
                         cursor.getString(19),
                         cursor.getString(20),
-                        cursor.getString(21));
+                        cursor.getString(21),cursor.getString(22));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -364,6 +391,22 @@ public class Contact {
         return master;
     }
 
+    public static String getContactdata(Context context, SQLiteDatabase database, Database db, String WhereClasue) {
+        String Query = "Select REPLACE(contact_code,  '"+Globals.objLPD.getDevice_Symbol()+"-CT-','') FROM " + tableName + " " + WhereClasue;
+        String master = null;
+//        Database db = new Database(context);
+//        SQLiteDatabase database = db.getReadableDatabase();
+        Cursor cursor = database.rawQuery(Query, null);
+        if (cursor.moveToFirst()) {
+            do {
+                master = cursor.getString(0);
+            } while (cursor.moveToNext());
+        }
+        cursor.close();
+//        database.close();
+//        db.close();
+        return master;
+    }
     // Here Changed in function  need to update all classes
     public static ArrayList<Contact> getAllContact(Context context, SQLiteDatabase database, Database db, String WhereClasue) {
         String Query = "Select * FROM " + tableName + " " + WhereClasue;
@@ -393,7 +436,7 @@ public class Contact {
                         cursor.getString(18),
                         cursor.getString(19),
                         cursor.getString(20),
-                        cursor.getString(21));
+                        cursor.getString(21),cursor.getString(22));
                     list.add(master);
             } while (cursor.moveToNext());
         }
@@ -429,14 +472,16 @@ public class Contact {
 
 
 
-    public static String  sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1,String syscode3,String syscode4) {
+    public static JSONObject  sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid,String syscode1,String syscode3,String syscode4) {
 //        Database db = new Database(context);
 //        SQLiteDatabase database = db.getReadableDatabase();
         String strContactCode = "",conStr="0";
+        JSONObject jsonString = null;
         Cursor cursor = database.rawQuery(strTableQry, null);
         try {
             int columnCount = cursor.getColumnCount();
             while (cursor.moveToNext()) {
+                jsonString =new JSONObject();
                 JSONObject sender = new JSONObject();
                 JSONArray result = new JSONArray();
                 JSONObject row = new JSONObject();
@@ -505,47 +550,26 @@ public class Contact {
                 row.put("address_lookup", array_add_lookup);
                 row.put("contact_business_group", array_con_bg);
                 result.put(row);
-                sender.put("contact".toLowerCase(), result);
-                String serverData = send_item_json_on_server(sender.toString(),liccustomerid,syscode1,syscode3,syscode4);
-                final JSONObject collection_jsonObject1 = new JSONObject(serverData);
-                final String strStatus = collection_jsonObject1.getString("status");
-                final String strmsg = collection_jsonObject1.getString("message");
-                if (strStatus.equals("true")) {
-                    // Update This Item Group Push True
-                    database.beginTransaction();
-                    String Query = "Update  contact Set is_push = 'Y' Where contact_code = '" + strContactCode + "'";
-                    long check = db.executeDML(Query,database);
-                    if (check>0){
-                        conStr="1";
-                        database.setTransactionSuccessful();
-                        database.endTransaction();
-                    }else {
-                        database.endTransaction();
-                    }
-                }
-                else if(strStatus.equals("false")){
-                    conStr="3";
-                    Globals.responsemessage=strmsg;
-                }
+                jsonString=  sender.put("contact".toLowerCase(), result);
+                send_contact_json_on_server(context,database,db,conStr,sender.toString(),strContactCode,syscode1,Globals.syscode2,syscode3,syscode4,liccustomerid);
 
-                else {
-                    database.endTransaction();
-                }
+               // String serverData = send_item_json_on_server(sender.toString(),liccustomerid,syscode1,syscode3,syscode4);
+
             }
             cursor.close();
         } catch (Exception ex) {
-            conStr="2";
+           // conStr="2";
         }
-        return conStr;
+        return jsonString;
     }
 //            database.endTransaction();
 
-    private static String send_item_json_on_server(String JsonString,String liccustomerid,String syscode1,String syscode3,String syscode4) {
+  /*  private static String send_item_json_on_server(String JsonString,String liccustomerid,String syscode1,String syscode3,String syscode4) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/contact/data");
+                 Globals.App_IP_URL + "contact/data");
 
         ArrayList nameValuePairs = new ArrayList(8);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
@@ -574,6 +598,103 @@ System.out.println("name value send contact"+nameValuePairs);
             e.printStackTrace();
         }
         return serverData;
+    }*/
+    public static void send_contact_json_on_server(Context context, SQLiteDatabase database,Database db,final String ig,final String JsonString,String strContactCode,final String syscode1,final String syscode2,final String syscode3,final String syscode4, final String liccustomerid) {
+
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url = Globals.App_IP_URL + "contact/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject collection_jsonObject1 = new JSONObject(response);
+                            final String strStatus = collection_jsonObject1.getString("status");
+                            final String strmsg = collection_jsonObject1.getString("message");
+                            if (strStatus.equals("true")) {
+                                // Update This Item Group Push True
+                                database.beginTransaction();
+                                String Query = "Update  contact Set is_push = 'Y' Where contact_code = '" + strContactCode + "'";
+                                long check = db.executeDML(Query,database);
+                                if (check>0){
+                                    //conStr="1";
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                }else {
+                                    database.endTransaction();
+                                }
+                            }
+                            else if(strStatus.equals("false")){
+                                //conStr="3";
+                                Globals.responsemessage=strmsg;
+                            }
+
+                            else {
+                                database.endTransaction();
+                            }
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", liccustomerid);
+
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
 }

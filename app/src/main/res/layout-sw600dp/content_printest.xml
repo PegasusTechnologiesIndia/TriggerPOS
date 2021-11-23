@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    xmlns:tools="http://schemas.android.com/tools"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.PrintTestActivity"
+    android:layout_below="@+id/appBarLayout"
+    android:layout_marginTop="@dimen/_50sdp"
+    tools:showIn="@layout/activity_print_test">
+
+
+    <LinearLayout
+        android:id="@+id/pri_selection"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_marginTop="20dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight="1"
+            android:text="@string/Select_Printer"
+            android:textColor="#ff0000"
+            android:textSize="17sp" />
+
+        <Spinner
+            android:id="@+id/sp_printtest"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginRight="10dp"
+            android:layout_marginTop="20dp"
+            android:textSize="18sp" />
+    </LinearLayout>
+
+    <TableLayout
+        android:id="@+id/wifi_set"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/pri_selection"
+        android:layout_marginTop="10dp"
+        android:padding="5dp"
+        android:stretchColumns="*">
+
+        <TableRow
+            android:id="@+id/wifi_set_row"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="3dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:visibility="gone"
+            android:weightSum="3">
+
+            <TextView
+                android:id="@+id/TextView061"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:ellipsize="none"
+                android:text="@string/printer_Wifi_IPPORT"
+                android:textSize="18sp" />
+
+            <EditText
+                android:id="@+id/ip"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_weight="2"
+                android:hint="@string/wifi_iphint"
+                android:inputType="text"
+                android:maxLines="1"
+                android:nextFocusForward="@+id/credit_limit"
+                android:textSize="18sp"/>
+        </TableRow>
+    </TableLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_testbtn"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
+        android:layout_below="@id/wifi_set"
+        android:orientation="horizontal"
+        android:gravity="center_horizontal"
+        android:weightSum="1">
+        <Button
+            android:id="@+id/btn_searchdevice"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_weight=".5"
+            android:text="@string/btdevice"
+            android:visibility="gone"
+            android:textAllCaps="false" />
+        <Button
+            android:id="@+id/btn_testprint"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_margin="5dp"
+            android:layout_weight=".5"
+            android:text="@string/testprint"
+            android:visibility="gone"
+            android:textAllCaps="false" />
+
+    </LinearLayout>
+</LinearLayout>

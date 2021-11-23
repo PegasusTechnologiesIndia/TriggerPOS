@@ -16,9 +16,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -335,7 +335,7 @@ public class PurchaseListActivity extends AppCompatActivity {
             email.m.setBody(strReportName);
             email.m.set_to(recipients);
             email.m.set_subject(Globals.objLPD.getDevice_Name() + ":" + strReportName + "");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
 
 
             email.execute();

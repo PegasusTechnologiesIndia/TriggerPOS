@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical">
+<TextView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="Enter Ip"
+    android:textColor="@color/black"
+    android:layout_gravity="center"
+    android:gravity="center"
+    android:layout_marginTop="20dp"
+    android:textSize="18sp"
+    ></TextView>
+    <EditText
+        android:id="@+id/edt_ipchange"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:hint="192.168.29.200:9100"></EditText>
+    <EditText
+        android:id="@+id/edt_ippassword"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text=""
+        android:textColor="@color/black"
+        android:layout_marginLeft="30dp"
+        android:layout_marginRight="30dp"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:hint="Enter Password"></EditText>
+    <Button
+        android:id="@+id/btn_save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/colorPrimary"
+        android:layout_gravity="center"
+        android:layout_marginTop="20dp"
+        android:layout_marginBottom="10dp"
+        android:textColor="@color/whitecolor"
+        android:text="@string/save"></Button>
+
+
+</LinearLayout>

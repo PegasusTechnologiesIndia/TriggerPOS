@@ -1,0 +1,16 @@
+{
+  "result": [
+    {
+      "item_group_id": "1",
+      "device_code": "TRRIGER_POS",
+      "item_group_code": "TRRIGER_POS-IG-1",
+      "parent_code": "0",
+      "item_group_name": "Vehicles",
+      "image": "",
+      "is_active": "1",
+      "modified_by": "1",
+      "modified_date": "2021-03-31 12:14:25",
+      "device_id": "3281"
+    }
+  ]
+}

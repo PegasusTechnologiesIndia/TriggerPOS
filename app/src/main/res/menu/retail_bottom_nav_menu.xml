@@ -19,4 +19,17 @@
         android:title="@string/Clear"
         android:icon="@drawable/clear"
         app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_contact"
+        android:enabled="true"
+        android:title="contact"
+        android:icon="@drawable/contact1"
+        app:showAsAction="ifRoom" />
+    <item
+        android:id="@+id/action_whatsapphelp"
+        android:enabled="true"
+        android:title="@string/help"
+        android:icon="@drawable/help"
+        app:showAsAction="ifRoom" />
+
 </menu>

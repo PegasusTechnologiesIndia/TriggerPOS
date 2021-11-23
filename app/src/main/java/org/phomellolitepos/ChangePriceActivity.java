@@ -5,39 +5,53 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
+import android.os.Build;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Spinner;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.Locale;
 
+import org.phomellolitepos.Adapter.ItemUnitListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Customer_PriceBook;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
+import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Order_Item_Tax;
+import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.ShoppingCart;
 import org.phomellolitepos.database.Sys_Tax_Type;
 import org.phomellolitepos.database.Tax_Detail;
 import org.phomellolitepos.database.Tax_Master;
+import org.phomellolitepos.database.Unit;
+import org.phomellolitepos.database.Void;
+import org.phomellolitepos.database.VoidShoppingCart;
 
 
 public class ChangePriceActivity extends AppCompatActivity {
@@ -49,12 +63,13 @@ public class ChangePriceActivity extends AppCompatActivity {
     int position;
     ShoppingCart shoppingCart;
     ArrayList<String> item_group_taxArrayList;
+    ArrayList<Unit> arrayUnitList;
     ArrayList<Item_Group_Tax> item_group_taxArray;
     Database db;
     SQLiteDatabase database;
     String decimal_check, qty_decimal_check, item_code, item_group_code, line_total_bf, operation = "Edit";
     Item item;
-    String orderCode, flag,main_land;
+    String orderCode, flag,main_land,mastercode;
     String sale_priceStr;
     String cost_priceStr;
     ProgressDialog pDialog;
@@ -63,7 +78,15 @@ public class ChangePriceActivity extends AppCompatActivity {
     Item_Location item_location;
     Customer_PriceBook customer_priceBook;
     Settings settings;
-
+    ArrayList<ShoppingCart> myCart = Globals.cart;
+    String srno;
+     Orders orders;
+     String date;
+    ItemUnitListAdapter itemUnitListAdapter;
+  Order_Detail order_detail;
+  Spinner spn_unit;
+  String spn_unit_code="";
+    Void Voidinsert;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -76,13 +99,18 @@ public class ChangePriceActivity extends AppCompatActivity {
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+
         int id = pref.getInt("id", 0);
         if (id == 0) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
         } else {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_forward_black_24dp);
         }
+        Date d = new Date();
+        SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
 
+        date = format.format(d);
         toolbar.setNavigationOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -95,52 +123,63 @@ public class ChangePriceActivity extends AppCompatActivity {
                         try {
                             sleep(1000);
 
-                            if (settings.get_Home_Layout().equals("0")) {
-                                if (flag.equals("Main")) {
-                                    Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                    intent.putExtra("opr", operation);
-                                    intent.putExtra("order_code", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
-                                } else if (main_land.equals("MainLand")){
-                                    Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                    intent.putExtra("opr", operation);
-                                    intent.putExtra("order_code", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
-                                }else{
-                                    Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                    intent.putExtra("opr1", operation);
-                                    intent.putExtra("order_code1", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
+                            if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                if (settings.get_Home_Layout().equals("0")) {
+                                    if (flag.equals("Main")) {
+                                        Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                        intent.putExtra("opr", operation);
+                                        intent.putExtra("order_code", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    } else if (main_land.equals("MainLand")) {
+                                        Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                        intent.putExtra("opr", operation);
+                                        intent.putExtra("order_code", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                        intent.putExtra("opr1", operation);
+                                        intent.putExtra("order_code1", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    }
+                                } else {
+                                    if (flag.equals("Main")) {
+                                        Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                        intent.putExtra("opr", operation);
+                                        intent.putExtra("order_code", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    } else if (main_land.equals("MainLand")) {
+                                        Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                        intent.putExtra("opr", operation);
+                                        intent.putExtra("order_code", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    } else {
+                                        Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                        intent.putExtra("opr1", operation);
+                                        intent.putExtra("order_code1", orderCode);
+                                        startActivity(intent);
+                                        pDialog.dismiss();
+                                        finish();
+                                    }
                                 }
-                            } else {
-                                if (flag.equals("Main")) {
-                                    Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
-                                    intent.putExtra("opr", operation);
-                                    intent.putExtra("order_code", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
-                                } else if (main_land.equals("MainLand")){
-                                    Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
-                                    intent.putExtra("opr", operation);
-                                    intent.putExtra("order_code", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
-                                }else{
-                                    Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                    intent.putExtra("opr1", operation);
-                                    intent.putExtra("order_code1", orderCode);
-                                    startActivity(intent);
-                                    pDialog.dismiss();
-                                    finish();
-                                }
+
+                            }
+                            else if(Globals.objLPR.getIndustry_Type().equals("2")) {
+                                Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                                intent.putExtra("opr", operation);
+                                intent.putExtra("order_code", orderCode);
+                                startActivity(intent);
+                                pDialog.dismiss();
+                                finish();
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -165,10 +204,21 @@ public class ChangePriceActivity extends AppCompatActivity {
         operation = intent.getStringExtra("opr");
         orderCode = intent.getStringExtra("odr_code");
         flag = intent.getStringExtra("flag");
+        srno = intent.getStringExtra("srno");
         main_land = intent.getStringExtra("MainLand");
+        mastercode = intent.getStringExtra("mastercode");
         if (orderCode == null) {
             orderCode = "";
         }
+        if(orderCode!=null) {
+            orders = Orders.getOrders(ChangePriceActivity.this, database, "WHERE order_code = '" + orderCode + "'");
+           order_detail = Order_Detail.getOrder_Detail(getApplicationContext(), " WHERE order_code='" + orderCode + "'", database);
+
+
+
+
+        }
+
 
         row_cus_sales_price = (TableRow) findViewById(R.id.row_cus_sales_price);
         tbr_cost = (TableRow) findViewById(R.id.tbr_cost);
@@ -182,8 +232,29 @@ public class ChangePriceActivity extends AppCompatActivity {
         btn_minus_price = (Button) findViewById(R.id.btn_minus_price);
         btn_plus_price = (Button) findViewById(R.id.btn_plus_price);
         btn_save = (Button) findViewById(R.id.btn_save);
+        spn_unit=(Spinner)findViewById(R.id.spn_unit);
         btn_delete = (Button) findViewById(R.id.btn_delete);
 
+        item = Item.getItem(getApplicationContext(),"where item_code ='"+item_code+"'",database,db);
+        if(item!=null){
+            String unitid= item.get_unit_id();
+            fill_spinner_unit(unitid);
+
+        }
+        spn_unit.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+            @Override
+            public void onItemSelected(AdapterView<?> adapterView, View view, int position, long l) {
+                try {
+                    Unit resultp = arrayUnitList.get(position);
+                    spn_unit_code = resultp.get_unit_id();
+                } catch (Exception ex) {
+                }
+            }
+
+            @Override
+            public void onNothingSelected(AdapterView<?> adapterView) {
+            }
+        });
         if (settings.get_Is_Change_Price().equals("false")){
             count_price.setEnabled(false);
             btn_minus_price.setEnabled(false);
@@ -451,7 +522,7 @@ public class ChangePriceActivity extends AppCompatActivity {
                             sleep(1000);
 
                             if (operation.equals("Edit")) {
-
+                                long vd=0;
                                 if (Globals.cart.size() > 1) {
 
                                     if (count_price.getText().toString().trim().equals("")) {
@@ -460,41 +531,126 @@ public class ChangePriceActivity extends AppCompatActivity {
                                     if (count_qty.getText().toString().trim().equals("")) {
                                         count_qty.setText(Globals.myNumberFormat2Price(Double.parseDouble("0"), qty_decimal_check));
                                     }
-                                    Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
-                                    Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
-                                    Globals.TotalItem = Globals.TotalItem - 1;
-                                    Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
-                                    Globals.cart.remove(position);
+
+
+                                    if(!mastercode.equals("0")) {
+                                        Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
+                                        Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
+                                        Globals.TotalItem = Globals.TotalItem - 1;
+                                        Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
+                                        if (Globals.objsettings.getIs_KitchenPrint().equals("true")) {
+                                            Voidinsert = new Void(getApplicationContext(), null, orderCode, orders.get_device_code(), myCart.get(position).get_Item_Code(), myCart.get(position).getIs_modifier(), myCart.get(position).get_Quantity(), date, "false", "0", Globals.userId);
+                                            vd = Voidinsert.insertVoid(database);
+                                            if (vd > 0) {
+                                                VoidShoppingCart voidcartItem = new VoidShoppingCart(getApplicationContext(), myCart.get(position).get_SRNO() + "", myCart.get(position).get_Item_Code(), myCart.get(position).get_Item_Name(), myCart.get(position).get_Quantity(), myCart.get(position).get_Cost_Price(), myCart.get(position).get_Sales_Price() + "", myCart.get(position).get_Tax_Price() + "", myCart.get(position).get_Discount(), myCart.get(position).get_Line_Total(), myCart.get(position).getIs_modifier(), myCart.get(position).getMaster_itemcode(), myCart.get(position).getCategoryIp(), "false");
+                                                Globals.voidcart.add(voidcartItem);
+
+                                            }
+                                        }
+
+                                        Globals.cart.remove(position);
+
+                                    }
+                                    else{
+                                        for (int i = 0; i < Globals.cart.size(); i++) {
+                                            if(!mastercode.equals("0")) {
+                                                Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
+                                                Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
+                                                Globals.TotalItem = Globals.TotalItem - 1;
+                                                Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
+                                                if (Globals.objsettings.getIs_KitchenPrint().equals("true")) {
+                                                    Voidinsert = new Void(getApplicationContext(), null, orderCode, orders.get_device_code(), myCart.get(position).get_Item_Code(), myCart.get(position).getIs_modifier(), myCart.get(position).get_Quantity(), date, "false", "0", Globals.userId);
+                                                    vd = Voidinsert.insertVoid(database);
+                                                    if (vd > 0) {
+                                                        VoidShoppingCart voidcartItem = new VoidShoppingCart(getApplicationContext(), myCart.get(position).get_SRNO() + "", myCart.get(position).get_Item_Code(), myCart.get(position).get_Item_Name(), myCart.get(position).get_Quantity(), myCart.get(position).get_Cost_Price(), myCart.get(position).get_Sales_Price() + "", myCart.get(position).get_Tax_Price() + "", myCart.get(position).get_Discount(), myCart.get(position).get_Line_Total(), myCart.get(position).getIs_modifier(), myCart.get(position).getMaster_itemcode(), myCart.get(position).getCategoryIp(), "false");
+                                                        Globals.voidcart.add(voidcartItem);
+
+                                                    }
+                                                }
+
+                                                Globals.cart.remove(position);
+
+                                            }
+                                            else {
+                                                try {
+                                                    String Sr_no = Globals.cart.get(i).get_SRNO();
+                                                    if (srno.equals(Sr_no)) {
+                                                        shoppingCart = myCart.get(i);
+                                                        Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
+                                                        Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
+                                                        Globals.TotalItem = Globals.TotalItem - 1;
+                                                        Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
+
+                                                        if (Globals.objsettings.getIs_KitchenPrint().equals("true")) {
+                                                            Voidinsert = new Void(getApplicationContext(), null, orderCode, orders.get_device_code(), myCart.get(position).get_Item_Code(), myCart.get(position).getIs_modifier(), myCart.get(position).get_Quantity(), date, "false", "0", Globals.userId);
+                                                            vd = Voidinsert.insertVoid(database);
+                                                            if (vd > 0) {
+                                                                VoidShoppingCart voidcartItem = new VoidShoppingCart(getApplicationContext(), myCart.get(position).get_SRNO() + "", myCart.get(position).get_Item_Code(), myCart.get(position).get_Item_Name(), myCart.get(position).get_Quantity(), myCart.get(position).get_Cost_Price(), myCart.get(position).get_Sales_Price() + "", myCart.get(position).get_Tax_Price() + "", myCart.get(position).get_Discount(), myCart.get(position).get_Line_Total(), myCart.get(position).getIs_modifier(), myCart.get(position).getMaster_itemcode(), myCart.get(position).getCategoryIp(), "false");
+                                                                Globals.voidcart.add(voidcartItem);
+
+                                                            }
+                                                        }
+
+                                                        myCart.remove(i);
+                                                        i--;
+                                                    }
+                                                } catch (Exception e) {
+                                                    System.out.println(e.getMessage());
+                                                }
+                                            }
+                                        }
+                                    }
+                                    Globals.cart = myCart;
                                     ArrayList<ShoppingCart> myCart = Globals.cart;
                                     while (position < myCart.size()) {
                                         myCart.get(position).set_SRNO(((Integer.parseInt(myCart.get(position).get_SRNO())) - 1) + "");
                                         position = position + 1;
                                     }
-                                    Globals.cart = myCart;
+                                   // Globals.cart = myCart;
                                     pDialog.dismiss();
 
                                     for (int i = 0; i < Globals.order_item_tax.size(); i++) {
                                         if (item_code.equals(Globals.order_item_tax.get(i).get_item_code())) {
                                             Globals.order_item_tax.remove(i);
+
+
                                             i--;
                                         }
                                     }
-                                    Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                    intent.putExtra("opr1", operation);
-                                    intent.putExtra("order_code1", orderCode);
-                                    startActivity(intent);
-                                    finish();
+                                    if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                        Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                        intent.putExtra("opr1", operation);
+                                        intent.putExtra("order_code1", orderCode);
+                                        startActivity(intent);
+                                        finish();
+                                    }
+                                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                        Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                                        intent.putExtra("opr", operation);
+                                        intent.putExtra("order_code", orderCode);
+                                        startActivity(intent);
+                                        finish();
+                                    }
                                 } else {
                                     runOnUiThread(new Runnable() {
                                         public void run() {
                                             pDialog.dismiss();
                                             Toast.makeText(getApplicationContext(), R.string.Change_price_alrt, Toast.LENGTH_SHORT).show();
-                                            pDialog.dismiss();
-                                            Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                            intent.putExtra("opr1", operation);
-                                            intent.putExtra("order_code1", orderCode);
-                                            startActivity(intent);
-                                            finish();
+
+                                            if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                                Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                                intent.putExtra("opr1", operation);
+                                                intent.putExtra("order_code1", orderCode);
+                                                startActivity(intent);
+                                                finish();
+                                            }
+                                            else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                                Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                                                intent.putExtra("opr", operation);
+                                                intent.putExtra("order_code", orderCode);
+                                                startActivity(intent);
+                                                finish();
+                                            }
                                         }
                                     });
                                 }
@@ -507,47 +663,84 @@ public class ChangePriceActivity extends AppCompatActivity {
                                 if (count_qty.getText().toString().trim().equals("")) {
                                     count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble("0"), qty_decimal_check));
                                 }
-                                Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
-                                Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
-                                Globals.TotalItem = Globals.TotalItem - 1;
-                                Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
-                                Globals.cart.remove(position);
-                                ArrayList<ShoppingCart> myCart = Globals.cart;
+
+                                if (!mastercode.equals("0")) {
+                                    Globals.cart.remove(position);
+
+                                    Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
+                                    Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
+                                    Globals.TotalItem = Globals.TotalItem - 1;
+                                    Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
+
+                                } else {
+
+                                    int temp;
+                                    for (int i = 0; i < myCart.size(); i++) {
+                                        if (Globals.cart.get(i).get_SRNO().equals(srno)) {
+                                            shoppingCart = myCart.get(i);
+                                            Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(shoppingCart.get_Line_Total());
+                                            Globals.TotalItemCost = Globals.TotalItemCost - (Double.parseDouble(shoppingCart.get_Cost_Price()) * Double.parseDouble(shoppingCart.get_Quantity()));
+                                            Globals.TotalItem = Globals.TotalItem - 1;
+                                            Globals.TotalQty = Globals.TotalQty - Double.parseDouble(shoppingCart.get_Quantity());
+
+                                            myCart.remove(i);
+
+                                            temp = i;
+                                            i--;
+
+
+                                        }
+
+                                    }
+
+
+                                }
+
+                                Globals.cart = myCart;
+
                                 while (position < myCart.size()) {
                                     myCart.get(position).set_SRNO(((Integer.parseInt(myCart.get(position).get_SRNO())) - 1) + "");
                                     position = position + 1;
                                 }
-                                Globals.cart = myCart;
-
                                 for (int i = 0; i < Globals.order_item_tax.size(); i++) {
                                     if (item_code.equals(Globals.order_item_tax.get(i).get_item_code())) {
                                         Globals.order_item_tax.remove(i);
                                         i--;
                                     }
                                 }
-                                pDialog.dismiss();
 
-                                if (main_land.equals("MainLand")){
-                                    if (settings.get_Home_Layout().equals("0")) {
-                                        Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                        intent.putExtra("opr", operation);
-                                        intent.putExtra("order_code", orderCode);
+
+                                pDialog.dismiss();
+                                if (Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    if (main_land.equals("MainLand")) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                        }
+                                    } else {
+                                        Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                        intent.putExtra("opr1", operation);
+                                        intent.putExtra("order_code1", orderCode);
                                         startActivity(intent);
                                         finish();
-                                    } else {
-                                        Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
-                                        intent.putExtra("opr", operation);
-                                        intent.putExtra("order_code", orderCode);
-                                        startActivity(intent);
                                     }
-                                }else {
-                                    Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                    intent.putExtra("opr1", operation);
-                                    intent.putExtra("order_code1", orderCode);
+
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")) {
+                                    Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                                    intent.putExtra("opr", operation);
+                                    intent.putExtra("order_code", orderCode);
                                     startActivity(intent);
                                     finish();
                                 }
-
                             }
                         } catch (InterruptedException e) {
                             e.printStackTrace();
@@ -561,7 +754,11 @@ public class ChangePriceActivity extends AppCompatActivity {
 
         btn_plus_qty.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+                if (count_qty.getText().toString().trim().equals(".")) {
+                    count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble("1"), qty_decimal_check));
+                } else {
                 Double qty = Double.parseDouble(count_qty.getText().toString().trim()) + 1;
                 if (settings.get_Is_Stock_Manager().equals("true")){
                     boolean result = stock_check(item_code, qty);
@@ -577,18 +774,48 @@ public class ChangePriceActivity extends AppCompatActivity {
                 }
 
             }
+            }
         });
 
         btn_minus_qty.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view) {
+            public void onClick(View view)
+            {
+                if (count_qty.getText().toString().trim().equals(".")) {
+                    count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble("1"), qty_decimal_check));
+                } else {
                 Double qty = Double.parseDouble(count_qty.getText().toString().trim()) - 1;
 
                 if (qty <= 0) {
                     count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble("1"), qty_decimal_check));
                 } else {
-                    count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(qty + ""), qty_decimal_check));
+
+                        if(settings.getIs_KitchenPrint().equals("true")) {
+                            Voidinsert = Void.getVoid(getApplicationContext(), "where order_no='" + orderCode + "' and item_code='" + item_code + "'", database);
+                            if (Voidinsert != null) {
+
+                                Voidinsert.setQty(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(qty + ""), qty_decimal_check));
+                                long l = Voidinsert.updateVoid("vId=?", database, new String[]{Voidinsert.getvId()});
+                                if (l > 0) {
+                                    VoidShoppingCart voidcartItem = new VoidShoppingCart(getApplicationContext(), myCart.get(position).get_SRNO() + "", myCart.get(position).get_Item_Code(), myCart.get(position).get_Item_Name(), Voidinsert.getQty(), myCart.get(position).get_Cost_Price(), myCart.get(position).get_Sales_Price() + "", myCart.get(position).get_Tax_Price() + "", myCart.get(position).get_Discount(), myCart.get(position).get_Line_Total(), myCart.get(position).getIs_modifier(), myCart.get(position).getMaster_itemcode(), myCart.get(position).getCategoryIp(), "false");
+
+                                    Globals.voidcart.add(voidcartItem);
+                                }
+                            } else {
+                                long vd = 0;
+                                Voidinsert = new Void(getApplicationContext(), null, orderCode, orders.get_device_code(), myCart.get(position).get_Item_Code(), myCart.get(position).getIs_modifier(), myCart.get(position).get_Quantity(), date, "false", "0", Globals.userId);
+                                vd = Voidinsert.insertVoid(database);
+                                if (vd > 0) {
+                                    VoidShoppingCart voidcartItem = new VoidShoppingCart(getApplicationContext(), myCart.get(position).get_SRNO() + "", myCart.get(position).get_Item_Code(), myCart.get(position).get_Item_Name(), myCart.get(position).get_Quantity(), myCart.get(position).get_Cost_Price(), myCart.get(position).get_Sales_Price() + "", myCart.get(position).get_Tax_Price() + "", myCart.get(position).get_Discount(), myCart.get(position).get_Line_Total(), myCart.get(position).getIs_modifier(), myCart.get(position).getMaster_itemcode(), myCart.get(position).getCategoryIp(), "false");
+                                    Globals.voidcart.add(voidcartItem);
+                                }
+                            }
+                        }
+                        else {
+                            count_qty.setText(Globals.myNumberFormat2QtyDecimal(Double.parseDouble(qty + ""), qty_decimal_check));
+                        }
                 }
+            }
             }
         });
         btn_minus_price.setOnClickListener(new View.OnClickListener() {
@@ -661,6 +888,8 @@ public class ChangePriceActivity extends AppCompatActivity {
                         public void run() {
                             if (flag.equals("Main")) {
                                 Item_Location item_location = Item_Location.getItem_Location(getApplicationContext(), "Where item_code = '" + item_code + "'", database);
+                               Item_Group item_group = Item_Group.getItem_Group(getApplicationContext(), database, db, "WHERE item_group_code ='" + item.get_item_group_code() + "'");
+
                                 ArrayList<ShoppingCart> myCart = Globals.cart;
                                 int count = 0;
                                 boolean bFound = false;
@@ -702,16 +931,27 @@ public class ChangePriceActivity extends AppCompatActivity {
                                         Globals.cart = myCart;
                                         if (flag.equals("Main")) {
                                             pDialog.dismiss();
-                                            if (settings.get_Home_Layout().equals("0")) {
-                                                Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                                intent.putExtra("line_total_af", myCart.get(count).get_Line_Total());
-                                                intent.putExtra("line_total_bf", line_total_bf);
-                                                intent.putExtra("opr", operation);
-                                                intent.putExtra("order_code", orderCode);
-                                                startActivity(intent);
-                                                finish();
-                                            } else {
-                                                Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                            if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                                if (settings.get_Home_Layout().equals("0")) {
+                                                    Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                                    intent.putExtra("line_total_af", myCart.get(count).get_Line_Total());
+                                                    intent.putExtra("line_total_bf", line_total_bf);
+                                                    intent.putExtra("opr", operation);
+                                                    intent.putExtra("order_code", orderCode);
+                                                    startActivity(intent);
+                                                    finish();
+                                                } else {
+                                                    Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                                    intent.putExtra("line_total_af", myCart.get(count).get_Line_Total());
+                                                    intent.putExtra("line_total_bf", line_total_bf);
+                                                    intent.putExtra("opr", operation);
+                                                    intent.putExtra("order_code", orderCode);
+                                                    startActivity(intent);
+                                                    finish();
+                                                }
+                                            }
+                                            else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                                Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
                                                 intent.putExtra("line_total_af", myCart.get(count).get_Line_Total());
                                                 intent.putExtra("line_total_bf", line_total_bf);
                                                 intent.putExtra("opr", operation);
@@ -719,7 +959,6 @@ public class ChangePriceActivity extends AppCompatActivity {
                                                 startActivity(intent);
                                                 finish();
                                             }
-
                                         }
                                     }
                                     count = count + 1;
@@ -745,7 +984,10 @@ public class ChangePriceActivity extends AppCompatActivity {
                                         Globals.order_item_tax.add(order_item_tax);
                                     }
                                     Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                                    ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", item.get_item_code(), item.get_item_name(), count_qty.getText().toString().trim(), cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (Double.parseDouble(count_qty.getText().toString().trim()) * (Double.parseDouble(sale_priceStr) + iTaxTotal)) + "");
+                                    Double sprcewdtax=Double.parseDouble(sale_priceStr)-iTaxTotal;
+                                    String spnunit= spn_unit_code;
+
+                                    ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), Globals.SRNO + "", item.get_item_code(), item.get_item_name(), count_qty.getText().toString().trim(), cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (Double.parseDouble(count_qty.getText().toString().trim()) * (Double.parseDouble(sale_priceStr) + iTaxTotal)) + "","0","0",item_group.getCategoryIp(),order_detail.getIs_KitchenPrintFlag(),spnunit,sprcewdtax+"");
                                     Globals.cart.add(cartItem);
                                     ArrayList<ShoppingCart> myCart1 = Globals.cart;
                                     Globals.SRNO = Globals.SRNO + 1;
@@ -754,18 +996,30 @@ public class ChangePriceActivity extends AppCompatActivity {
                                     Globals.TotalQty = Globals.TotalQty + Double.parseDouble(count_qty.getText().toString().trim());
                                     Globals.cart = myCart1;
                                     pDialog.dismiss();
-                                    if (settings.get_Home_Layout().equals("0")) {
-                                        Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                        // we change here becuase of crash
-                                        intent.putExtra("line_total_af", myCart1.get(myCart1.size() - 1).get_Line_Total());
-                                        intent.putExtra("line_total_bf", line_total_bf);
-                                        intent.putExtra("opr", operation);
-                                        intent.putExtra("order_code", orderCode);
-                                        startActivity(intent);
-                                        finish();
-                                    } else {
-                                        Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
-                                        // we change here becuase of crash
+                                    if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                            // we change here becuase of crash
+                                            intent.putExtra("line_total_af", myCart1.get(myCart1.size() - 1).get_Line_Total());
+                                            intent.putExtra("line_total_bf", line_total_bf);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                            // we change here becuase of crash
+                                            intent.putExtra("line_total_af", myCart1.get(myCart1.size() - 1).get_Line_Total());
+                                            intent.putExtra("line_total_bf", line_total_bf);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                            finish();
+                                        }
+
+                                    }
+                                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                        Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
                                         intent.putExtra("line_total_af", myCart1.get(myCart1.size() - 1).get_Line_Total());
                                         intent.putExtra("line_total_bf", line_total_bf);
                                         intent.putExtra("opr", operation);
@@ -773,7 +1027,6 @@ public class ChangePriceActivity extends AppCompatActivity {
                                         startActivity(intent);
                                         finish();
                                     }
-
                                 }
                             } else {
                                 Double iTax = 0d;
@@ -823,39 +1076,52 @@ public class ChangePriceActivity extends AppCompatActivity {
                                 myCart.get(position).set_Quantity(((Double.parseDouble(count_qty.getText().toString().trim()) + "")));
                                 myCart.get(position).set_Tax_Price(iTaxTotal + "");
                                 line_total_bf = myCart.get(position).get_Line_Total() + "";
+                                myCart.get(position).setUnitId(spn_unit_code);
                                 myCart.get(position).set_Line_Total((Double.parseDouble(count_qty.getText().toString().trim()) * Double.parseDouble(count_price.getText().toString().trim())) + (strTotalTax) + "");
                                 Globals.cart = myCart;
                                 pDialog.dismiss();
-                                if (main_land.equals("MainLand")){
-                                    if (settings.get_Home_Layout().equals("0")) {
-                                        Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
-                                        intent.putExtra("line_total_af", myCart.get(position).get_Line_Total());
-                                        intent.putExtra("line_total_bf", line_total_bf);
-                                        intent.putExtra("opr", operation);
-                                        intent.putExtra("order_code", orderCode);
-                                        startActivity(intent);
-                                        finish();
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    if (main_land.equals("MainLand")) {
+                                        if (settings.get_Home_Layout().equals("0")) {
+                                            Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
+                                            intent.putExtra("line_total_af", myCart.get(position).get_Line_Total());
+                                            intent.putExtra("line_total_bf", line_total_bf);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                            finish();
+                                        } else {
+                                            Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
+                                            intent.putExtra("line_total_af", myCart.get(position).get_Line_Total());
+                                            intent.putExtra("line_total_bf", line_total_bf);
+                                            intent.putExtra("opr", operation);
+                                            intent.putExtra("order_code", orderCode);
+                                            startActivity(intent);
+                                            finish();
+                                        }
                                     } else {
-                                        Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
-                                        intent.putExtra("line_total_af", myCart.get(position).get_Line_Total());
-                                        intent.putExtra("line_total_bf", line_total_bf);
-                                        intent.putExtra("opr", operation);
-                                        intent.putExtra("order_code", orderCode);
+                                        Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(line_total_bf);
+                                        Globals.TotalItemPrice = Globals.TotalItemPrice + Double.parseDouble(myCart.get(position).get_Line_Total());
+                                        Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
+                                        intent.putExtra("line_total_af", "");
+                                        intent.putExtra("line_total_bf", "");
+                                        intent.putExtra("opr1", operation);
+                                        intent.putExtra("order_code1", orderCode);
                                         startActivity(intent);
                                         finish();
                                     }
-                                }else {
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")){
                                     Globals.TotalItemPrice = Globals.TotalItemPrice - Double.parseDouble(line_total_bf);
                                     Globals.TotalItemPrice = Globals.TotalItemPrice + Double.parseDouble(myCart.get(position).get_Line_Total());
-                                    Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
-                                    intent.putExtra("line_total_af","");
+                                    Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                                    intent.putExtra("line_total_af", "");
                                     intent.putExtra("line_total_bf", "");
-                                    intent.putExtra("opr1", operation);
-                                    intent.putExtra("order_code1", orderCode);
+                                    intent.putExtra("opr", operation);
+                                    intent.putExtra("order_code", orderCode);
                                     startActivity(intent);
                                     finish();
                                 }
-
                             }
                         }
                     });
@@ -869,6 +1135,41 @@ public class ChangePriceActivity extends AppCompatActivity {
         timerThread.start();
     }
 
+    private void fill_spinner_unit(String str) {
+        Unit unit;
+        arrayUnitList = Unit.getAllUnit(getApplicationContext(), " WHERE is_active ='1' Order By name asc");
+        if (str.equals("")) {
+            unit = Unit.getUnit(getApplicationContext(), database, db, " WHERE is_active ='1'");
+            if (arrayUnitList.size() > 0) {
+                itemUnitListAdapter = new ItemUnitListAdapter(getApplicationContext(), arrayUnitList);
+                spn_unit.setAdapter(itemUnitListAdapter);
+            }
+        } else {
+            unit = Unit.getUnit(getApplicationContext(), database, db, " WHERE is_active ='1' and unit_id = '" + str + "'");
+            if (unit == null) {
+                if (arrayUnitList.size() > 0) {
+                    itemUnitListAdapter = new ItemUnitListAdapter(getApplicationContext(), arrayUnitList);
+                    spn_unit.setAdapter(itemUnitListAdapter);
+                }
+            } else {
+
+                if (arrayUnitList.size() > 0) {
+                    itemUnitListAdapter = new ItemUnitListAdapter(getApplicationContext(), arrayUnitList);
+                    spn_unit.setAdapter(itemUnitListAdapter);
+
+                    if (!unit.get_name().toString().equals("")) {
+                        for (int i = 0; i < itemUnitListAdapter.getCount(); i++) {
+                            String iname = arrayUnitList.get(i).get_name();
+                            if (unit.get_name().equals(iname)) {
+                                spn_unit.setSelection(i);
+                                break;
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
 
 
     private ArrayList<String> calculateTax() {
@@ -942,6 +1243,8 @@ public class ChangePriceActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(1000);
+                    if(Globals.objLPR.getIndustry_Type().equals("1"))
+                    {
                     if (settings.get_Home_Layout().equals("0")) {
                         if (flag.equals("Main")) {
                             Intent intent = new Intent(ChangePriceActivity.this, MainActivity.class);
@@ -973,14 +1276,14 @@ public class ChangePriceActivity extends AppCompatActivity {
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
-                        } else if (main_land.equals("MainLand")){
+                        } else if (main_land.equals("MainLand")) {
                             Intent intent = new Intent(ChangePriceActivity.this, Main2Activity.class);
                             intent.putExtra("opr", operation);
                             intent.putExtra("order_code", orderCode);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
-                        }else{
+                        } else {
                             Intent intent = new Intent(ChangePriceActivity.this, RetailActivity.class);
                             intent.putExtra("opr1", operation);
                             intent.putExtra("order_code1", orderCode);
@@ -988,6 +1291,15 @@ public class ChangePriceActivity extends AppCompatActivity {
                             pDialog.dismiss();
                             finish();
                         }
+                    }
+                    }
+                    else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                        Intent intent = new Intent(ChangePriceActivity.this, Retail_IndustryActivity.class);
+                        intent.putExtra("opr", operation);
+                        intent.putExtra("order_code", orderCode);
+                        startActivity(intent);
+                        pDialog.dismiss();
+                        finish();
                     }
                 } catch (InterruptedException e) {
                     e.printStackTrace();

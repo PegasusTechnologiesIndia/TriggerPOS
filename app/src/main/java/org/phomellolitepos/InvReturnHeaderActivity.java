@@ -11,8 +11,8 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -25,36 +25,38 @@ import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
+
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.phomellolitepos.Adapter.PaymentListAdapter;
-import org.phomellolitepos.Adapter.ReportCustomerAdapter;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Last_Code;
-import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Payment;
+import org.phomellolitepos.database.Return_Item_Tax;
 import org.phomellolitepos.database.Returns;
-import org.phomellolitepos.database.Settings;
+import org.phomellolitepos.database.Tax_Master;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.Locale;
+import java.util.Map;
 
 public class InvReturnHeaderActivity extends AppCompatActivity {
 
@@ -75,18 +77,19 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
     ArrayList<Object> barcodelist;
     ArrayList<Object> returnquantitylist;
     ArrayList<Object> quantitylist;
+    ArrayList<Object> pricelist;
     ArrayList<Returns> arraylistreturns;
     String strPayMethod, PayId, cusCode;
-    ;
+    String decimal_check;
     Contact contact;
     String db_contact, db_itemname;
-    Settings settings;
-    Lite_POS_Registration lite_pos_registration;
+   // Settings settings;
+   // Lite_POS_Registration lite_pos_registration;
     String projectid;
-    String itemname, barcode, itemcode, ordercode, returnquantity,quantity;
+    String itemname, barcode, itemcode, ordercode, returnquantity,quantity,linetotal;
     String part2;
     String orderId = null;
-
+    ArrayList<Item_Group_Tax> item_group_taxArrayList;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -113,11 +116,11 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            sleep(100);
                             pDialog.dismiss();
                             Globals.strContact_Code="";
                             Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnListActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             intent.putExtra("operation", operation);
                             startActivity(intent);
 
@@ -150,28 +153,36 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         img_date = (ImageView) findViewById(R.id.img_date);
         btn_next = (Button) findViewById(R.id.btn_next);
         spn_pay_method = (Spinner) findViewById(R.id.spn_pay_method);
-        lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
-        projectid = lite_pos_registration.getproject_id();
+       // lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+        projectid = Globals.objLPR.getproject_id();
         itemnamelist = new ArrayList<>();
         itemcodelist = new ArrayList<>();
         barcodelist = new ArrayList<>();
         returnquantitylist = new ArrayList<>();
         quantitylist= new ArrayList<>();
-        settings = Settings.getSettings(getApplicationContext(), database, "");
+        pricelist=new ArrayList<>();
+        try {
+            decimal_check = Globals.objLPD.getDecimal_Place();
+        } catch (Exception ex) {
+            decimal_check = "1";
+        }
+        //Globals.objsettings = Settings.getSettings(getApplicationContext(), database, "");
         if (operation.equals("Edit")) {
+
             try {
                 returns = Returns.getReturns(getApplicationContext(), "WHERE voucher_no = '" + voucher_no + "'", database);
                 edt_voucher_no.setText(returns.get_voucher_no());
-                edt_date.setText(returns.get_date());
+               // edt_date.setText(returns.get_date());
                 edt_remarks.setText(returns.get_remarks());
                 edt_order_code.setText(returns.get_order_code());
                 fill_spn_pay_method(returns.get_payment_id());
+                Globals.str_date=returns.get_date();
             } catch (Exception ex) {
             }
         } else {
             try {
                 fill_spn_pay_method("");
-                String myFormat = "yyyy-MM-dd"; //In which you need put here
+                String myFormat = "yyyy-MM-dd HH:mm:ss"; //In which you need put here
                 SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
                 String date;
                 try {
@@ -179,130 +190,15 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 } catch (Exception ex) {
                     date = "";
                 }
-                edt_date.setText(date);
+                Globals.str_date=date;
+               // edt_date.setText(date);
                 btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
             } catch (Exception e) {
 
             }
         }
 
-/*        edt_order_code.setOnKeyListener(new View.OnKeyListener() {
-            @Override
-            public boolean onKey(View v, int keyCode, KeyEvent event) {
-                if (event.getAction()==KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER) {
-                    //do something here
-                    if(projectid.equals("standalone")){
-                        try {
 
-                            String selectquery ="SELECT am.*,e.item_name FROM  order_detail am left join item e on e.item_code = am.item_code where order_code='"+edt_order_code.getText().toString()+"'";
-                            // String selectquery = "SELECT am.*,e.name FROM  orders am left join contact e on e.contact_code = am.contact_code where order_code='" + edt_order_code.getText().toString() + "'";
-
-                            database = db.getReadableDatabase();
-                            Cursor cursor = database.rawQuery(selectquery, null);
-
-
-                            if (cursor != null) {
-
-                                if (cursor.moveToFirst()) {
-                                    do {
-
-
-                                        db_itemname = cursor.getString(cursor.getColumnIndex("item_name"));
-                                        itemnamelist.add(db_itemname);
-                                    } while (cursor.moveToNext());
-                                }
-                            }
-                        }
-                        catch(Exception e){
-
-                        }
-                        if (operation.equals("Edit")) {
-                            try {
-                                returns = Returns.getReturns(getApplicationContext(), "WHERE voucher_no = '" + voucher_no + "'", database);
-                                edt_voucher_no.setText(returns.get_voucher_no());
-                                edt_date.setText(returns.get_date());
-                                edt_remarks.setText(returns.get_remarks());
-                                edt_order_code.setText(returns.get_order_code());
-                                fill_spn_pay_method(returns.get_payment_id());
-                            } catch (Exception ex) {
-                            }
-                        } else {
-                            fill_spn_pay_method("");
-                            String myFormat = "yyyy-MM-dd"; //In which you need put here
-                            SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
-                            String date;
-                            try {
-                                date = sdf.format(myCalendar.getTime());
-                            } catch (Exception ex) {
-                                date = "";
-                            }
-                            edt_date.setText(date);
-                            btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
-                        }
-                    }
-
-                    else  if(projectid.equals("cloud")) {
-                        try {
-                            pDialog = new ProgressDialog(InvReturnHeaderActivity.this);
-                            pDialog.setCancelable(false);
-                            pDialog.setMessage(getString(R.string.Wait_msg));
-                            pDialog.show();
-
-                            Thread timerThread = new Thread() {
-                                public void run() {
-                                    try {
-                                        sleep(1000);
-
-                                        String relt = ValidInvoiceFromServer(edt_order_code.getText().toString().trim());
-//                            String relt="1";
-
-
-                                        if (relt.equals("1")) {
-                                        *//*        try {
-                                                    fill_spn_pay_method("");
-                                                    String myFormat = "yyyy-MM-dd"; //In which you need put here
-                                                    SimpleDateFormat sdf = new SimpleDateFormat(myFormat, Locale.ENGLISH);
-                                                    String date;
-                                                    try {
-                                                        date = sdf.format(myCalendar.getTime());
-                                                    } catch (Exception ex) {
-                                                        date = "";
-                                                    }
-                                                    edt_date.setText(date);
-                                                    btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
-                                                }catch(Exception e){
-
-                                                }*//*
-                                            }
-
-                                         else {
-                                            runOnUiThread(new Runnable() {
-                                                public void run() {
-                                                    Toast.makeText(getApplicationContext(), "Invoice Not Valid!", Toast.LENGTH_SHORT).show();
-                                                }
-                                            });
-                                        }
-
-                                    } catch (InterruptedException e) {
-                                        e.printStackTrace();
-                                        Toast.makeText(getApplicationContext(), e.getMessage(), Toast.LENGTH_LONG).show();
-
-                                    }
-                                }
-                            };
-                            timerThread.start();
-
-                            return true;
-                        }
-                        catch(Exception e){
-
-                        }
-                    }
-
-
-            }  return false;}
-
-        });*/
         spn_pay_method.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
             @Override
             public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
@@ -394,17 +290,15 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                     return;
                 }
 
-                if (edt_date.getText().toString().trim().equals("")) {
-                    edt_date.setError("Date is required");
-                    return;
-                }
+                // Commented this below code becz once need to check with sir if we deleted item and again trying to create order but it not allowing
+/*
                 if (!operation.equals("Edit")) {
                     arraylistreturns = Returns.getAllReturns(getApplicationContext(), " where order_code ='" + edt_order_code.getText().toString() + "' and is_post='false' and is_cancel='false'", database);
                     if (arraylistreturns.size() > 0) {
                         Toast.makeText(getApplicationContext(), "Order No " + edt_order_code.getText().toString() + " already created return voucher!", Toast.LENGTH_SHORT).show();
                         return;
                     }
-                }
+                }*/
                 if (isNetworkStatusAvialable(getApplicationContext())) {
 
                     pDialog = new ProgressDialog(InvReturnHeaderActivity.this);
@@ -418,62 +312,11 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                             if (projectid.equals("cloud")) {
                                 try {
                                     sleep(1000);
-                                    String relt = ValidInvoiceFromServer(edt_order_code.getText().toString().trim());
+                                    ValidInvoice(pDialog,edt_order_code.getText().toString().trim());
+
 //                            String relt="1";
-                                    pDialog.dismiss();
-
-                                    if (relt.equals("1")) {
-
-/*    if (Globals.strContact_Code.isEmpty()) {
-
-            pDialog.dismiss();
-            runOnUiThread(new Runnable() {
-                public void run() {
-                    Toast.makeText(getApplicationContext(), "Please select valid Payment method", Toast.LENGTH_SHORT).show();
-                }
-            });
-
-    } else {*/
-
-                                        try {
-                                            Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnFinalActivity.class);
-                                            intent.putExtra("operation", operation);
-                                            intent.putExtra("voucher_no", strVoucherNo);
-                                            intent.putExtra("date", edt_date.getText().toString().trim());
-                                            intent.putExtra("remarks", edt_remarks.getText().toString().trim());
-                                            intent.putExtra("contact_code", cusCode);
-                                            intent.putExtra("order_code", edt_order_code.getText().toString().trim());
-                                            intent.putExtra("item_code", itemcode);
-                                            intent.putExtra("barcode", barcode);
-                                            if (Globals.strContact_Code.equals("")) {
-                                                intent.putExtra("payment_id", "1");
-                                            } else {
-                                                intent.putExtra("payment_id", PayId);
-                                            }
-                                            Bundle args = new Bundle();
-                                            args.putSerializable("ARRAYLIST", (Serializable) itemnamelist);
-                                            args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
-                                            args.putSerializable("BarCodeList", (Serializable) barcodelist);
-                                            args.putSerializable("ret_quantitylist", (Serializable) returnquantitylist);
-                                            args.putSerializable("quantitylist", (Serializable) quantitylist);
-                                            intent.putExtra("BUNDLE", args);
 
 
-                                            startActivity(intent);
-                                            finish();
-                                        } catch (Exception e) {
-
-                                        }
-                                        // }}
-
-
-                                    } else {
-                                        runOnUiThread(new Runnable() {
-                                            public void run() {
-                                                Toast.makeText(getApplicationContext(), "Invoice Not Valid!", Toast.LENGTH_SHORT).show();
-                                            }
-                                        });
-                                    }
 
                                 } catch (InterruptedException e) {
                                     e.printStackTrace();
@@ -526,9 +369,9 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         });
     }
 
-    private String ValidInvoiceFromServer(String InvoiceNo) {
+    private String ValidInvoiceFromServer(String serverData) {
         String succ = "0";
-        String serverData = ValidInvoice(InvoiceNo);
+
         try {
             final JSONObject jsonObject_bg = new JSONObject(serverData);
             final String strStatus = jsonObject_bg.getString("status");
@@ -537,11 +380,13 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                 JSONObject myResult = jsonObject_bg.getJSONObject("result");
                 JSONArray jsonArray1 = myResult.getJSONArray("order");
                 JSONArray jsonArray2 = myResult.getJSONArray("order_detail");
+                JSONArray jsonArray3 = myResult.getJSONArray("order_detail_tax");
                 for (int i = 0; i < jsonArray1.length(); i++) {
                     JSONObject jsonObject = jsonArray1.getJSONObject(i);
                     cusCode = jsonObject.getString("contact_code");
                     Globals.strContact_Code = cusCode;
                 }
+                double iPrice=0d;
                 for (int i = 0; i < jsonArray2.length(); i++) {
                     JSONObject jsonObject = jsonArray2.getJSONObject(i);
 
@@ -551,42 +396,65 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
                     barcode = jsonObject.getString("barcode");
                     quantity=jsonObject.getString("quantity");
                     returnquantity = jsonObject.getString("return_quantity");
-                    itemnamelist.add(itemname);
-                    itemcodelist.add(itemcode);
-                    barcodelist.add(barcode);
-                    returnquantitylist.add(returnquantity);
-                    quantitylist.add(quantity);
+                    linetotal = jsonObject.getString("line_total");
+                    Double quantityDB= Double.parseDouble(quantity);
+                    Double returnquantityDB=Double.parseDouble(returnquantity);
+                    if(quantityDB-returnquantityDB>0) {
+                        itemnamelist.add(itemname);
+                        itemcodelist.add(itemcode);
+                        barcodelist.add(barcode);
+                        returnquantitylist.add(returnquantity);
+                        quantitylist.add(quantity);
+                        pricelist.add(linetotal);
+                        iPrice = Double.parseDouble(linetotal);
+                    }
                     String Query = "Update  order_detail Set return_quantity = '" + returnquantity + "' where item_code='" + jsonObject.getString("item_code") + "'";
                     long result = db.executeDML(Query, database);
 
                     if (result > 0) {
 
+                        item_group_taxArrayList = Item_Group_Tax.getAllItem_Group_Tax(getApplicationContext(), "Where item_group_code = '" + jsonObject.getString("item_code") + "'", database, db);
+                        Double iTax = 0d;
+                        Double iTaxTotal = 0d;
+                        for (int j = 0; j < item_group_taxArrayList.size(); j++) {
+                            iTax = 0d;
+                            Tax_Master tax_master = Tax_Master.getTax_Master(getApplicationContext(), "Where tax_id = '" + item_group_taxArrayList.get(j).get_tax_id() + "'", database, db);
+if(iPrice>0) {
+    if (tax_master.get_tax_type().equals("P")) {
+        iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+    } else {
+        iTax = iTax + Double.parseDouble(tax_master.get_rate());
+    }
 
+    Return_Item_Tax return_item_tax = new Return_Item_Tax(getApplicationContext(), "", "", Globals.SRNO + "", itemcode, item_group_taxArrayList.get(j).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+    Globals.return_item_tax.add(return_item_tax);
+}
+                        }
                     } else {
 
                     }
-               /*     Order_Detail order_detail = Order_Detail.getOrder_Detail(getApplicationContext(), "",database);
-                    order_detail.set_return_quantity(jsonObject.getString("return_quantity"));
-                    long ct = order_detail.updateOrder_Detail("item_code=?", new String[]{itemcode}, database);
-                    if (ct > 0) {
 
-
-                    }*/
-
-                   /* String Query = "Update  order_detail Set return_quantity = '"+returnquantity+"'";
-                    long result = db.executeDML(Query, database);
-
-                    if (result > 0) {
-
-
-
-                    } else {
-
-                    }*/
 
                 }
+                for (int k = 0; k < jsonArray3.length(); k++) {
+                    JSONObject jsonObject = jsonArray3.getJSONObject(k);
 
-                // long ct = lite_pos_device.updateDevice("Status=?", new String[]{"IN"}, database);
+                    String detail_taxid = jsonObject.getString("order_detail_tax_id");
+                    String retordercode = jsonObject.getString("order_code");
+                    String srno = jsonObject.getString("sr_no");
+                    String item_code = jsonObject.getString("item_code");
+                    String taxid = jsonObject.getString("tax_id");
+                    String taxtype=jsonObject.getString("tax_type");
+                    String rate = jsonObject.getString("rate");
+                    String value = jsonObject.getString("value");
+                    String itemCode= item_code;
+                }
+
+                    //      if (taxIdFinalAarry.size() > 0) {
+
+
+
+
 
                 succ = "1";
 //
@@ -596,36 +464,156 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         return succ;
     }
 
-    private String ValidInvoice(String invoiceNo) {
+   /* private String ValidInvoice(String invoiceNo) {
         String serverData = null;//
-        String registration_code = lite_pos_registration.getRegistration_Code();
-        DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost(
 
-
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/invoice_return/check_order");
-        ArrayList nameValuePairs = new ArrayList(2);
-        nameValuePairs.add(new BasicNameValuePair("reg_code", registration_code));
-        //nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
-        nameValuePairs.add(new BasicNameValuePair("order_code", invoiceNo));
         try {
-            httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
-        } catch (UnsupportedEncodingException e1) {
-            // TODO Auto-generated catch block
-            e1.printStackTrace();
+            // String registration_code = lite_pos_registration.getRegistration_Code();
+            DefaultHttpClient httpClient = new DefaultHttpClient();
+            HttpPost httpPost = new HttpPost(
+
+
+                    Globals.App_IP_URL + "invoice_return/check_order");
+            ArrayList nameValuePairs = new ArrayList(2);
+            nameValuePairs.add(new BasicNameValuePair("reg_code", Globals.objLPR.getRegistration_Code()));
+            //nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+            nameValuePairs.add(new BasicNameValuePair("order_code", invoiceNo));
+            try {
+                httpPost.setEntity(new UrlEncodedFormEntity(nameValuePairs));
+            } catch (UnsupportedEncodingException e1) {
+                // TODO Auto-generated catch block
+                e1.printStackTrace();
+            }
+            try {
+                HttpResponse httpResponse = httpClient.execute(httpPost);
+                HttpEntity httpEntity = httpResponse.getEntity();
+                serverData = EntityUtils.toString(httpEntity);
+                Log.d("response", serverData);
+            } catch (ClientProtocolException e) {
+                e.printStackTrace();
+            } catch (IOException e) {
+                e.printStackTrace();
+            }
         }
-        try {
-            HttpResponse httpResponse = httpClient.execute(httpPost);
-            HttpEntity httpEntity = httpResponse.getEntity();
-            serverData = EntityUtils.toString(httpEntity);
-            Log.d("response", serverData);
-        } catch (ClientProtocolException e) {
-            e.printStackTrace();
-        } catch (IOException e) {
-            e.printStackTrace();
+        catch(Exception e){
+
         }
         return serverData;
+    }*/
+
+    public  void ValidInvoice(final ProgressDialog pDialog, final String invoiceNo){
+      /*  pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getString(R.string.Syncingh));
+        pDialog.show();*/
+
+        String server_url =Globals.App_IP_URL + "invoice_return/check_order";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            String relt = ValidInvoiceFromServer(response);
+                            if (relt.equals("1")) {
+
+
+                                try {
+                                    Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnFinalActivity.class);
+                                    intent.putExtra("operation", operation);
+                                    intent.putExtra("voucher_no", strVoucherNo);
+                                    intent.putExtra("date", Globals.str_date.toString().trim());
+                                    intent.putExtra("remarks", edt_remarks.getText().toString().trim());
+                                    intent.putExtra("contact_code", cusCode);
+                                    intent.putExtra("order_code", edt_order_code.getText().toString().trim());
+                                    intent.putExtra("item_code", itemcode);
+                                    intent.putExtra("barcode", barcode);
+                                    if (Globals.strContact_Code.equals("")) {
+                                        intent.putExtra("payment_id", "1");
+                                    } else {
+                                        intent.putExtra("payment_id", PayId);
+                                    }
+                                    Bundle args = new Bundle();
+                                    args.putSerializable("ARRAYLIST", (Serializable) itemnamelist);
+                                    args.putSerializable("ItemCodeList", (Serializable) itemcodelist);
+                                    args.putSerializable("BarCodeList", (Serializable) barcodelist);
+                                    args.putSerializable("ret_quantitylist", (Serializable) returnquantitylist);
+                                    args.putSerializable("quantitylist", (Serializable) quantitylist);
+                                    args.putSerializable("pricelist", (Serializable) pricelist);
+                                    intent.putExtra("BUNDLE", args);
+
+
+                                    startActivity(intent);
+                                    finish();
+                                } catch (Exception e) {
+
+                                }
+                                // }}
+
+
+                            } else {
+                                runOnUiThread(new Runnable() {
+                                    public void run() {
+                                        Toast.makeText(getApplicationContext(), "Invoice Not Valid!", Toast.LENGTH_SHORT).show();
+                                    }
+                                });
+                            }
+
+                        } catch (Exception e) {
+                            System.out.println(e.getMessage());
+                        }
+
+                        pDialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                         pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+               params.put("reg_code", Globals.objLPR.getRegistration_Code());
+                //nameValuePairs.add(new BasicNameValuePair("device_code", Globals.objLPD.getDevice_Code()));
+               params.put("order_code", invoiceNo);
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
+
 
     private void SetDate() {
         String myFormat = "yyyy-MM-dd"; //In which you need put here
@@ -693,11 +681,11 @@ public class InvReturnHeaderActivity extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(100);
                     pDialog.dismiss();
                     Globals.strContact_Code="";
                     Intent intent = new Intent(InvReturnHeaderActivity.this, InvReturnListActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     intent.putExtra("operation", operation);
                     startActivity(intent);
                     finish();

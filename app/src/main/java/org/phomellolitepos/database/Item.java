@@ -1,5 +1,6 @@
 package org.phomellolitepos.database;
 
+import android.app.ProgressDialog;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
@@ -9,7 +10,18 @@ import android.graphics.Bitmap;
 import android.net.Uri;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.itextpdf.text.pdf.codec.Base64;
 
 import org.apache.http.HttpEntity;
@@ -23,6 +35,8 @@ import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.phomellolitepos.AppController;
+import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 
 import java.io.ByteArrayOutputStream;
@@ -30,6 +44,8 @@ import java.io.File;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Map;
 
 
 /**
@@ -61,7 +77,7 @@ public class Item {
     private String is_push;
     private String is_inclusive_tax;
     private String item_image;
-
+    private String is_modifier;
     private Database db;
     private ContentValues value;
 
@@ -70,7 +86,7 @@ public class Item {
                 String item_code, String parent_code, String item_group_code, String manufacture_code,
                 String item_name, String description, String sku, String barcode, String hsn_sac_code, String image,
                 String item_type, String unit_id, String is_return_stockable, String is_service, String is_active, String modified_by,
-                String modified_date, String is_push, String is_inclusive_tax, String item_image) {
+                String modified_date, String is_push, String is_inclusive_tax, String item_image,String ismodifier) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -96,8 +112,19 @@ public class Item {
         this.set_modified_date(modified_date);
         this.set_is_push(is_push);
         this.set_is_inclusive_tax(is_inclusive_tax);
-        this.set_item_image(item_image);
+        this.setItem_image(item_image);
+        this.setIs_modifier(ismodifier);
 
+    }
+
+
+    public String getIs_modifier() {
+        return is_modifier;
+    }
+
+    public void setIs_modifier(String is_modifier) {
+        this.is_modifier = is_modifier;
+        value.put("is_modifier", is_modifier);
     }
 
     public String get_item_id() {
@@ -294,15 +321,57 @@ public class Item {
     }
 
 
-    public String get_item_image() {
+/*    public String get_item_image() {
         return item_image;
     }
 
     public void set_item_image(String item_image) {
         this.item_image = item_image;
         value.put("item_image", item_image);
+    }*/
+
+
+    public String getItem_image() {
+        return item_image;
     }
 
+    public void setItem_image(String item_image) {
+        this.item_image = item_image;
+    }
+
+    public void add_item(ArrayList<Item> list, SQLiteDatabase db) {
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Item itemlist : list) {
+
+
+                values.put("device_code", itemlist.get_device_code());
+                values.put("item_code", itemlist.get_item_code());
+                values.put("item_group_code", itemlist.get_item_group_code());
+                values.put("manufacture_code", itemlist.get_manufacture_code());
+                values.put("item_name", itemlist.get_item_name());
+                values.put("description", itemlist.get_description());
+                values.put("sku", itemlist.get_sku());
+                values.put("barcode", itemlist.get_barcode());
+                values.put("hsn_sac_code", itemlist.get_hsn_sac_code());
+                values.put("item_type", itemlist.get_item_type());
+                values.put("unit_id", itemlist.get_unit_id());
+                values.put("is_return_stockable", itemlist.get_is_return_stockable());
+                values.put("is_service", itemlist.get_is_service());
+                values.put("is_active", itemlist.get_is_active());
+                values.put("modified_by", itemlist.get_modified_by());
+                values.put("modified_date", itemlist.get_modified_date());
+                values.put("is_inclusive_tax", itemlist.get_is_inclusive_tax());
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
 
     public long insertItem(SQLiteDatabase database) {
 //        SQLiteDatabase database = db.getWritableDatabase();
@@ -314,7 +383,7 @@ public class Item {
             throws SQLiteConstraintException {
         //SQLiteDatabase sdb = db.getWritableDatabase();
         long insert = database.updateWithOnConflict(tableName, value, whereClause,
-                whereArgs, SQLiteDatabase.CONFLICT_FAIL);
+                whereArgs, SQLiteDatabase.CONFLICT_NONE);
         //sdb.close();
         return insert;
     }
@@ -339,7 +408,7 @@ public class Item {
                         cursor.getString(17), cursor.getString(18),
                         cursor.getString(19),
                         cursor.getString(20),
-                        cursor.getString(21));
+                        cursor.getString(21),cursor.getString(22));
             } while (cursor.moveToNext());
         }
         cursor.close();
@@ -373,7 +442,7 @@ public class Item {
                             cursor.getString(16), cursor.getString(17),
                             cursor.getString(18), cursor.getString(19),
                             cursor.getString(20),
-                            cursor.getString(21));
+                            cursor.getString(21),cursor.getString(22));
                     list.add(master);
                 } catch (Exception ex) {
 
@@ -437,12 +506,14 @@ public class Item {
 
     }
 
-    public static String sendOnServer(Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid) {
+    public static String sendOnServer(ProgressDialog progressDialog,Context context, SQLiteDatabase database, Database db, String strTableQry,String liccustomerid) {
 
         String strItemCode = "", resultStr = "0";
         Cursor cursor = database.rawQuery(strTableQry, null);
         try {
             int columnCount = cursor.getColumnCount();
+
+
             while (cursor.moveToNext()) {
                 JSONObject sender = new JSONObject();
                 JSONArray result = new JSONArray();
@@ -454,6 +525,8 @@ public class Item {
                 JSONObject item_item_supplier = new JSONObject();
                 JSONArray array_item_tax = new JSONArray();
                 JSONObject item_item_tax = new JSONObject();
+                JSONArray array_item_modifier = new JSONArray();
+                JSONObject item_item_modifier = new JSONObject();
                 strItemCode = cursor.getString(1);
                 for (int index = 0; index < columnCount; index++) {
                     if (index==9){
@@ -513,50 +586,54 @@ public class Item {
                     } catch (Exception ex) {
                     }
 
+
+                    String item_modifier_qry= "Select item_code, modifier_code from Receipe_Modifier where item_code  = '" + strItemCode + "' ";
+                    Cursor cursor_item_modifier = database.rawQuery(item_modifier_qry, null);
+                    try {
+                        int columnCount_itemmodifier = cursor_item_modifier.getColumnCount();
+                        while (cursor_item_modifier.moveToNext()) {
+                            item_item_modifier = new JSONObject();
+                            for (int index = 0; index < columnCount_itemmodifier; index++) {
+                                item_item_modifier.put(cursor_item_modifier.getColumnName(index).toLowerCase(), cursor_item_modifier.getString(index));
+                            }
+                            array_item_modifier.put(item_item_modifier);
+                        }
+
+                    } catch (Exception ex) {
+                    }
+
                     row.put("item_location", array_item_location);
                     row.put("item_supplier", array_item_supplier);
                     row.put("item_tax", array_item_tax);
+                    row.put("item_modifier", array_item_modifier);
                     result.put(row);
                     sender.put("item".toLowerCase(), result);
-                    String serverData = send_item_json_on_server(sender.toString(),liccustomerid);
-                    final JSONObject collection_jsonObject1 = new JSONObject(serverData);
-                    final String strStatus = collection_jsonObject1.getString("status");
-                    if (strStatus.equals("true")) {
-                        // Update This Item Group Push True
-                        database.beginTransaction();
-                        String Query = "Update  item Set is_push = 'Y' Where item_code = '" + strItemCode + "'";
-                        long check = db.executeDML(Query, database);
-                        if (check > 0) {
-                            resultStr = "1";
-                            database.setTransactionSuccessful();
-                            database.endTransaction();
-                        } else {
-                            database.endTransaction();
-                        }
-                    } else {
-                        resultStr = "2";
-                        database.endTransaction();
-                    }
+                    send_item_json_on_server(progressDialog,context,database,db,resultStr,sender.toString(),strItemCode,Globals.serialno,Globals.syscode2,Globals.androidid,Globals.mykey,liccustomerid);
+
                 } catch (JSONException e) {
                     e.printStackTrace();
                 }
-//                cursor.close();
             }
+               cursor.close();
+
+
+
+
         } catch (Exception ex) {
             String msg = ex.getMessage();
         }
         return resultStr;
     }
 
-    private static String send_item_json_on_server(String JsonString,String liccustomerid) {
+   /* private static String send_item_json_on_server(String JsonString,String liccustomerid) {
         String cmpnyId = Globals.Company_Id;
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/item/data");
+                 Globals.App_IP_URL + "item/data");
 
         ArrayList nameValuePairs = new ArrayList(8);
-        nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.reg_code));
+        nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("data", JsonString));
         nameValuePairs.add(new BasicNameValuePair("sys_code_1", Globals.serialno));
         nameValuePairs.add(new BasicNameValuePair("sys_code_2", Globals.syscode2));
@@ -582,6 +659,106 @@ public class Item {
             e.printStackTrace();
         }
         return serverData;
+    }
+*/
+
+
+    public static void  send_item_json_on_server(final ProgressDialog progressDialog,Context context, SQLiteDatabase database,Database db,final String ig,final String JsonString,final String strItemCode,final String syscode1,final String syscode2,final String syscode3,final String syscode4, final String liccustomerid) {
+
+        progressDialog.dismiss();               
+        progressDialog.setMessage("GettingData...");
+        progressDialog.show();
+      /*  ProgressDialog pDialog = new ProgressDialog(context);
+        pDialog.setMessage(context.getResources().getString(R.string.Syncingh));
+        pDialog.show()*/;
+
+        String server_url = Globals.App_IP_URL + "item/data";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            final JSONObject collection_jsonObject1 = new JSONObject(response);
+                            final String strStatus = collection_jsonObject1.getString("status");
+                            if (strStatus.equals("true")) {
+                                // Update This Item Group Push True
+                                database.beginTransaction();
+                                String Query = "Update  item Set is_push = 'Y' Where item_code = '" + strItemCode + "'";
+                                long check = db.executeDML(Query, database);
+                                if (check > 0) {
+                                   // resultStr = "1";
+                                    progressDialog.dismiss();
+                                    database.setTransactionSuccessful();
+                                    database.endTransaction();
+                                } else {
+                                    database.endTransaction();
+                                }
+                            } else {
+                                progressDialog.dismiss();
+                               // resultStr = "2";
+                                database.endTransaction();
+                            }
+                        } catch (Exception e) {
+                        }
+                        progressDialog.dismiss();
+//pDialog.dismiss();
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        progressDialog.dismiss();
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(context,"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(context,"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(context,"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                       // pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code",Globals.objLPR.getRegistration_Code());
+                params.put("data", JsonString);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("device_code", Globals.Device_Code);
+                params.put("lic_customer_license_id", liccustomerid);
+
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
     }
 
     public static String BitmapToString(Bitmap bitmap) {

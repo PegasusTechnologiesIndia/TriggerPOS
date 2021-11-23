@@ -1,0 +1,47 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.TaxCheckListActivity"
+    tools:showIn="@layout/activity_tax_check_list">
+
+    <TextView
+        android:id="@+id/txt_title"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        style="@style/AppTheme.NoListfoundText"
+        android:layout_alignParentTop="true"
+        android:text="@string/no_item_tax_found"
+        />
+
+
+    <ListView android:id="@+id/contact_ck_list"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginBottom="50dp"
+        android:layout_below="@+id/txt_title"/>
+
+    <LinearLayout
+        android:layout_alignParentBottom="true"
+        style="@style/AppTheme.HorizontalButtonLayout">
+
+        <Button
+            android:id="@+id/btn_finish"
+            android:text="@string/finish"
+            android:layout_marginBottom="10dp"
+            android:background="#403c3c"
+            style="@style/AppTheme.HorizontalButton"/>
+
+        <Button
+            android:id="@+id/btn_delete"
+            android:text="@string/delete"
+            android:layout_marginLeft="10dp"
+            style="@style/AppTheme.HorizontalButton"
+            android:visibility="gone"
+            />
+    </LinearLayout>
+
+</RelativeLayout>

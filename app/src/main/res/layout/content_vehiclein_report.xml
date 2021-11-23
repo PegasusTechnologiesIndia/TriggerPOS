@@ -1,0 +1,301 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:shrinkColumns="*">
+
+    <LinearLayout
+        android:id="@+id/lbl_table"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:background="#f8e3d5"
+        android:orientation="vertical">
+
+        <androidx.appcompat.widget.Toolbar
+            android:id="@+id/toolbar2"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:background="?attr/colorPrimary"
+            android:minHeight="?attr/actionBarSize"
+            android:theme="?attr/actionBarTheme" />
+
+        <TableLayout
+            android:id="@+id/ll_park"
+            android:layout_width="300dp"
+            android:layout_height="match_parent"
+
+            android:layout_gravity="center"
+            android:gravity="center"
+
+
+            android:orientation="vertical">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="@color/button_color"
+                android:padding="5dp">
+
+                <TextView
+                    android:id="@+id/txt_companyname"
+                    android:layout_width="300dp"
+                    android:layout_height="match_parent"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="etyuuyio"
+                    android:textColor="@color/whitecolor"
+                    android:textSize="18dp"
+
+
+                    />
+
+                <TextView
+                    android:id="@+id/txt_adress"
+                    android:layout_width="300dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center"
+                    android:layout_marginTop="5dp"
+                    android:gravity="center"
+                    android:text="etyuuyio"
+                    android:textColor="@color/whitecolor"
+                    android:textSize="15dp"
+                    android:visibility="gone"
+
+
+                    />
+
+
+            </TableRow>
+            /
+
+            <TableRow
+                android:id="@+id/ll_date"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background=" #ffe289"
+
+
+                >
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="50dp"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left|center"
+                    android:text="@string/Date"
+
+                    android:textColor="@color/black"
+                    android:textSize="15sp" />
+
+                <TextView
+                    android:id="@+id/txt_date"
+                    android:layout_width="0sp"
+                    android:layout_height="50dp"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text=""
+                    android:textColor="@color/black" />
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/ll_status"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffe289"
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left|center"
+
+                    android:text="@string/vehicle_in"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_vehiclein"
+                    android:layout_width="0sp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/ll_statusout"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffe289"
+
+                android:orientation="horizontal">
+
+                <TextView
+                    android:layout_width="0sp"
+                    android:layout_height="30dp"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left|center"
+
+                    android:text="@string/vehicle_out"
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+                <TextView
+                    android:id="@+id/txt_vehicleout"
+                    android:layout_width="0sp"
+                    android:layout_height="30dp"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:background="@drawable/cell_shapecolor"
+                    android:gravity="left"
+                    android:paddingLeft="5dp"
+                    android:text=""
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+            </TableRow>
+
+            <LinearLayout
+                android:id="@+id/totllay"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:background="#ffe289"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_weight=".3"
+                    android:gravity="left|center"
+                    android:text="@string/Totalsum"
+
+
+                    android:textColor="@color/black"
+                    android:textSize="17sp"
+
+                    />
+
+                <TextView
+                    android:id="@+id/totalamnt"
+                    android:layout_width="wrap_content"
+                    android:layout_height="30dp"
+                    android:layout_gravity="left"
+                    android:layout_weight=".6"
+                    android:gravity="left|center"
+
+                    android:text=""
+
+                    android:textColor="@color/black"
+                    android:textSize="17sp" />
+
+            </LinearLayout>
+        </TableLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_below="@+id/lbl_table"
+
+        android:orientation="vertical">
+
+        <TextView
+            android:id="@+id/table_title"
+            style="@style/AppTheme.NoListfoundText"
+            android:text="@string/No_Table_Fnd"
+            android:visibility="gone" />
+
+        <androidx.recyclerview.widget.RecyclerView
+            android:id="@+id/report_recyclerView"
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:background="#f8e3d5"
+            android:scrollbars="vertical">
+
+        </androidx.recyclerview.widget.RecyclerView>
+
+    </LinearLayout>
+    <!--   <TableRow
+            android:id="@+id/tr_heading"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:weightSum="1"
+            android:layout_marginTop="10dp"
+            >
+
+            <TextView
+                android:id="@+id/txt_vehicletype"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".3"
+                android:text="@string/vehicletype"
+                />
+            <TextView
+                android:id="@+id/txt_ttlcount"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".3"
+                android:text="@string/totalcount"
+                />
+            <TextView
+                android:id="@+id/txt_basefareamnt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight=".4"
+                android:text="@string/fareamnt"
+                />
+        </TableRow>
+        <TableRow
+            android:id="@+id/tr_getrec"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:weightSum="1"
+            android:layout_marginTop="10dp"
+            >
+
+            <TextView
+                android:id="@+id/txt_getvehicletype"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".3"
+
+                />
+            <TextView
+                android:id="@+id/txt_getttlcount"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".3"
+
+                />
+            <TextView
+                android:id="@+id/txt_getbasefareamnt"
+                android:layout_width="wrap_content"
+                android:layout_height="match_parent"
+                android:layout_weight=".4"
+
+                />
+        </TableRow>
+-->
+
+
+</RelativeLayout>

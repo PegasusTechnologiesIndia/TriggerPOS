@@ -98,7 +98,29 @@ public class Order_Type {
         value.put("is_push", is_push);
     }
 
+    public void add_ordertype(ArrayList<Order_Type> list,SQLiteDatabase db) {
 
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Order_Type ordertype : list) {
+
+
+                values.put("order_type_id", ordertype.get_order_type_id());
+                values.put("name", ordertype.get_name());
+                values.put("is_active", ordertype.get_is_active());
+                values.put("modified_by", ordertype.get_modified_by());
+                values.put("modified_date", ordertype.get_modified_date());
+                values.put("is_push", ordertype.get_is_push());
+
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
 
     public long insertOrder_Type(SQLiteDatabase database) {
         //SQLiteDatabase database = this.db.getWritableDatabase();

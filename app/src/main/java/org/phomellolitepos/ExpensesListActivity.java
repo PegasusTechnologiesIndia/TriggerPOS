@@ -6,15 +6,17 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
+import android.view.KeyEvent;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.ListView;
@@ -26,7 +28,6 @@ import org.phomellolitepos.Adapter.ExpensesListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Pos_Balance;
 
 public class ExpensesListActivity extends AppCompatActivity {
@@ -37,7 +38,7 @@ public class ExpensesListActivity extends AppCompatActivity {
     ArrayList<Pos_Balance> arrayList;
     Pos_Balance pos_balance;
     ExpensesListAdapter expensesListAdapter;
-    Lite_POS_Registration lite_pos_registration;
+
     ProgressDialog pDialog;
 
     @Override
@@ -67,9 +68,10 @@ public class ExpensesListActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            sleep(100);
 
                             Intent intent = new Intent(ExpensesListActivity.this, ManagerActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -92,6 +94,30 @@ public class ExpensesListActivity extends AppCompatActivity {
 
         expense_title = (TextView) findViewById(R.id.expense_title);
         edt_toolbar_expense_list = (EditText) findViewById(R.id.edt_toolbar_expense_list);
+        edt_toolbar_expense_list.setMaxLines(1);
+        edt_toolbar_expense_list.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_toolbar_expense_list.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        edt_toolbar_expense_list.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_DONE)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFilter = edt_toolbar_expense_list.getText().toString().trim();
+                    strFilter = " and ( remarks Like '%" + strFilter + "%' )";
+                    edt_toolbar_expense_list.selectAll();
+                    getExpenseList(strFilter);
+
+                    return true;
+                }
+                return false;
+            }
+        });
 
         edt_toolbar_expense_list.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -120,7 +146,14 @@ public class ExpensesListActivity extends AppCompatActivity {
             }
         });
 
-        getExpenseList("");
+        try {
+
+            // Getting Expense list here
+            getExpenseList("");
+        }
+        catch(Exception e){
+
+        }
     }
 
     private void getExpenseList(String strFilter) {
@@ -159,6 +192,8 @@ public class ExpensesListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item_menu) {
         int id = item_menu.getItemId();
+
+        // Search filter
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_expense_list.getText().toString().trim();
             strFilter = " and ( remarks Like '%" + strFilter + "%' )";
@@ -180,9 +215,10 @@ public class ExpensesListActivity extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(100);
 
                     Intent intent = new Intent(ExpensesListActivity.this, ManagerActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     pDialog.dismiss();
                     finish();

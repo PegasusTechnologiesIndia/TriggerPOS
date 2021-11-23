@@ -112,6 +112,29 @@ public class Zone {
         return insert;
     }
 
+
+    public void add_zone(ArrayList<Zone> list,SQLiteDatabase db) {
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Zone zone : list) {
+
+
+                values.put("zone_id", zone.get_zone_id());
+                values.put("country_id", zone.get_country_id());
+                values.put("name", zone.get_name());
+                values.put("code", zone.get_code());
+                values.put("status", zone.get_status());
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
+
     public static Zone getZone(Context context, String WhereClasue) {
         String Query = "Select * FROM " + tableName + " " + WhereClasue;
         Zone master = null;

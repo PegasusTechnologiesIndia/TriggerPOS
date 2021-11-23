@@ -15,7 +15,7 @@
         android:layout_marginRight="10dp"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
 
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
@@ -26,12 +26,13 @@
                 android:id="@+id/edt_unit_name"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/unit_name"
+                android:gravity="right"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
             android:layout_marginTop="30dp"
@@ -41,13 +42,14 @@
                 android:id="@+id/edt_code"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Code"
+                android:gravity="right"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentTop="true"
             android:layout_marginTop="30dp"
@@ -57,9 +59,10 @@
                 android:id="@+id/edt_description"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Description"
+                android:gravity="right"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <LinearLayout

@@ -1,0 +1,355 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".InvReturnFinalActivity"
+    tools:showIn="@layout/activity_inv_return_final">
+
+    <TableLayout
+        android:id="@+id/tbl"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true">
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="15dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.3"
+                android:text="@string/ItemName"
+                android:textColor="#333333"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edt_name"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.6"
+                android:enabled="false"
+                android:textColor="#333333"
+                android:textSize="16sp" />
+
+        </TableRow>
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="5dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.3"
+                android:text="@string/ItemCode"
+                android:textColor="#333333"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/edt_itemcode"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.6"
+                android:hint=""
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:inputType="numberDecimal"
+                android:enabled="false"/>
+
+        </TableRow>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:layout_marginTop="5dp">
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.12"
+                    android:text="@string/total_qty"
+                    android:textColor="#333333"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.02"
+                    android:text=":"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+                <EditText
+                    android:id="@+id/edt_total_qty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.2"
+                    android:hint=""
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:inputType="numberDecimal"
+                    android:enabled="false"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:orientation="horizontal"
+                android:layout_weight="0.5">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.4"
+                    android:text="@string/return_qty"
+                    android:textColor="#333333"
+                    android:textSize="25sp" />
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.05"
+                    android:text=":"
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:textStyle="bold" />
+
+
+                <EditText
+                    android:id="@+id/edt_return_qty"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.5"
+                    android:hint=""
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:inputType="numberDecimal"
+                    android:enabled="false"/>
+
+            </LinearLayout>
+
+        </LinearLayout>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="5dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.3"
+                android:text="@string/enter_qty"
+                android:textColor="#333333"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+            <EditText
+                android:id="@+id/edt_qty"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.6"
+                android:hint="@string/enter_qty"
+                android:textColor="#333333"
+                android:textSize="20sp"
+                android:inputType="numberDecimal"/>
+
+        </TableRow>
+
+        <TableRow
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_gravity="center_vertical"
+            android:layout_marginTop="5dp"
+            android:baselineAligned="false"
+            android:gravity="clip_vertical"
+            android:weightSum="1">
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.3"
+                android:text="@string/itemprice"
+                android:textColor="#333333"
+                android:textSize="25sp" />
+
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.1"
+                android:text=":"
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:textStyle="bold" />
+
+
+            <EditText
+                android:id="@+id/edt_price"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:layout_marginLeft="2dp"
+                android:layout_weight="0.6"
+                android:hint=""
+                android:textColor="#333333"
+                android:textSize="16sp"
+                android:inputType="numberDecimal"
+                android:enabled="false"/>
+
+        </TableRow>
+
+
+    </TableLayout>
+
+    <Button
+        android:id="@+id/btn_add"
+        android:layout_width="wrap_content"
+        android:layout_height="40dp"
+        android:background="#fb7c3e"
+        android:text="@string/add"
+        android:textColor="#ffffff"
+        android:textSize="25sp"
+        android:layout_below="@+id/tbl"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="10dp"/>
+
+    <ListView
+        android:id="@+id/list"
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/btn_add"
+        android:layout_marginTop="12dp"
+        android:layout_marginBottom="55dp">
+
+    </ListView>
+
+    <LinearLayout
+
+        android:id="@+id/main_linear"
+        style="@style/AppTheme.FooterButtonLayout"
+        android:layout_marginBottom="2dp"
+
+        android:layout_above="@+id/retail_bottom_navigation">
+
+        <Button
+            android:id="@+id/btn_Qty"
+
+            style="@style/AppTheme.FooterButton"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+        <Button
+            android:id="@+id/btn_Item_Price"
+            style="@style/AppTheme.FooterButton"
+            android:layout_marginLeft="1dp"
+            android:layout_marginRight="1dp"
+            android:background="#403c3c"
+            android:text="0.00"
+            android:textSize="19sp"/>
+
+    </LinearLayout>
+
+    <com.google.android.material.bottomnavigation.BottomNavigationView
+        android:id="@+id/retail_bottom_navigation"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:background="@color/colorPrimary"
+        app:itemBackground="@color/colorPrimary"
+        app:itemIconTint="#ffffff"
+        app:itemTextColor="#ffffff"
+        app:itemTextAppearanceActive="@style/BottomNavigationView"
+        app:menu="@menu/stock_adjestment_nav_menu" />
+
+</RelativeLayout>

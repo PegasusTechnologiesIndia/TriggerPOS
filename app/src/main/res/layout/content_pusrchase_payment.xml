@@ -45,7 +45,7 @@
         </TableRow>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_amount"
             style="@style/AppTheme.TextInputLayout"
             android:layout_margin="10dp"
@@ -75,7 +75,7 @@
             </TableRow>
 
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <ListView
             android:id="@+id/list"

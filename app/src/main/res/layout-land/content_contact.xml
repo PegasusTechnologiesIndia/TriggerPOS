@@ -1,0 +1,309 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_contact"
+    android:layout_width="match_parent"
+    android:layout_marginTop="60dp"
+    android:layout_height="match_parent"
+    tools:context="org.phomellolitepos.ContactActivity"
+    tools:showIn="@layout/activity_contact">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical"
+        >
+
+
+        <TextView
+            android:id="@+id/lbl_spinner_title"
+            style="@style/AppTheme.LabelText"
+            android:layout_marginTop="30dp"
+            android:text="@string/Title"
+            android:visibility="gone"/>
+
+        <Spinner
+            android:id="@+id/spinner_title"
+            style="@style/AppTheme.Spinner"
+            android:layout_marginLeft="5dp"
+            android:layout_marginRight="5dp"
+            android:inputType="text"
+            android:visibility="gone">
+        </Spinner>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_contact_code"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+            android:layout_marginTop="20dp">
+
+            <EditText
+                android:id="@+id/edt_contact_code"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/contact_code_auto_generated"
+                android:enabled="false"
+                android:focusable="false"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_contact_name"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_contact_name"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/ContactName"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_contact_1"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_contact_1"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/Contact_1"
+                android:inputType="phone"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_email_1"
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_email_1"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/Email_1"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+        <CheckBox
+            android:id="@+id/chk_istaxable"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:checked="true"
+            android:text="@string/is_taxable"></CheckBox>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="15dp"
+            android:orientation="horizontal"
+            android:gravity="center_vertical"
+            android:weightSum="1"
+            >
+            <TextView
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="@string/other_information"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="0.9"
+                />
+
+            <ImageView
+                android:id="@+id/img_expand"
+                android:layout_width="20dp"
+                android:layout_height="20dp"
+                />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/ll_othr_info"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:visibility="gone">
+            <TextView
+                android:id="@+id/lbl_spinner_gender"
+                style="@style/AppTheme.LabelText"
+                android:layout_marginTop="15dp"
+                android:text="@string/Gender" />
+
+            <Spinner
+                android:id="@+id/spinner__gender"
+                style="@style/AppTheme.Spinner"
+                android:layout_marginLeft="5dp"
+                android:layout_marginRight="5dp"
+                android:inputType="text">
+            </Spinner>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#cccccc"
+                android:layout_marginTop="10dp">
+
+            </View>
+
+            <TextView
+                android:id="@+id/lbl_country"
+                style="@style/AppTheme.LabelText"
+                android:text="@string/Country"/>
+
+            <Spinner
+                android:id="@+id/spn_country"
+                style="@style/AppTheme.Spinner"/>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:background="#cccccc">
+
+            </View>
+
+            <TextView
+                android:id="@+id/lbl_zone"
+                style="@style/AppTheme.LabelText"
+                android:text="@string/Zone"
+                />
+
+            <Spinner
+                android:id="@+id/spn_zone"
+                style="@style/AppTheme.Spinner"/>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_gstn"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_gstn"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/gstn"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_dob"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_dob"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/DOB"
+                    />
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_company_name"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_company_name"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/CompanyName"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_contact_2"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_contact_2"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/Contact_2"
+                    android:inputType="phone"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_email_2"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_email_2"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/Email_2"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_description"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_description"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/Description"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+
+
+            <com.google.android.material.textfield.TextInputLayout
+                android:id="@+id/edt_layout_address"
+                style="@style/AppTheme.TextInputLayout"
+                app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+                <EditText
+                    android:id="@+id/edt_address"
+                    style="@style/AppTheme.EditText"
+                    android:hint="@string/Address"
+                    android:selectAllOnFocus="true"/>
+
+            </com.google.android.material.textfield.TextInputLayout>
+        </LinearLayout>
+
+
+
+
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_below="@+id/edt_layout_item_ct_name"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:layout_below="@+id/edt_layout_item_description"
+                android:text="@string/Next" />
+
+            <Button
+                android:id="@+id/btn_contact_delete"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone"
+                />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</ScrollView>

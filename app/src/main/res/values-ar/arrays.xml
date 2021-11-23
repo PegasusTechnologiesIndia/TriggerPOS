@@ -64,11 +64,12 @@
         <item>--Select Printer--</item>
         <item>PPT8525</item>
         <item>WIFI</item>
-        <item>Bluetooth 56mm</item>
+        <item>Bluetooth 58mm</item>
         <item>Bluetooth 80mm</item>
         <item>Bluetooth 100mm</item>
         <item>PHA-POS24</item>
         <item>PPT8527</item>
+        <item>MNP-POS</item>
     </string-array>
 
     <string-array name="title">

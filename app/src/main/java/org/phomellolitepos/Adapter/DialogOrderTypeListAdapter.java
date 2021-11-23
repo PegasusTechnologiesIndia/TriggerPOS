@@ -1,8 +1,13 @@
 package org.phomellolitepos.Adapter;
 
+import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.Context;
-import android.support.design.widget.BottomNavigationView;
+import android.content.DialogInterface;
+import android.content.Intent;
+import com.google.android.material.bottomnavigation.BottomNavigationView;
+
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -10,13 +15,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
 import org.phomellolitepos.R;
+import org.phomellolitepos.TableMangement;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.database.Item_Group;
+import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Order_Type;
+import org.phomellolitepos.database.Table;
 
 /**
  * Created by Neeraj Paliwal on 3/24/2017.
@@ -29,6 +37,8 @@ public class DialogOrderTypeListAdapter extends BaseAdapter {
     ArrayList<Order_Type> data;
     Dialog dialog;
     MenuItem orertyp;
+    Database db;
+    SQLiteDatabase database;
     BottomNavigationView topNavigation;
 
     public DialogOrderTypeListAdapter(Context context,
@@ -75,10 +85,12 @@ public class DialogOrderTypeListAdapter extends BaseAdapter {
             @Override
             public void onClick(View arg0) {
                 Order_Type resultp = data.get(position);
-                String id = resultp.get_order_type_id();
-                Globals.strOrder_type_id = id;
+                String id_order = resultp.get_order_type_id();
+                Globals.strOrder_type_id = id_order;
                 orertyp.setTitle(resultp.get_name());
-                switch (id) {
+                Globals.strorderType=resultp.get_name();
+
+                switch (id_order) {
                     case "1":
                         orertyp.setIcon(R.drawable.deliver);
                         break;
@@ -99,6 +111,38 @@ public class DialogOrderTypeListAdapter extends BaseAdapter {
                         break;
                 }
                 dialog.dismiss();
+                if(Globals.objLPR.getproject_id().equals("cloud")){
+                if(id_order.equals("5")) {
+
+                    db = new Database(context);
+                    database = db.getReadableDatabase();
+                    Globals.strorderType = "Dine-In";
+                    Globals.strOrder_type_id = id_order;
+                    Table tableobj = Table.getTable(context, database, db, "");
+                    if (tableobj == null) {
+
+                        Toast.makeText(context, "No Table Data Found", Toast.LENGTH_LONG).show();
+                    } else {
+                        Intent table = new Intent(context, TableMangement.class);
+                        context.startActivity(table);
+                    }
+                }
+                else{
+                   // Toast.makeText(context,"No table Found",Toast.LENGTH_LONG).show();
+                }
+                  /*  AlertDialog.Builder builder = new AlertDialog.Builder(context);
+                    builder.setMessage("Book Table before Placing Order!")
+                            .setCancelable(false)
+                            .setPositiveButton("OK", new DialogInterface.OnClickListener() {
+                                public void onClick(DialogInterface dialog, int id) {
+                                    //do things
+
+                                }
+                            });
+                    AlertDialog alert = builder.create();
+                    alert.show();
+*/
+                }
             }
         });
         return itemView;

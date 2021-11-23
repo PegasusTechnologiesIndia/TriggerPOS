@@ -1,0 +1,113 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical"
+    android:layout_margin="10dp">
+
+    <TextView
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:paddingLeft="5dp"
+        android:textColor="#333333"
+        android:text="Amount"
+        android:textSize="17dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="5dp"/>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp">
+
+        <EditText
+            android:id="@+id/edt_amount"
+            android:layout_width="match_parent"
+            android:layout_height="40dp"
+            android:background="@drawable/edittext_bg"
+            android:hint=""
+            android:paddingLeft="5dp"
+            android:textColor="#333333" />
+    </LinearLayout>
+
+    <View
+        android:layout_width="match_parent"
+        android:layout_height="0.5dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp"
+        android:background="#333333"
+        ></View>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Card No:"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#333333"/>
+
+        <TextView
+            android:id="@+id/txt_param_1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="10dp"
+        android:layout_marginLeft="10dp">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Expiry Date:"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"
+            android:textColor="#333333"/>
+
+        <TextView
+            android:id="@+id/txt_param_2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text=""
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"/>
+
+    </LinearLayout>
+
+    <LinearLayout
+        style="@style/AppTheme.HorizontalButtonLayout"
+        android:layout_marginTop="40dp">
+
+        <Button
+            android:id="@+id/btn_pay"
+            android:text="Pay"
+            android:textColor="#ffffff"
+            style="@style/AppTheme.HorizontalButton"/>
+
+        <Button
+            android:id="@+id/btn_cancel"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_marginLeft="10dp"
+            android:layout_marginRight="10dp"
+            android:background="#403c3c"
+            android:text="@string/Cancel"
+            android:visibility="visible"
+            />
+
+    </LinearLayout>
+</LinearLayout>

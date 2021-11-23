@@ -5,7 +5,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.AsyncTask;
-import android.support.v7.app.AppCompatActivity;
+import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.Window;
@@ -35,6 +35,7 @@ public class SendLogActivity extends AppCompatActivity {
         setContentView(R.layout.activity_send_log);
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         logs = getIntent().getStringExtra("logs");
+        Globals.AppLogWrite("Main oncreate log"+ logs);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
         settings = Settings.getSettings(getApplicationContext(), database, "");
@@ -55,10 +56,13 @@ public class SendLogActivity extends AppCompatActivity {
     }
 
     private void sendLogFile() {
-        if (logs == null)
+        if (logs == null) {
+            Globals.AppLogWrite("Error Log null" + logs);
+
             return;
+        }
 
-
+        Globals.AppLogWrite("Error Log"+ logs);
             send_email_manager();
 
 
@@ -97,15 +101,15 @@ public class SendLogActivity extends AppCompatActivity {
     private void send_email_manager() {
         String dtt = Globals.Reportnamedate();
         try {
-            String[] recipients = {"pegasusq8@gmail.com"};
+            String[] recipients = {"developer.pegasus@gmail.com"};
             final SendLogActivity.SendEmailAsyncTask email = new SendLogActivity.SendEmailAsyncTask();
             email.activity = this;
 
-            email.m = new GMailSender("pegasusq8@gmail.com","@Purbia@99534388","smtp.gmail.com","465");
-            email.m.set_from("pegasusq8@gmail.com");
+            email.m = new GMailSender("developer.pegasus@gmail.com","Passw0rd@","smtp.gmail.com","465");
+            email.m.set_from("developer.pegasus@gmail.com");
             email.m.setBody("Log file attached." + logs);
             email.m.set_to(recipients);
-            email.m.set_subject("Error reported from Phomello-LitePOS");
+            email.m.set_subject("Error reported from Phomello-TriggerPOS");
             email.execute();
         } catch (Exception e) {
             e.printStackTrace();
@@ -156,7 +160,7 @@ public class SendLogActivity extends AppCompatActivity {
 //                activity.displayMessage("Authentication failed.");
                 return false;
             } catch (MessagingException e) {
-                Log.e(ReportViewerActivity.SendEmailAsyncTask.class.getName(), "Email failed");
+                Log.e(SendLogActivity.SendEmailAsyncTask.class.getName(), "Email failed");
                 e.printStackTrace();
                 runOnUiThread(new Runnable() {
                     public void run() {

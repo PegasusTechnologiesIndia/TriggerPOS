@@ -94,7 +94,7 @@
 
         </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -105,9 +105,9 @@
                 android:inputType="numberDecimal"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -118,7 +118,7 @@
                 android:inputType="numberDecimal"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TableLayout
             android:layout_width="match_parent"

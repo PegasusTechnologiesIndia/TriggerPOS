@@ -18,8 +18,8 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 import android.os.RemoteException;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 
 import android.text.format.DateFormat;
 import android.util.Log;
@@ -36,7 +36,6 @@ import android.widget.Toast;
 import android.widget.VideoView;
 
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.JavaEncryption;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Item_Location;
@@ -46,27 +45,13 @@ import org.phomellolitepos.database.Order_Detail;
 import org.phomellolitepos.database.Order_Payment;
 import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.ShoppingCart;
-import org.phomellolitepos.database.User;
-import org.phomellolitepos.printer.MemInfo;
-import org.phomellolitepos.printer.ThreadPoolManager;
 
-import java.security.SecureRandom;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.Date;
 import java.util.Locale;
-import java.util.Random;
-
-import javax.crypto.Cipher;
-import javax.crypto.KeyGenerator;
-import javax.crypto.SecretKey;
-import javax.crypto.spec.SecretKeySpec;
-
-import sunmi.sunmiui.edit.Edit;
-import woyou.aidlservice.jiuiv5.ICallback;
-import woyou.aidlservice.jiuiv5.IWoyouService;
 
 
 public class TestActivity extends AppCompatActivity {
@@ -334,7 +319,7 @@ public class TestActivity extends AppCompatActivity {
                             "0", netAmount, netAmount,
                             "0", "0", "0",
                             "0", "1", "", strOrderDate, "N",
-                            "CLOSE", "", Globals.strTable_Code, "");
+                            "CLOSE", "", Globals.strTable_Code, "",null);
 
                     long l = orders.insertOrders(database);
                     if (l > 0) {
@@ -344,7 +329,7 @@ public class TestActivity extends AppCompatActivity {
                             ShoppingCart mCart = myCart.get(count);
                             order_detail = new Order_Detail(getApplicationContext(), null, Globals.Device_Code, strOrderNo,
                                     "", mCart.get_Item_Code(), mCart.get_SRNO(), mCart.get_Cost_Price(), mCart.get_Sales_Price(), mCart.get_Tax_Price(),
-                                    mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0");
+                                    mCart.get_Quantity(), "0", "0", mCart.get_Line_Total(), "0","false",mCart.getUnitId(),mCart.getBeforeTaxPrice());
                             long o = order_detail.insertOrder_Detail(database);
                             if (o > 0) {
                                 strFlag = "1";
@@ -419,7 +404,7 @@ public class TestActivity extends AppCompatActivity {
                 sale_priceStr = item_location.get_selling_price();
                 cost_priceStr = item_location.get_cost_price();
             }
-            ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), i + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", "0", "0", sale_priceStr);
+            ShoppingCart cartItem = new ShoppingCart(getApplicationContext(), i + "", resultp.get_item_code(), resultp.get_item_name(), "1", cost_priceStr, sale_priceStr + "", "0", "0", sale_priceStr,"0","0","","",resultp.get_unit_id(),"");
             Globals.cart.add(cartItem);
         }
         try {

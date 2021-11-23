@@ -2,16 +2,22 @@ package org.phomellolitepos.Util;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.Matrix;
+import android.inputmethodservice.Keyboard;
 import android.os.Build;
 import android.os.Environment;
 import android.telephony.TelephonyManager;
+import android.util.DisplayMetrics;
 import android.util.Log;
 
+import java.io.BufferedWriter;
 import java.io.File;
 import java.io.FileWriter;
+import java.io.IOException;
 import java.security.SecureRandom;
 import java.text.NumberFormat;
 import java.text.SimpleDateFormat;
@@ -24,6 +30,8 @@ import java.util.concurrent.ExecutionException;
 
 import org.json.JSONObject;
 
+import org.phomellolitepos.Adapter.Vehicle_Order;
+import org.phomellolitepos.AppController;
 import org.phomellolitepos.StockAdjestment.StockAdjectmentDetailList;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item_Group_Tax;
@@ -32,18 +40,23 @@ import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.OrderTaxArray;
 import org.phomellolitepos.database.Order_Item_Tax;
 import org.phomellolitepos.database.Order_Type_Tax;
+import org.phomellolitepos.database.Return_Item_Tax;
+import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.ShoppingCart;
 import org.phomellolitepos.database.SplitPaymentList;
 import org.phomellolitepos.database.Tax_Master;
+import org.phomellolitepos.database.VoidShoppingCart;
 
 import javax.crypto.KeyGenerator;
 import javax.crypto.SecretKey;
 
 import au.com.bytecode.opencsv.CSVWriter;
+import jxl.Cell;
 import jxl.CellView;
 import jxl.Workbook;
 import jxl.WorkbookSettings;
 import jxl.format.UnderlineStyle;
+import jxl.write.Formula;
 import jxl.write.Label;
 import jxl.write.Number;
 import jxl.write.WritableCellFormat;
@@ -55,11 +68,12 @@ import jxl.write.biff.RowsExceededException;
 
 public class Globals {
     public static String ListLimit = "100";
-    public static String DiscountPer = "";
+    public static double DiscountPer = 0;
     public static String Param1 = "";
     public static String Param2 = "";
     public static double Net_Amount = 0;
     public static double Inv_Discount = 0;
+    public static double discountPer=0;
     public static double Inv_Tax = 0;
     public static double Sub_Total = 0;
     public static double CouponTotal = 0;
@@ -68,6 +82,12 @@ public class Globals {
     public static String Inv_Odr_Code = "";
     public static String Inv_Delivery_Date = "";
     public static String CardNo = "";
+    public static String ZoneID = "";
+    public static String table_code = "";
+    public static String table_name="";
+    public static String strorderType = "";
+    // StockAdjustmentDetail List Variable declaration
+    public static ArrayList<StockAdjectmentDetailList> data =new ArrayList<StockAdjectmentDetailList>();
     //.........................................
     public static String TicketCategory = "";
     public static String rtick = "";
@@ -101,25 +121,50 @@ public class Globals {
     public static String str_date="";
     public static String onInvoice = "0";
     public static String spinner_code_value = "";
+    static  Database db = new Database(AppController.getInstance());
+    static  SQLiteDatabase  database = db.getWritableDatabase();
+    public static Settings objsettings = Settings.getSettings(AppController.getInstance(),Globals.database,"");
+    public static ArrayList<Vehicle_Order> vehicleorderList = new ArrayList<Vehicle_Order>();
+    public static ArrayList<Vehicle_Order> newvehicleorderList = new ArrayList<Vehicle_Order>();
     public static ArrayList<Loyalty_Redeem> LoyaltyRedeem = new ArrayList<Loyalty_Redeem>();
     public static ArrayList<SplitPaymentList> splitPsyMd = new ArrayList<SplitPaymentList>();
     public static ArrayList<ShoppingCart> cart = new ArrayList<ShoppingCart>();
+    public static ArrayList<VoidShoppingCart> voidcart = new ArrayList<VoidShoppingCart>();
     public static ArrayList<OrderTaxArray> order_tax_array = new ArrayList<OrderTaxArray>();
     public static ArrayList<Order_Item_Tax> order_item_tax = new ArrayList<Order_Item_Tax>();
+    public static ArrayList<Return_Item_Tax> return_item_tax = new ArrayList<Return_Item_Tax>();
     public static ArrayList<String> CMD_Images = new ArrayList<String>();
-   // public static String App_IP = "192.168.1.72";
-    //public static String App_IP = "104.238.86.46:85";
-    public static String App_IP = "74.208.235.72:85";
+    public static ArrayList<String> arrayListGetFile_Image=new ArrayList<>();
+
+    //Server
+
+
+   public static String url =Globals.objsettings.getApi_Ip();
+  public static String App_IP_URL = "http://"+Globals.url+"/trigger-pos/index.php/api/";
+ //public static String App_IP_URL = "http://192.168.29.243:85/trigger-pos/index.php/api/"; // Local Ip
+
+   //Local
+// public static String App_IP_URL = "http://192.168.29.201/trigger-pos-ar/index.php/api/";
+   // public static String App_IP = "192.168.2.72";
+   // public static String imageURL ="http://www.pegasustek.com/trigger-pos/upload/demo_files/images/india/";
+   public static String imageURL ="http://"+Globals.url+"/trigger-pos/upload/demo_files/images/india/";
+
+ //   public static String App_IP_URL = "http://74.208.235.72:85/trigger-pos-ar/index.php/api/"; // Server Ip
     public static Cursor online_report_cursor = null;
     public static String Company_Id;
     public static int SRNO = 1;
-    public static String folder = "mnt/sdcard/LitePOS/";
+    public static String folder = "mnt/sdcard/TriggerPOS/";
     public static String pdffolder = "PDF Report";
     public static String item_category_code = "";
-    public static String Watermark = "Lite POS DEMO";
+    public static String Watermark = "Trigger POS DEMO";
     public static String user = "";
+    public static String username = "";
+    public static String userId = "";
+
+    public static String devicename="";
     public static String strOrder_type_id = "1";
     public static String strContact_Code = "";
+    public static String localstrContact_Code = "";
     public static String strResvContact_Code = "";
     public static String strContact_Name = "";
     public static String stritem_name = "";
@@ -127,6 +172,7 @@ public class Globals {
     public static Bitmap logo1 = null;
     public static String logo = null;
     public static String strTable_Code = "";
+    public static String strZoneName = "";
     public static String Order_Code = "";
     public static String Operation = "";
     public static String load_form_cart = "0";
@@ -147,7 +193,9 @@ public class Globals {
     public static double InvoiceTax = 0;
     public static boolean cameraFlag = false;
     public static String reg_code = "";
-    public static String App_Lic_Base_URL="https://www.pegasustech.net";
+    public static String projectid = "";
+    public static String locname="";
+    public static String App_Lic_Base_URL="http://www.pegasustech.net";
     public static String isuse="1";
     public static String master_product_id="670";
     public static String lic_customer_license_id="0";
@@ -158,22 +206,34 @@ public class Globals {
     public static String mykey="";
     public static String syscode2="5";
     public static String responsemessage="";
+    public static String orderresponsemessage="";
     public static String strvoucherno="";
     public static boolean gpsFlag = true;
-    public static String latitude="";
-    public static String longitude="";
+    public static String latitude="0.00";
+    public static String longitude="0.00";
     public static String locationddress="";
     public static String str_userpassword;
+    public static String localelang ;
+    public static String NoTax="" ;  // Non-Taxable Customer
+    public static String Taxwith_state="" ; // Taxable Customer
+    public static String Taxdifferent_state="" ; // Taxable with Different State
+
     public static JSONObject jsonArray_background= new JSONObject();;
-    public static void setEmpty() {
+    public static void  setEmpty() {
         CouponTotal = 0;
         Globals.Param1 = "";
+
         Globals.Param2 = "";
+        Globals.strContact_Name = "";
+        Globals.strContact_Code = "";
+        Globals.strResvContact_Code = "";
         splitPsyMd = new ArrayList<SplitPaymentList>();
         cart = new ArrayList<ShoppingCart>();
+        voidcart=new ArrayList<VoidShoppingCart>();
         LoyaltyRedeem = new ArrayList<Loyalty_Redeem>();
         NetAmount = 0;
         SRNO = 1;
+
         InvoiceDiscount = 0;
         InvoiceTax = 0;
         TotalItemPrice = 0;
@@ -183,6 +243,51 @@ public class Globals {
         strTable_Code = "";
         load_form_cart = "0";
         strContact_Name = "";
+        NoTax="";
+        Taxwith_state="";
+        Taxdifferent_state="";
+        order_item_tax = new ArrayList<Order_Item_Tax>();
+        order_tax_array = new ArrayList<OrderTaxArray>();
+        strOrder_type_id = "1";
+        Net_Amount = 0;
+        Inv_Discount = 0;
+        Inv_Tax = 0;
+        Sub_Total = 0;
+        Inv_Description = "";
+        Inv_Opr = "";
+        Inv_Odr_Code = "";
+        Globals.newvehicleorderList.clear();
+        Globals.vehicleorderList.clear();
+        Inv_Delivery_Date = "";
+    }
+    public static void setEmpty1() {
+        CouponTotal = 0;
+        Globals.Param1 = "";
+        Globals.Param2 = "";
+        Globals.strContact_Name = "";
+        Globals.strContact_Code = "";
+        Globals.strResvContact_Code = "";
+        splitPsyMd = new ArrayList<SplitPaymentList>();
+        cart = new ArrayList<ShoppingCart>();
+        voidcart=new ArrayList<VoidShoppingCart>();
+        LoyaltyRedeem = new ArrayList<Loyalty_Redeem>();
+        NetAmount = 0;
+        SRNO = 1;
+
+        InvoiceDiscount = 0;
+        InvoiceTax = 0;
+        TotalItemPrice = 0;
+        TotalItemCost = 0;
+        // TotalItem = 0;
+        TotalQty = 0;
+        strTable_Code = "";
+        load_form_cart = "0";
+        strContact_Name = "";
+        NoTax="";
+        Taxwith_state="";
+        Globals.newvehicleorderList.clear();
+        Globals.vehicleorderList.clear();
+        Taxdifferent_state="";
         order_item_tax = new ArrayList<Order_Item_Tax>();
         order_tax_array = new ArrayList<OrderTaxArray>();
         strOrder_type_id = "1";
@@ -195,14 +300,20 @@ public class Globals {
         Inv_Odr_Code = "";
         Inv_Delivery_Date = "";
     }
-
     public static double TotalItemCost = 0;
     public static int TotalItem = 0;
     public static double TotalQty = 0;
+    public static double ReturnTotalQty = 0;
+    public static double ReturnTotalPrice = 0;
+    public static double InvReturnTotalQty = 0;
+    public static double InvReturnTotalPrice = 0;
     public static int TabPos = 0;
     public static double TotalItemPrice = 0;
+    public static double TotalSlesPrice_CustomerDisplay=0;
     public static Lite_POS_Registration objLPR;
     public static Lite_POS_Device objLPD;
+
+    public static String PrinterType;
     public static double CMDItemPrice = 0;
     public static String CMDItemName = "";
 
@@ -215,6 +326,101 @@ public class Globals {
             + Build.TYPE.length() % 10 + Build.USER.length() % 10;*/
 
     public static String Device_Code = Build.SERIAL;
+    public static void AppLogWrite(String text) {
+        try
+        {
+            File logFile = new File("");
+            if (!logFile.exists()) {
+                try {
+                    logFile.createNewFile();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            try {
+                //BufferedWriter for performance, true to set append to file flag
+                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+                buf.append(text);
+                buf.newLine();
+                buf.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+
+
+
+    public static void AppLogWrite(ArrayList<String> text) {
+        try
+        {
+            File logFile = new File("sdcard/kitchenPrinting.file");
+            if (!logFile.exists()) {
+                try {
+                    logFile.createNewFile();
+                } catch (IOException e) {
+                    // TODO Auto-generated catch block
+                    e.printStackTrace();
+                }
+            }
+            try {
+                //BufferedWriter for performance, true to set append to file flag
+                BufferedWriter buf = new BufferedWriter(new FileWriter(logFile, true));
+                buf.append(text.toString());
+                buf.newLine();
+                buf.close();
+            } catch (IOException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        }
+        catch (Exception ex)
+        {
+
+        }
+
+    }
+    public static String myRequiredString(String strValue,int  len) {
+        String strResultString ="";
+        try {
+                if(strValue.length() > len)
+                {
+                    strResultString =  strValue.substring(0,len).toString();
+                }
+                else
+                {
+                    strResultString =   strValue;
+                    for(int  l=strResultString.length();l < len;l++)
+                    {
+                        strResultString +=" ";
+                    }
+                }
+
+        } catch (Exception ex) {
+            strResultString ="";
+        }
+        return strResultString;
+    }
+    public static Bitmap getResizedBitmap(Bitmap bm, int newHeight, int newWidth) {
+        int width = bm.getWidth();
+        int height = bm.getHeight();
+        float scaleWidth = ((float) newWidth) / width;
+        float scaleHeight = ((float) newHeight) / height;
+        // CREATE A MATRIX FOR THE MANIPULATION
+        Matrix matrix = new Matrix();
+        // RESIZE THE BIT MAP
+        matrix.postScale(scaleWidth, scaleHeight);
+        // RECREATE THE NEW BITMAP
+        Bitmap resizedBitmap = Bitmap.createBitmap(bm, 0, 0, width, height, matrix, false);
+        return resizedBitmap;
+    }
 
     public static String myNumberFormat2Price(double abc, String decimal_check) {
         String strVal = "0";
@@ -230,6 +436,18 @@ public class Globals {
     }
 
     public static String myNumberFormat2QtyDecimal(double abc, String decimal_check) {
+        String strVal = "0";
+        try {
+            NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
+            formatter.setMaximumFractionDigits(Integer.parseInt(decimal_check));
+            formatter.setMinimumFractionDigits(Integer.parseInt(decimal_check));
+            formatter.setGroupingUsed(false);
+            strVal = formatter.format(abc);
+        } catch (Exception ex) {}
+        return strVal;
+    }
+
+    public static String myNumberFormat2QtyDecimalstr(String decimal_check,double abc) {
         String strVal = "0";
         try {
             NumberFormat formatter = NumberFormat.getInstance(Locale.ENGLISH);
@@ -421,6 +639,37 @@ public class Globals {
 
             }
         }
+        if (scale == 25) {
+            // COde For Dubai Only For Two Decimal
+            if (place.equals("2")) {
+
+                String[] ab = amt.split("\\.");
+                part1 = ab[0];
+                part2 = ab[1];
+
+
+
+
+                if (Integer.parseInt(part2) <= 12) {
+
+                    tempResult = ab[0] + ".00";
+
+                } else if (Integer.parseInt(part2) > 12 && Integer.parseInt(part2)<38) {
+
+                    tempResult = ab[0] + ".25";
+
+                } else if (Integer.parseInt(part2) > 38 && Integer.parseInt(part2)<76) {
+
+                    tempResult = ab[0] + ".50";
+
+                }  else if (Integer.parseInt(part2) > 75 && Integer.parseInt(part2)<99) {
+
+                    tempResult = (Integer.parseInt(ab[0])+1)  + ".00";
+
+                }
+            }
+        }
+
 
         return Double.parseDouble(tempResult);
 
@@ -580,9 +829,9 @@ public class Globals {
         string += st;
     }
 
-    public static void ExportItem(Cursor cursor, String abc, ArrayList<Integer> numCol, ArrayList<Integer> dateCol) {
+    public static void ExportItem(Cursor cursor, String abc,String namestr, ArrayList<Integer> numCol, ArrayList<Integer> dateCol) {
         try {
-            File exportDir = new File(Environment.getExternalStorageDirectory(), "/LitePOS/Exportxls");
+            File exportDir = new File(Environment.getExternalStorageDirectory(), "/TriggerPOS/Exportxls");
             if (!exportDir.exists()) {
                 exportDir.mkdirs();
             }
@@ -594,8 +843,12 @@ public class Globals {
             wbSettings.setLocale(new Locale("en", "EN"));
             WritableWorkbook workbook = Workbook.createWorkbook(file, wbSettings);
             workbook.createSheet("Report", 0);
+
             WritableSheet excelSheet = workbook.getSheet(0);
-            createLabel(excelSheet, cursor, abc);
+
+
+            createLabel(excelSheet, cursor, abc,namestr);
+
             createContent(excelSheet, cursor, abc, numCol, dateCol);
             workbook.write();
             workbook.close();
@@ -605,10 +858,12 @@ public class Globals {
         }
     }
 
+
+
     public static WritableCellFormat timesBoldUnderline;
     public static WritableCellFormat times;
 
-    public static void createLabel(WritableSheet sheet, Cursor cursor, String abc) throws WriteException {
+    public static void createLabel(WritableSheet sheet, Cursor cursor, String abc,String reportname) throws WriteException {
         // Lets create a times font
         WritableFont times10pt = new WritableFont(WritableFont.TIMES, 11,
                 WritableFont.NO_BOLD, false, UnderlineStyle.NO_UNDERLINE);
@@ -631,11 +886,14 @@ public class Globals {
 
         // Write a few headers
 
-        int colCount = 0;
+        int colCount =0;
+        addCaption(sheet,0 , 0, reportname);
 
+        int sheetcolumn=sheet.getColumns();
+        sheet.mergeCells(0, 0, cursor.getColumnCount(), 0);
         while (colCount < cursor.getColumnCount()) {
 
-            addCaption(sheet, colCount, 0, cursor.getColumnName(colCount).toString());
+            addCaption(sheet, colCount, 1, cursor.getColumnName(colCount).toString());
             colCount++;
         }
 
@@ -649,16 +907,31 @@ public class Globals {
         sheet.addCell(label);
     }
 
+    public void getDatabase(){
+String sqlquery= "SELECT Api_Ip from Settings";
+
+    }
+
+
+
+        public static int calculateNoOfColumns(Context context, float columnWidthDp) { // For example columnWidthdp=180
+            DisplayMetrics displayMetrics = context.getResources().getDisplayMetrics();
+            float screenWidthDp = displayMetrics.widthPixels / displayMetrics.density;
+            int noOfColumns = (int) (screenWidthDp / columnWidthDp + 0.5); // +0.5 for correct rounding to int.
+            return noOfColumns;
+        }
+
     public static void createContent(WritableSheet sheet, Cursor cursor, String abc, ArrayList<Integer> numCol, ArrayList<Integer> dateCol) throws WriteException,
             RowsExceededException {
 
-        int rowCount = 1;
-
+        int rowCount = 2;
+int rwcount=0;
         if (cursor.moveToFirst()) {
             do {
 
                 int colCount = 0;
-
+                int colcnt=0;
+                double count=0;
                 while (colCount < cursor.getColumnCount()) {
                     if (colCount == 0) {
 
@@ -677,6 +950,8 @@ public class Globals {
                                 if (Double.parseDouble(Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(colCount)), decimal_check)) >= 0) {
                                     addNumber(sheet, colCount, rowCount, Double.parseDouble(Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(colCount)), decimal_check)));
 //                                    addLabel(sheet, colCount, rowCount,Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(colCount)), decimal_check));
+
+                                   // count += Double.parseDouble(Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(colCount)), decimal_check));
                                 } else {
                                     addNumber(sheet, colCount, rowCount, Double.parseDouble("0"));
                                     //addLabel(sheet, colCount, rowCount,Globals.myNumberFormat2Price(Double.parseDouble("0"), decimal_check));
@@ -688,15 +963,46 @@ public class Globals {
                             addLabel(sheet, colCount, rowCount, DateUtill.PaternDate2(cursor.getString(colCount)));
                         } else {
                             addLabel(sheet, colCount, rowCount, cursor.getString(colCount));
+
                         }
 
                     }
 
+                    // count+=Integer.parseInt(cursor.getString(colCount)); // add by jyoti
                     colCount++;
+                    colcnt+=colCount;
                 }
+                // add by jyoti
+
                 rowCount++;
 
+                rwcount+=rowCount;
+                int sheetRows = sheet.getRows();
+                int sheetcol= sheet.getColumns();
+
+             /*   String[][] result = new String[rowCount][];
+                for (int i = 0; i < sheetRows; i++) {
+                    Cell[] row = sheet.getRow(i);
+
+                    result[i] = new String[row.length-1];
+                    for (int j = 0; j < row.length; j++) {
+                        result[i][j] = row[j].getContents();
+                    }*/
+
+                    StringBuffer buf = new StringBuffer();
+
+                    buf.append(cursor.getString(cursor.getColumnIndex("Net Amount")));
+                    //Formula f = new Formula(0, sheetRows+1, "Net Amount"+ buf.toString());
+                     addLabel(sheet,0,sheetRows+1,"Total : "+buf.toString());
+                    sheet.mergeCells(0, sheetRows+1, sheetcol+1, sheetRows+1);
+                //sheet.mergeCells(sheetRows+1,sheetRows+1,0,colCount+1);
+                    //sheet.addCell(f);
+
+
+
+
             } while (cursor.moveToNext());
+
         }
     }
 

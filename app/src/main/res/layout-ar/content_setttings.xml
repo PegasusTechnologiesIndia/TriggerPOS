@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
         <LinearLayout
             android:id="@+id/pri_selection"
             android:layout_width="match_parent"
@@ -123,7 +124,9 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:text="@string/no_of_print"
-                    android:inputType="text"
+                    android:gravity="right"
+
+                    android:inputType="number"
                     android:maxLines="1"
                     android:textSize="18sp"
                     android:selectAllOnFocus="true"/>
@@ -134,6 +137,7 @@
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="3dp"
                 android:baselineAligned="false"
+                android:visibility="gone"
                 android:gravity="clip_vertical"
                 android:weightSum="3">
 
@@ -154,6 +158,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:text="@string/list_limit_like_50"
+
                     android:inputType="text"
                     android:maxLines="1"
                     android:textSize="18sp"
@@ -186,7 +191,20 @@
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="20dp"
+                android:gravity="right"
+
                 android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:text="@string/select_customer_display"
+                android:textColor="#ff0000"
+                android:textSize="17sp" />
         </LinearLayout>
 
         <LinearLayout
@@ -196,7 +214,7 @@
             android:layout_alignParentStart="true"
             android:layout_marginTop="20dp"
             android:orientation="vertical"
-            android:visibility="visible">
+            android:visibility="gone">
 
             <TextView
                 android:layout_width="wrap_content"
@@ -233,16 +251,6 @@
             android:orientation="vertical"
             android:visibility="visible">
 
-            <TextView
-                android:id="@+id/textView2"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_marginLeft="10dp"
-                android:layout_weight="1"
-                android:text="@string/select_customer_display"
-                android:textColor="#ff0000"
-                android:textSize="17sp" />
-
             <Spinner
                 android:id="@+id/sp_cus_dis"
                 android:layout_width="match_parent"
@@ -250,6 +258,8 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_weight="2"
+                android:gravity="right"
+
                 android:textSize="18sp" />
 
             <View
@@ -359,6 +369,7 @@
                 android:layout_marginRight="10dp"
                 android:layout_marginTop="20dp"
                 android:layout_weight="2"
+                android:gravity="right"
                 android:textSize="18sp" />
 
             <View
@@ -392,6 +403,8 @@
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginRight="10dp"
+                android:gravity="right"
+
                 android:layout_marginTop="20dp"
                 android:layout_weight="2"
                 android:textSize="18sp" />
@@ -508,6 +521,7 @@
                 android:layout_width="match_parent"
                 android:layout_height="0.5dp"
                 android:layout_marginTop="20dp"
+                android:visibility="gone"
                 android:background="#333333"></View>
         </LinearLayout>
 
@@ -518,6 +532,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:orientation="vertical">
 
@@ -568,6 +583,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+
             android:background="#333333"></View>
 
         <CheckBox
@@ -576,6 +592,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_denomination" />
 
         <LinearLayout
@@ -611,6 +628,7 @@
 
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:background="#333333"></View>
 
@@ -620,6 +638,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_barcode_print" />
 
 
@@ -642,6 +661,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333"></View>
 
         <CheckBox
@@ -650,6 +670,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_print_kot" />
 
         <View
@@ -674,6 +695,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333"></View>
 
         <CheckBox
@@ -681,6 +703,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:text="@string/is_file_share" />
 
@@ -689,6 +712,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333"></View>
 
         <CheckBox
@@ -697,6 +721,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_accounts_show" />
 
 
@@ -706,6 +731,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -715,12 +741,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_stock_manage" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -730,12 +758,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_zero_stock_item_show" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -745,11 +775,13 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_change_price" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
+            android:visibility="gone"
             android:layout_marginTop="20dp"
             android:background="#333333">
         </View>
@@ -760,12 +792,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_show_z_detail_in_report" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -775,6 +809,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_show_device_customer" />
         <View
             android:layout_width="match_parent"
@@ -795,6 +830,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -804,12 +840,14 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_qr_code_scanner_show" />
 
         <View
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -819,6 +857,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_cost_price_show" />
 
 
@@ -827,6 +866,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -837,6 +877,7 @@
             android:layout_weight="1"
             android:text="@string/customer_debit_amount"
             android:textColor="#ff0000"
+            android:visibility="gone"
             android:textSize="17sp"
             android:layout_marginTop="10dp"/>
 
@@ -845,6 +886,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:text="@string/always_debit" />
 
@@ -853,6 +895,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
+            android:visibility="gone"
             android:layout_marginTop="10dp"
             android:text="@string/always_cash" />
 
@@ -862,6 +905,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="10dp"
+            android:visibility="gone"
             android:text="@string/based_on_parameter" />
 
         <View
@@ -1023,6 +1067,7 @@
                     android:layout_weight="2.2"
                     android:ems="10"
                     android:hint="@string/Password"
+                    android:gravity="right"
                     android:inputType="textPassword"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
@@ -1058,6 +1103,7 @@
                     android:layout_weight="2.2"
                     android:ems="10"
                     android:hint="@string/host"
+                    android:gravity="right"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
                 </EditText>
@@ -1093,6 +1139,7 @@
                     android:layout_weight="2.2"
                     android:ems="10"
                     android:hint="@string/port"
+                    android:gravity="right"
                     android:inputType="number"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
@@ -1132,6 +1179,7 @@
                     android:layout_marginRight="1dp"
                     android:layout_marginTop="20dp"
                     android:ems="10"
+                    android:gravity="right"
                     android:hint="@string/email_separator"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
@@ -1197,6 +1245,7 @@
                     android:ems="10"
                     android:hint="@string/SMS_Api_Url"
                     android:textSize="16sp"
+                    android:gravity="right"
                     android:selectAllOnFocus="true"></EditText>
 
             </TableRow>
@@ -1228,6 +1277,7 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
                     android:hint="@string/SMS_Auth_Key"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
@@ -1263,6 +1313,7 @@
                     android:layout_marginRight="1dp"
                     android:layout_weight="2.2"
                     android:ems="10"
+                    android:gravity="right"
                     android:hint="@string/SMS_Sender_Id"
                     android:textSize="16sp"
                     android:selectAllOnFocus="true">
@@ -1304,6 +1355,7 @@
                 android:layout_marginTop="20dp"
                 android:ems="10"
                 android:hint="@string/gst_no"
+                android:gravity="right"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
         </LinearLayout>
@@ -1330,6 +1382,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/gst_label"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true">
@@ -1360,6 +1413,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/print_order"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
@@ -1389,6 +1443,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/print_cashier"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
@@ -1419,6 +1474,7 @@
                 android:ems="10"
                 android:hint="@string/print_invoice_no"
                 android:textSize="16sp"
+                android:gravity="right"
                 android:selectAllOnFocus="true"></EditText>
         </LinearLayout>
 
@@ -1446,6 +1502,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/print_invoice_date"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
@@ -1474,6 +1531,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/print_device_id"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
@@ -1483,6 +1541,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_marginTop="10dp"
+            android:visibility="gone"
             android:orientation="vertical">
 
             <TextView
@@ -1502,6 +1561,7 @@
                 android:layout_marginRight="1dp"
                 android:layout_marginTop="20dp"
                 android:ems="10"
+                android:gravity="right"
                 android:hint="@string/sequence_number"
                 android:textSize="16sp"
                 android:selectAllOnFocus="true"></EditText>
@@ -1531,6 +1591,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:text="@string/reset_settings"
+            android:visibility="gone"
             android:textAllCaps="false" />
 
     </LinearLayout>

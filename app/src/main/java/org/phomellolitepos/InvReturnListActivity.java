@@ -3,11 +3,18 @@ package org.phomellolitepos;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.ActivityNotFoundException;
+import android.content.ComponentName;
+import android.content.ContentProviderOperation;
+import android.content.ContentProviderResult;
 import android.content.Context;
 import android.content.Intent;
+import android.content.OperationApplicationException;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
@@ -15,10 +22,13 @@ import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.RemoteException;
+import android.provider.ContactsContract;
 import android.provider.MediaStore;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.core.content.FileProvider;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -59,7 +69,6 @@ import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
 import org.phomellolitepos.database.Return_detail;
 import org.phomellolitepos.database.Returns;
-import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Unit;
 
 import java.io.ByteArrayOutputStream;
@@ -84,7 +93,8 @@ public class InvReturnListActivity extends AppCompatActivity {
     Database db;
     SQLiteDatabase database;
     Dialog listDialog;
-    Settings settings;
+    Contact contact_cd;
+   // Settings settings;
     String decimal_check, qty_decimal_check;
 
     @Override
@@ -108,10 +118,10 @@ public class InvReturnListActivity extends AppCompatActivity {
         }
 
         listDialog = new Dialog(this);
-        settings = Settings.getSettings(getApplicationContext(), database, "");
+    //    settings = Settings.getSettings(getApplicationContext(), database, "");
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
-            qty_decimal_check = settings.get_Qty_Decimal();
+            qty_decimal_check = Globals.objsettings.get_Qty_Decimal();
         } catch (Exception ex) {
 
             decimal_check = "1";
@@ -128,8 +138,9 @@ public class InvReturnListActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
+                            Globals.strContact_Code="";
                             Intent intent = new Intent(InvReturnListActivity.this, ReturnOptionActivity.class);
-                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -143,7 +154,7 @@ public class InvReturnListActivity extends AppCompatActivity {
         getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         item_title = (TextView) findViewById(R.id.item_title);
         edt_toolbar_item_list = (EditText) findViewById(R.id.edt_toolbar_item_list);
-
+        edt_toolbar_item_list.setMaxLines(1);
         edt_toolbar_item_list.setOnTouchListener(new View.OnTouchListener() {
             @Override
             public boolean onTouch(View v, MotionEvent event) {
@@ -165,14 +176,24 @@ public class InvReturnListActivity extends AppCompatActivity {
         fab.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
+                Globals.strContact_Code = "";
+                Globals.strContact_Name = "";
+                Globals.InvReturnTotalPrice = 0.0;
+                Globals.InvReturnTotalQty = 0.0;
+
                 Intent intent = new Intent(InvReturnListActivity.this, InvReturnHeaderActivity.class);
                 intent.putExtra("operation", "Add");
                 startActivity(intent);
                 finish();
             }
         });
-        // Gettting item list here
-        getStockList("");
+        try {
+            // Gettting  return item list here
+            getStockList("");
+        }
+        catch(Exception e){
+
+        }
     }
 
     private void getStockList(String strFilter) {
@@ -207,6 +228,7 @@ public class InvReturnListActivity extends AppCompatActivity {
     @Override
     public boolean onOptionsItemSelected(final MenuItem item_menu) {
         int id = item_menu.getItemId();
+        // Invoice Return Search
         if (id == R.id.action_settings) {
             String strFilter = edt_toolbar_item_list.getText().toString().trim();
             strFilter = "and (voucher_no Like '%" + strFilter + "%' or remarks Like '%" + strFilter + "%' or date Like '%" + strFilter + "%')";
@@ -245,12 +267,12 @@ public class InvReturnListActivity extends AppCompatActivity {
                 public void onClick(View view) {
                     if (isNetworkStatusAvialable(getApplicationContext())) {
 
-                        if (settings.get_Is_email().equals("true")) {
-                            if (settings.get_Manager_Email().equals("")) {
+                        if (Globals.objsettings.get_Is_email().equals("true")) {
+                            if (Globals.objsettings.get_Manager_Email().equals("")) {
                             } else {
                                 String name = "Return";
                                 final String dtt = name + DateUtill.Reportnamedate();
-                                String strEmail = settings.get_Manager_Email();
+                                String strEmail = Globals.objsettings.get_Manager_Email();
                                 performPDFExport(voucher_no, "",dtt);
                                 send_email_manager(strEmail, dtt, name);
                             }
@@ -285,12 +307,12 @@ public class InvReturnListActivity extends AppCompatActivity {
             final InvReturnListActivity.SendEmailAsyncTask email = new InvReturnListActivity.SendEmailAsyncTask();
             email.activity = this;
 
-            email.m = new GMailSender(settings.get_Email(), settings.get_Password(), settings.get_Host(), settings.get_Port());
-            email.m.set_from(settings.get_Email());
+            email.m = new GMailSender(Globals.objsettings.get_Email(), Globals.objsettings.get_Password(), Globals.objsettings.get_Host(), Globals.objsettings.get_Port());
+            email.m.set_from(Globals.objsettings.get_Email());
             email.m.setBody(strReportName);
             email.m.set_to(recipients);
             email.m.set_subject(Globals.objLPD.getDevice_Name() + ":" + strReportName + "");
-            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "LitePOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
+            email.m.addAttachment(Environment.getExternalStorageDirectory().getPath() + "/" + "TriggerPOS" + "/" + "PDF Report" + "/" + strFileName + ".pdf");
 
             email.execute();
         } catch (Exception e) {
@@ -444,7 +466,7 @@ public class InvReturnListActivity extends AppCompatActivity {
             Image image = null;
             try {
                 Bitmap bitmap;
-                Uri uri = Uri.parse(settings.get_Logo());
+                Uri uri = Uri.parse(Globals.objsettings.get_Logo());
                 bitmap = MediaStore.Images.Media.getBitmap(getContentResolver(), uri);
                 ByteArrayOutputStream stream = new ByteArrayOutputStream();
                 bitmap.compress(Bitmap.CompressFormat.PNG, 30, stream);
@@ -744,160 +766,7 @@ public class InvReturnListActivity extends AppCompatActivity {
             document.open();
 
 
-//            PdfPTable table_payment = new PdfPTable(7);
-//
-//            pr = new Phrase("", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c1.setBorder(Rectangle.NO_BORDER);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c1.setBorder(Rectangle.NO_BORDER);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c1.setBorder(Rectangle.NO_BORDER);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c1.setBorder(Rectangle.NO_BORDER);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c1.setBorder(Rectangle.NO_BORDER);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("Payment Name", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            table_payment.addCell(c1);
-//
-//            pr = new Phrase("Payment", B10);
-//            c3 = new PdfPCell(pr);
-//            c3.setPadding(5);
-//            c3.setHorizontalAlignment(Element.ALIGN_LEFT);
-//            table_payment.addCell(c3);
-//
-//
-//            for (int i = 0; i < list8a.size(); i++) {
-//                pr = new Phrase("", N9);
-//                PdfPCell c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                c7.setBorder(Rectangle.NO_BORDER);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase("", N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                c7.setBorder(Rectangle.NO_BORDER);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase("", N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                c7.setBorder(Rectangle.NO_BORDER);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase("", N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                c7.setBorder(Rectangle.NO_BORDER);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase("", N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                c7.setBorder(Rectangle.NO_BORDER);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase(list8a.get(i), N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//                table_payment.addCell(c7);
-//
-//                pr = new Phrase(list9a.get(i), N9);
-//                c7 = new PdfPCell(pr);
-//                c7.setPadding(5);
-//                c7.setHorizontalAlignment(Element.ALIGN_LEFT);
-//                table_payment.addCell(c7);
-//
-//
-//            }
-//            table_payment.setSpacingBefore(10.0f);
-//            table.setHeaderRows(1);
-//            document.open();
 
-//            PdfPTable tablePaymentTotal = new PdfPTable(7);
-//
-//            pr = new Phrase("", N9);
-//            PdfPCell c7 = new PdfPCell(pr);
-//            c7.setPadding(5);
-//            c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c7.setBorder(Rectangle.NO_BORDER);
-//            tablePaymentTotal.addCell(c7);
-//
-//            pr = new Phrase("", N9);
-//            c7 = new PdfPCell(pr);
-//            c7.setPadding(5);
-//            c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c7.setBorder(Rectangle.NO_BORDER);
-//            tablePaymentTotal.addCell(c7);
-//
-//            pr = new Phrase("", N9);
-//            c7 = new PdfPCell(pr);
-//            c7.setPadding(5);
-//            c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c7.setBorder(Rectangle.NO_BORDER);
-//            tablePaymentTotal.addCell(c7);
-//
-//            pr = new Phrase("", N9);
-//            c7 = new PdfPCell(pr);
-//            c7.setPadding(5);
-//            c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c7.setBorder(Rectangle.NO_BORDER);
-//            tablePaymentTotal.addCell(c7);
-//
-//            pr = new Phrase("", N9);
-//            c7 = new PdfPCell(pr);
-//            c7.setPadding(5);
-//            c7.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            c7.setBorder(Rectangle.NO_BORDER);
-//            tablePaymentTotal.addCell(c7);
-//
-//            pr = new Phrase("Total", B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_RIGHT);
-//            tablePaymentTotal.addCell(c1);
-//
-//            pr = new Phrase(Globals.myNumberFormat2Price(total_payment, decimal_check), B10);
-//            c1 = new PdfPCell(pr);
-//            c1.setPadding(5);
-//            c1.setHorizontalAlignment(Element.ALIGN_LEFT);
-//            tablePaymentTotal.addCell(c1);
-//            document.open();
-//            document.add(image);
             document.add(tableh);
             document.add(company_name);
             document.add(gst_no);
@@ -948,7 +817,7 @@ public class InvReturnListActivity extends AppCompatActivity {
             public void run() {
                 try {
                     Intent intent = new Intent(InvReturnListActivity.this, ReturnOptionActivity.class);
-                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     pDialog.dismiss();
                     finish();
@@ -957,6 +826,172 @@ public class InvReturnListActivity extends AppCompatActivity {
             }
         };
         timerThread.start();
+    }
+
+
+
+    public void startWhatsapp(String str_voucher_no,String strcontact_code) {
+        String strContct = "";
+        contact_cd = Contact.getContact(getApplicationContext(), database, db, " where is_active ='1' and contact_code='" + strcontact_code + "'");
+        if (contact_cd == null) {
+            Toast.makeText(getApplicationContext(),"No Contact found for this Invoice Return to send WhatsApp",Toast.LENGTH_SHORT).show();
+        } else {
+            strContct = contact_cd.get_contact_1();
+
+        final File file = new File(Globals.folder + Globals.pdffolder
+                + "/" + str_voucher_no + ".pdf");
+        // Toast.makeText(getApplicationContext(),file+"",Toast.LENGTH_SHORT).show();
+        if (contactExists(getApplicationContext(), strContct)) {
+            boolean installed = appInstalledOrNot("com.whatsapp");
+            if (installed) {
+                //This intent will help you to launch if the package is already installed
+                try {
+                    openWhatsApp(file, getApplicationContext(), contact_cd.get_contact_1());
+
+                } catch (Exception e) {
+                    Globals.AppLogWrite("Contact Exception  " + e.getMessage());
+                    /// Toast.makeText(getApplicationContext(),"Exception"+e.getMessage(),Toast.LENGTH_SHORT).show();
+                    e.printStackTrace();
+                }
+            } else {
+                Toast.makeText(this, "Please Install whatsapp first!", Toast.LENGTH_SHORT).show();
+                finish();
+            }
+
+        } else {
+
+            if (SaveContact()) {
+                //Toast.makeText(getBaseContext(), "Contact Saved!", Toast.LENGTH_SHORT).show();
+                finish();
+                boolean installed = appInstalledOrNot("com.whatsapp");
+                if (installed) {
+                    //This intent will help you to launch if the package is already installed
+                    try {
+                        // String id = "Message +91 9024490780";
+                        openWhatsApp(file, getApplicationContext(), contact_cd.get_contact_1());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+            } else {
+                Toast.makeText(getBaseContext(), "Error saving contact", Toast.LENGTH_SHORT).show();
+            }
+        }
+    }
+
+    }
+
+
+    private void openWhatsApp(File file,Context context,String contactnumbr) {
+        Uri path = FileProvider.getUriForFile(context, "com.org.phomellolitepos.myfileprovider", file);
+        //Uri path = Uri.fromFile(file);
+        String formattedNumber =  contactnumbr;
+        Intent pdfOpenintent = new Intent(Intent.ACTION_SEND);
+        pdfOpenintent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+        pdfOpenintent.setType("application/pdf");
+        pdfOpenintent.setPackage("com.whatsapp");
+      //  pdfOpenintent.setComponent(new ComponentName("com.whatsapp","com.whatsapp.Conversation"));
+        pdfOpenintent.putExtra("jid", formattedNumber + "@s.whatsapp.net");
+        pdfOpenintent.putExtra(Intent.EXTRA_STREAM, path);
+
+        try {
+            startActivityForResult(pdfOpenintent, 1);
+        } catch (ActivityNotFoundException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public boolean contactExists(Context context, String number) {
+/// number is the phone number
+        if(!number.isEmpty()) {
+            Uri lookupUri = Uri.withAppendedPath(
+                    ContactsContract.PhoneLookup.CONTENT_FILTER_URI,
+                    Uri.encode(number));
+            String[] mPhoneNumberProjection = {ContactsContract.PhoneLookup._ID, ContactsContract.PhoneLookup.NUMBER, ContactsContract.PhoneLookup.DISPLAY_NAME};
+            Cursor cur = context.getContentResolver().query(lookupUri, mPhoneNumberProjection, null, null, null);
+            try {
+                if (cur != null && cur.moveToFirst()) {
+                    return true;
+                }
+            } finally {
+                if (cur != null)
+                    cur.close();
+            }
+        }
+        return false;
+    }
+
+    private boolean appInstalledOrNot(String uri) {
+        PackageManager pm = getPackageManager();
+        boolean app_installed = false;
+        try {
+            //  Toast.makeText(getApplicationContext(),app_installed+"App Installed",Toast.LENGTH_SHORT).show();
+            pm.getPackageInfo(uri, PackageManager.GET_ACTIVITIES);
+            app_installed = true;
+        } catch (PackageManager.NameNotFoundException e) {
+            app_installed = false;
+        }
+        return app_installed;
+    }
+
+    boolean SaveContact() {
+        //Get text
+        String szFirstname = contact_cd.get_name(),
+                szPhone = "+91" + " " + contact_cd.get_contact_1();
+
+        Bitmap bitmapOrg = BitmapFactory.decodeResource(getResources(), R.drawable.user);
+        ByteArrayOutputStream stream = new ByteArrayOutputStream();
+        bitmapOrg.compress(Bitmap.CompressFormat.JPEG, 100, stream);
+
+        //Create a new contact entry!
+
+        ArrayList<ContentProviderOperation> ops = new ArrayList<ContentProviderOperation>();
+        int rawContactInsertIndex = ops.size();
+
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.RawContacts.CONTENT_URI)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_TYPE, null)
+                .withValue(ContactsContract.RawContacts.ACCOUNT_NAME, null)
+                .build());
+
+        //INSERT NAME
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.StructuredName.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.DISPLAY_NAME, szFirstname) // Name of the person
+                .withValue(ContactsContract.CommonDataKinds.StructuredName.GIVEN_NAME, szFirstname) // Name of the person
+                .build());
+
+        //INSERT PHONE
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Phone.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Phone.NUMBER, szPhone) // Number of the person
+                .withValue(ContactsContract.CommonDataKinds.Phone.TYPE, ContactsContract.CommonDataKinds.Phone.TYPE_WORK)
+                .build());
+
+        //INSERT PITURE
+        ops.add(ContentProviderOperation.newInsert(ContactsContract.Data.CONTENT_URI)
+                .withValueBackReference(ContactsContract.Data.RAW_CONTACT_ID, rawContactInsertIndex)
+                .withValue(ContactsContract.Data.MIMETYPE, ContactsContract.CommonDataKinds.Photo.CONTENT_ITEM_TYPE)
+                .withValue(ContactsContract.CommonDataKinds.Photo.PHOTO,
+                        stream.toByteArray())
+                .build());
+
+        Uri newContactUri = null;
+
+        try {
+            ContentProviderResult[] res = getContentResolver().applyBatch(ContactsContract.AUTHORITY, ops);
+            if (res != null && res[0] != null) {
+                newContactUri = res[0].uri;
+            }
+        } catch (RemoteException e) {
+            // error
+            newContactUri = null;
+        } catch (OperationApplicationException e) {
+            // error
+            newContactUri = null;
+        }
+        return newContactUri != null;
     }
 
 }

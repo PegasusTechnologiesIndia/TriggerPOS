@@ -12,41 +12,45 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Build;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
-import android.support.annotation.RequiresApi;
-import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
+import androidx.annotation.NonNull;
+import androidx.annotation.RequiresApi;
+import androidx.core.app.ActivityCompat;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.View;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.android.volley.AuthFailureError;
+import com.android.volley.NetworkError;
+import com.android.volley.NoConnectionError;
+import com.android.volley.ParseError;
+import com.android.volley.Request;
+import com.android.volley.Response;
+import com.android.volley.ServerError;
+import com.android.volley.TimeoutError;
+import com.android.volley.VolleyError;
+import com.android.volley.toolbox.StringRequest;
 import com.google.gson.Gson;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.BufferedReader;
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
-import java.io.UnsupportedEncodingException;
+import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 import org.phomellolitepos.Util.AESHelper;
@@ -72,8 +76,11 @@ import sunmi.ds.data.UPacketFactory;
 import static android.Manifest.permission.ACCESS_COARSE_LOCATION;
 import static android.Manifest.permission.ACCESS_FINE_LOCATION;
 import static android.Manifest.permission.CAMERA;
+import static android.Manifest.permission.READ_CALL_LOG;
+import static android.Manifest.permission.READ_CONTACTS;
 import static android.Manifest.permission.READ_EXTERNAL_STORAGE;
 import static android.Manifest.permission.READ_PHONE_STATE;
+import static android.Manifest.permission.WRITE_CONTACTS;
 import static android.Manifest.permission.WRITE_EXTERNAL_STORAGE;
 
 public class SplashScreen extends AppCompatActivity {
@@ -255,12 +262,9 @@ public class SplashScreen extends AppCompatActivity {
 
     private boolean checkPermission() {
         int result = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_EXTERNAL_STORAGE);
-
-        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
-        int result3 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION);
-        int result4 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.ACCESS_FINE_LOCATION);
-        int result5 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_PHONE_STATE);
-        return result == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED;
+        int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_EXTERNAL_STORAGE);
+        int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_PHONE_STATE);
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED && result2== PackageManager.PERMISSION_GRANTED ;
     }
 
     private void create_database() {
@@ -277,7 +281,7 @@ public class SplashScreen extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                  //  sleep(100);
                     javaEncryption = new JavaEncryption();
                     Date d = new Date();
                     SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
@@ -298,20 +302,62 @@ public class SplashScreen extends AppCompatActivity {
                         } catch (IOException e) {
                             e.printStackTrace();
                         }
+                     //  copyFiletoExternalStorage(R.raw.triggerpos);
+
+
+   /*                     if (db.version > 79) {
+                            InputStream ins = SplashScreen.this.getResources().openRawResource(
+                                    R.raw.litepos);
+                            BufferedReader reader = new BufferedReader(new InputStreamReader(ins));
+                            try {
+                                String line = null;
+                                String sql = "";
+                                while ((line = reader.readLine()) != null) {
+                                    sql += line;
+                                }
+                                ins.close();
+                                runInsert(database, sql);
+                            } catch (IOException e) {
+                                e.printStackTrace();
+                            }
+                        } else {
+                            copyResources(R.raw.triggerpos);
+                        }*/
+
                     }
+
 
                     country = Country.getCountry(getApplicationContext(), "", database);
                     if (country == null) {
-                        read_country();
-                        read_zone();
+                        try {
+                            read_country();
+                        }
+                        catch(Exception e){
+
+                        }
+                        try {
+                            read_zone();
+                        }
+                        catch(Exception e){
+
+                        }
+                        try {
+                            read_defult();
+                        }
+                        catch(Exception e){}
+                    }
+
+                   /* try {
                         read_defult();
                     }
+                    catch(Exception e){}*/
 
                   //  Settings settings = Settings.getSettings(getApplicationContext(), database, "");
                     if (settings == null) {
                         database.beginTransaction();
-                        settings = new Settings(getApplicationContext(), null, "false", "0", "", "", "", "", "", "", "", "", "", "", "", "0", "false", "false", "0", "Powered By Phomello", "0", "", "", "false", "false", "false", "TRN", "TAX INVOICE", "Salesperson", "Invoice Number", "Invoice Date", "Device ID", "false", "false", "false", "", "", "AC", "false", "false", "0", "false", "true", "false", "1", "GST", "false", "false", "false", "false", "1", "0","false","0");
+                        settings = new Settings(getApplicationContext(), null, "false", "0", "", "", "", "", "", "", "", "", "", "", "", "0", "false", "false", "0", "Powered By Phomello", "0", "", "", "false", "false", "false", "TRN", "TAX INVOICE", "Salesperson", "Invoice Number", "Invoice Date", "Device ID", "false", "false", "false", "", "", "AC", "false", "false", "0", "false", "true", "false", "1", "GST", "false", "false", "false", "false", "1", "0","false","0","false","false","false","false","false","false","false","false","false","false","false","74.208.235.72:85","false","","");
                         long l = settings.insertSettings(database);
+
                         if (l > 0) {
                             database.setTransactionSuccessful();
                             database.endTransaction();
@@ -363,7 +409,7 @@ public class SplashScreen extends AppCompatActivity {
 
                     }
 
-                    Sys_Tax_Type sys_tax_type = Sys_Tax_Type.getSys_Tax_Type(getApplicationContext(), database, db, "");
+                  /*  Sys_Tax_Type sys_tax_type = Sys_Tax_Type.getSys_Tax_Type(getApplicationContext(), database, db, "");
                     if (sys_tax_type == null) {
 
                         sys_tax_type = new Sys_Tax_Type(getApplicationContext(), null, "Other", "0");
@@ -378,13 +424,15 @@ public class SplashScreen extends AppCompatActivity {
                         sys_tax_type = new Sys_Tax_Type(getApplicationContext(), null, "Intrastate", "1");
                         sys_tax_type.insertSys_Tax_Type(database);
                     }
-
+*/
                     lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
                     lite_pos_device = Lite_POS_Device.getDevice(getApplicationContext(), "", database);
                     if (lite_pos_registration == null && lite_pos_device == null) {
                         new Thread() {
                             @Override
                             public void run() {
+
+
                                 Intent intent = new Intent(SplashScreen.this, ActivateEmailActivity.class);
                                 startActivity(intent);
                                 finish();
@@ -395,12 +443,14 @@ public class SplashScreen extends AppCompatActivity {
                         new Thread() {
                             @Override
                             public void run() {
+
                                 Intent intent = new Intent(SplashScreen.this, ActivateEmailActivity.class);
                                 startActivity(intent);
                                 finish();
                             }
                         }.start();
                     } else if (lite_pos_registration != null && lite_pos_device != null) {
+
 
 //                        if (lite_pos_device.getDevice_Code().equals(Globals.Device_Code)) {
                         Globals.Company_Id = lite_pos_registration.getcompany_id();
@@ -428,7 +478,7 @@ public class SplashScreen extends AppCompatActivity {
 //                        }.start();
 //                        }
                     }
-                } catch (InterruptedException e) {
+                } catch (Exception e) {
                     e.printStackTrace();
 
                 } finally {
@@ -454,8 +504,8 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private void getLastCode() {
-        String serverData = getLastCodeFromServer(Globals.license_id);
+    private void getLastCode(String serverData) {
+
         if (serverData == null) {
             System.exit(0);
             runOnUiThread(new Runnable() {
@@ -499,10 +549,10 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private String getLastCodeFromServer(String liccustomerid) {
+/*    private String getLastCodeFromServer(String liccustomerid) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos-lic/index.php/api/last_code");
+        HttpPost httpPost = new HttpPost(Globals.App_IP_URL + "last_code");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("reg_code",Globals.objLPR.getRegistration_Code()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
@@ -531,10 +581,86 @@ public class SplashScreen extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
+
+    public void postLastCodeFromServer(final String registration_code, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4,final String licensecustomerid) {
+
+      /*  pDialog = new ProgressDialog(ActivateEmailActivity.this);
+        pDialog.setMessage(getString(R.string.loggingin));
+        pDialog.show();*/
+        String server_url = Globals.App_IP_URL + "last_code";
+        //HttpsTrustManager.allowAllSSL();
+        // String server_url =  Gloabls.server_url;
+        StringRequest stringRequest = new StringRequest(Request.Method.POST, server_url,
+                new Response.Listener<String>() {
+                    @Override
+                    public void onResponse(String response) {
+
+                        try {
+                            //  Toast.makeText(getApplicationContext(), response, Toast.LENGTH_SHORT).show();
+                            getLastCode(response);
+
+                        } catch (Exception e) {
+                        }
+
+
+                    }
+                },
+                new Response.ErrorListener() {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            // Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof AuthFailureError) {
+                            Toast.makeText(getApplicationContext(),"Authentication issue", Toast.LENGTH_SHORT).show();
+                            //  Globals.showToast(getApplicationContext(),  "Authentication issue", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof ServerError) {
+                            Toast.makeText(getApplicationContext(),"Server not available", Toast.LENGTH_SHORT).show();
+
+                            //Globals.showToast(getApplicationContext(),  "Server not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+                        } else if (error instanceof NetworkError) {
+                            Toast.makeText(getApplicationContext(),"Network not available", Toast.LENGTH_SHORT).show();
+
+                            //  Globals.showToast(getApplicationContext(),  "Network not available", Globals.txtSize, "#ffffff", "#e51f13", "short", Globals.gravity, 0, 0);
+
+
+                        } else if (error instanceof ParseError) {
+
+                        }
+                        //pDialog.dismiss();
+                    }
+                }) {
+            @Override
+            protected Map<String, String> getParams() throws AuthFailureError {
+                Map<String, String> params = new HashMap<String, String>();
+                params.put("reg_code", registration_code);
+                params.put("device_code", devicecode);
+                params.put("sys_code_1", syscode1);
+                params.put("sys_code_2", syscode2);
+                params.put("sys_code_3", syscode3);
+                params.put("sys_code_4", syscode4);
+                params.put("lic_customer_license_id", licensecustomerid);
+
+                System.out.println("params" + params);
+
+                return params;
+            }
+
+
+        };
+
+        AppController.getInstance().addToRequestQueue(stringRequest);
+    }
     private void check_device() {
-        String serverData = check_on_server();
+        String serverData ="";
+                //check_on_server();
         if (serverData == null) {
             System.exit(0);
             runOnUiThread(new Runnable() {
@@ -581,7 +707,7 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
                             jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
                             jsonObject_device.getString("currency_place"),jsonObject_device.getString("lic_customer_license_id"),jsonObject_device.getString("lic_code"),
-                            jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN");
+                            jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN",jsonObject_device.getString("location_name"));
 
                     long d = lite_pos_device.insertDevice(database);
 
@@ -603,7 +729,8 @@ public class SplashScreen extends AppCompatActivity {
                         String srvc_trf = jsonObject_company.getString("service_code_tariff");
                         String indus_type = jsonObject_company.getString("industry_type");
                         String logo = jsonObject_company.getString("logo");
-
+                        String zonename = jsonObject_company.getString("zone_name");
+                        String countryname = jsonObject_company.getString("country_name");
                         Settings settings = Settings.getSettings(getApplicationContext(), database, "");
                         settings.set_Logo(logo);
                         settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
@@ -611,7 +738,7 @@ public class SplashScreen extends AppCompatActivity {
                         Lite_POS_Registration.delete_Registration(getApplicationContext(), "Lite_POS_Registration", null, null, database);
 
                         lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name, contact_person,
-                                mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                                mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type,"",countryname,zonename);
                         long r = lite_pos_registration.insertRegistration(database);
                         if (r > 0) {
                             long u = 0;
@@ -655,7 +782,8 @@ public class SplashScreen extends AppCompatActivity {
                         new Thread() {
                             @Override
                             public void run() {
-                                getLastCode();
+                                postLastCodeFromServer(Globals.reg_code,Globals.Device_Code,serial_no,Globals.syscode2,android_id,myKey,Globals.license_id);
+
                             }
                         }.start();
 
@@ -697,10 +825,10 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private String check_on_server() {
+  /*  private String check_on_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos/index.php/api/device/check_license");
+        HttpPost httpPost = new HttpPost(Globals.App_IP_URL + "device/check_license");
         ArrayList nameValuePairs = new ArrayList(6);
         nameValuePairs.add(new BasicNameValuePair("email", ""));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
@@ -726,10 +854,11 @@ public class SplashScreen extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
     private void device_process() {
-        String serverData = device_on_server();
+        String serverData = "";
+                //device_on_server();
         try {
             final JSONObject collection_jsonObject1 = new JSONObject(serverData);
             final String strStatus = collection_jsonObject1.getString("status");
@@ -750,7 +879,7 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_device.getString("device_symbol"), jsonObject_device.getString("location_id"),
                             jsonObject_device.getString("currency_symbol"), jsonObject_device.getString("decimal_place"),
                             jsonObject_device.getString("currency_place"),jsonObject_device.getString("lic_customer_license_id"),jsonObject_device.getString("lic_code"),
-                            jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN");
+                            jsonObject_device.getString("license_key"),jsonObject_device.getString("license_type"),"IN",jsonObject_device.getString("location_name"));
 
                     long d = lite_pos_device.insertDevice(database);
 
@@ -772,7 +901,8 @@ public class SplashScreen extends AppCompatActivity {
                         String srvc_trf = jsonObject_company.getString("service_code_tariff");
                         String indus_type = jsonObject_company.getString("industry_type");
                         String logo = jsonObject_company.getString("logo");
-
+                        String zonename = jsonObject_company.getString("zone_name");
+                        String countryname = jsonObject_company.getString("country_name");
                         Settings settings = Settings.getSettings(getApplicationContext(), database, "");
                         settings.set_Logo(logo);
                         settings.updateSettings("_Id=?", new String[]{settings.get_Id()}, database);
@@ -782,7 +912,7 @@ public class SplashScreen extends AppCompatActivity {
                         } else {
                         }
                         lite_pos_registration = new Lite_POS_Registration(getApplicationContext(), null, company_name, contact_person,
-                                mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                                mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type,"",countryname,zonename);
                         long r = lite_pos_registration.insertRegistration(database);
                         if (r > 0) {
                             long u = 0;
@@ -844,10 +974,10 @@ public class SplashScreen extends AppCompatActivity {
         }
     }
 
-    private String device_on_server() {
+  /*  private String device_on_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
-        HttpPost httpPost = new HttpPost("http://" + Globals.App_IP + "/lite-pos/index.php/api/device/register");
+        HttpPost httpPost = new HttpPost(Globals.App_IP_URL + "device/register");
         ArrayList nameValuePairs = new ArrayList(7);
         nameValuePairs.add(new BasicNameValuePair("email", lite_pos_registration.getEmail().toString()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
@@ -874,14 +1004,16 @@ public class SplashScreen extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
     private void read_defult() {
 
         StringBuffer sb = new StringBuffer();
         BufferedReader br = null;
         try {
+
             br = new BufferedReader(new InputStreamReader(getApplicationContext().getResources().openRawResource(R.raw.defaullt)));
+
             String temp;
             while ((temp = br.readLine()) != null)
                 sb.append(temp);
@@ -905,7 +1037,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONObject jsonObject_default = new JSONObject(sb.toString());
-
+                ArrayList<Address_Category> address_categoryArrayList = new ArrayList<Address_Category>();
+                Address_Category address_category = new Address_Category(getApplicationContext(), "", "", "", "", "","","","");
                 JSONArray jsonArray_address_category = jsonObject_default.getJSONArray("address_category");
 
                 for (int i = 0; i < jsonArray_address_category.length(); i++) {
@@ -920,7 +1053,16 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_address_category1.getString("modified_by"),
                             date, "N");
 
-                    address_category.insertAddress_Category(database);
+                    address_categoryArrayList.add(address_category);
+
+                  //  address_category.insertAddress_Category(database);
+                }
+
+                try{
+                    address_category.add_addrresscategory(address_categoryArrayList,database);
+                }
+                catch(Exception e){
+
                 }
 
                 try {
@@ -932,7 +1074,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONArray jsonArray_address_type = jsonObject_default.getJSONArray("address_type");
-
+                ArrayList<Address_Type> address_typelist = new ArrayList<Address_Type>();
+                Address_Type address_type = new Address_Type(getApplicationContext(), "", "");
                 for (int i = 0; i < jsonArray_address_type.length(); i++) {
 
                     JSONObject jsonObject_address_type1 = jsonArray_address_type.getJSONObject(i);
@@ -940,8 +1083,17 @@ public class SplashScreen extends AppCompatActivity {
                     address_type = new Address_Type(getApplicationContext(), null,
                             jsonObject_address_type1.getString("name"));
 
-                    address_type.insertAddress_Type(database);
+
+                    address_typelist.add(address_type);
+                    //address_type.insertAddress_Type(database);
                 }
+                try{
+                    address_type.add_Addressstype(address_typelist,database);
+                }
+                catch(Exception e){
+
+                }
+
 
                 try {
                     long l = Bussiness_Group.delete_Bussiness_Group(getApplicationContext(), null, null, database);
@@ -952,7 +1104,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONArray jsonArray_bussiness_group = jsonObject_default.getJSONArray("business_group");
-
+                ArrayList<Bussiness_Group> bussiness_groupArrayList = new ArrayList<Bussiness_Group>();
+                Bussiness_Group bussiness_group = new Bussiness_Group(getApplicationContext(), "", "","","","","","","","");
                 for (int i = 0; i < jsonArray_bussiness_group.length(); i++) {
 
                     JSONObject jsonObject_bussiness_group1 = jsonArray_bussiness_group.getJSONObject(i);
@@ -964,9 +1117,16 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_bussiness_group1.getString("is_active"),
                             jsonObject_bussiness_group1.getString("modified_by"), date, "N");
 
-                    bussiness_group.insertBussiness_Group(database);
+
+                    bussiness_groupArrayList.add(bussiness_group);
+                   // bussiness_group.insertBussiness_Group(database);
                 }
 
+
+                try{
+                    bussiness_group.add_businessgrp(bussiness_groupArrayList,database);
+                }
+                catch(Exception e){}
                 try {
                     long l = Order_Type.delete_Order_Type(getApplicationContext(), null, null, database);
                     if (l > 0) {
@@ -976,7 +1136,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONArray jsonArray_order_type = jsonObject_default.getJSONArray("order_type");
-
+                ArrayList<Order_Type> ordertype_arraylist = new ArrayList<Order_Type>();
+                Order_Type ordertype = new Order_Type(getApplicationContext(), "", "","","","","");
                 for (int i = 0; i < jsonArray_order_type.length(); i++) {
 
                     JSONObject jsonObject_order_type1 = jsonArray_order_type.getJSONObject(i);
@@ -987,9 +1148,15 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_order_type1.getString("modified_by"),
                             date, "N");
 
-                    order_type.insertOrder_Type(database);
+                    ordertype_arraylist.add(order_type);
+                 //   order_type.insertOrder_Type(database);
                 }
 
+
+                try{
+                    ordertype.add_ordertype(ordertype_arraylist,database);
+                }
+                catch (Exception e){}
 
                 try {
                     long l = Payment.delete_Payment(getApplicationContext(), "payments", null, null, database);
@@ -1000,7 +1167,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONArray jsonArray_payments = jsonObject_default.getJSONArray("payments");
-
+                ArrayList<Payment> paymentArrayList = new ArrayList<Payment>();
+                Payment paymentobj = new Payment(getApplicationContext(), "", "","","","","","");
                 for (int i = 0; i < jsonArray_payments.length(); i++) {
 
                     JSONObject jsonObject_payments1 = jsonArray_payments.getJSONObject(i);
@@ -1012,9 +1180,18 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_payments1.getString("modified_by"),
                             date, "N");
 
-                    payment.insertPayment(database);
+
+                    paymentArrayList.add(payment);
+                   // payment.insertPayment(database);
                 }
 
+                try{
+
+                    paymentobj.add_payment(paymentArrayList,database);
+                }catch(Exception e){}
+
+
+            //  String sqlQuery="select * from unit ut left join item i ON i.unit_id = ut.unit_id where ut.unit_id = ''and i.is_active ='1'";
                 try {
                     long l = Unit.deleteUnit(getApplicationContext(), null, null, database);
                     if (l > 0) {
@@ -1024,7 +1201,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONArray jsonArray_unit = jsonObject_default.getJSONArray("unit");
-
+                ArrayList<Unit> unitArrayList = new ArrayList<Unit>();
+                Unit unitobj = new Unit(getApplicationContext(), "", "","","","","","","");
                 for (int i = 0; i < jsonArray_unit.length(); i++) {
 
                     JSONObject jsonObject_unit1 = jsonArray_unit.getJSONObject(i);
@@ -1037,8 +1215,16 @@ public class SplashScreen extends AppCompatActivity {
                             jsonObject_unit1.getString("modified_by"),
                             date, "N");
 
-                    unit.insertUnit(database);
+                    unitArrayList.add(unit);
+                    //unit.insertUnit(database);
                 }
+
+              try{
+                  unitobj.add_unit(unitArrayList,database);
+              }
+              catch(Exception e){
+
+              }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1077,7 +1263,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONObject jsonObject_zone = new JSONObject(sb.toString());
-
+                ArrayList<Zone> zonelist = new ArrayList<Zone>();
+                Zone zone = new Zone(getApplicationContext(), "", "", "", "", "");
                 JSONArray jsonArray_zone = jsonObject_zone.getJSONArray("zone");
 
                 for (int i = 0; i < jsonArray_zone.length(); i++) {
@@ -1087,9 +1274,16 @@ public class SplashScreen extends AppCompatActivity {
                     zone = new Zone(getApplicationContext(), jsonObject_zone1.getString("zone_id"),
                             jsonObject_zone1.getString("country_id"), jsonObject_zone1.getString("name"), jsonObject_zone1.getString("code"), jsonObject_zone1.getString("status"));
 
-                    zone.insertZone(database);
+                    zonelist.add(zone);
+                  //  zone.insertZone(database);
                 }
 
+                try{
+                    zone.add_zone(zonelist,database);
+                }
+                catch(Exception e){
+
+                }
 
             } catch (JSONException e) {
                 e.printStackTrace();
@@ -1126,7 +1320,8 @@ public class SplashScreen extends AppCompatActivity {
                 }
 
                 JSONObject jsonObject_country = new JSONObject(sb.toString());
-
+                ArrayList<Country> clist = new ArrayList<Country>();
+                Country country = new Country(getApplicationContext(), "", "", "", "", "", "","","","","");
                 JSONArray jsonArray_country = jsonObject_country.getJSONArray("country");
 
                 for (int i = 0; i < jsonArray_country.length(); i++) {
@@ -1136,7 +1331,15 @@ public class SplashScreen extends AppCompatActivity {
                     country = new Country(getApplicationContext(), jsonObject_country1.getString("country_id"),
                             jsonObject_country1.getString("name"), jsonObject_country1.getString("isd_code"), jsonObject_country1.getString("iso_code_2"), jsonObject_country1.getString("iso_code_3"), jsonObject_country1.getString("currency_symbol"), jsonObject_country1.getString("currency_place"), jsonObject_country1.getString("decimal_place"), jsonObject_country1.getString("postcode_required"), jsonObject_country1.getString("status"));
 
-                    country.insertCountry(database);
+
+                    clist.add(country);
+                  //  country.insertCountry(database);
+                }
+
+                try {
+                    country.add_country(clist, database);
+                } catch (Exception e) {
+
                 }
 
             } catch (JSONException e) {
@@ -1160,17 +1363,18 @@ public class SplashScreen extends AppCompatActivity {
         int result1 = ContextCompat.checkSelfPermission(getApplicationContext(), CAMERA);
         int result2 = ContextCompat.checkSelfPermission(getApplicationContext(), WRITE_EXTERNAL_STORAGE);
         int result3 = ContextCompat.checkSelfPermission(getApplicationContext(), READ_PHONE_STATE);
-        int result4 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_FINE_LOCATION);
-        int result5 = ContextCompat.checkSelfPermission(getApplicationContext(), Manifest.permission.ACCESS_COARSE_LOCATION);
+        int result5 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.READ_CONTACTS);
+        int result6 = ContextCompat.checkSelfPermission(getApplicationContext(), android.Manifest.permission.WRITE_CONTACTS);
+
         //If permission is granted returning true
 
-        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result4 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED;
+        return result == PackageManager.PERMISSION_GRANTED && result1 == PackageManager.PERMISSION_GRANTED && result2 == PackageManager.PERMISSION_GRANTED && result3 == PackageManager.PERMISSION_GRANTED && result5 == PackageManager.PERMISSION_GRANTED && result6 == PackageManager.PERMISSION_GRANTED;
 
     }
 
     //Requesting permission
     private void requestStoragePermission() {
-        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION}, PERMISSION_REQUEST_CODE);
+        ActivityCompat.requestPermissions(this, new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,READ_CONTACTS,WRITE_CONTACTS}, PERMISSION_REQUEST_CODE);
     }
 
     //This method will be called when the user will tap on allow or deny
@@ -1191,7 +1395,7 @@ public class SplashScreen extends AppCompatActivity {
                                             @Override
                                             public void onClick(DialogInterface dialog, int which) {
                                                 if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                                                    requestPermissions(new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,ACCESS_FINE_LOCATION,ACCESS_COARSE_LOCATION},
+                                                    requestPermissions(new String[]{READ_EXTERNAL_STORAGE, CAMERA,WRITE_EXTERNAL_STORAGE,READ_PHONE_STATE,READ_CONTACTS,WRITE_CONTACTS},
                                                             PERMISSION_REQUEST_CODE);
                                                 }
                                             }
@@ -1212,6 +1416,57 @@ public class SplashScreen extends AppCompatActivity {
                 .setNegativeButton("Cancel", null)
                 .create()
                 .show();
+    }
+
+    private void copyFiletoExternalStorage(int resourceId){
+        String pathSDCard = Database.DATABASE_FILE_PATH;
+        try{
+            InputStream in = getResources().openRawResource(resourceId);
+            FileOutputStream out = null;
+            out = new FileOutputStream(pathSDCard);
+            byte[] buff = new byte[1024];
+            int read = 0;
+            try {
+                while ((read = in.read(buff)) > 0) {
+                    out.write(buff, 0, read);
+                }
+            } finally {
+                in.close();
+                out.close();
+            }
+        } catch (FileNotFoundException e) {
+            e.printStackTrace();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    public void copyResources(int resId){
+        Log.i("Test", "Setup::copyResources");
+        InputStream in = getApplicationContext().getResources().openRawResource(resId);
+        String filename = getApplicationContext().getResources().getResourceEntryName(resId);
+
+        File f = new File(filename);
+
+        if(!f.exists()){
+            try {
+                db = new Database(getApplicationContext());
+                database = db.getWritableDatabase();
+                OutputStream out = new FileOutputStream(new File(db.DATABASE_FILE_PATH, filename+".db"));
+                byte[] buffer = new byte[1024];
+                int len;
+                while((len = in.read(buffer, 0, buffer.length)) != -1){
+                    out.write(buffer, 0, len);
+                }
+                in.close();
+                out.close();
+            } catch (FileNotFoundException e) {
+                Log.i("Test", "Setup::copyResources - "+e.getMessage());
+            } catch (IOException e) {
+                Log.i("Test", "Setup::copyResources - "+e.getMessage());
+            }
+        }
     }
 
 }

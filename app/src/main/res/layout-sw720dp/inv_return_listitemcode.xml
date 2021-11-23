@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+    <TextView
+        android:id="@+id/txt_itemname"
+        style="@style/AppTheme.ListItemTextSize_720dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="@string/ItemName"
+        android:textColor="#000000" />
+
+    <TextView
+        android:id="@+id/txt_itemcode"
+        style="@style/AppTheme.ListItemTextSize_720dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Itemcode"
+        android:textColor="#000000"
+        android:layout_below="@+id/txt_itemname"/>
+
+
+    <TextView
+        android:id="@+id/txt_qty"
+        style="@style/AppTheme.ListItemTextSize_720dp"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_marginRight="10dp"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="5dp"
+        android:text="Quantity"
+        android:textColor="#ff0000" />
+</RelativeLayout>

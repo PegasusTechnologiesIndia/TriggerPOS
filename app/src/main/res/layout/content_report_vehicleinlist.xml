@@ -1,0 +1,158 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:layout_columnSpan="1"
+    xmlns:card_view="http://schemas.android.com/apk/res-auto">
+
+    <androidx.cardview.widget.CardView
+        android:id="@+id/cardView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dp"
+        android:layout_marginTop="10dp"
+        android:layout_marginRight="10dp"
+        android:layout_marginBottom="10dp"
+        card_view:cardCornerRadius="5dp"
+        card_view:cardElevation="@dimen/_10sdp"
+        card_view:cardMaxElevation="@dimen/_10sdp"
+        card_view:cardPreventCornerOverlap="false"
+        card_view:contentPadding="@dimen/_10sdp">
+
+
+        <LinearLayout
+            android:id="@+id/relativeLayout"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+
+            android:orientation="vertical"
+            android:weightSum="1">
+
+            <LinearLayout
+                android:id="@+id/ll_vehtype"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="@string/vehicletype"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt_vehicletype"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_vehdate"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="@string/Date"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt_date"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_totalcount"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="@string/totalcount"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt_totalcount"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_fareamnt"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="@string/fareamnt"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt_fareamnt"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_username"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="horizontal"
+
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight=".5"
+                    android:text="@string/User_Name"
+                    android:textColor="@color/black" />
+
+                <TextView
+                    android:id="@+id/txt_username"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="left"
+                    android:layout_weight=".5"
+                    android:gravity="left"
+                    android:textColor="@color/black" />
+            </LinearLayout>
+
+
+        </LinearLayout>
+
+    </androidx.cardview.widget.CardView>
+</RelativeLayout>

@@ -43,16 +43,23 @@
         android:id="@+id/nav_support"
         android:icon="@drawable/support"
         android:title="@string/support" />
-
+    <item
+        android:id="@+id/nav_privacy"
+        android:icon="@drawable/privacy_policy"
+        android:title="@string/privacychange" />
     <item
         android:id="@+id/nav_get_file"
         android:icon="@drawable/get_file"
         android:visible="false"
         android:title="@string/get_files" />
+    <item
+        android:id="@+id/nav_get_itemimages"
+        android:icon="@drawable/get_image"
+        android:title="@string/get_images" />
 
     <item
         android:id="@+id/nav_send_db"
-        android:icon="@drawable/get_file"
+        android:icon="@drawable/send_database"
         android:title="@string/send_database" />
 
     <item

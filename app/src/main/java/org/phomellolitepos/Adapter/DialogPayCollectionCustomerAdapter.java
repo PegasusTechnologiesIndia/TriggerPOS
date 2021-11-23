@@ -2,7 +2,6 @@ package org.phomellolitepos.Adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.design.widget.BottomNavigationView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -12,10 +11,8 @@ import android.widget.TextView;
 
 import org.phomellolitepos.PaymentCollectionActivity;
 import org.phomellolitepos.R;
-import org.phomellolitepos.ReservationActivity;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Contact;
-import org.phomellolitepos.database.Item_Group;
 
 import java.util.ArrayList;
 

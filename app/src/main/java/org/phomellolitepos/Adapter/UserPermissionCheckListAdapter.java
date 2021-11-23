@@ -61,8 +61,10 @@ public class UserPermissionCheckListAdapter extends ArrayAdapter<UserPermissionC
         }
         viewHolder.ch_item_gp.setTag(position); // This line is important.
         viewHolder.item_gp_name.setText(list.get(position).getName());
-        viewHolder.ch_item_gp.setChecked(list.get(position).isSelected());
 
+            viewHolder.ch_item_gp.setChecked(list.get(position).isSelected());
+
+        //viewHolder.ch_item_gp.setChecked(true);
         return convertView;
     }
 

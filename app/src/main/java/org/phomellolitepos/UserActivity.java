@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.TextInputLayout;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -34,12 +34,12 @@ import java.util.regex.Pattern;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.User;
 
 
 public class UserActivity extends AppCompatActivity {
-    TextInputLayout edt_layout_user_code, edt_layout_user_name, edt_layout_email, edt_layout_password,
+    TextInputLayout edt_layout_user_code, edt_layout_user_name, edt_layout_email
+            , edt_layout_password,
             edt_layout_max_discount;
     EditText edt_user_code, edt_user_name, edt_email, edt_password, edt_max_discount;
     Button btn_save, btn_item_delete;
@@ -47,9 +47,9 @@ public class UserActivity extends AppCompatActivity {
     String operation, code, User_Id, date, decimal_check;
     Database db;
     SQLiteDatabase database;
-    Lite_POS_Registration lite_pos_registration;
+    // Lite_POS_Registration lite_pos_registration;
     ProgressDialog pDialog;
-    String user_name = "", user_email = "", user_password = "", user_max_discount = "";
+    String user_name = "", user_email, user_password = "", user_max_discount = "";
     String strITCode = "";
     String strResult = "";
     AlertDialog.Builder alertDialog;
@@ -84,9 +84,11 @@ public class UserActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                            sleep(100);
 
                             Intent intent = new Intent(UserActivity.this, UserListActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -134,7 +136,10 @@ public class UserActivity extends AppCompatActivity {
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
         date = format.format(d);
+       if(Globals.objLPR.getIndustry_Type().equals("3")){
+    edt_layout_max_discount.setVisibility(View.GONE);
 
+       }
 
         edt_max_discount.setOnTouchListener(new View.OnTouchListener() {
             @Override
@@ -154,7 +159,7 @@ public class UserActivity extends AppCompatActivity {
         });
 
         if (operation.equals("Edit")) {
-            if(!Globals.objLPR.getproject_id().equals("cloud")) {
+            if (!Globals.objLPR.getproject_id().equals("cloud")) {
 
                 btn_item_delete.setVisibility(View.VISIBLE);
             }
@@ -176,10 +181,10 @@ public class UserActivity extends AppCompatActivity {
             String max_discount;
             max_discount = user.get_max_discount();
             edt_max_discount.setText(max_discount);
-            if (user.get_app_user_permission().equals("")){
-            }else {
+            if (user.get_app_user_permission().equals("")) {
+            } else {
                 String[] str = user.get_app_user_permission().split(",");
-                for (int i=0;i<str.length;i++){
+                for (int i = 0; i < str.length; i++) {
                     strResult = strResult + "," + str[i];
                 }
             }
@@ -312,13 +317,25 @@ public class UserActivity extends AppCompatActivity {
                 pDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        Globals.cart.clear();
+                        Globals.order_item_tax.clear();
+                        Globals.TotalItemPrice = 0;
+                        Globals.TotalQty = 0;
                         //Toast.makeText(getApplicationContext(), R.string.Update_Successfully, Toast.LENGTH_SHORT).show();
 //                        Intent intent_category = new Intent(UserActivity.this, UserListActivity.class);
-                        Intent intent_category = new Intent(UserActivity.this, UserParmissionCheckListActivity.class);
-                        intent_category.putExtra("code", user.get_user_code());
-                        intent_category.putExtra("operation", operation);
-                        startActivity(intent_category);
-                        finish();
+
+                        if(Globals.objLPR.getEmail().equals(user.get_email())){
+                            Intent intent_category = new Intent(UserActivity.this, UserListActivity.class);
+                            startActivity(intent_category);
+                            finish();
+                        }
+                        else {
+                            Intent intent_category = new Intent(UserActivity.this, UserParmissionCheckListActivity.class);
+                            intent_category.putExtra("code", user.get_user_code());
+                            intent_category.putExtra("operation", operation);
+                            startActivity(intent_category);
+                            finish();
+                        }
                     }
                 });
 
@@ -344,13 +361,25 @@ public class UserActivity extends AppCompatActivity {
                 pDialog.dismiss();
                 runOnUiThread(new Runnable() {
                     public void run() {
+                        Globals.cart.clear();
+                        Globals.order_item_tax.clear();
+                        Globals.TotalItemPrice = 0;
+                        Globals.TotalQty = 0;
                         Toast.makeText(getApplicationContext(), R.string.Save_Successfully, Toast.LENGTH_SHORT).show();
-                        Intent intent_category = new Intent(UserActivity.this, UserParmissionCheckListActivity.class);
-                        intent_category.putExtra("code", strITCode);
-                        intent_category.putExtra("operation", operation);
-                        startActivity(intent_category);
-                        startActivity(intent_category);
-                        finish();
+
+                        if(Globals.objLPR.getEmail().equals(user.get_email())){
+                            Intent intent_category = new Intent(UserActivity.this, UserListActivity.class);
+                            startActivity(intent_category);
+                            finish();
+                        }
+                        else {
+                            Intent intent_category = new Intent(UserActivity.this, UserParmissionCheckListActivity.class);
+                            intent_category.putExtra("code", strITCode);
+                            intent_category.putExtra("operation", operation);
+                            startActivity(intent_category);
+                            startActivity(intent_category);
+                            finish();
+                        }
                     }
                 });
 
@@ -378,6 +407,7 @@ public class UserActivity extends AppCompatActivity {
         Matcher matcher = pattern.matcher(email);
         return matcher.matches();
     }
+
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menuItem = menu.findItem(R.id.action_settings);
@@ -394,6 +424,12 @@ public class UserActivity extends AppCompatActivity {
     }
 
     private void save() {
+
+        Globals.cart.clear();
+        Globals.order_item_tax.clear();
+        Globals.TotalItemPrice = 0;
+        Globals.TotalQty = 0;
+        Globals.setEmpty();
         if (edt_user_code.getText().toString().equals("")) {
             User objIT1 = User.getUser(getApplicationContext(), "  order By user_id Desc LIMIT 1", database);
 
@@ -425,7 +461,7 @@ public class UserActivity extends AppCompatActivity {
 
         if (edt_email.getText().toString().equals("")) {
         } else {
-            final String email1 = edt_email.getText().toString();
+            final String email1 = edt_email.getText().toString().trim();
             if (!isValidEmail(email1)) {
                 edt_email.setError(getString(R.string.Invalid_Email));
                 edt_email.requestFocus();
@@ -471,8 +507,11 @@ public class UserActivity extends AppCompatActivity {
             public void run() {
                 try {
                     sleep(1000);
+                    try {
+                        Fill_Item(User_Id, strITCode, user_name, user_email, user_password, user_max_discount);
+                    } catch (Exception e) {
 
-                    Fill_Item(User_Id, strITCode, user_name, user_email, user_password, user_max_discount);
+                    }
                 } catch (InterruptedException e) {
                     e.printStackTrace();
 
@@ -499,6 +538,7 @@ public class UserActivity extends AppCompatActivity {
         int id = item.getItemId();
         return super.onOptionsItemSelected(item);
     }
+
     @Override
     public void onBackPressed() {
         pDialog = new ProgressDialog(UserActivity.this);
@@ -509,9 +549,10 @@ public class UserActivity extends AppCompatActivity {
         Thread timerThread = new Thread() {
             public void run() {
                 try {
-                    sleep(1000);
+                    sleep(100);
 
                     Intent intent = new Intent(UserActivity.this, UserListActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                     startActivity(intent);
                     pDialog.dismiss();
                     finish();

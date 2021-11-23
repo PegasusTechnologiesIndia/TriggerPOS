@@ -8,8 +8,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.TextView;
 
+import org.phomellolitepos.InvReturnListActivity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.CusReturnHeaderActivity;
 import org.phomellolitepos.CustomerReturnListActivity;
@@ -50,6 +52,7 @@ public class CustomerReturnListAdapter extends BaseAdapter{
 
     public View getView(final int position, View convertView, ViewGroup parent) {
         TextView txt_item_name, txt_item_code, txt_price;
+        ImageView img_whatsappshare;
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -58,6 +61,7 @@ public class CustomerReturnListAdapter extends BaseAdapter{
         Returns resultp = data.get(position);
         txt_item_name = (TextView) itemView.findViewById(R.id.txt_item_name);
         txt_item_code = (TextView) itemView.findViewById(R.id.txt_item_code);
+        img_whatsappshare=(ImageView)itemView.findViewById(R.id.img_whatsapp);
         try {
             decimal_check = Globals.objLPD.getDecimal_Place();
         } catch (Exception ex) {
@@ -74,14 +78,33 @@ public class CustomerReturnListAdapter extends BaseAdapter{
             }
 
             if (resultp.get_is_post().equals("false")) {
+                img_whatsappshare.setVisibility(View.GONE);
                 itemView.setBackgroundColor(Color.parseColor("#D3D3D3"));
             }
             if (resultp.get_is_cancel().equals("true")) {
+                img_whatsappshare.setVisibility(View.GONE);
                 itemView.setBackgroundColor(Color.parseColor("#fb8951"));
             }
             if (resultp.get_is_post().equals("true")) {
+                if(Globals.objsettings.get_Is_File_Share().equals("true")){
+                    img_whatsappshare.setVisibility(View.VISIBLE);
+                }
+                else{
+
+                    img_whatsappshare.setVisibility(View.GONE);
+                }
                 itemView.setBackgroundColor(Color.parseColor("#FFFFFF"));
             }
+
+        img_whatsappshare.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                Returns resultp = data.get(position);
+                if (resultp.get_is_post().equals("true")){
+                    ((CustomerReturnListActivity) context).startWhatsapp(resultp.get_voucher_no(),resultp.get_contact_code());
+                }
+            }
+        });
 
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override

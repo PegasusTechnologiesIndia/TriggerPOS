@@ -13,7 +13,14 @@
     tools:context="org.phomellolitepos.ChangePriceActivity"
     tools:showIn="@layout/activity_change_price">
 
-
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:fillViewport="true">
+    <RelativeLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
     <TextView
         style="@style/AppTheme.LabelText"
         android:layout_width="wrap_content"
@@ -88,11 +95,41 @@
             android:text="+" />
 
     </LinearLayout>
+    <LinearLayout
+        android:id="@+id/layout_spinner"
+   android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="30dp"
+        android:layout_marginRight="50dp"
+        android:layout_marginLeft="50dp"
+        android:orientation="horizontal"
+        android:weightSum="1"
+        android:layout_below="@+id/layout_qty">
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:textSize="18sp"
+            android:layout_marginLeft="10dp"
+            android:textColor="@color/black"
+            android:layout_weight=".3"
+            android:text="@string/selctunit"></TextView>
 
+        <Spinner
+            android:id="@+id/spn_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="10dp"
+            android:layout_weight=".7"
+          android:layout_gravity="center"
+            android:gravity="center"
+
+            ></Spinner>
+    </LinearLayout>
     <LinearLayout
         android:id="@+id/ll_btn"
         style="@style/AppTheme.HorizontalButtonLayout"
-        android:layout_below="@+id/layout_qty"
+        android:layout_below="@+id/layout_spinner"
         android:layout_marginTop="50dp">
 
         <Button
@@ -188,5 +225,7 @@
                 android:textSize="20sp" />
         </TableRow>
     </TableLayout>
+    </RelativeLayout>
+</ScrollView>
 
 </RelativeLayout>

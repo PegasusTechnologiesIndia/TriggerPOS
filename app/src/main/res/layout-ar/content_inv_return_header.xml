@@ -16,20 +16,21 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
             <EditText
                 android:id="@+id/edt_voucher_no"
                 style="@style/AppTheme.EditText"
+                android:gravity="right"
                 android:hint="@string/voucher_no_auto_generated"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -37,10 +38,11 @@
                 android:id="@+id/edt_order_code"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/invoice_no"
+                android:gravity="right"
                 android:selectAllOnFocus="true"
                 android:layout_marginTop="15dp"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -71,6 +73,8 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="1dp"
+                    android:gravity="right"
+
                     android:layout_weight="2.2"
                     android:background="@drawable/edittext_bg"
                     />
@@ -80,6 +84,7 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginTop="15dp">
 
                 <EditText
@@ -104,7 +109,7 @@
             </TableRow>
         </TableLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -112,9 +117,11 @@
                 android:id="@+id/edt_remarks"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Remarks"
+                android:gravity="right"
+
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
 

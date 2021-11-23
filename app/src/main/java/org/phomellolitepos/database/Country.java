@@ -169,6 +169,34 @@ public class Country {
         return insert;
     }
 
+
+    public void add_country(ArrayList<Country> list,SQLiteDatabase db) {
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Country country : list) {
+
+
+                values.put("country_id", country.get_country_id());
+                values.put("name", country.get_name());
+                values.put("isd_code", country.get_isd_code());
+                values.put("iso_code_2", country.get_iso_code_2());
+                values.put("iso_code_3", country.get_iso_code_3());
+                values.put("currency_symbol", country.get_currency_symbol());
+                values.put("currency_place", country.get_currency_place());
+                values.put("decimal_place", country.get_decimal_place());
+                values.put("postcode_required", country.get_postcode_required());
+                values.put("status", country.get_status());
+
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
     public static Country getCountry(Context context, String WhereClasue, SQLiteDatabase database) {
         String Query = "Select * FROM " + tableName + " " + WhereClasue;
         Country master = null;

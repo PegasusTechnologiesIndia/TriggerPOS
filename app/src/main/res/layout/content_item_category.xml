@@ -40,7 +40,7 @@
         </Spinner>
     </LinearLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_item_ct_code"
         android:layout_marginTop="10dp"
         style="@style/AppTheme.TextInputLayout"
@@ -54,9 +54,9 @@
             style="@style/AppTheme.EditText"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_item_ct_name"
         android:layout_below="@+id/edt_layout_item_ct_code"
         style="@style/AppTheme.TextInputLayout"
@@ -69,13 +69,28 @@
             style="@style/AppTheme.EditText"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
+    <com.google.android.material.textfield.TextInputLayout
+        android:id="@+id/edt_layout_item_ct_ip"
+        android:layout_below="@+id/edt_layout_item_ct_name"
+        style="@style/AppTheme.TextInputLayout"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+        >
+
+        <EditText
+            android:id="@+id/edt_item_ct_ip"
+            android:hint="@string/categoryip"
+            style="@style/AppTheme.EditText"
+            android:selectAllOnFocus="true"/>
+
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 <LinearLayout
 
     android:layout_below="@+id/edt_layout_item_ct_name"
-    android:layout_marginTop="40dp"
+    android:layout_marginTop="70dp"
+
     style="@style/AppTheme.HorizontalButtonLayout">
 
     <Button

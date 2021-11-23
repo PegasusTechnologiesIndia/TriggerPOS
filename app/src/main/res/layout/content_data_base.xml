@@ -22,7 +22,7 @@
             android:id="@+id/linear_layout1"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginTop="20dp"
+            android:layout_margin="10dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
@@ -30,12 +30,20 @@
             <Button
                 android:id="@+id/btn_database"
                 style="@style/AppTheme.DatabaseButton"
-                android:text="@string/BackUp" />
-
-            <Button
-                android:id="@+id/btn_database_clear"
                 android:layout_marginRight="10dp"
                 android:layout_marginLeft="10dp"
+                android:text="@string/BackUp" />
+            <Button
+                android:id="@+id/btn_initialize"
+                style="@style/AppTheme.DatabaseButton"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/initialize"
+                />
+            <Button
+                android:id="@+id/btn_database_clear"
+
+                android:visibility="gone"
                 style="@style/AppTheme.DatabaseButton"
                 android:text="@string/Clear_Transaction" />
 
@@ -45,15 +53,16 @@
             android:id="@+id/linear_layout3"
             android:layout_width="match_parent"
             android:layout_height="100dp"
-            android:layout_marginTop="20dp"
+            android:layout_margin="10dp"
             android:gravity="center_horizontal"
             android:orientation="horizontal">
-            <Button
-                android:id="@+id/btn_initialize"
-                style="@style/AppTheme.DatabaseButton"
-                android:text="@string/initialize"
-                />
 
+            <Button
+                android:id="@+id/btn_push_order"
+                style="@style/AppTheme.DatabaseButton"
+                android:layout_marginRight="10dp"
+                android:layout_marginLeft="10dp"
+                android:text="@string/Pushorders" />
             <Button
                 android:id="@+id/btn_import_table"
                 style="@style/AppTheme.DatabaseButton"
@@ -71,13 +80,13 @@
             android:gravity="center_horizontal"
             android:orientation="horizontal">
 
-
             <Button
-                android:id="@+id/btn_push_order"
+                android:id="@+id/btn_push_orderparking"
                 style="@style/AppTheme.DatabaseButton"
-
+                android:layout_marginRight="10dp"
+                android:visibility="gone"
+                android:layout_marginLeft="10dp"
                 android:text="@string/Pushorders" />
-
 
             <Button
                 android:id="@+id/btn_all_sync"

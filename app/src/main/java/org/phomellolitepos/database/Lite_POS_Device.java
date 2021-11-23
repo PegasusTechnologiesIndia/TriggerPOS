@@ -32,10 +32,11 @@ public class Lite_POS_Device {
     private String license_key;
     private String license_type;
     private String Status;
+    private String Location_name;
 
     public Lite_POS_Device(Context context, String Id, String Device_Id,
                            String App_Type, String Device_Code, String Device_Name, String Expiry_Date, String Device_Symbol,
-                           String Location_Code, String Currency_Symbol, String Decimal_Place, String Currency_Place,String licensecustomerid,String licensecode,String licensekey,String licensetype,String Status
+                           String Location_Code, String Currency_Symbol, String Decimal_Place, String Currency_Place,String licensecustomerid,String licensecode,String licensekey,String licensetype,String Status,String location_name
                        ) {
 
         db = new Database(context);
@@ -57,10 +58,19 @@ public class Lite_POS_Device {
         this.setLicense_key(licensekey);
         this.setLicense_type(licensetype);
         this.setStatus(Status);
+        this.setLocation_name(location_name);
 
     }
 
 
+    public String getLocation_name() {
+        return Location_name;
+    }
+
+    public void setLocation_name(String location_name) {
+        Location_name = location_name;
+        value.put("Location_name", Location_name);
+    }
 
     public String getStatus() {
         return Status;
@@ -247,7 +257,7 @@ public class Lite_POS_Device {
                             cursor.getString(5), cursor.getString(6),
                             cursor.getString(7), cursor.getString(8),
                             cursor.getString(9), cursor.getString(10),
-                            cursor.getString(11),cursor.getString(12),cursor.getString(13),cursor.getString(14),cursor.getString(15));
+                            cursor.getString(11),cursor.getString(12),cursor.getString(13),cursor.getString(14),cursor.getString(15),cursor.getString(16));
                 } while (cursor.moveToNext());
             }
             cursor.close();

@@ -14,7 +14,7 @@
         android:text="@string/Empty_Bucket"
         style="@style/AppTheme.NoListfoundText"/>
 
-    <android.support.design.widget.BottomNavigationView
+    <com.google.android.material.bottomnavigation.BottomNavigationView
 
         android:id="@+id/retail_bottom_navigation"
         android:layout_width="match_parent"

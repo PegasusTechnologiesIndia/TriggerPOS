@@ -26,11 +26,12 @@ public class Acc_Customer_Credit {
     private String modified_by;
     private String modified_date;
     private String voucher_no;
+    private String payment_id;
     private Database db;
     private ContentValues value;
 
     public Acc_Customer_Credit(Context context, String id, String trans_date,
-                String contact_code, String cr_amount, String paid_amount, String balance_amount, String z_no,String is_active, String modified_by, String modified_date,String voucherno) {
+                String contact_code, String cr_amount, String paid_amount, String balance_amount, String z_no,String is_active, String modified_by, String modified_date,String voucherno,String paymentid) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -46,6 +47,16 @@ public class Acc_Customer_Credit {
         this.set_modified_by(modified_by);
         this.set_modified_date(modified_date);
         this.setVoucher_no(voucherno);
+        this.setPayment_id(paymentid);
+    }
+
+    public String getPayment_id() {
+        return payment_id;
+    }
+
+    public void setPayment_id(String paymentid) {
+        this.payment_id = payment_id;
+        value.put("payment_id", paymentid);
     }
 
     public String getVoucher_no() {
@@ -189,7 +200,8 @@ public class Acc_Customer_Credit {
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7), cursor.getString(8),
-                        cursor.getString(9),cursor.getString(10)
+                        cursor.getString(9),cursor.getString(10),
+                        cursor.getString(11)
                         );
             } while (cursor.moveToNext());
         }
@@ -215,7 +227,8 @@ public class Acc_Customer_Credit {
                         cursor.getString(5),
                         cursor.getString(6),
                         cursor.getString(7), cursor.getString(8),
-                        cursor.getString(9),cursor.getString(10)
+                        cursor.getString(9),cursor.getString(10),
+                        cursor.getString(11)
                         );
 
                 list.add(master);

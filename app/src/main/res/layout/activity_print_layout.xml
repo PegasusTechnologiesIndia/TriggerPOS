@@ -14,15 +14,17 @@
 
     <Button
         android:id="@+id/button1"
-        android:layout_width="wrap_content"
+        android:layout_width="150dp"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="10dp"
         android:layout_marginBottom="10dp"
+        android:background="@color/colorPrimary"
         android:padding="10dp"
         android:paddingLeft="10dp"
         android:paddingRight="10dp"
-        android:textSize="18sp"
-        android:text="@string/print" />
+        android:text="@string/print"
+        android:textColor="@color/whitecolor"
+        android:textSize="18sp" />
 
 </RelativeLayout>

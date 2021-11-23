@@ -1,0 +1,754 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_report"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:layout_marginBottom="20dp"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ReportActivity"
+    tools:showIn="@layout/activity_report">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:orientation="vertical">
+
+        <TableLayout
+            android:id="@+id/tableLayout1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_margin="2dp"
+            android:layout_marginTop="15dp"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            tools:ignore="UselessParent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_date_of"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/From"
+                    android:textColor="#ff0000"
+                    android:textSize="25sp" />
+
+
+                <EditText
+
+                    android:id="@+id/edt_from"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/From"
+                    android:inputType="date"
+                    android:textSize="18sp">
+
+                </EditText>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_to"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/To"
+                    android:textColor="#ff0000"
+                    android:textSize="25sp" />
+
+
+                <EditText
+                    android:id="@+id/edt_to"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/To"
+                    android:inputType="date"
+                    android:textSize="18sp">
+
+                </EditText>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/tt_cus_spn"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/Contact"
+                    android:textColor="#ff0000"
+                    android:textSize="25sp" />
+
+                <Spinner
+                    android:id="@+id/spn_cus"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"></Spinner>
+
+            </TableRow>
+
+            <TableRow
+                android:id="@+id/category_row"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:visibility="gone"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_category"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/Category"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+
+                <Button
+                    android:id="@+id/btn_report_category"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:background="#fb7c3e"
+                    android:ems="10"
+                    android:text="@string/Slct_category"
+                    android:textAllCaps="false"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp">
+
+                </Button>
+
+            </TableRow>
+
+
+        </TableLayout>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+
+            <LinearLayout
+                android:id="@+id/ll_summary"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="20dp"
+                android:orientation="vertical">
+
+                <View
+                    android:id="@+id/devider5"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/summary_report"
+                    android:textColor="#333333"
+                    android:textSize="25sp" />
+
+                <Button
+                    android:id="@+id/btn_daily_report"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="20dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Daily_Sales_Report" />
+
+                <Button
+                    android:id="@+id/btn_monthly_report"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Monthly_Report" />
+
+
+                <Button
+                    android:id="@+id/btn_item_summary"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/Category_Sales_Report" />
+
+                <Button
+                    android:id="@+id/btn_salesby_item"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/sales_by_item_report" />
+
+                <Button
+                    android:id="@+id/btn_delivery"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    android:textSize="22sp"
+                    android:layout_marginRight="10dp"
+                    android:text="@string/delivery_report" />
+
+                <Button
+                    android:id="@+id/btn_item_profit_report"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginTop="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/item_profit_report" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_header"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/header_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_invoice_header"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/Invoice_Header_Report" />
+
+                <Button
+                    android:id="@+id/btn_order_payment"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/order_payment_report" />
+
+                <Button
+                    android:id="@+id/btn_open_odr_report"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Cancel_Order_Report" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_detail"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/detail_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_item_wise"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/order_item_report" />
+
+            </LinearLayout>
+
+
+            <LinearLayout
+                android:id="@+id/ll_account"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:id="@+id/textView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/accounts_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_zclose"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Z_Close_Report" />
+                <Button
+                    android:id="@+id/btn_vehicleinreport"
+                    style="@style/AppTheme.DatabaseButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/vehicleinreport" />
+                <Button
+                    android:id="@+id/btn_vehiclesumreport"
+                    style="@style/AppTheme.DatabaseButton"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/vehiclesummaryreport" />
+                <Button
+                    android:id="@+id/btn_pay_collec"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Payment_Collection_Report" />
+
+                <Button
+                    android:id="@+id/btn_cus_cr_coltion"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:visibility="gone"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/customer_credit_collection_report" />
+
+                <Button
+                    android:id="@+id/btn_cus_smry"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/customer_summery_report"
+                    android:visibility="gone"/>
+
+                <Button
+                    android:id="@+id/btn_cus_sate"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/customer_statement_report"
+                    android:visibility="gone"/>
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_purchase"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/purchase_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_psumry_header"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/header" />
+
+
+                <Button
+                    android:id="@+id/btn_psumy_by_item"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/summary_by_item" />
+
+                <Button
+                    android:id="@+id/btn_psumy_by_suplr_pay"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/summary_by_supplier_payment" />
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_master"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/master_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_item_categry"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/item_category_report" />
+
+                <Button
+                    android:id="@+id/btn_item"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/item_report" />
+
+                <Button
+                    android:id="@+id/btn_contact_group"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:visibility="gone"
+                    android:textSize="22sp"
+                    android:text="@string/contact_group_report" />
+
+                <Button
+                    android:id="@+id/btn_contact"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:textSize="22sp"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/contact_report" />
+
+                <Button
+                    android:id="@+id/btn_tax"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/Tax_Report" />
+
+                <Button
+                    android:id="@+id/btn_item_tax"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/item_tax_report" />
+
+                <Button
+                    android:id="@+id/btn_oder_type_tax"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/order_tax_report" />
+
+                <Button
+                    android:id="@+id/btn_user"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/user_report" />
+
+                <Button
+                    android:id="@+id/btn_low_stock"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:visibility="gone"
+                    android:text="@string/low_stock_report" />
+
+
+                <Button
+                    android:id="@+id/btn_stock"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:visibility="gone"
+                    android:text="@string/stock_report" />
+
+
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_gst"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/india_gst_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_gst_sale_regis"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/gst_sale_register_report" />
+
+                <Button
+                    android:id="@+id/btn_gst_item_wise"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/order_item_gst_report" />
+            </LinearLayout>
+
+            <LinearLayout
+                android:id="@+id/ll_vat"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical">
+
+
+                <View
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_marginTop="20dp"
+                    android:background="#555555"></View>
+
+                <TextView
+
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginTop="10dp"
+                    android:text="@string/india_vat_report"
+                    android:textColor="#333333"
+                    android:textSize="25dp" />
+
+                <Button
+                    android:id="@+id/btn_vat_sale_regis"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/gst_vat_register_report" />
+
+                <Button
+                    android:id="@+id/btn_vat_item_wise"
+                    style="@style/AppTheme.DatabaseButton_600dp"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:layout_marginTop="10dp"
+                    android:textSize="22sp"
+                    android:text="@string/order_item_vat_report" />
+            </LinearLayout>
+        </LinearLayout>
+    </LinearLayout>
+</ScrollView>

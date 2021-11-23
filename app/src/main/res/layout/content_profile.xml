@@ -16,6 +16,11 @@
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/customborder"
+        android:layout_marginRight="20dp"
+        android:layout_marginLeft="20dp"
+        android:gravity="center"
         android:orientation="vertical">
 
         <ImageView
@@ -25,7 +30,8 @@
             android:layout_above="@+id/txt_footer"
             android:layout_centerHorizontal="true"
             android:layout_gravity="center_horizontal"
-            android:background="@drawable/logo3" />
+            android:visibility="gone"
+            android:background="@drawable/triggerposlogo" />
 
         <TableLayout
             android:id="@+id/tableLayout1"
@@ -65,19 +71,22 @@
                     android:layout_marginLeft="2dp"
                     android:layout_weight="0.5"
                     android:text=":"
+
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
 
-                <TextView
+                <EditText
                     android:id="@+id/txt_res_code"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
                     android:layout_weight="1.5"
                     android:text=""
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false"/>
 
 
             </TableRow>
@@ -119,6 +128,7 @@
                     android:layout_marginLeft="2dp"
                     android:layout_weight="1.5"
                     android:text=""
+                    android:singleLine="true"
                     android:textColor="#333333"
                     android:textSize="16sp"
                     android:enabled="false"/>
@@ -245,7 +255,7 @@
                     android:textSize="16sp" />
 
 
-                <TextView
+                <EditText
                     android:id="@+id/txt_email"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -254,7 +264,8 @@
                     android:layout_weight="1.5"
                     android:text=""
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false"/>
 
             </TableRow>
 
@@ -422,7 +433,7 @@
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
-                <TextView
+                <EditText
                     android:id="@+id/txt_device_code"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -431,7 +442,8 @@
                     android:layout_weight="1.5"
                     android:text=""
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false" />
 
             </TableRow>
 
@@ -464,7 +476,7 @@
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
-                <TextView
+                <EditText
                     android:id="@+id/txt_loc_code"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -473,7 +485,8 @@
                     android:layout_weight="1.5"
                     android:text=""
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false" />
 
             </TableRow>
 
@@ -507,7 +520,7 @@
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
-                <TextView
+                <EditText
                     android:id="@+id/txt_exp"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
@@ -516,7 +529,8 @@
                     android:layout_weight="1.5"
                     android:text=""
                     android:textColor="#333333"
-                    android:textSize="16sp" />
+                    android:textSize="16sp"
+                    android:enabled="false" />
 
             </TableRow>
 
@@ -550,11 +564,17 @@
                     android:textSize="16sp"
                     android:layout_gravity="center_vertical"/>
 
-                <Spinner
+                <EditText
                     android:id="@+id/spn_country"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
-                    android:layout_weight="1.5"/>
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1.5"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:enabled="false"/>
             </TableRow>
 
             <TableRow
@@ -573,6 +593,7 @@
                     android:layout_height="wrap_content"
                     android:text="@string/Zone"
                     android:layout_weight="1"
+
                     android:layout_marginLeft="2dp"
                     android:layout_gravity="center_vertical"
                     android:textColor="#333333"/>
@@ -586,12 +607,17 @@
                     android:textColor="#333333"
                     android:textSize="16sp" />
 
-                <Spinner
+                <EditText
                     android:id="@+id/spn_zone"
                     android:layout_width="0dp"
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
-                    android:layout_weight="1.5"/>
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="1.5"
+                    android:text=""
+                    android:textColor="#333333"
+                    android:textSize="16sp"
+                    android:enabled="false"/>
 
             </TableRow>
 
@@ -623,10 +649,21 @@
             style="@style/AppTheme.Button"
             android:layout_below="@+id/tableLayout1"
             android:layout_centerHorizontal="true"
-            android:layout_marginBottom="20dp"
+
             android:layout_marginTop="20dp"
 
             android:background="#403c3c"
             android:text="@string/get_profile" />
+
+        <Button
+            android:id="@+id/btn_get_changeip"
+            style="@style/AppTheme.Button"
+            android:layout_below="@+id/tableLayout1"
+            android:layout_centerHorizontal="true"
+            android:layout_marginBottom="20dp"
+            android:layout_marginTop="20dp"
+
+            android:background="#403c3c"
+            android:text="@string/Changeip" />
     </LinearLayout>
 </ScrollView>

@@ -2,7 +2,9 @@ package org.phomellolitepos.Adapter;
 
 import android.content.Context;
 import android.content.DialogInterface;
-import android.support.v7.app.AlertDialog;
+import androidx.appcompat.app.AlertDialog;
+
+import android.database.sqlite.SQLiteDatabase;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -16,6 +18,11 @@ import org.phomellolitepos.R;
 import org.phomellolitepos.CusReturnFinalActivity;
 import org.phomellolitepos.StockAdjestment.StockAdjectmentDetailList;
 import org.phomellolitepos.Util.Globals;
+import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Item_Group_Tax;
+import org.phomellolitepos.database.Order_Item_Tax;
+import org.phomellolitepos.database.Return_Item_Tax;
+import org.phomellolitepos.database.Tax_Master;
 
 import java.util.ArrayList;
 
@@ -30,7 +37,9 @@ public class CusReturnFinalListAdapter extends BaseAdapter{
     String result1;
     String decimal_check;
     ArrayList<StockAdjectmentDetailList> data;
-
+    ArrayList<Item_Group_Tax> item_group_taxArrayList;
+    SQLiteDatabase database;
+    Database db;
     public CusReturnFinalListAdapter(Context context,
                                      ArrayList<StockAdjectmentDetailList> list) {
         this.context = context;
@@ -55,6 +64,13 @@ public class CusReturnFinalListAdapter extends BaseAdapter{
     public View getView(final int position, View convertView, ViewGroup parent) {
         final TextView txt_item_name, txt_item_code, txt_price;
         ImageView delete;
+        try {
+            db = new Database(context);
+            database = db.getWritableDatabase();
+        }
+        catch(Exception e){
+
+        }
         inflater = (LayoutInflater) context
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
@@ -73,6 +89,37 @@ public class CusReturnFinalListAdapter extends BaseAdapter{
         txt_item_name.setText(resultp.getItem_name());
         txt_item_code.setText(resultp.getItem_code() + " ("+ resultp.getQty() + "*" +resultp.getPrice() + ")");
         txt_price.setText(Globals.myNumberFormat2Price(Double.parseDouble(resultp.getLine_total()), decimal_check));
+
+       String item_code= resultp.getItem_code();
+        item_group_taxArrayList = Item_Group_Tax.getAllItem_Group_Tax(context, "Where item_group_code = '" + item_code + "'", database, db);
+        Double iTax = 0d;
+        Double iTaxTotal = 0d;
+        //      if (taxIdFinalAarry.size() > 0) {
+        for (int i = 0; i < item_group_taxArrayList.size(); i++) {
+            iTax = 0d;
+            Tax_Master tax_master = Tax_Master.getTax_Master(context, "Where tax_id = '" + item_group_taxArrayList.get(i).get_tax_id() + "'", database, db);
+            if(tax_master!=null) {
+                Double iPrice = Double.parseDouble(resultp.getPrice());
+                if (tax_master.get_tax_type().equals("P")) {
+                    iTax = iTax + (iPrice * Double.parseDouble(tax_master.get_rate()) / 100);
+                } else {
+                    iTax = iTax + Double.parseDouble(tax_master.get_rate());
+                }
+
+                Return_Item_Tax return_item_tax = new Return_Item_Tax(context, "", "", Globals.SRNO + "", resultp.getItem_code(), item_group_taxArrayList.get(i).get_tax_id(), tax_master.get_tax_type(), tax_master.get_rate(), Globals.myNumberFormat2Price(iTax, decimal_check) + "");
+                Globals.return_item_tax.add(return_item_tax);
+            }
+            else{}
+        }
+        // }
+       /* Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
+        Globals.TotalSlesPrice_CustomerDisplay = Double.parseDouble(sprice + "");*/
+
+        //((CusReturnFinalActivity) context).setQuantityPrice(data.get(position).getQty(), data.get(position).getLine_total());
+        /*Globals.ReturnTotalPrice =  (Double.parseDouble(resultp.getLine_total())) * Double.parseDouble(resultp.getQty()));
+        Globals.ReturnTotalQty =  Double.parseDouble(resultp.getQty()) ;*/
+
+
         itemView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -92,11 +139,12 @@ public class CusReturnFinalListAdapter extends BaseAdapter{
 
                 alertDialog.setPositiveButton("YES", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog,int which) {
-                        data.remove(position);
-                    notifyDataSetChanged();
-                        String str_update= "DELETE";
-                        ((CusReturnFinalActivity) context).setTextView();
 
+                        String str_update= "DELETE";
+                        StockAdjectmentDetailList resultp = data.get(position);
+                        ((CusReturnFinalActivity) context).setTextView(position+"",resultp.getQty(),resultp.getPrice(),str_update);
+                        data.remove(position);
+                        notifyDataSetChanged();
                     }
                 });
 

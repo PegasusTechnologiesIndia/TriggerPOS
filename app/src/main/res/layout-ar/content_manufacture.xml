@@ -13,7 +13,7 @@
     tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.ManufactureActivity"
     tools:showIn="@layout/activity_manufacture">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_manufacture_code"
         android:layout_alignParentTop="true"
         android:layout_marginTop="30dp"
@@ -26,9 +26,9 @@
             android:hint="@string/Manufacture_Code"
             style="@style/AppTheme.EditText"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_manufacture_name"
         android:layout_below="@+id/edt_layout_manufacture_code"
         style="@style/AppTheme.TextInputLayout"
@@ -41,7 +41,7 @@
             android:hint="@string/Manufacture_Name"
             style="@style/AppTheme.EditText"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
     <LinearLayout

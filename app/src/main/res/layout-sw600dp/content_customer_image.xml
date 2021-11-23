@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.CustomerImageActivity"
+    tools:showIn="@layout/activity_customer_image">
+
+    <LinearLayout
+        android:id="@+id/ll"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:layout_margin="2dp">
+        <LinearLayout
+           android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="2"
+            >
+            <Button
+                android:id="@+id/btn_browse"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Browse"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:background="#fb7c3e"
+                android:textSize="16sp"
+                android:layout_weight="1"
+                />
+
+            <Button
+                android:id="@+id/btn_add"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:text="Add"
+                android:textAllCaps="false"
+                android:textColor="#ffffff"
+                android:background="#403c3c"
+                android:textSize="16sp"
+                android:layout_weight="1"
+                android:layout_marginLeft="2dp"
+                android:layout_marginRight="2dp"/>
+
+        </LinearLayout>
+
+        <EditText
+            android:id="@+id/edt_cus_img"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="10dp"
+            android:enabled="false"/>
+    </LinearLayout>
+
+    <TextView
+        android:id="@+id/txt_cus_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="No Image Found"
+        android:textSize="30sp"
+        android:layout_below="@+id/ll"
+        android:visibility="invisible"
+        android:layout_centerHorizontal="true"
+        />
+    <ListView
+    android:id="@+id/list_cus_img"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_below="@+id/txt_cus_img"
+    android:layout_marginTop="10dp"
+    android:layout_marginBottom="50dp"
+    android:background="#dddddd"
+    >
+    </ListView>
+
+<Button
+    android:id="@+id/btn_save"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:text="@string/save"
+    android:textAllCaps="false"
+    android:textColor="#ffffff"
+    android:background="#403c3c"
+    android:textSize="16sp"
+    android:layout_alignParentBottom="true"/>
+
+</RelativeLayout>

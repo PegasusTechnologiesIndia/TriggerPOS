@@ -1,0 +1,235 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.ReservationActivity"
+    tools:showIn="@layout/activity_reservation">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <EditText
+                    android:id="@+id/edt_time"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:background="@drawable/edittext_bg"
+                    android:hint="Time"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:enabled="false"
+                    android:textColor="#333333"
+                    />
+
+                <ImageView
+                    android:id="@+id/img_time"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/time"/>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="15dp">
+
+                <EditText
+                    android:id="@+id/edt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:background="@drawable/edittext_bg"
+                    android:hint="Date"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:enabled="false"
+                    android:textColor="#333333"/>
+
+                <ImageView
+                    android:id="@+id/img_date"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/date"/>
+
+            </TableRow>
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="15dp"
+                android:background="#333333">
+            </View>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/lbl_table"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Table"
+                    android:textStyle="bold"
+                    android:textSize="17dp"
+                    />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <Spinner
+                    android:id="@+id/spn_table"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#ffffff"
+                    />
+
+                 </TableRow>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="15dp"
+                android:background="#333333">
+            </View>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/lbl_customer"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="Customer"
+                    android:textStyle="bold"
+                    android:textSize="17dp"
+                    />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <Button
+                    android:id="@+id/spn_customer"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#fb7c3e"
+                    android:text="Select Customer"
+                    android:textColor="#ffffff"
+                    android:textAllCaps="false"
+                    />
+
+            </TableRow>
+
+
+            <View
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_marginTop="15dp"
+                android:background="#333333">
+            </View>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <TextView
+                    android:id="@+id/lbl_user"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="User"
+                    android:textStyle="bold"
+                    android:textSize="17dp"
+                    />
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp">
+
+                <Spinner
+                    android:id="@+id/spn_user"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:layout_marginRight="10dp"
+                    android:background="#ffffff"
+                    />
+
+            </TableRow>
+
+        </TableLayout>
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton"
+                android:text="@string/Next" />
+
+            <Button
+                android:id="@+id/btn_item_delete"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+
+    </LinearLayout>
+
+    </LinearLayout>
+
+
+</ScrollView>

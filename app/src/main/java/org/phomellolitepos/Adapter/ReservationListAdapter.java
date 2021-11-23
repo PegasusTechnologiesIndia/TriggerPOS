@@ -187,7 +187,8 @@ public class ReservationListAdapter extends BaseAdapter {
 
 
                                     Double sprice = Double.parseDouble(sale_priceStr) + iTaxTotal;
-                                    ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", item.get_item_code(), item.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "");
+                                    Double sperwdtax= sprice-iTaxTotal;
+                                    ShoppingCart cartItem = new ShoppingCart(context, Globals.SRNO + "", item.get_item_code(), item.get_item_name(), "1", cost_priceStr, sale_priceStr + "", iTaxTotal + "", "0", (1 * Double.parseDouble(sale_priceStr)) + iTaxTotal + "","0","0","","",item.get_unit_id(),sperwdtax+"");
                                     Globals.cart.add(cartItem);
                                     Globals.SRNO = Globals.SRNO + 1;
                                     Globals.TotalItemPrice = Globals.TotalItemPrice + (1 * Double.parseDouble(sprice + ""));

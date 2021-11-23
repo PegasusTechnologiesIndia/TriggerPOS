@@ -6,10 +6,11 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -25,7 +26,6 @@ import android.widget.Toast;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Tax_Master;
 import org.phomellolitepos.database.Unit;
 
 import java.text.SimpleDateFormat;
@@ -47,7 +47,7 @@ public class UnitActivity extends AppCompatActivity {
     AlertDialog alert;
     LinearLayout.LayoutParams lp;
     MenuItem menuItem;
-
+    String Unitid;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -78,6 +78,7 @@ public class UnitActivity extends AppCompatActivity {
                         try {
                             sleep(1000);
                             Intent intent = new Intent(UnitActivity.this, UnitListActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                             startActivity(intent);
                             pDialog.dismiss();
                             finish();
@@ -165,35 +166,59 @@ public class UnitActivity extends AppCompatActivity {
                                     public void run() {
                                         try {
                                             sleep(1000);
-                                            database.beginTransaction();
+                                          //  database.beginTransaction();
 
-                                            Unit unit = Unit.getUnit(getApplicationContext(), database, db, "WHERE unit_id = '" + unit_id + "'");
-                                            unit.set_is_active("false");
-                                            long h = unit.updateUnit("unit_id=?", new String[]{unit_id}, database);
-                                            if (h > 0) {
-                                                database.setTransactionSuccessful();
-                                                database.endTransaction();
-                                                pDialog.dismiss();
+                                              String sqlQuery="select ut.unit_id from unit ut left join item i ON i.unit_id = ut.unit_id where ut.unit_id = '" + unit_id + "' and i.is_active ='1'";
+                                            //database = db.getReadableDatabase();
+                                            Cursor cursor = database.rawQuery(sqlQuery, null);
+                                            if (cursor.moveToFirst()) {
+                                                do {
+                                                  Unitid = cursor.getString(0);
+                                                } while (cursor.moveToNext());
+
+                                            }
+
+                                            // closing connection
+                                            cursor.close();
+                                            
+                                            if(Unitid!=null){
                                                 runOnUiThread(new Runnable() {
                                                     public void run() {
-                                                        Toast.makeText(getApplicationContext(), R.string.Delete_Successfully, Toast.LENGTH_SHORT).show();
-                                                        Intent intent_category = new Intent(UnitActivity.this, UnitListActivity.class);
-                                                        startActivity(intent_category);
-                                                        finish();
+                                                        pDialog.dismiss();
+                                                        Toast.makeText(getApplicationContext(), getString(R.string.deletemsg), Toast.LENGTH_LONG).show();
+
                                                     }
                                                 });
+                                                }
+                                            else {
+                                                Unit unit = Unit.getUnit(getApplicationContext(), database, db, "WHERE unit_id = '" + unit_id + "'");
+                                                unit.set_is_active("false");
+                                                long h = unit.updateUnit("unit_id=?", new String[]{unit_id}, database);
+                                                if (h > 0) {
+                                                   /* database.setTransactionSuccessful();
+                                                    database.endTransaction();*/
+                                                    pDialog.dismiss();
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), R.string.Delete_Successfully, Toast.LENGTH_SHORT).show();
+                                                            Intent intent_category = new Intent(UnitActivity.this, UnitListActivity.class);
+                                                            startActivity(intent_category);
+                                                            finish();
+                                                        }
+                                                    });
 
 
-                                            } else {
-                                                database.endTransaction();
-                                                pDialog.dismiss();
-                                                runOnUiThread(new Runnable() {
-                                                    public void run() {
-                                                        Toast.makeText(getApplicationContext(), R.string.Record_Not_Deleted, Toast.LENGTH_SHORT).show();
-                                                    }
-                                                });
+                                                } else {
+                                                    database.endTransaction();
+                                                    pDialog.dismiss();
+                                                    runOnUiThread(new Runnable() {
+                                                        public void run() {
+                                                            Toast.makeText(getApplicationContext(), R.string.Record_Not_Deleted, Toast.LENGTH_SHORT).show();
+                                                        }
+                                                    });
 
 
+                                                }
                                             }
 
                                         } catch (InterruptedException e) {
@@ -359,7 +384,7 @@ public class UnitActivity extends AppCompatActivity {
             }
 
             if (edt_code.getText().toString().trim().equals("")) {
-                edt_code.setError("Unit Code is required");
+                edt_code.setError(getString(R.string.unitcodereq));
                 edt_code.requestFocus();
                 return;
             } else {

@@ -104,8 +104,8 @@ public class Sys_Tax_Group {
             } while (cursor.moveToNext());
         }
         cursor.close();
-//        database.close();
-//        db.close();
+     //database.close();
+       // db.close();
         return master;
     }
 

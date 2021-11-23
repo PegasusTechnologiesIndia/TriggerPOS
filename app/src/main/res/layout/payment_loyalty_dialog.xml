@@ -5,7 +5,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:orientation="vertical">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/AppTheme.TextInputLayout"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
         android:layout_marginTop="20dp">
@@ -17,9 +17,9 @@
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/AppTheme.TextInputLayout"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -30,9 +30,9 @@
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/AppTheme.TextInputLayout"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -43,7 +43,7 @@
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -58,7 +58,7 @@
         android:layout_marginTop="20dp"
         />
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         style="@style/AppTheme.TextInputLayout"
         app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
         android:layout_marginTop="15dp">
@@ -71,7 +71,7 @@
             android:selectAllOnFocus="true"
             />
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
 

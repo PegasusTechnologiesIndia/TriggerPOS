@@ -10,9 +10,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,20 +24,10 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.phomellolitepos.Adapter.ManufactureListAdapter;
@@ -429,7 +419,8 @@ public class ManufactureListActivity extends AppCompatActivity {
     private String getManufacture() {
         String succ_manu = "0";
         database.beginTransaction();
-        String serverData = get_manufacture_from_server();
+        String serverData = "";
+               // get_manufacture_from_server();
         try {
 
             final JSONObject jsonObject_manufacture = new JSONObject(serverData);
@@ -496,12 +487,12 @@ public class ManufactureListActivity extends AppCompatActivity {
         return succ_manu;
     }
 
-    private String get_manufacture_from_server() {
+  /*  private String get_manufacture_from_server() {
 
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/manufacture");
+                 Globals.App_IP_URL + "manufacture");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         try {
@@ -523,7 +514,7 @@ public class ManufactureListActivity extends AppCompatActivity {
         }
         return serverData;
 
-    }
+    }*/
 
 
     private boolean isNetworkStatusAvialable(Context applicationContext) {

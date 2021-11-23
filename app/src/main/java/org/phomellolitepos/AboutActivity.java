@@ -10,12 +10,13 @@ import android.content.pm.PackageManager;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.Window;
+import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -46,12 +47,14 @@ public class AboutActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         getSupportActionBar().setTitle(R.string.About);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         txt_version = (TextView) findViewById(R.id.txt_version);
         pegasus_image = (ImageView) findViewById(R.id.pegasus_image);
         listDialog2 = new Dialog(this);
         db = new Database(getApplicationContext());
         database = db.getWritableDatabase();
         settings = Settings.getSettings(getApplicationContext(), database, "");
+
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
         int id = pref.getInt("id", 0);
         if (id == 0) {
@@ -68,35 +71,61 @@ public class AboutActivity extends AppCompatActivity {
                 pDialog.show();
                 Thread timerThread = new Thread() {
                     public void run() {
-                        if (settings.get_Home_Layout().equals("0")) {
-                            try {
-                                Intent intent = new Intent(AboutActivity.this, MainActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        }else if (settings.get_Home_Layout().equals("2")){
-                            try {
-                                Intent intent = new Intent(AboutActivity.this, RetailActivity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
-                        } else {
-                            try {
-                                Intent intent = new Intent(AboutActivity.this, Main2Activity.class);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                                startActivity(intent);
-                                pDialog.dismiss();
-                                finish();
-                            } finally {
-                            }
+
+                        if(Globals.objLPR.getIndustry_Type().equals("2")){
+                            Intent intent = new Intent(AboutActivity.this, Retail_IndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            startActivity(intent);
+                            finish();
+
+                        }
+                       else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                            Intent intent = new Intent(AboutActivity.this, PaymentCollection_MainScreen.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                            startActivity(intent);
+                            finish();
+
                         }
 
+                        else if(Globals.objLPR.getIndustry_Type().equals("4")){
+                            Intent intent = new Intent(AboutActivity.this, ParkingIndustryActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+                            startActivity(intent);
+                            finish();
+                        }
+                        else {
+
+                            if (settings.get_Home_Layout().equals("0")) {
+                                try {
+                                    Intent intent = new Intent(AboutActivity.this, MainActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else if (settings.get_Home_Layout().equals("2")) {
+                                try {
+                                    Intent intent = new Intent(AboutActivity.this, RetailActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            } else {
+                                try {
+                                    Intent intent = new Intent(AboutActivity.this, Main2Activity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                    startActivity(intent);
+                                    pDialog.dismiss();
+                                    finish();
+                                } finally {
+                                }
+                            }
+                        }
                     }
                 };
                 timerThread.start();
@@ -142,7 +171,8 @@ public class AboutActivity extends AppCompatActivity {
                             Window window = listDialog2.getWindow();
                             window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
                             edt_copy_right.setText(settings.get_Copy_Right());
-                            btn_save.setOnClickListener(new View.OnClickListener() {
+                            btn_save.setOnClickListener(new View.OnClickListener()
+                            {
                                 @Override
                                 public void onClick(View view) {
                                     if (edt_pass.getText().toString().trim().equals("Change Copy Right")) {
@@ -182,32 +212,59 @@ public class AboutActivity extends AppCompatActivity {
         pDialog.show();
         Thread timerThread = new Thread() {
             public void run() {
-                if (settings.get_Home_Layout().equals("0")) {
-                    try {
-                        Intent intent = new Intent(AboutActivity.this, MainActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                }else if (settings.get_Home_Layout().equals("2")){
-                    try {
-                        Intent intent = new Intent(AboutActivity.this, RetailActivity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
-                    }
-                } else {
-                    try {
-                        Intent intent = new Intent(AboutActivity.this, Main2Activity.class);
-                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
-                        startActivity(intent);
-                        pDialog.dismiss();
-                        finish();
-                    } finally {
+                if(Globals.objLPR.getIndustry_Type().equals("2")){
+                    Intent intent = new Intent(AboutActivity.this, Retail_IndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    startActivity(intent);
+                    finish();
+
+                }
+               else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                    Intent intent = new Intent(AboutActivity.this, PaymentCollection_MainScreen.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    startActivity(intent);
+                    finish();
+
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("4")){
+                    Intent intent = new Intent(AboutActivity.this, ParkingIndustryActivity.class);
+                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
+
+                    startActivity(intent);
+                    finish();
+
+                }
+
+                else {
+                    if (settings.get_Home_Layout().equals("0")) {
+                        try {
+                            Intent intent = new Intent(AboutActivity.this, MainActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else if (settings.get_Home_Layout().equals("2")) {
+                        try {
+                            Intent intent = new Intent(AboutActivity.this, RetailActivity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
+                    } else {
+                        try {
+                            Intent intent = new Intent(AboutActivity.this, Main2Activity.class);
+                            intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                            startActivity(intent);
+                            pDialog.dismiss();
+                            finish();
+                        } finally {
+                        }
                     }
                 }
             }

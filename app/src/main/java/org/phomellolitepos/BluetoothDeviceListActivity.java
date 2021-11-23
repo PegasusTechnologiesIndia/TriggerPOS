@@ -9,8 +9,8 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.View;
 import android.widget.AdapterView;
@@ -20,6 +20,8 @@ import android.widget.ListView;
 import android.widget.TextView;
 
 import com.hoin.btsdk.BluetoothService;
+
+import org.phomellolitepos.Util.Globals;
 
 import java.util.Set;
 
@@ -60,8 +62,13 @@ BluetoothService mService = null;
         Button scanButton = (Button) findViewById(R.id.button_scan);
         scanButton.setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                doDiscovery();
-                v.setVisibility(View.GONE);
+                try {
+                    doDiscovery();
+                    v.setVisibility(View.GONE);
+                }
+                catch(Exception e){
+
+                }
             }
         });
 
@@ -82,18 +89,49 @@ BluetoothService mService = null;
         filter = new IntentFilter(BluetoothAdapter.ACTION_DISCOVERY_FINISHED);
         this.registerReceiver(mReceiver, filter);
 
-        mService = MainActivity.mService;
+        try {
+            Intent i=getIntent();
+            String flag= i.getStringExtra("flag");
+            Set<BluetoothDevice> pairedDevices;
+            if(flag.equals("settings")) {
 
-        Set<BluetoothDevice> pairedDevices = MainActivity.mService.getPairedDev();
+                    mService = SetttingsActivity.mService;
 
-        if (pairedDevices.size() > 0) {
-            findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
-            for (BluetoothDevice device : pairedDevices) {
-                mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+
+              //  pairedDevices = SetttingsActivity.mService.getPairedDev();
+
             }
-        } else {
-            String noDevices = getResources().getText(R.string.bluetooth_none_paired).toString();
-            mPairedDevicesArrayAdapter.add(noDevices);
+            else if(flag.equals("printtest")){
+                mService = PrintTestActivity.mService;
+
+            }
+            else{
+                if(Globals.objLPR.getIndustry_Type().equals("4")){
+                    mService = ParkingIndustryActivity.mService;
+
+                }
+                else if(Globals.objLPR.getIndustry_Type().equals("3")){
+                    mService = PaymentCollection_MainScreen.mService;
+                }
+                else {
+                    mService = MainActivity.mService;
+                }
+
+
+            }
+            pairedDevices = mService.getPairedDev();
+            if (pairedDevices.size() > 0) {
+                findViewById(R.id.title_paired_devices).setVisibility(View.VISIBLE);
+                for (BluetoothDevice device : pairedDevices) {
+                    mPairedDevicesArrayAdapter.add(device.getName() + "\n" + device.getAddress());
+                }
+            } else {
+                String noDevices = getResources().getText(R.string.bluetooth_none_paired).toString();
+                mPairedDevicesArrayAdapter.add(noDevices);
+            }
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
         }
     }
 
@@ -109,16 +147,22 @@ BluetoothService mService = null;
 
     private void doDiscovery() {
 
-        setProgressBarIndeterminateVisibility(true);
-        setTitle(R.string.bluetooth_scanning);
+        try {
+            setProgressBarIndeterminateVisibility(true);
+            setTitle(R.string.bluetooth_scanning);
 
-        findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
+            findViewById(R.id.title_new_devices).setVisibility(View.VISIBLE);
 
-        if (mService.isDiscovering()) {
-            mService.cancelDiscovery();
+            if (mService.isDiscovering()) {
+                mService.cancelDiscovery();
+            }
+
+            mService.startDiscovery();
+        }
+        catch (Exception e){
+            System.out.println(e.getMessage());
         }
 
-        mService.startDiscovery();
     }
 
     private AdapterView.OnItemClickListener mDeviceClickListener = new AdapterView.OnItemClickListener() {   //����б�������豸

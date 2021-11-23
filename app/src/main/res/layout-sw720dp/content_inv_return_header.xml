@@ -1,0 +1,152 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context=".InvReturnHeaderActivity"
+    tools:showIn="@layout/activity_inv_return_header">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentTop="true"
+        android:layout_margin="10dp"
+        android:orientation="vertical">
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_voucher_no"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/voucher_no_auto_generated"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="1">
+
+                <TextView
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.3"
+                    android:text="@string/payment_method"
+                    android:textColor="#ff0000"
+                    android:textSize="25sp"
+                    />
+
+                <Spinner
+                    android:id="@+id/spn_pay_method"
+                    android:layout_width="0dp"
+                    android:layout_height="40dp"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="0.7"
+                    android:background="@drawable/edittext_bg"
+                    />
+
+            </TableRow>
+        </TableLayout>
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_order_code"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/invoice_no"
+                android:selectAllOnFocus="true"
+                android:imeOptions="actionNext"
+                android:singleLine="true"
+                android:layout_marginTop="15dp"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <TableLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content">
+
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:layout_marginTop="15dp">
+
+                <EditText
+                    android:id="@+id/edt_date"
+                    android:layout_width="0dp"
+                    android:layout_height="45dp"
+                    android:layout_weight="0.8"
+                    android:background="@drawable/edittext_bg"
+                    android:hint="@string/Date"
+                    android:paddingLeft="5dp"
+                    android:paddingRight="5dp"
+                    android:enabled="false"
+                    android:textColor="#333333"/>
+
+                <ImageView
+                    android:id="@+id/img_date"
+                    android:layout_width="45dp"
+                    android:layout_height="45dp"
+                    android:layout_marginLeft="10dp"
+                    android:layout_marginRight="10dp"
+                    android:background="@drawable/date"/>
+            </TableRow>
+        </TableLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            style="@style/AppTheme.TextInputLayout"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_remarks"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/Remarks"
+                android:selectAllOnFocus="true"/>
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_marginBottom="30dp"
+            android:layout_marginTop="40dp">
+
+            <Button
+
+                android:id="@+id/btn_next"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:text="@string/Next" />
+
+            <Button
+                android:id="@+id/btn_item_delete"
+                style="@style/AppTheme.HorizontalButton_600dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+</RelativeLayout>

@@ -9,11 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,7 +36,6 @@ import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Purchase;
-import org.phomellolitepos.database.Returns;
 import org.phomellolitepos.database.Settings;
 
 import java.text.SimpleDateFormat;

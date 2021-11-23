@@ -7,7 +7,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,25 +21,9 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import org.json.JSONObject;
-import org.phomellolitepos.ChangePriceActivity;
-import org.phomellolitepos.ItemActivity;
 
-import org.phomellolitepos.MainActivity;
 import org.phomellolitepos.R;
-import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.RecyclerTouchListener;
-import org.phomellolitepos.database.Contact;
-import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
-import org.phomellolitepos.database.Item_Location;
-import org.phomellolitepos.database.Order_Item_Tax;
-import org.phomellolitepos.database.Settings;
-import org.phomellolitepos.database.ShoppingCart;
-import org.phomellolitepos.database.Tax_Master;
-
-import sunmi.ds.DSKernel;
-import sunmi.ds.callback.ISendCallback;
-import sunmi.ds.data.UPacketFactory;
 
 /**
  * Created by Neeraj Paliwal on 3/24/2017.

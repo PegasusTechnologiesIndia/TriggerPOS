@@ -20,32 +20,34 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.DocumentsContract;
 import android.provider.MediaStore;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.content.ContextCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Spinner;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itextpdf.text.pdf.codec.Base64;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
-import java.io.IOException;
 import java.net.URISyntaxException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -66,9 +68,9 @@ import org.phomellolitepos.database.Item_Supplier;
 import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
 import org.phomellolitepos.database.Manufacture;
-import org.phomellolitepos.database.Purchase_Payment;
 import org.phomellolitepos.database.Unit;
-import org.phomellolitepos.utils.ImageCache;
+
+import static android.os.SystemClock.sleep;
 
 public class ItemActivity extends AppCompatActivity {
     TextInputLayout edt_layout_item_name, edt_layout_item_code, edt_layout_item_cost_price, edt_layout_item_sku,
@@ -76,8 +78,11 @@ public class ItemActivity extends AppCompatActivity {
     EditText edt_item_name, edt_price, edt_item_sku, edt_item_barcode, edt_item_description, edt_item_code,
             edt_item_cost_price, edt_item_sales_price, edt_hsn_code;
     Spinner spinner_item_category, spinner_manufacture, spinner_item_type, spinner_item_unit;
+    TextView txt_selectimage;
     Button btn_next, btn_item_delete;
     CheckBox ck_stockable, ck_service, ck_PIT;
+    LinearLayout ll_itemtype;
+    TextView lbl_spn_item_type;
     Item item;
     Item_Group item_group;
     Item_Location item_location;
@@ -85,13 +90,13 @@ public class ItemActivity extends AppCompatActivity {
     ArrayList<Item_Group> arrayList;
     ArrayList<Unit> arrayUnitList;
     ArrayList<Manufacture> arrayList_manufacture;
-    String spn_code, spn_manufacture_code = "", operation, code, Item_Id, date, decimal_check, spn_unit_code = "";
+    String spn_code, spn_manufacture_code = "", operation, code, Item_Id, date, decimal_check, spn_unit_code = "",ismodifier;
     Database db;
     SQLiteDatabase database;
     Lite_POS_Registration lite_pos_registration;
     ProgressDialog pDialog;
     String Item_item_name = "", Item_code = "", Item_sales_price = "", Item_sku = "", Item_barcode = "", Item_hsn = "", Item_description = "", description = "", Item_cost_price = "";
-    String strITCode = "", item_type;
+    String strITCode = "", item_type="";
     String[] itemType = {};
     ItemUnitListAdapter itemUnitListAdapter;
     ImageView img_logo, img_logo_add;
@@ -108,7 +113,8 @@ public class ItemActivity extends AppCompatActivity {
     Lite_POS_Device liteposdevice;
     String liccustomerid;
     String item_name;
-
+    View viewl;
+CheckBox chk_ismodifier;
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -135,19 +141,21 @@ public class ItemActivity extends AppCompatActivity {
                 Thread timerThread = new Thread() {
                     public void run() {
                         try {
-                            sleep(1000);
+                           // sleep(100);
                             if (tick.equals("Ticket")) {
                                 Intent intent = new Intent(ItemActivity.this, TicketActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                                 pDialog.dismiss();
                                 finish();
                             } else {
                                 Intent intent = new Intent(ItemActivity.this, ItemListActivity.class);
+                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TOP);
                                 startActivity(intent);
                                 pDialog.dismiss();
                                 finish();
                             }
-                        } catch (InterruptedException e) {
+                        } catch (Exception e) {
                             e.printStackTrace();
                         } finally {
                         }
@@ -191,14 +199,37 @@ public class ItemActivity extends AppCompatActivity {
         edt_layout_item_description = (TextInputLayout) findViewById(R.id.edt_layout_item_description);
         edt_layout_item_sales_price = (TextInputLayout) findViewById(R.id.edt_layout_item_sales_price);
         edt_layout_hsn_code = (TextInputLayout) findViewById(R.id.edt_layout_hsn_code);
+
         edt_item_name = (EditText) findViewById(R.id.edt_item_name);
+        edt_item_name.setMaxLines(1);
+        edt_item_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_item_name.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         edt_item_code = (EditText) findViewById(R.id.edt_item_code);
         edt_item_sales_price = (EditText) findViewById(R.id.edt_item_sales_price);
         edt_item_sku = (EditText) findViewById(R.id.edt_item_sku);
+
         edt_item_barcode = (EditText) findViewById(R.id.edt_item_barcode);
+        edt_item_barcode.setMaxLines(1);
+        edt_item_barcode.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_item_barcode.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         edt_item_description = (EditText) findViewById(R.id.edt_item_description);
+        edt_item_description.setMaxLines(1);
+        edt_item_description.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_item_description.setImeOptions(EditorInfo.IME_ACTION_GO);
+
+        edt_item_sku.setMaxLines(1);
+        edt_item_sku.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_item_sku.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         edt_item_cost_price = (EditText) findViewById(R.id.edt_item_cost_price);
+
+
         edt_hsn_code = (EditText) findViewById(R.id.edt_hsn_code);
+        edt_hsn_code.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_hsn_code.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         spinner_item_category = (Spinner) findViewById(R.id.spinner_item_category);
         spinner_manufacture = (Spinner) findViewById(R.id.spinner_manufacture);
         spinner_item_type = (Spinner) findViewById(R.id.spinner_item_type);
@@ -210,6 +241,31 @@ public class ItemActivity extends AppCompatActivity {
         btn_item_delete = (Button) findViewById(R.id.btn_item_delete);
         img_logo = (ImageView) findViewById(R.id.img_logo);
         img_logo_add = (ImageView) findViewById(R.id.img_logo_add);
+        ll_itemtype=(LinearLayout)findViewById(R.id.ll_ittype);
+        lbl_spn_item_type=(TextView) findViewById(R.id.lbl_spn_item_type);
+        txt_selectimage=(TextView)findViewById(R.id.lbl_logo);
+        chk_ismodifier=(CheckBox)findViewById(R.id.chk_ismodifier);
+        viewl=(View)findViewById(R.id.view1);
+
+        if(Globals.objLPR.getIndustry_Type().equals("2"))
+        {
+            chk_ismodifier.setVisibility(View.GONE);
+        }
+        if(Globals.objLPR.getIndustry_Type().equals("4")){
+
+            chk_ismodifier.setVisibility(View.GONE);
+            edt_layout_item_description.setVisibility(View.GONE);
+            edt_layout_item_sku.setVisibility(View.GONE);
+            edt_layout_hsn_code.setVisibility(View.GONE);
+            img_logo.setVisibility(View.VISIBLE);
+            img_logo_add.setVisibility(View.GONE);
+            //ck_PIT.setVisibility(View.GONE);
+            spinner_item_type.setVisibility(View.GONE);
+            lbl_spn_item_type.setVisibility(View.GONE);
+            txt_selectimage.setVisibility(View.GONE);
+           // viewl.setVisibility(View.GONE);
+
+        }
         btn_next.setVisibility(View.GONE);
         Date d = new Date();
         SimpleDateFormat format = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss", Locale.ENGLISH);
@@ -220,6 +276,20 @@ public class ItemActivity extends AppCompatActivity {
             decimal_check = "1";
         }
 
+
+        chk_ismodifier.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView,boolean isChecked) {
+                if(isChecked) {
+               chk_ismodifier.setChecked(true);
+                }
+                else{
+                    chk_ismodifier.setChecked(false);
+                }
+            }
+        }
+        );
         img_logo_add.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
@@ -247,6 +317,16 @@ public class ItemActivity extends AppCompatActivity {
             edt_item_barcode.setText(item.get_barcode());
             edt_hsn_code.setText(item.get_hsn_sac_code());
             edt_item_description.setText(item.get_description());
+
+            try {
+                if (item.getIs_modifier().equals("1")) {
+                    chk_ismodifier.setChecked(true);
+                } else {
+                    chk_ismodifier.setChecked(false);
+                }
+            }catch(Exception e){
+
+            }
 
             String cost_pri = "";
             try {
@@ -335,7 +415,7 @@ public class ItemActivity extends AppCompatActivity {
             }
 
 
-            try {
+       /*     try {
 //                Bitmap bitmap = StringToBitMap(item.get_item_image());
                 img_logo.setImageBitmap(ImageCache.decodeSampledBitmapFromResource(item.get_item_image(), 100, 100));
 //                Globals.logo = bitmap;
@@ -343,7 +423,7 @@ public class ItemActivity extends AppCompatActivity {
 
             } catch (Exception e) {
                 e.printStackTrace();
-            }
+            }*/
         } else {
             btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
             fill_spinner("");
@@ -521,7 +601,14 @@ public class ItemActivity extends AppCompatActivity {
         });
     }
 
-    private void save() {
+    private void save()
+    {
+        if(spinner_item_category.getSelectedItem()==null)
+        {
+            Toast.makeText(ItemActivity.this,"please select category ",Toast.LENGTH_SHORT).show();
+            return;
+        }
+
         if (edt_item_code.getText().toString().equals("")) {
             Item objIT1 = Item.getItem(getApplicationContext(), "  order By item_id Desc LIMIT 1", database, db);
 
@@ -561,7 +648,7 @@ public class ItemActivity extends AppCompatActivity {
             Item_barcode = edt_item_barcode.getText().toString();
         //}
 
-        if (edt_item_cost_price.getText().toString().equals("")) {
+        if (edt_item_cost_price.getText().toString().equals("")||edt_item_cost_price.getText().toString().equals(".")) {
             edt_item_cost_price.setError(getString(R.string.Cost_price_is_required));
             edt_item_cost_price.requestFocus();
             return;
@@ -569,7 +656,7 @@ public class ItemActivity extends AppCompatActivity {
             Item_cost_price = Globals.myNumberFormat2Price(Double.parseDouble(edt_item_cost_price.getText().toString()), decimal_check);
         }
 
-        if (edt_item_sales_price.getText().toString().equals("")) {
+        if (edt_item_sales_price.getText().toString().equals("")||edt_item_sales_price.getText().toString().equals(".")) {
             edt_item_sales_price.setError(getString(R.string.Sale_price_is_required));
             edt_item_sales_price.requestFocus();
             return;
@@ -601,6 +688,14 @@ public class ItemActivity extends AppCompatActivity {
             strPIT = "0";
         }
 
+
+
+        if (chk_ismodifier.isChecked()) {
+
+            ismodifier = "1";
+        } else {
+            ismodifier = "0";
+        }
         if (spn_manufacture_code.equals("")) {
             spn_manufacture_code = "0";
         }
@@ -632,8 +727,9 @@ public class ItemActivity extends AppCompatActivity {
                         sleep(1000);
                         if (operation.equals("Edit")) {
                             Item objIT1=null;
+
                             try {
-                                objIT1 = Item.getItem(getApplicationContext(), "where item_id  != '"+ Item_Id +"'  and item_name='" + edt_item_name.getText().toString() + "'", database, db);
+                                objIT1 = Item.getItem(getApplicationContext(), "where item_id  != '"+ Item_Id +"'  and item_name='" + edt_item_name.getText().toString().toLowerCase() + "' COLLATE NOCASE", database, db);
 
 
 
@@ -669,14 +765,15 @@ public class ItemActivity extends AppCompatActivity {
 
                             if (objIT1!=null) {
                                 pDialog.dismiss();
+                               // Item finalObjIT = objIT1;
                                 runOnUiThread(new Runnable() {
                                     public void run() {
+                                       // if(edt_item_name.getText().toString().equalsIgnoreCase(finalObjIT.get_item_name())) {
 
+                                            edt_item_name.setText(item.get_item_name());
+                                            Toast.makeText(ItemActivity.this, getString(R.string.itempresent), Toast.LENGTH_SHORT).show();
 
-                                        edt_item_name.setText("");
-                                        Toast.makeText(ItemActivity.this, "Item Name already present", Toast.LENGTH_SHORT).show();
-
-
+                                       // }
                                         //  edt_item_name.selectAll();
 
 //                                                    Toast.makeText(getApplicationContext(), "Transaction Clear Successful", Toast.LENGTH_SHORT).show();
@@ -690,8 +787,8 @@ public class ItemActivity extends AppCompatActivity {
                                     public void run() {
 
 
-                                        edt_item_name.setText("");
-                                        Toast.makeText(ItemActivity.this, "Item Code already present", Toast.LENGTH_SHORT).show();
+                                        //edt_item_name.setText("");
+                                        Toast.makeText(ItemActivity.this, getString(R.string.itemcodepresent), Toast.LENGTH_SHORT).show();
 
 
                                         //  edt_item_name.selectAll();
@@ -707,8 +804,8 @@ public class ItemActivity extends AppCompatActivity {
                                     public void run() {
 
 
-                                        edt_item_name.setText("");
-                                        Toast.makeText(ItemActivity.this, "Item Barcode already present", Toast.LENGTH_SHORT).show();
+                                      //  edt_item_name.setText("");
+                                        Toast.makeText(ItemActivity.this, getString(R.string.itembarcodepreset), Toast.LENGTH_SHORT).show();
 
 
                                         //  edt_item_name.selectAll();
@@ -719,12 +816,12 @@ public class ItemActivity extends AppCompatActivity {
 
                             } else {
                                 Fill_Item(Item_Id, Item_item_name, strITCode, Item_sales_price, Item_sku, Item_barcode, Item_description,
-                                        Item_cost_price, spn_code, strStockable, strService, spn_manufacture_code, item_type, spn_unit_code, Item_hsn, strPIT, finalLogo);
+                                        Item_cost_price, spn_code, strStockable, strService, spn_manufacture_code, item_type, spn_unit_code, Item_hsn, strPIT, finalLogo,ismodifier);
                             }
                         } else if (operation.equals("Add")) {
                             Item objIT1=null;
                             try {
-                                 objIT1 = Item.getItem(getApplicationContext(), "where item_name='" + edt_item_name.getText().toString() + "'", database, db);
+                                 objIT1 = Item.getItem(getApplicationContext(), "where item_name='" + edt_item_name.getText().toString().toLowerCase() + "' COLLATE NOCASE", database, db);
 
 
 
@@ -736,7 +833,7 @@ public class ItemActivity extends AppCompatActivity {
 
                             if(edt_item_code.getText().length() > 0) {
                                 try {
-                                    objIT2 = Item.getItem(getApplicationContext(), "where item_code='" + edt_item_code.getText().toString() + "' or barcode  = '"+ edt_item_code.getText().toString()   +"'", database, db);
+                                    objIT2 = Item.getItem(getApplicationContext(), "where item_code='" + edt_item_code.getText().toString() + "' or barcode  = '"+ edt_item_code.getText().toString()   +"'COLLATE NOCASE ", database, db);
 
 
                                 } catch (Exception e) {
@@ -749,7 +846,7 @@ public class ItemActivity extends AppCompatActivity {
 
                             if(edt_item_barcode.getText().length() > 0 && !(edt_item_barcode.getText().equals("")&& !(edt_item_barcode.getText().equals("0")))) {
                                 try {
-                                    objIT3 = Item.getItem(getApplicationContext(), "where barcode='" + edt_item_barcode.getText().toString() + "' or  item_code  = '"+ edt_item_barcode.getText().toString()    +"'", database, db);
+                                    objIT3 = Item.getItem(getApplicationContext(), "where barcode='" + edt_item_barcode.getText().toString() + "' or  item_code  = '"+ edt_item_barcode.getText().toString()    +"' COLLATE NOCASE", database, db);
 
 
                                 } catch (Exception e) {
@@ -765,7 +862,7 @@ public class ItemActivity extends AppCompatActivity {
 
 
                                         edt_item_name.setText("");
-                                        Toast.makeText(ItemActivity.this, "Item Name already present", Toast.LENGTH_SHORT).show();
+                                        Toast.makeText(ItemActivity.this, getString(R.string.itempresent), Toast.LENGTH_SHORT).show();
 
 
                                         //  edt_item_name.selectAll();
@@ -781,8 +878,8 @@ public class ItemActivity extends AppCompatActivity {
                                         public void run() {
 
 
-                                            edt_item_name.setText("");
-                                            Toast.makeText(ItemActivity.this, "Item Code already present", Toast.LENGTH_SHORT).show();
+                                          //  edt_item_name.setText("");
+                                            Toast.makeText(ItemActivity.this, getString(R.string.itemcodepresent), Toast.LENGTH_SHORT).show();
 
 
                                             //  edt_item_name.selectAll();
@@ -798,8 +895,8 @@ public class ItemActivity extends AppCompatActivity {
                                     public void run() {
 
 
-                                        edt_item_name.setText("");
-                                        Toast.makeText(ItemActivity.this, "Item Barcode already present", Toast.LENGTH_SHORT).show();
+                                     //   edt_item_name.setText("");
+                                        Toast.makeText(ItemActivity.this, getString(R.string.itembarcodepreset), Toast.LENGTH_SHORT).show();
 
 
                                         //  edt_item_name.selectAll();
@@ -812,7 +909,7 @@ public class ItemActivity extends AppCompatActivity {
                                 else
                              {
                                 Fill_Item(Item_Id, Item_item_name, strITCode, Item_sales_price, Item_sku, Item_barcode, Item_description,
-                                        Item_cost_price, spn_code, strStockable, strService, spn_manufacture_code, item_type, spn_unit_code, Item_hsn, strPIT, finalLogo);
+                                        Item_cost_price, spn_code, strStockable, strService, spn_manufacture_code, item_type, spn_unit_code, Item_hsn, strPIT, finalLogo,ismodifier);
                             }
                         }
 
@@ -901,11 +998,11 @@ public class ItemActivity extends AppCompatActivity {
         }
     }
 
-    private void Fill_Item(String item_Id, String item_item_name, final String item_code, String item_sales_price, String item_sku, String item_barcode, String item_description, String item_cost_price, String spn_code, String strStockable, String strService, String spn_manufacture_code, String item_type, String spn_unit_code, String hsn_code, final String strPIT, String logo) {
+    private void Fill_Item(String item_Id, String item_item_name, final String item_code, String item_sales_price, String item_sku, String item_barcode, String item_description, String item_cost_price, String spn_code, String strStockable, String strService, String spn_manufacture_code, String item_type, String spn_unit_code, String hsn_code, final String strPIT, String logo,String ismodifier) {
         String modified_by = Globals.user;
 
         item = new Item(getApplicationContext(), item_Id, liccustomerid, item_code, "0", spn_code, spn_manufacture_code,
-                item_item_name, item_description, item_sku, item_barcode, hsn_code, logo, item_type, spn_unit_code, strStockable, strService, "1", modified_by, date, "N", strPIT, logo);
+                item_item_name, item_description, item_sku, item_barcode, hsn_code, logo, item_type, spn_unit_code, strStockable, strService, "1", modified_by, date, "N", strPIT, logo,ismodifier);
 
         if (operation.equals("Edit")) {
             database.beginTransaction();
@@ -935,13 +1032,16 @@ public class ItemActivity extends AppCompatActivity {
                                     pDialog.dismiss();
                                     finish();
                                 } else {
-                                    Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
-                                    intent_category.putExtra("item_code", item_code);
-                                    intent_category.putExtra("PIT", strPIT);
-                                    intent_category.putExtra("sprice", item_location.get_selling_price());
-                                    intent_category.putExtra("operation", operation);
-                                    startActivity(intent_category);
-                                    finish();
+
+                                        Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
+                                        intent_category.putExtra("item_code", item_code);
+                                        intent_category.putExtra("PIT", strPIT);
+                                        intent_category.putExtra("modifier", ismodifier);
+                                        intent_category.putExtra("sprice", item_location.get_selling_price());
+                                        intent_category.putExtra("operation", operation);
+                                        startActivity(intent_category);
+                                        finish();
+
                                 }
                             }
                         });
@@ -973,14 +1073,17 @@ public class ItemActivity extends AppCompatActivity {
                                     pDialog.dismiss();
                                     finish();
                                 } else {
-                                    Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
-                                    intent_category.putExtra("item_code", item_code);
-                                    intent_category.putExtra("PIT", strPIT);
-                                    intent_category.putExtra("sprice", item_location.get_selling_price());
-                                    intent_category.putExtra("operation", operation);
-                                    intent_category.putExtra("Ticket", tick);
-                                    startActivity(intent_category);
-                                    finish();
+
+                                        Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
+                                        intent_category.putExtra("item_code", item_code);
+                                        intent_category.putExtra("PIT", strPIT);
+                                        intent_category.putExtra("sprice", item_location.get_selling_price());
+                                        intent_category.putExtra("operation", operation);
+                                        intent_category.putExtra("Ticket", tick);
+                                        intent_category.putExtra("modifier", ismodifier);
+                                        startActivity(intent_category);
+                                        finish();
+
                                 }
                             }
                         });
@@ -1035,14 +1138,17 @@ public class ItemActivity extends AppCompatActivity {
                                     pDialog.dismiss();
                                     finish();
                                 } else {
-                                    Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
-                                    intent_category.putExtra("item_code", item_code);
-                                    intent_category.putExtra("PIT", strPIT);
-                                    intent_category.putExtra("sprice", item_location.get_selling_price());
-                                    intent_category.putExtra("operation", operation);
-                                    intent_category.putExtra("Ticket", tick);
-                                    startActivity(intent_category);
-                                    finish();
+
+                                        Intent intent_category = new Intent(ItemActivity.this, TaxCheckListActivity.class);
+                                        intent_category.putExtra("item_code", item_code);
+                                        intent_category.putExtra("PIT", strPIT);
+                                        intent_category.putExtra("sprice", item_location.get_selling_price());
+                                        intent_category.putExtra("operation", operation);
+                                        intent_category.putExtra("Ticket", tick);
+                                        intent_category.putExtra("modifier", ismodifier);
+                                        startActivity(intent_category);
+                                        finish();
+
                                 }
                             }
                         });

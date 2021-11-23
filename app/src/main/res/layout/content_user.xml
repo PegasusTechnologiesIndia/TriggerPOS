@@ -18,7 +18,7 @@
         android:layout_marginTop="20dp"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_user_code"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -29,9 +29,9 @@
                 android:hint="User Code (Auto Generated)"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_user_name"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -42,10 +42,10 @@
                 android:hint="@string/User_Name"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_email"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -58,12 +58,17 @@
                 android:hint="@string/Email"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_password"
             style="@style/AppTheme.TextInputLayout"
-            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+            android:textColor="@color/black"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
+            app:passwordToggleEnabled="true"
+            app:passwordToggleTint="@color/black"
+            android:layout_margin="5dp"
+            app:passwordToggleTintMode="src_atop" >
 
             <EditText
                 android:id="@+id/edt_password"
@@ -73,9 +78,9 @@
                 android:selectAllOnFocus="true"
                 />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_max_discount"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -87,7 +92,7 @@
                 android:inputType="numberDecimal"
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             style="@style/AppTheme.HorizontalButtonLayout"

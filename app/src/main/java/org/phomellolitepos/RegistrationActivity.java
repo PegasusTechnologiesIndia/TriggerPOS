@@ -15,11 +15,11 @@ import android.net.NetworkInfo;
 import android.os.Build;
 import android.os.Bundle;
 import android.provider.Settings;
-import android.support.annotation.RequiresApi;
-import android.support.design.widget.TextInputLayout;
-import android.support.v4.app.ActivityCompat;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.annotation.RequiresApi;
+import com.google.android.material.textfield.TextInputLayout;
+import androidx.core.app.ActivityCompat;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.telephony.TelephonyManager;
 import android.text.InputType;
 import android.util.Log;
@@ -38,28 +38,16 @@ import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.phomellolitepos.Adapter.CountryAdapter;
-import org.phomellolitepos.Adapter.UserPermissionCheckListAdapter;
 import org.phomellolitepos.Adapter.ZoneAdapter;
-import org.phomellolitepos.CheckBoxClass.UserPermissionCheck;
 import org.phomellolitepos.Util.AESHelper;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.Util.JavaEncryption;
@@ -532,12 +520,12 @@ public class RegistrationActivity extends AppCompatActivity {
         alert.setTitle(R.string.Terms_Condition);
 
         WebView wv = new WebView(this);
-        wv.loadData("LitePOS is the perfect solution for faster billing and customer service.\n" +
+        wv.loadData("TriggerPOS is the perfect solution for faster billing and customer service.\n" +
                 "A Simple POS system for ALL your needs…\n" +
-                "LitePOS is indispensable in todays retail and hospitality sectors. It is efficient, easy to use and versatile. It is sure to make operating your business easier. Developed by Pegasus, a pioneer company producing POS systems for a wide variety of sectors and applications since past decade. From the small local restaurant to the large hotel, from the local taxi service to an international travel agency , no matter what your business is, with our LitePOS software you can simplify your day to day billing activities. Instant tokens, fast billing, staff management and discount creation, all this can be easily accomplished with one system.LitePOS is the perfect solution for faster billing and customer service.\n" +
+                "TriggerPOS is indispensable in todays retail and hospitality sectors. It is efficient, easy to use and versatile. It is sure to make operating your business easier. Developed by Pegasus, a pioneer company producing POS systems for a wide variety of sectors and applications since past decade. From the small local restaurant to the large hotel, from the local taxi service to an international travel agency , no matter what your business is, with our TriggerPOS software you can simplify your day to day billing activities. Instant tokens, fast billing, staff management and discount creation, all this can be easily accomplished with one system.TriggerPOS is the perfect solution for faster billing and customer service.\n" +
                 "\" +\n" +
                 "\"A Simple POS system for ALL your needs…\\n\" +\n" +
-                "\"LitePOS is indispensable in todays retail and hospitality sectors. It is efficient, easy to use and versatile. It is sure to make operating your business easier. Developed by Pegasus, a pioneer company producing POS systems for a wide variety of sectors and applications since past decade. From the small local restaurant to the large hotel, from the local taxi service to an international travel agency , no matter what your business is, with our LitePOS software you can simplify your day to day billing activities. Instant tokens, fast billing, staff management and discount creation, all this can be easily accomplished with one system", "text/html; charset=utf-8", "UTF-8");
+                "\"TriggerPOS is indispensable in todays retail and hospitality sectors. It is efficient, easy to use and versatile. It is sure to make operating your business easier. Developed by Pegasus, a pioneer company producing POS systems for a wide variety of sectors and applications since past decade. From the small local restaurant to the large hotel, from the local taxi service to an international travel agency , no matter what your business is, with our TriggerPOS software you can simplify your day to day billing activities. Instant tokens, fast billing, staff management and discount creation, all this can be easily accomplished with one system", "text/html; charset=utf-8", "UTF-8");
 
 
         alert.setView(wv);
@@ -550,11 +538,11 @@ public class RegistrationActivity extends AppCompatActivity {
         alert.show();
     }
 
-    private String check_on_server() {
+  /*  private String check_on_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/device/check_license");
+                Globals.App_IP_URL + "device/check_license");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("email", edt_email.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
@@ -577,9 +565,13 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return serverData;
     }
-
+*/
     private void registration_process() {
-        String serverData = register_on_server();
+        String serverData = "";
+
+
+
+                //register_on_server();
         try {
             if (serverData==null){
                 progressDialog.dismiss();
@@ -608,9 +600,11 @@ public class RegistrationActivity extends AppCompatActivity {
                     String project_id = jsonObject_result.getString("project_id");
                     String indus_type = jsonObject_result.getString("industry_type");
                     String srvc_trf = jsonObject_result.getString("service_code_tariff");
+                    String zonename = jsonObject_result.getString("zone_name");
+                    String countryname = jsonObject_result.getString("country_name");
                     Globals.Industry_Type = indus_type;
                     lpr = new Lite_POS_Registration(getApplicationContext(), null, company_name, contact_person,
-                            mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type);
+                            mobile_no, country_id, zone_id, registration_code, license_no, email, address, company_id, project_id, registration_code, srvc_trf, indus_type,"",countryname,zonename);
                     long l = lpr.insertRegistration(database);
                     if (l > 0) {
                         new Thread() {
@@ -658,11 +652,11 @@ public class RegistrationActivity extends AppCompatActivity {
         }
     }
 
-    private String register_on_server() {
+   /* private String register_on_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/register");
+                 Globals.App_IP_URL + "register");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_name", edt_company_name.getText().toString().trim()));
         nameValuePairs.add(new BasicNameValuePair("contact_person", edt_contact_person.getText().toString().trim()));
@@ -695,11 +689,12 @@ public class RegistrationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
     private String device_process() {
         String succ = "0";
-        String serverData = device_on_server();
+        String serverData = "";
+                //device_on_server();
         try {
             final JSONObject collection_jsonObject1 = new JSONObject(serverData);
             final String strStatus = collection_jsonObject1.getString("status");
@@ -710,7 +705,7 @@ public class RegistrationActivity extends AppCompatActivity {
                     JSONObject json_device = myResult.getJSONObject("device");
 
                     lpd = new Lite_POS_Device(getApplicationContext(), null, json_device.getString("device_id"), json_device.getString("app_type"), json_device.getString("device_code"), json_device.getString("device_name"),javaEncryption.encrypt(json_device.getString("expiry_date"),"1235678"), json_device.getString("device_symbol"), json_device.getString("location_id"), json_device.getString("currency_symbol"), json_device.getString("decimal_place"), json_device.getString("currency_place"),json_device.getString("lic_customer_license_id"),json_device.getString("lic_code"),
-                            json_device.getString("license_key"),json_device.getString("license_type"),"IN");
+                            json_device.getString("license_key"),json_device.getString("license_type"),"IN",json_device.getString("location_name"));
                     lpd.insertDevice(database);
 
                     JSONArray jsonArray = myResult.getJSONArray("company_user");
@@ -759,12 +754,12 @@ public class RegistrationActivity extends AppCompatActivity {
         return succ;
     }
 
-    private String device_on_server() {
+   /* private String device_on_server() {
         String serverData = null;//
 
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/device/register");
+                Globals.App_IP_URL + "device/register");
         ArrayList nameValuePairs = new ArrayList(6);
         nameValuePairs.add(new BasicNameValuePair("email", edt_email.getText().toString()));
         nameValuePairs.add(new BasicNameValuePair("device_code", Globals.Device_Code));
@@ -789,7 +784,7 @@ public class RegistrationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
     private void get_country() {
         arrayCList = country.getAllCountry(getApplicationContext(), "");
@@ -807,11 +802,11 @@ public class RegistrationActivity extends AppCompatActivity {
 
     }
 
-    private String get_zone_from_server(String strCountryCode) {
+   /* private String get_zone_from_server(String strCountryCode) {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/zone");
+                Globals.App_IP_URL + "zone");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("country_id", strCountryCode));
         try {
@@ -833,12 +828,12 @@ public class RegistrationActivity extends AppCompatActivity {
         }
         return serverData;
     }
-
-    private String get_country_from_server() {
+*/
+    /*private String get_country_from_server() {
         String serverData = null;// String object to store fetched data from
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/country");
+                Globals.App_IP_URL + "country");
         try {
             HttpResponse httpResponse = httpClient.execute(httpPost);
             HttpEntity httpEntity = httpResponse.getEntity();
@@ -851,7 +846,7 @@ public class RegistrationActivity extends AppCompatActivity {
             e.printStackTrace();
         }
         return serverData;
-    }
+    }*/
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

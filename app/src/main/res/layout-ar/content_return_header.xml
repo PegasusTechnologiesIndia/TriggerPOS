@@ -16,7 +16,7 @@
         android:layout_margin="10dp"
         android:orientation="vertical">
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -24,9 +24,11 @@
                 android:id="@+id/edt_voucher_no"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/voucher_no_auto_generated"
+                android:gravity="right"
+
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TableLayout
             android:layout_width="match_parent"
@@ -46,19 +48,22 @@
                     android:layout_height="wrap_content"
                     android:layout_gravity="center_vertical"
                     android:layout_marginLeft="2dp"
-                    android:layout_weight="0.8"
+                    android:layout_weight="1"
                     android:text="@string/Contact"
                     android:textColor="#ff0000"
                     android:textSize="16sp" />
 
-                <Spinner
+                <EditText
                     android:id="@+id/spn_cus"
                     android:layout_width="0dp"
                     android:layout_height="40dp"
-                    android:layout_marginRight="1dp"
-                    android:layout_weight="2.2"
-                    android:background="@drawable/edittext_bg">
-                </Spinner>
+                    android:gravity="right"
+
+                    android:padding="2dp"
+                    android:layout_weight="2"
+                    android:background="@drawable/edittext_bg"
+                   >
+                </EditText>
 
             </TableRow>
 
@@ -87,6 +92,8 @@
                     android:layout_width="0dp"
                     android:layout_height="40dp"
                     android:layout_marginRight="1dp"
+                    android:gravity="right"
+
                     android:layout_weight="2.2"
                     android:background="@drawable/edittext_bg"
                     />
@@ -96,6 +103,7 @@
             <TableRow
                 android:layout_width="match_parent"
                 android:layout_height="wrap_content"
+                android:visibility="gone"
                 android:layout_marginTop="15dp">
 
                 <EditText
@@ -121,7 +129,7 @@
 
         </TableLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
@@ -129,9 +137,11 @@
                 android:id="@+id/edt_remarks"
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Remarks"
+                android:gravity="right"
+
                 android:selectAllOnFocus="true"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
 

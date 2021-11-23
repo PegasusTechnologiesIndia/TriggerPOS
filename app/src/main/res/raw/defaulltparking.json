@@ -1,0 +1,21 @@
+{
+	"unit": [
+		{
+			"unit_id": "1",
+			"name": "Hour",
+			"code": "hr",
+			"description": "",
+			"is_active": "1",
+			"modified_by": "0"
+		},{
+
+			"unit_id": "2",
+			"name": "Day",
+			"code": "day",
+			"description": "",
+			"is_active": "1",
+			"modified_by": "0"
+
+		}
+	]
+}

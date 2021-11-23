@@ -13,7 +13,7 @@
     tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.OpeningBalanceActivity"
     tools:showIn="@layout/activity_opening_balance">
 
-    <android.support.design.widget.TextInputLayout
+    <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_ob"
         style="@style/AppTheme.TextInputLayout"
         android:layout_marginTop="20dp"
@@ -28,7 +28,7 @@
             android:inputType="numberDecimal"
             android:selectAllOnFocus="true"/>
 
-    </android.support.design.widget.TextInputLayout>
+    </com.google.android.material.textfield.TextInputLayout>
 
     <LinearLayout
 

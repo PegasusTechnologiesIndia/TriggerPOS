@@ -11,9 +11,9 @@ import android.database.sqlite.SQLiteDatabase;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.InputType;
 import android.util.Log;
 import android.view.Menu;
@@ -29,26 +29,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.util.EntityUtils;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
 import org.phomellolitepos.Adapter.BussinessGroupListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.UserPermission;
 import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Lite_POS_Registration;
@@ -314,7 +303,8 @@ public class BussinessGroupListActivity extends AppCompatActivity {
         String succ_manu = "0";
         // Call get bussiness group api here
         database.beginTransaction();
-        String serverData = get_bussiness_gp_from_server();
+        String serverData ="";
+                //get_bussiness_gp_from_server();
         try {
             final JSONObject jsonObject_bp = new JSONObject(serverData);
             final String strStatus = jsonObject_bp.getString("status");
@@ -355,12 +345,11 @@ public class BussinessGroupListActivity extends AppCompatActivity {
         }
         return succ_manu;
     }
-
-    private String get_bussiness_gp_from_server() {
+   /* private String get_bussiness_gp_from_server() {
         String serverData = null;//
         DefaultHttpClient httpClient = new DefaultHttpClient();
         HttpPost httpPost = new HttpPost(
-                "http://" + Globals.App_IP + "/lite-pos/index.php/api/business_group");
+                Globals.App_IP_URL + "business_group");
         ArrayList nameValuePairs = new ArrayList(5);
         nameValuePairs.add(new BasicNameValuePair("company_id", Globals.Company_Id));
         try {
@@ -382,7 +371,7 @@ public class BussinessGroupListActivity extends AppCompatActivity {
         }
         return serverData;
 
-    }
+    }*/
 
     private String send_online_bussiness() {
         String l = Bussiness_Group.sendOnServer(getApplicationContext(), database, db, "Select  * From business_group  WHERE is_push = 'N'");

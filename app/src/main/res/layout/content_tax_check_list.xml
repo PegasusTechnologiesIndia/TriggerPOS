@@ -18,11 +18,12 @@
         />
 
 
-    <ListView android:id="@+id/contact_ck_list"
+    <ListView
+        android:id="@+id/contact_ck_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginBottom="50dp"
-        android:layout_below="@+id/txt_title"/>
+        android:layout_below="@+id/txt_title"
+        android:layout_marginBottom="50dp" />
 
     <LinearLayout
         android:layout_alignParentBottom="true"

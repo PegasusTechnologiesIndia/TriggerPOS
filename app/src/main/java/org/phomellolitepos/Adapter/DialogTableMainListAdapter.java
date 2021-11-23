@@ -2,7 +2,6 @@ package org.phomellolitepos.Adapter;
 
 import android.app.Dialog;
 import android.content.Context;
-import android.support.design.widget.BottomNavigationView;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
@@ -14,7 +13,6 @@ import java.util.ArrayList;
 
 import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Table;
 
 /**

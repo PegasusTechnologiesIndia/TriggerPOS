@@ -1,0 +1,17 @@
+<?xml version="1.0" encoding="utf-8"?>
+<TextView xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/spin_item"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="7dp"
+    android:background="#ffffff"
+    android:ellipsize="end"
+    android:fadingEdge="horizontal"
+    android:gravity="left"
+    android:marqueeRepeatLimit="marquee_forever"
+    android:padding="10dp"
+    android:scrollHorizontally="true"
+    android:text="@string/app_name"
+    android:textColor="#333333"
+    android:textSize="18sp"
+    />

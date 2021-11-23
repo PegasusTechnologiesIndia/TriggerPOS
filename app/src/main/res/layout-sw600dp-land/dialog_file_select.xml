@@ -1,0 +1,59 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:padding="0dp"
+    tools:ignore="HardcodedText">
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@color/black"
+        android:orientation="vertical">
+
+        <ImageView
+            android:id="@+id/ico"
+            android:layout_width="40dp"
+            android:layout_height="40dp"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:contentDescription="@android:string/defaultMsisdnAlphaTag"
+            android:scaleType="fitXY"
+            />
+
+        <TextView
+            android:id="@+id/title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="18dp"
+            android:layout_toRightOf="@+id/ico"
+            android:text="Select file"
+            android:textAppearance="?android:attr/textAppearanceLarge"
+
+            android:textSize="25sp"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/cancel"
+            android:layout_width="50dp"
+            android:layout_height="50dp"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_margin="0dp"
+            android:adjustViewBounds="true"
+            android:contentDescription="@android:string/cancel"
+            android:src="@android:drawable/ic_delete"
+            android:visibility="visible" />
+    </RelativeLayout>
+
+    <ListView
+        android:id="@+id/fileview"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_below="@+id/RelativeLayout1"/>
+
+</RelativeLayout>

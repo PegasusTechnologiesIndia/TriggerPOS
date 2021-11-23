@@ -1,0 +1,510 @@
+<?xml version="1.0" encoding="utf-8"?>
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_setttingpayment"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:paddingBottom="@dimen/activity_vertical_margin"
+    android:paddingLeft="@dimen/activity_horizontal_margin"
+    android:paddingRight="@dimen/activity_horizontal_margin"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="org.phomellolitepos.SetttingsActivity"
+    tools:showIn="@layout/activity_settings_payment">
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical">
+
+
+        <LinearLayout
+            android:id="@+id/pri_selection"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/textView3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="@string/Select_Printer"
+                android:textColor="#ff0000"
+                android:textSize="17sp" />
+
+            <Spinner
+                android:id="@+id/sp_print"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:textSize="18sp" />
+        </LinearLayout>
+
+        <TableLayout
+            android:id="@+id/wifi_set"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/ll_testbtn"
+            android:layout_marginTop="10dp"
+            android:padding="5dp"
+            android:stretchColumns="*">
+
+            <TableRow
+                android:id="@+id/wifi_set_row"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="3dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:visibility="gone"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/TextView061"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="10dp"
+                    android:layout_weight="1"
+                    android:ellipsize="none"
+                    android:text="@string/printer_Wifi_IPPORT"
+                    android:textSize="18sp" />
+
+                <EditText
+                    android:id="@+id/ip"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="10dp"
+                    android:layout_weight="2"
+                    android:hint="@string/wifi_iphint"
+                    android:inputType="text"
+                    android:maxLines="1"
+                    android:nextFocusForward="@+id/credit_limit"
+                    android:textSize="18sp"/>
+            </TableRow>
+        </TableLayout>
+        <Button
+            android:id="@+id/btn_searchbtdevice"
+            style="@style/AppTheme.HorizontalButton"
+            android:layout_gravity="center_horizontal"
+            android:layout_marginTop="30dp"
+            android:layout_below="@id/wifi_set"
+            android:text="@string/btdevice"
+            android:visibility="gone"
+            android:textAllCaps="false" />
+        <LinearLayout
+            android:id="@+id/ll_testbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/btn_searchbtdevice"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:weightSum="1">
+
+            <Button
+                android:id="@+id/btn_testprint"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="30dp"
+                android:text="@string/testprint"
+                android:visibility="gone"
+                android:textAllCaps="false" />
+
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/pri_lang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentStart="true"
+            android:layout_marginTop="20dp"
+            android:orientation="vertical"
+            android:visibility="visible">
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:text="@string/Printer_Language"
+                android:textColor="#ff0000"
+                android:textSize="17sp" />
+
+            <Spinner
+                android:id="@+id/sp_print_lang"
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="20dp"
+                android:textSize="18sp" />
+
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginLeft="10dp"
+                android:layout_weight="1"
+                android:visibility="gone"
+                android:text="@string/select_customer_display"
+                android:textColor="#ff0000"
+                android:textSize="17sp" />
+        </LinearLayout>
+        <TextView
+            android:id="@+id/lbl_eml"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="2dp"
+            android:layout_marginTop="10dp"
+            android:text="@string/Email_Settings"
+            android:textColor="#ff0000"
+            android:textSize="17sp" />
+
+        <CheckBox
+            android:id="@+id/is_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/Is_Email" />
+
+        <TableLayout
+            android:id="@+id/tl_email"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view2"
+            android:layout_margin="2dp"
+            android:layout_marginTop="30dp"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            tools:ignore="UselessParent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/Email"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+
+                <EditText
+
+                    android:id="@+id/edt_email"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/Email"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+
+                </EditText>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_pass"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/Password"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt_pass"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/Password"
+                    android:inputType="textPassword"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_host"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/host"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt_host"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/host"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_port"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/port"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt_port"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/port"
+                    android:inputType="number"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+            </TableRow>
+
+            <View
+                android:id="@+id/view2"
+                android:layout_width="match_parent"
+                android:layout_height="0.5dp"
+                android:layout_below="@+id/wifi_set"
+                android:layout_marginTop="20dp"
+                android:background="#333333">
+
+            </View>
+
+            <LinearLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginTop="10dp"
+                android:orientation="vertical">
+
+                <TextView
+                    android:id="@+id/lbl_mnger_email"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="2dp"
+                    android:text="@string/Manager_Email"
+                    android:textColor="#ff0000"
+                    android:textSize="17sp" />
+
+
+                <EditText
+                    android:id="@+id/edt_mnger_email"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_marginTop="20dp"
+                    android:ems="10"
+                    android:hint="@string/email_separator"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+            </LinearLayout>
+
+            <Button
+                android:id="@+id/btn_test_email"
+                android:layout_below="@id/tableLayout1"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:text="@string/test_email"
+                android:textAllCaps="false"
+                style="@style/AppTheme.HorizontalButton"/>
+
+        </TableLayout>
+
+        <CheckBox
+            android:id="@+id/is_sms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/Is_SMS" />
+
+        <TableLayout
+            android:id="@+id/tl_sms"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/view2"
+            android:layout_margin="2dp"
+            android:layout_marginTop="30dp"
+            android:shrinkColumns="*"
+            android:stretchColumns="*"
+            tools:ignore="UselessParent">
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_uri"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/SMS_Api_Url"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+
+                <EditText
+                    android:id="@+id/edt_uri"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/SMS_Api_Url"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true"></EditText>
+
+            </TableRow>
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_key"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/SMS_Auth_Key"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt_key"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/SMS_Auth_Key"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+            </TableRow>
+
+
+
+            <TableRow
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:layout_gravity="center_vertical"
+                android:layout_marginTop="15dp"
+                android:baselineAligned="false"
+                android:gravity="clip_vertical"
+                android:weightSum="3">
+
+                <TextView
+                    android:id="@+id/lbl_sender_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_gravity="center_vertical"
+                    android:layout_marginLeft="2dp"
+                    android:layout_weight="0.8"
+                    android:text="@string/SMS_Sender_Id"
+                    android:textColor="#ff0000"
+                    android:textSize="16sp" />
+
+                <EditText
+                    android:id="@+id/edt_sender_id"
+                    android:layout_width="0dp"
+                    android:layout_height="wrap_content"
+                    android:layout_marginRight="1dp"
+                    android:layout_weight="2.2"
+                    android:ems="10"
+                    android:hint="@string/SMS_Sender_Id"
+                    android:textSize="16sp"
+                    android:selectAllOnFocus="true">
+                </EditText>
+            </TableRow>
+
+            <Button
+                android:id="@+id/btn_test_sms"
+                android:layout_below="@id/tableLayout1"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="20dp"
+                android:text="@string/test_sms"
+                android:textAllCaps="false"
+                style="@style/AppTheme.HorizontalButton"
+                android:visibility="gone"/>
+        </TableLayout>
+
+    </LinearLayout>
+</ScrollView>

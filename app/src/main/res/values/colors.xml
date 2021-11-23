@@ -5,7 +5,16 @@
     <color name="colorAccent">#fb7c3e</color>
     <color name="colorEdittext">#000000</color>
     <color name="white">#b9b8b8</color>
+    <color name="whitecolor">#FFFFFF</color>
     <color name="black">#000000</color>
     <color name="search_hint_color">#b9b8b8</color>
+    <color name="pressedcolor">#ADD8E6</color>
     <color name="button_color">#403c3c</color>
+    <color name="transparent">#00FFFFFF</color>
+    <color name="darker_gray">#333435</color>
+    <color name="whatsappcolor">#3db22a</color>
+    <color name="topnav">#000000</color>
+
+
+
 </resources>

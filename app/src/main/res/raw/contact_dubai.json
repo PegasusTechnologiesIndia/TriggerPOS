@@ -1,0 +1,76 @@
+{
+    "result": [
+        {
+            "contact_id": "2",
+            "device_code": "LITE_POS",
+            "contact_code": "LITE_POS-C-2",
+            "title": "Mr.",
+            "name": "Aqib",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "8794561230",
+            "contact_2": "",
+            "email_1": "",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-25 02:34:14",
+            "gstin": "",
+            "country_id": "221",
+            "zone_id": "3510",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "LITE_POS-C-2",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        },
+        {
+            "contact_id": "3",
+            "device_code": "LITE_POS",
+            "contact_code": "LITE_POS-C-3",
+            "title": "Mr.",
+            "name": "Shabbir",
+            "gender": "M",
+            "dob": "0000-00-00",
+            "company_name": "",
+            "description": "",
+            "contact_1": "9874563210",
+            "contact_2": "",
+            "email_1": "",
+            "email_2": "",
+            "credit_limit": "0.000000",
+            "is_taxable": "1",
+            "is_active": "1",
+            "modified_by": "1",
+            "modified_date": "2020-07-25 02:34:32",
+            "gstin": "",
+            "country_id": "221",
+            "zone_id": "3510",
+            "date": "0000-00-00",
+            "amount": "0.000000",
+            "option": "",
+            "file_url": null,
+            "business_group_code": "BGC-1",
+            "address_lookup": [],
+            "address": [],
+            "contact_business_group": [
+                {
+                    "contact_code": "LITE_POS-C-3",
+                    "business_group_code": "BGC-1"
+                }
+            ]
+        }
+    ]
+}

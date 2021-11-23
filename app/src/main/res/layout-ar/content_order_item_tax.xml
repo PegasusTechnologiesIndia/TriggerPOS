@@ -6,7 +6,6 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
-    tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.OrderItemTaxActivity"
     tools:showIn="@layout/activity_order_item_tax">
 
     <HorizontalScrollView

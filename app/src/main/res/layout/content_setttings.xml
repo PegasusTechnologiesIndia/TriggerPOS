@@ -17,6 +17,7 @@
         android:layout_height="wrap_content"
         android:orientation="vertical">
 
+
         <LinearLayout
             android:id="@+id/pri_selection"
             android:layout_width="match_parent"
@@ -49,7 +50,7 @@
             android:id="@+id/wifi_set"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/pri_selection"
+            android:layout_below="@+id/ll_testbtn"
             android:layout_marginTop="10dp"
             android:padding="5dp"
             android:stretchColumns="*">
@@ -89,8 +90,42 @@
             </TableRow>
         </TableLayout>
 
+        <LinearLayout
+            android:id="@+id/ll_testbtn"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dp"
+            android:layout_below="@id/wifi_set"
+            android:orientation="horizontal"
+            android:gravity="center_horizontal"
+            android:weightSum="1">
+            <Button
+                android:id="@+id/btn_searchbtdevice"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+            android:layout_weight=".5"
+                android:text="@string/btdevice"
+                android:visibility="gone"
+                android:textAllCaps="false" />
+            <Button
+                android:id="@+id/btn_testprint"
+                style="@style/AppTheme.HorizontalButton"
+                android:layout_gravity="center_horizontal"
+                android:layout_margin="5dp"
+                android:layout_weight=".5"
+                android:text="@string/testprint"
+                android:visibility="gone"
+                android:textAllCaps="false" />
 
+        </LinearLayout>
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:id="@+id/ll_paymentcollection">
         <TableLayout
+            android:id="@+id/ll_noprint"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_below="@+id/pri_selection"
@@ -123,7 +158,7 @@
                     android:layout_marginRight="10dp"
                     android:layout_weight="2"
                     android:text="@string/no_of_print"
-                    android:inputType="text"
+                    android:inputType="number"
                     android:maxLines="1"
                     android:textSize="18sp"
                     android:selectAllOnFocus="true"/>
@@ -203,6 +238,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_printmemo"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -334,8 +370,7 @@
                 android:background="#333333"></View>
 
         </LinearLayout>
-
-
+        </LinearLayout>
         <LinearLayout
             android:id="@+id/ll_home_layout"
             android:layout_width="match_parent"
@@ -370,7 +405,11 @@
                 android:layout_marginTop="20dp"
                 android:background="#333333"></View>
         </LinearLayout>
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:id="@+id/ll_paycollection4"
+    android:orientation="vertical">
 
         <LinearLayout
             android:id="@+id/ll_qty_dicml"
@@ -447,6 +486,7 @@
 
 
         <LinearLayout
+            android:id="@+id/ll_ordertype"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -481,6 +521,7 @@
         </LinearLayout>
 
         <LinearLayout
+            android:id="@+id/ll_qrscanning"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
@@ -522,7 +563,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentLeft="true"
             android:layout_alignParentStart="true"
-            android:visibility="gone"
+
             android:layout_marginTop="20dp"
             android:orientation="vertical">
 
@@ -559,13 +600,6 @@
                 android:layout_marginTop="20dp"
                 android:background="#333333"></View>
 
-            <CheckBox
-                android:id="@+id/is_online"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:layout_marginTop="20dp"
-                android:text="@string/Is_Online" />
         </LinearLayout>
 
         <View
@@ -573,7 +607,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
-            android:visibility="gone"
+
             android:background="#333333"></View>
 
         <CheckBox
@@ -638,6 +672,15 @@
             android:layout_marginTop="20dp"
             android:background="#333333"></View>
 
+
+        <CheckBox
+            android:id="@+id/is_online"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="20dp"
+            android:text="@string/Is_Online" />
+
         <CheckBox
             android:id="@+id/is_discount"
             android:layout_width="wrap_content"
@@ -679,7 +722,7 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
             android:text="@string/is_print_invoice" />
-
+</LinearLayout>
         <View
 
             android:layout_width="match_parent"
@@ -688,12 +731,13 @@
             android:visibility="gone"
             android:background="#333333"></View>
 
+
         <CheckBox
             android:id="@+id/is_file_share"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
-            android:visibility="gone"
+
             android:layout_marginTop="20dp"
             android:text="@string/is_file_share" />
 
@@ -702,14 +746,20 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333"></View>
-
+<LinearLayout
+    android:id="@+id/ll_paymentcollection3"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
         <CheckBox
             android:id="@+id/is_accounts"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_accounts_show" />
 
 
@@ -753,6 +803,7 @@
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:background="#333333">
         </View>
 
@@ -762,6 +813,7 @@
             android:layout_height="wrap_content"
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
+            android:visibility="gone"
             android:text="@string/is_change_price" />
 
         <View
@@ -798,6 +850,7 @@
             android:visibility="gone"
             android:text="@string/is_show_device_customer" />
         <View
+            android:id="@+id/viewdirect"
             android:layout_width="match_parent"
             android:layout_height="0.5dp"
             android:layout_marginTop="20dp"
@@ -811,6 +864,102 @@
             android:layout_alignParentTop="true"
             android:layout_marginTop="20dp"
             android:text="@string/is_direct_print" />
+    <CheckBox
+        android:id="@+id/is_showsave_print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_saveprint" />
+
+    <CheckBox
+        android:id="@+id/is_syncatlogin"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_apisync" />
+    <CheckBox
+        android:id="@+id/is_showdeliverydate"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_deliverydate" />
+
+    <CheckBox
+        android:id="@+id/is_showpaymentmethod"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_showpayment" />
+
+
+    <CheckBox
+        android:id="@+id/is_showcloud_print"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_cloudprint" />
+
+    <CheckBox
+        android:id="@+id/is_kitchenprinting"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:text="@string/is_kitchenprint"/>
+    <CheckBox
+        android:id="@+id/is_selfposkitchenprint"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/includeselfposkot"/>
+    <CheckBox
+        android:id="@+id/is_show_nfc"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/is_enablefnc" />
+    <CheckBox
+        android:id="@+id/is_show_singlewindow"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/singlewindcheckout" />
+    <CheckBox
+        android:id="@+id/is_show_filladvamnt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/is_filladvamnt" />
+    <CheckBox
+        android:id="@+id/is_show_vehicleno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/vehiclevalidation" />
+    <CheckBox
+        android:id="@+id/is_show_mobileno"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_marginTop="20dp"
+        android:visibility="gone"
+        android:text="@string/mobilevalidation" />
+
 
         <View
             android:layout_width="match_parent"
@@ -901,7 +1050,11 @@
             android:layout_marginTop="20dp"
             android:background="#333333"></View>
 
-
+<LinearLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical"
+    android:id="@+id/ll_sel_logo">
         <TextView
             android:id="@+id/lbl_logo"
             android:layout_width="wrap_content"
@@ -958,7 +1111,8 @@
             android:background="#333333">
 
         </View>
-
+</LinearLayout>
+</LinearLayout>
 
         <TextView
             android:id="@+id/lbl_eml"
@@ -1309,7 +1463,11 @@
                 style="@style/AppTheme.HorizontalButton"
                 android:visibility="gone"/>
         </TableLayout>
-
+<LinearLayout
+    android:id="@+id/ll_paymentcollection2"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="vertical">
         <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
@@ -1545,7 +1703,7 @@
             android:layout_marginTop="15dp"
             android:hint="@string/enter_print_footer_text_here"
             android:selectAllOnFocus="true"/>
-
+</LinearLayout>
         <Button
             android:id="@+id/save"
             style="@style/AppTheme.HorizontalButton"
@@ -1553,6 +1711,7 @@
             android:layout_gravity="center_horizontal"
             android:layout_marginTop="30dp"
             android:text="@string/save"
+            android:visibility="gone"
             android:textAllCaps="false" />
 
         <Button

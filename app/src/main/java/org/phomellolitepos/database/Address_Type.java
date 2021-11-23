@@ -52,6 +52,25 @@ public class Address_Type {
         this.address_type = address_type;
         value.put("address_type", address_type);
     }
+    public void add_Addressstype(ArrayList<Address_Type> list,SQLiteDatabase db) {
+
+        db.beginTransaction();
+        try {
+            ContentValues values = new ContentValues();
+            for (Address_Type address_type : list) {
+
+
+                values.put("address_type", address_type.get_address_type());
+                values.put("name", address_type.get_name());
+
+                db.insert(tableName, null, values);
+            }
+            db.setTransactionSuccessful();
+        } finally {
+            db.endTransaction();
+        }
+
+    }
 
 
     public long insertAddress_Type(SQLiteDatabase database) {

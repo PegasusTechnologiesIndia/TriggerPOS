@@ -1,0 +1,112 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical" android:layout_width="match_parent"
+    android:layout_height="match_parent">
+
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:text="Field"
+            android:textColor="#333333"
+            android:textSize="18sp"
+            android:layout_marginTop="10dp"/>
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Spinner
+                android:id="@+id/spn_fields"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:text="Operation"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <Spinner
+                android:id="@+id/spn_opr"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="15dp"
+        android:orientation="vertical">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:paddingLeft="5dp"
+            android:text="Value"
+            android:textColor="#333333"
+            android:textSize="18sp" />
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:weightSum="1">
+
+            <EditText
+                android:id="@+id/edt_value"
+                android:layout_width="match_parent"
+                android:layout_height="40dp"
+                android:layout_marginTop="15dp"
+                android:hint="Enter here" />
+
+        </LinearLayout>
+
+    </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_search"
+        android:layout_width="match_parent"
+        android:layout_height="40dp"
+        android:background="#403c3c"
+        android:text="Search"
+        android:textColor="#ffffff"
+        android:layout_marginLeft="120dp"
+        android:layout_marginRight="120dp"
+        android:textAllCaps="false"
+        android:textSize="18sp"
+        android:layout_marginTop="20dp"/>
+</LinearLayout>

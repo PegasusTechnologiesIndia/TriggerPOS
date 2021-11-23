@@ -6,10 +6,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.Menu;
@@ -24,7 +23,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.phomellolitepos.Adapter.PaymentListAdapter;
-import org.phomellolitepos.Adapter.PaymentSplitListAdapter;
 import org.phomellolitepos.Adapter.PurchasePaymentSplitListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
@@ -32,19 +30,13 @@ import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Lite_POS_Device;
 import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Order_Payment;
-import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Payment;
 import org.phomellolitepos.database.Purchase;
-import org.phomellolitepos.database.Purchase_Detail;
 import org.phomellolitepos.database.Purchase_Payment;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.SplitPaymentList;
 
 import java.util.ArrayList;
-
-import woyou.aidlservice.jiuiv5.ICallback;
-import woyou.aidlservice.jiuiv5.IWoyouService;
 
 public class PusrchasePaymentActivity extends AppCompatActivity {
     TextView txt_amount;

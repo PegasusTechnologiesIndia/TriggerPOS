@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/content_login"
@@ -10,18 +10,30 @@
     android:paddingLeft="@dimen/activity_horizontal_margin"
     android:paddingRight="@dimen/activity_horizontal_margin"
     android:paddingTop="@dimen/activity_vertical_margin"
+    android:orientation="vertical"
+
     app:layout_behavior="@string/appbar_scrolling_view_behavior"
     tools:context="org.phomellolitepos.LoginActivity"
     tools:showIn="@layout/activity_login">
+<ScrollView
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fillViewport="true"
+    android:layout_weight="1">
+    <LinearLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
 
+        android:orientation="vertical">
     <ImageView
         android:id="@+id/pegasus_image"
-        android:layout_width="150dp"
-        android:layout_height="75dp"
+        android:layout_width="160dp"
+        android:layout_height="120dp"
         android:layout_alignParentTop="true"
+        android:layout_gravity="center"
         android:layout_centerHorizontal="true"
         android:layout_marginTop="15dp"
-        android:background="@drawable/phomello_litepos" />
+        android:background="@drawable/triggerposlogo" />
 
     <TextView
         android:id="@+id/txt_version"
@@ -29,43 +41,87 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/pegasus_image"
         android:layout_centerHorizontal="true"
+        android:layout_gravity="center"
         android:text=""
         android:textColor="#ffffff"
         android:textSize="15sp"
         android:layout_marginTop="10dp"/>
 
+<LinearLayout
+    android:id="@+id/edtbox_layout"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:layout_marginTop="10dp"
+    android:layout_below="@+id/txt_version"
+    android:orientation="vertical">
+    <com.google.android.material.textfield.TextInputLayout
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+        android:textColorHint="#f9f9f9"
+        app:boxStrokeColor="@color/whitecolor"
+        android:backgroundTint="@color/whitecolor"
+        app:boxStrokeWidth="@dimen/_5sdp"
+        android:textColor="#ffffff"
+        android:layout_margin="5dp"
 
+
+        >
     <EditText
         android:id="@+id/edt_username"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/pegasus_image"
-        android:layout_marginTop="60dp"
-        android:background="#3e3935"
+        android:layout_marginTop="40dp"
         android:hint="@string/UserCode"
         android:paddingLeft="10dp"
+        android:cursorVisible="true"
+        android:focusable="true"
         android:singleLine="true"
         android:textColor="#ffffff"
+        android:selectAllOnFocus="true"
         android:textColorHint="#f9f9f9" />
+    </com.google.android.material.textfield.TextInputLayout>
+<com.google.android.material.textfield.TextInputLayout
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    style="@style/Widget.MaterialComponents.TextInputLayout.OutlinedBox"
+    app:boxStrokeColor="@color/whitecolor"
+    app:boxStrokeWidth="@dimen/_5sdp"
+    android:textColor="#ffffff"
+    app:passwordToggleEnabled="true"
+    app:passwordToggleTint="@color/whitecolor"
+    android:layout_margin="5dp"
+    app:passwordToggleTintMode="src_atop"
+
+    android:textColorHint="#f9f9f9"
+    >
+
 
     <EditText
         android:id="@+id/edt_userpass"
         android:layout_width="match_parent"
-        android:layout_height="55dp"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/edt_username"
         android:layout_marginTop="10dp"
-        android:background="#3e3935"
+
         android:hint="@string/Password"
         android:inputType="textPassword"
+        android:drawablePadding="20dp"
         android:paddingLeft="10dp"
+        android:cursorVisible="true"
+        android:focusable="true"
         android:singleLine="true"
         android:textColor="#ffffff"
         android:textColorHint="#f9f9f9"
         android:selectAllOnFocus="true"/>
 
+</com.google.android.material.textfield.TextInputLayout>
+</LinearLayout>
     <LinearLayout
+        android:id="@+id/btnlayouts"
         style="@style/AppTheme.HorizontalButtonLayout"
-        android:layout_below="@+id/edt_userpass"
+        android:layout_below="@+id/edtbox_layout"
         android:layout_marginTop="15dp"
         android:orientation="horizontal"
         android:weightSum="1">
@@ -96,57 +152,79 @@
     </LinearLayout>
 
 
-    <TextView
-        android:id="@+id/txt_forgot_pswd"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_above="@+id/txt_footer"
-        android:layout_centerHorizontal="true"
-        android:layout_marginBottom="30dp"
-        android:text="@string/Forgot_Password"
-        android:textColor="#ffffff"
-        android:textSize="18sp" />
+        <LinearLayout
+            android:id="@+id/btn_lang"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/btnlayouts"
+            android:gravity="center_horizontal"
+            android:orientation="horizontal"
+            android:weightSum="1"
+            android:visibility="visible">
 
-    <TextView
-        android:id="@+id/txt_footer"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_centerHorizontal="true"
-        android:text="Copyright © 2017 www.PegasusTech.net. All right reserved."
-        android:textColor="#ffffff"
-        android:textSize="12sp" />
+            <TextView
+                android:id="@+id/txt_lang"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_margin="5dp"
+            android:singleLine="true"
+                android:marqueeRepeatLimit="marquee_forever"
+                android:gravity="right|center"
+                android:layout_marginBottom="10dp"
+                android:layout_weight=".5"
+                android:text="@string/Language"
+                android:textColor="#ffffff"
+                android:textSize="16sp" />
 
+            <ToggleButton
+                android:id="@+id/tgl_btn_lang"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="17dp"
+
+                android:backgroundTint="#e8873a"
+                android:textAllCaps="false"
+                android:layout_margin="5dp"
+                android:textSize="20sp"
+                android:layout_weight=".5"
+                android:textColor="#ffffff"
+                android:textOff="English"
+                android:textOn="@string/Arabic" />
+        </LinearLayout>
     <LinearLayout
+        android:id="@+id/frgtpass_layout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/txt_forgot_pswd"
+        android:layout_below="@+id/btn_lang"
         android:gravity="center_horizontal"
         android:orientation="horizontal"
         android:visibility="visible">
-
         <TextView
-            android:id="@+id/txt_lang"
+            android:id="@+id/txt_forgot_pswd"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="10dp"
-            android:layout_marginLeft="15dp"
-            android:layout_marginRight="15dp"
-            android:text="@string/Language"
-            android:textColor="#ffffff"
+
+
+            android:layout_gravity="center"
+
+            android:text="@string/Forgot_Password"
+            android:textColor="#ff0000"
             android:textSize="18sp" />
-
-        <ToggleButton
-            android:id="@+id/tgl_btn_lang"
+    </LinearLayout>
+    </LinearLayout>
+</ScrollView>
+        <TextView
+            android:id="@+id/txt_footer"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginBottom="17dp"
-            android:backgroundTint="#fb7c3e"
-            android:textAllCaps="false"
+            android:singleLine="true"
+            android:marqueeRepeatLimit="marquee_forever"
+       android:layout_gravity="center"
+
+            android:layout_centerHorizontal="true"
+            android:text="@string/copyright"
             android:textColor="#ffffff"
-            android:textOff="English"
-            android:textOn="@string/Arabic" />
-    </LinearLayout>
+            android:textSize="12sp" />
 
 
-</RelativeLayout>
+</LinearLayout>

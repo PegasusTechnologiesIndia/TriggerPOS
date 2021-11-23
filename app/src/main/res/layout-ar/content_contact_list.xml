@@ -18,10 +18,10 @@
         android:text="@string/No_Contact_Fnd"
         style="@style/AppTheme.NoListfoundText"/>
 
-    <android.support.v7.widget.RecyclerView
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/item_list"
         style="@style/AppTheme.ListView">
 
-    </android.support.v7.widget.RecyclerView>
+    </androidx.recyclerview.widget.RecyclerView>
 
 </RelativeLayout>

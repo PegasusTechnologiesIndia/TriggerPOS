@@ -1,0 +1,1790 @@
+1<?xml version="1.0" encoding="utf-8"?>
+2<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+3    package="org.phomellolitepos"
+4    android:versionCode="111"
+5    android:versionName="11.28" >
+6
+7    <uses-sdk
+8        android:minSdkVersion="16"
+8-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml
+9        android:targetSdkVersion="30" />
+9-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml
+10
+11    <uses-permission android:name="android.permission.INTERNET" />
+11-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:8:5-67
+11-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:8:22-64
+12    <uses-permission android:name="android.permission.ACCESS_NETWORK_STATE" />
+12-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:9:5-79
+12-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:9:22-76
+13    <uses-permission android:name="android.permission.READ_EXTERNAL_STORAGE" />
+13-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:10:5-80
+13-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:10:22-77
+14    <uses-permission android:name="android.permission.READ_PRIVILEGED_PHONE_STATE" />
+14-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:11:5-86
+14-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:11:22-83
+15    <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE" />
+15-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:12:5-81
+15-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:12:22-78
+16    <uses-permission android:name="android.permission.READ_CONTACTS" />
+16-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:13:5-72
+16-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:13:22-69
+17    <uses-permission android:name="android.permission.WRITE_CONTACTS" />
+17-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:14:5-73
+17-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:14:22-70
+18    <uses-permission android:name="android.permission.SYSTEM_ALERT_WINDOW" />
+18-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:15:5-78
+18-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:15:22-75
+19    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
+19-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:16:5-74
+19-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:16:22-71
+20    <uses-permission android:name="android.permission.BLUETOOTH" />
+20-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:17:5-68
+20-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:17:22-65
+21    <uses-permission android:name="android.permission.READ_PHONE_STATE" />
+21-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:18:5-75
+21-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:18:22-72
+22    <uses-permission android:name="android.permission.MOUNT_UNMOUNT_FILESYSTEMS" /> <!-- <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" /> -->
+22-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:19:5-84
+22-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:19:22-81
+23    <uses-permission android:name="android.permission.CAMERA" />
+23-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:20:5-65
+23-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:20:22-62
+24    <uses-permission android:name="android.permission.WAKE_LOCK" />
+24-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:21:5-68
+24-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:21:22-65
+25    <uses-permission android:name="com.pos.permission.PRINTER" />
+25-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:22:5-66
+25-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:22:22-63
+26    <uses-permission android:name="com.pos.permission.COMMUNICATION" />
+26-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:23:5-72
+26-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:23:22-69
+27    <uses-permission android:name="com.pos.permission.SECURITY" />
+27-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:24:5-67
+27-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:24:22-64
+28    <uses-permission android:name="com.pos.permission.ACCESSORY_RFREGISTER" />
+28-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:25:5-79
+28-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:25:22-76
+29    <uses-permission android:name="com.pos.permission.EMVCORE" />
+29-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:26:5-66
+29-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:26:22-63
+30    <uses-permission android:name="com.pos.permission.ACCESSORY_DATETIME" />
+30-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:27:5-77
+30-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:27:22-74
+31    <uses-permission android:name="com.pos.permission.ACCESSORY_LED" />
+31-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:28:5-72
+31-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:28:22-69
+32    <uses-permission android:name="com.pos.permission.ACCESSORY_BEEP" />
+32-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:29:5-73
+32-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:29:22-70
+33    <uses-permission android:name="com.pos.permission.CARD_READER_ICC" />
+33-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:30:5-74
+33-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:30:22-71
+34    <uses-permission android:name="com.pos.permission.CARD_READER_PICC" />
+34-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:31:5-75
+34-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:31:22-72
+35    <uses-permission android:name="com.pos.permission.CARD_READER_MAG" />
+35-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:32:5-74
+35-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:32:22-71
+36    <uses-permission android:name="android.permission.ACCESS_WIFI_STATE" />
+36-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:33:5-76
+36-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:33:22-73
+37    <uses-permission android:name="android.permission.CHANGE_WIFI_STATE" />
+37-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:34:5-76
+37-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:34:22-73
+38    <uses-permission android:name="android.permission.NFC" />
+38-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:35:5-62
+38-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:35:22-59
+39
+40    <!-- 获取手机任务信息（进程,app列表） -->
+41    <uses-permission android:name="android.permission.GET_TASKS" /> <!-- 拨打电话 -->
+41-->[cn.finalteam:toolsfinal:1.1.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\869e2e846201be8ddf8b494d04d79c61\jetified-toolsfinal-1.1.5\AndroidManifest.xml:22:5-68
+41-->[cn.finalteam:toolsfinal:1.1.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\869e2e846201be8ddf8b494d04d79c61\jetified-toolsfinal-1.1.5\AndroidManifest.xml:22:22-65
+42    <uses-permission android:name="android.permission.CALL_PHONE" />
+42-->[cn.finalteam:toolsfinal:1.1.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\869e2e846201be8ddf8b494d04d79c61\jetified-toolsfinal-1.1.5\AndroidManifest.xml:26:5-69
+42-->[cn.finalteam:toolsfinal:1.1.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\869e2e846201be8ddf8b494d04d79c61\jetified-toolsfinal-1.1.5\AndroidManifest.xml:26:22-66
+43    <uses-permission android:name="com.google.android.finsky.permission.BIND_GET_INSTALL_REFERRER_SERVICE" />
+43-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:26:5-110
+43-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:26:22-107
+44
+45    <application
+45-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:37:5-817:19
+46        android:name="org.phomellolitepos.AppController"
+46-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:38:9-38
+47        android:allowBackup="true"
+47-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:39:9-35
+48        android:appComponentFactory="androidx.core.app.CoreComponentFactory"
+48-->[androidx.core:core:1.1.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\fbfdadee0afa48c503c588b9c64f2d4d\core-1.1.0\AndroidManifest.xml:24:18-86
+49        android:debuggable="true"
+50        android:hardwareAccelerated="false"
+50-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:40:9-44
+51        android:icon="@drawable/app_icon_192"
+51-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:41:9-46
+52        android:label="@string/app_name"
+52-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:42:9-41
+53        android:largeHeap="true"
+53-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:43:9-33
+54        android:networkSecurityConfig="@xml/network_security_config"
+54-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:44:9-69
+55        android:requestLegacyExternalStorage="true"
+55-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:45:9-52
+56        android:supportsRtl="true"
+56-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:46:9-35
+57        android:testOnly="true"
+58        android:theme="@style/AppTheme"
+58-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:47:9-40
+59        android:usesCleartextTraffic="true" >
+59-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:48:9-44
+60        <activity
+60-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:49:9-53:71
+61            android:name="org.phomellolitepos.Reports.VatOrderItemReport_view"
+61-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:50:13-60
+62            android:exported="true"
+62-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:51:13-36
+63            android:theme="@style/AppTheme.NoActionBar"
+63-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:52:13-56
+64            android:windowSoftInputMode="stateVisible|adjustResize" />
+64-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:53:13-68
+65        <activity
+65-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:54:9-58:71
+66            android:name="org.phomellolitepos.Reports.VatOrderHeaderReport_view"
+66-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:55:13-62
+67            android:exported="true"
+67-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:56:13-36
+68            android:theme="@style/AppTheme.NoActionBar"
+68-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:57:13-56
+69            android:windowSoftInputMode="stateVisible|adjustResize" />
+69-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:58:13-68
+70        <activity
+70-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:59:9-63:71
+71            android:name="org.phomellolitepos.Reports.GstOrderItemReport_view"
+71-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:60:13-60
+72            android:exported="true"
+72-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:61:13-36
+73            android:theme="@style/AppTheme.NoActionBar"
+73-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:62:13-56
+74            android:windowSoftInputMode="stateVisible|adjustResize" />
+74-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:63:13-68
+75        <activity
+75-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:64:9-68:71
+76            android:name="org.phomellolitepos.Reports.GstOrderHeaderReport_view"
+76-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:65:13-62
+77            android:exported="true"
+77-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:66:13-36
+78            android:theme="@style/AppTheme.NoActionBar"
+78-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:67:13-56
+79            android:windowSoftInputMode="stateVisible|adjustResize" />
+79-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:68:13-68
+80        <activity
+80-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:69:9-73:71
+81            android:name="org.phomellolitepos.Reports.OrderTaxReport_view"
+81-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:70:13-56
+82            android:exported="true"
+82-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:71:13-36
+83            android:theme="@style/AppTheme.NoActionBar"
+83-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:72:13-56
+84            android:windowSoftInputMode="stateVisible|adjustResize" />
+84-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:73:13-68
+85        <activity
+85-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:74:9-78:71
+86            android:name="org.phomellolitepos.Reports.ItemTaxReport_view"
+86-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:75:13-55
+87            android:exported="true"
+87-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:76:13-36
+88            android:theme="@style/AppTheme.NoActionBar"
+88-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:77:13-56
+89            android:windowSoftInputMode="stateVisible|adjustResize" />
+89-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:78:13-68
+90        <activity
+90-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:79:9-83:71
+91            android:name="org.phomellolitepos.Reports.TaxReport_view"
+91-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:80:13-51
+92            android:exported="true"
+92-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:81:13-36
+93            android:theme="@style/AppTheme.NoActionBar"
+93-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:82:13-56
+94            android:windowSoftInputMode="stateVisible|adjustResize" />
+94-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:83:13-68
+95        <activity
+95-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:84:9-88:71
+96            android:name="org.phomellolitepos.Reports.CancelReport_view"
+96-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:85:13-54
+97            android:exported="true"
+97-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:86:13-36
+98            android:theme="@style/AppTheme.NoActionBar"
+98-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:87:13-56
+99            android:windowSoftInputMode="stateVisible|adjustResize" />
+99-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:88:13-68
+100        <activity
+100-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:89:9-93:71
+101            android:name="org.phomellolitepos.Reports.ItemReport_view"
+101-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:90:13-52
+102            android:exported="true"
+102-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:91:13-36
+103            android:theme="@style/AppTheme.NoActionBar"
+103-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:92:13-56
+104            android:windowSoftInputMode="stateVisible|adjustResize" />
+104-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:93:13-68
+105        <activity
+105-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:94:9-98:71
+106            android:name="org.phomellolitepos.Reports.ItemProfitReport_view"
+106-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:95:13-58
+107            android:exported="true"
+107-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:96:13-36
+108            android:theme="@style/AppTheme.NoActionBar"
+108-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:97:13-56
+109            android:windowSoftInputMode="stateVisible|adjustResize" />
+109-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:98:13-68
+110        <activity
+110-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:99:9-103:71
+111            android:name="org.phomellolitepos.Reports.UserReport_view"
+111-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:100:13-52
+112            android:exported="true"
+112-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:101:13-36
+113            android:theme="@style/AppTheme.NoActionBar"
+113-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:102:13-56
+114            android:windowSoftInputMode="stateVisible|adjustResize" />
+114-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:103:13-68
+115        <activity
+115-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:104:9-108:71
+116            android:name="org.phomellolitepos.Reports.ContactReport_view"
+116-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:105:13-55
+117            android:exported="true"
+117-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:106:13-36
+118            android:theme="@style/AppTheme.NoActionBar"
+118-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:107:13-56
+119            android:windowSoftInputMode="stateVisible|adjustResize" />
+119-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:108:13-68
+120        <activity
+120-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:109:9-113:71
+121            android:name="org.phomellolitepos.Reports.DailySales_Report"
+121-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:110:13-54
+122            android:label="@string/app_name"
+122-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:111:13-45
+123            android:theme="@style/AppTheme.NoActionBar"
+123-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:112:13-56
+124            android:windowSoftInputMode="stateVisible|adjustResize" />
+124-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:113:13-68
+125        <activity
+125-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:114:9-118:71
+126            android:name="org.phomellolitepos.Reports.MonthlySalesReport_View"
+126-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:115:13-60
+127            android:label="@string/app_name"
+127-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:116:13-45
+128            android:theme="@style/AppTheme.NoActionBar"
+128-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:117:13-56
+129            android:windowSoftInputMode="stateVisible|adjustResize" />
+129-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:118:13-68
+130        <activity
+130-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:119:9-123:71
+131            android:name="org.phomellolitepos.Reports.SalesByItemGroupReport_View"
+131-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:120:13-64
+132            android:label="@string/app_name"
+132-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:121:13-45
+133            android:theme="@style/AppTheme.NoActionBar"
+133-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:122:13-56
+134            android:windowSoftInputMode="stateVisible|adjustResize" />
+134-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:123:13-68
+135        <activity
+135-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:124:9-128:71
+136            android:name="org.phomellolitepos.Reports.SalesByItemReport_View"
+136-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:125:13-59
+137            android:label="@string/app_name"
+137-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:126:13-45
+138            android:theme="@style/AppTheme.NoActionBar"
+138-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:127:13-56
+139            android:windowSoftInputMode="stateVisible|adjustResize" />
+139-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:128:13-68
+140        <activity
+140-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:129:9-133:71
+141            android:name="org.phomellolitepos.Reports.OrderHeaderReport_View"
+141-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:130:13-59
+142            android:label="@string/app_name"
+142-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:131:13-45
+143            android:theme="@style/AppTheme.NoActionBar"
+143-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:132:13-56
+144            android:windowSoftInputMode="stateVisible|adjustResize" />
+144-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:133:13-68
+145        <activity
+145-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:134:9-138:71
+146            android:name="org.phomellolitepos.Reports.OrderPaymentReport_View"
+146-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:135:13-60
+147            android:label="@string/app_name"
+147-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:136:13-45
+148            android:theme="@style/AppTheme.NoActionBar"
+148-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:137:13-56
+149            android:windowSoftInputMode="stateVisible|adjustResize" />
+149-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:138:13-68
+150        <activity
+150-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:139:9-143:71
+151            android:name="org.phomellolitepos.Reports.OrderDetailReport_View"
+151-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:140:13-59
+152            android:label="@string/app_name"
+152-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:141:13-45
+153            android:theme="@style/AppTheme.NoActionBar"
+153-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:142:13-56
+154            android:windowSoftInputMode="stateVisible|adjustResize" />
+154-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:143:13-68
+155        <activity
+155-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:144:9-148:71
+156            android:name="org.phomellolitepos.Reports.ZeroReportView"
+156-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:145:13-51
+157            android:label="@string/app_name"
+157-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:146:13-45
+158            android:theme="@style/AppTheme.NoActionBar"
+158-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:147:13-56
+159            android:windowSoftInputMode="stateVisible|adjustResize" />
+159-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:148:13-68
+160        <activity
+160-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:149:9-153:71
+161            android:name="org.phomellolitepos.Reports.ItemGroupReport_view"
+161-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:150:13-57
+162            android:label="@string/app_name"
+162-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:151:13-45
+163            android:theme="@style/AppTheme.NoActionBar"
+163-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:152:13-56
+164            android:windowSoftInputMode="stateVisible|adjustResize" />
+164-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:153:13-68
+165
+166        <uses-library
+166-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:155:9-157:40
+167            android:name="org.apache.http.legacy"
+167-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:156:13-50
+168            android:required="false" />
+168-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:157:13-37
+169
+170        <activity
+170-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:159:9-163:71
+171            android:name="org.phomellolitepos.VehicleOutList"
+171-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:160:13-43
+172            android:label="@string/app_name"
+172-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:161:13-45
+173            android:theme="@style/AppTheme.NoActionBar"
+173-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:162:13-56
+174            android:windowSoftInputMode="stateVisible|adjustResize" />
+174-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:163:13-68
+175        <activity android:name="org.phomellolitepos.VehicleIN_OutReport" />
+175-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:164:9-57
+175-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:164:19-54
+176        <activity
+176-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:165:9-169:71
+177            android:name="org.phomellolitepos.Retail_IndustryActivity"
+177-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:166:13-52
+178            android:label="@string/app_name"
+178-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:167:13-45
+179            android:theme="@style/AppTheme.NoActionBar"
+179-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:168:13-56
+180            android:windowSoftInputMode="stateVisible|adjustResize" />
+180-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:169:13-68
+181        <activity
+181-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:170:9-174:71
+182            android:name="org.phomellolitepos.VehicleInReport"
+182-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:171:13-44
+183            android:label="@string/app_name"
+183-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:172:13-45
+184            android:theme="@style/AppTheme.NoActionBar"
+184-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:173:13-56
+185            android:windowSoftInputMode="stateVisible|adjustResize" />
+185-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:174:13-68
+186        <activity
+186-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:175:9-179:71
+187            android:name="org.phomellolitepos.VehicleHistoryScreen"
+187-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:176:13-49
+188            android:label="@string/app_name"
+188-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:177:13-45
+189            android:theme="@style/AppTheme.NoActionBar"
+189-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:178:13-56
+190            android:windowSoftInputMode="stateVisible|adjustResize" />
+190-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:179:13-68
+191        <activity
+191-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:180:9-205:20
+192            android:name="org.phomellolitepos.ParkingIndustryActivity"
+192-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:181:13-52
+193            android:label="@string/app_name"
+193-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:182:13-45
+194            android:launchMode="singleTop"
+194-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:183:13-43
+195            android:theme="@style/AppTheme.NoActionBar"
+195-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:184:13-56
+196            android:windowSoftInputMode="stateVisible|adjustResize" >
+196-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:185:13-68
+197            <intent-filter>
+197-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:186:13-189:29
+198                <action android:name="android.intent.action.MAIN" />
+198-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:187:17-69
+198-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:187:25-66
+199                <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+200            </intent-filter>
+201            <intent-filter>
+201-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:190:13-194:29
+202                <action android:name="android.nfc.action.TECH_DISCOVERED" />
+202-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:191:17-77
+202-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:191:25-74
+203                <action android:name="android.nfc.action.NDEF_DISCOVERED" />
+203-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:192:17-77
+203-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:192:25-74
+204                <action android:name="android.nfc.action.TAG_DISCOVERED" />
+204-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:193:17-76
+204-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:193:25-73
+205            </intent-filter>
+206
+207            <meta-data
+207-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:196:13-198:54
+208                android:name="android.nfc.action.TECH_DISCOVERED"
+208-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:197:17-66
+209                android:resource="@xml/filter_nfc" />
+209-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:198:17-51
+210            <meta-data
+210-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:199:13-201:54
+211                android:name="android.nfc.action.NDEF_DISCOVERED"
+211-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:200:17-66
+212                android:resource="@xml/filter_nfc" />
+212-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:201:17-51
+213            <meta-data
+213-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:202:13-204:54
+214                android:name="android.nfc.action.TAG_DISCOVERED"
+214-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:203:17-65
+215                android:resource="@xml/filter_nfc" />
+215-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:204:17-51
+216        </activity>
+217        <activity
+217-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:206:9-210:71
+218            android:name="org.phomellolitepos.PrintTestActivity"
+218-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:207:13-46
+219            android:label="@string/app_name"
+219-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:208:13-45
+220            android:theme="@style/AppTheme.NoActionBar"
+220-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:209:13-56
+221            android:windowSoftInputMode="stateVisible|adjustResize" />
+221-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:210:13-68
+222        <activity
+222-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:211:9-215:71
+223            android:name="org.phomellolitepos.MainSpinneActivity"
+223-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:212:13-47
+224            android:label="@string/app_name"
+224-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:213:13-45
+225            android:theme="@style/AppTheme.NoActionBar"
+225-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:214:13-56
+226            android:windowSoftInputMode="stateVisible|adjustResize" />
+226-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:215:13-68
+227        <activity
+227-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:216:9-220:71
+228            android:name="org.phomellolitepos.NewRegistrationActivity"
+228-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:217:13-52
+229            android:label="@string/title_activity_newregistration"
+229-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:218:13-67
+230            android:theme="@style/AppTheme.NoActionBar"
+230-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:219:13-56
+231            android:windowSoftInputMode="stateVisible|adjustResize" />
+231-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:220:13-68
+232        <activity
+232-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:221:9-225:71
+233            android:name="org.phomellolitepos.ItemModifierSelection"
+233-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:222:13-50
+234            android:label="@string/title_activity_itemmodifier"
+234-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:223:13-64
+235            android:theme="@style/AppTheme.NoActionBar"
+235-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:224:13-56
+236            android:windowSoftInputMode="stateVisible|adjustResize" />
+236-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:225:13-68
+237        <activity android:name="org.phomellolitepos.CrashActivity" />
+237-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:226:9-51
+237-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:226:19-48
+238
+239        <meta-data
+239-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:228:9-230:36
+240            android:name="firebase_analytics_collection_enabled"
+240-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:229:13-65
+241            android:value="true" />
+241-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:230:13-33
+242        <meta-data
+242-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:231:9-233:36
+243            android:name="firebase_crashlytics_collection_enabled"
+243-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:232:13-67
+244            android:value="true" />
+244-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:233:13-33
+245
+246        <activity
+246-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:235:9-239:71
+247            android:name="org.phomellolitepos.ModiferCheckListActivity"
+247-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:236:13-53
+248            android:label="@string/title_activity_modifier"
+248-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:237:13-60
+249            android:theme="@style/AppTheme.NoActionBar"
+249-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:238:13-56
+250            android:windowSoftInputMode="stateVisible|adjustResize" />
+250-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:239:13-68
+251        <activity
+251-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:240:9-244:71
+252            android:name="org.phomellolitepos.TableMangement"
+252-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:241:13-43
+253            android:label="@string/title_activity_table"
+253-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:242:13-57
+254            android:theme="@style/AppTheme.NoActionBar"
+254-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:243:13-56
+255            android:windowSoftInputMode="stateVisible|adjustResize" />
+255-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:244:13-68
+256        <activity
+256-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:245:9-249:71
+257            android:name="org.phomellolitepos.PdfWebView"
+257-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:246:13-39
+258            android:excludeFromRecents="true"
+258-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:247:13-46
+259            android:theme="@style/Theme.AppCompat.Dialog.Alert"
+259-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:248:13-64
+260            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <uses-library android:name ="org.apache.http.legacy" android:required ="false"/> -->
+260-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:249:13-68
+261        <activity
+261-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:250:9-254:71
+262            android:name="org.phomellolitepos.PaymentCollection_MainScreen"
+262-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:251:13-57
+263            android:label="@string/title_activity_paymentcollection"
+263-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:252:13-69
+264            android:theme="@style/AppTheme.NoActionBar"
+264-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:253:13-56
+265            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <uses-library android:name ="org.apache.http.legacy" android:required ="false"/> -->
+265-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:254:13-68
+266        <activity
+266-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:255:9-259:71
+267            android:name="org.phomellolitepos.AddPaymentActivity"
+267-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:256:13-47
+268            android:label="@string/title_activity_item_payment"
+268-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:257:13-64
+269            android:theme="@style/AppTheme.NoActionBar"
+269-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:258:13-56
+270            android:windowSoftInputMode="stateVisible|adjustResize" />
+270-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:259:13-68
+271        <activity
+271-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:260:9-264:71
+272            android:name="org.phomellolitepos.PaymentListActivity"
+272-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:261:13-48
+273            android:label="@string/Payment"
+273-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:262:13-44
+274            android:theme="@style/AppTheme.NoActionBar"
+274-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:263:13-56
+275            android:windowSoftInputMode="stateVisible|adjustResize" />
+275-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:264:13-68
+276
+277        <provider
+277-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:266:9-274:20
+278            android:name="androidx.core.content.FileProvider"
+278-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:267:13-62
+279            android:authorities="com.org.phomellolitepos.myfileprovider"
+279-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:268:13-73
+280            android:exported="false"
+280-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:269:13-37
+281            android:grantUriPermissions="true" >
+281-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:270:13-47
+282            <meta-data
+282-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:271:13-273:53
+283                android:name="android.support.FILE_PROVIDER_PATHS"
+283-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:272:17-67
+284                android:resource="@xml/filepaths" />
+284-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:273:17-50
+285        </provider>
+286
+287        <service android:name="org.phomellolitepos.BackgroundApiService" />
+287-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:276:9-57
+287-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:276:18-54
+288
+289        <activity
+289-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:278:9-281:71
+290            android:name="org.phomellolitepos.InvReturnItemListActivity"
+290-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:279:13-54
+291            android:theme="@style/AppTheme.NoActionBar"
+291-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:280:13-56
+292            android:windowSoftInputMode="stateVisible|adjustResize" />
+292-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:281:13-68
+293
+294        <uses-library
+294-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:283:9-285:40
+295            android:name="com.odm"
+295-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:284:13-35
+296            android:required="false" />
+296-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:285:13-37
+297        <uses-library
+297-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:286:9-288:40
+298            android:name="com.pos.sdk"
+298-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:287:13-39
+299            android:required="false" />
+299-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:288:13-37
+300
+301        <activity
+301-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:290:9-294:63
+302            android:name="org.phomellolitepos.MainActivity"
+302-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:291:13-41
+303            android:label="@string/app_name"
+303-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:292:13-45
+304            android:theme="@style/AppTheme.NoActionBar"
+304-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:293:13-56
+305            android:windowSoftInputMode="stateAlwaysHidden" />
+305-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:294:13-60
+306        <activity
+306-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:295:9-299:71
+307            android:name="org.phomellolitepos.ItemCategoryActivity"
+307-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:296:13-49
+308            android:label="@string/title_activity_item_category"
+308-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:297:13-65
+309            android:theme="@style/AppTheme.NoActionBar"
+309-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:298:13-56
+310            android:windowSoftInputMode="stateVisible|adjustResize" />
+310-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:299:13-68
+311        <activity
+311-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:300:9-304:71
+312            android:name="org.phomellolitepos.ItemActivity"
+312-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:301:13-41
+313            android:label="@string/title_activity_item"
+313-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:302:13-56
+314            android:theme="@style/AppTheme.NoActionBar"
+314-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:303:13-56
+315            android:windowSoftInputMode="stateVisible|adjustResize" />
+315-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:304:13-68
+316        <activity
+316-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:305:9-309:71
+317            android:name="org.phomellolitepos.ReceptActivity"
+317-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:306:13-43
+318            android:label="@string/title_activity_recept"
+318-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:307:13-58
+319            android:theme="@style/AppTheme.NoActionBar"
+319-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:308:13-56
+320            android:windowSoftInputMode="stateVisible|adjustResize" />
+320-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:309:13-68
+321        <activity
+321-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:310:9-314:71
+322            android:name="org.phomellolitepos.ViewOrderActivity"
+322-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:311:13-46
+323            android:label="@string/title_activity_view_order"
+323-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:312:13-62
+324            android:theme="@style/AppTheme.NoActionBar"
+324-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:313:13-56
+325            android:windowSoftInputMode="stateVisible|adjustResize" />
+325-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:314:13-68
+326        <activity
+326-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:315:9-319:71
+327            android:name="org.phomellolitepos.SetttingsActivity"
+327-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:316:13-46
+328            android:label="@string/title_activity_setttings"
+328-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:317:13-61
+329            android:theme="@style/AppTheme.NoActionBar"
+329-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:318:13-56
+330            android:windowSoftInputMode="stateVisible|adjustResize" />
+330-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:319:13-68
+331        <activity
+331-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:320:9-324:71
+332            android:name="org.phomellolitepos.ProfileActivity"
+332-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:321:13-44
+333            android:label="@string/title_activity_profile"
+333-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:322:13-59
+334            android:theme="@style/AppTheme.NoActionBar"
+334-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:323:13-56
+335            android:windowSoftInputMode="stateVisible|adjustResize" />
+335-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:324:13-68
+336        <activity
+336-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:325:9-329:71
+337            android:name="org.phomellolitepos.ChangePriceActivity"
+337-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:326:13-48
+338            android:label="@string/title_activity_change_price"
+338-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:327:13-64
+339            android:theme="@style/AppTheme.NoActionBar"
+339-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:328:13-56
+340            android:windowSoftInputMode="stateVisible|adjustResize" />
+340-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:329:13-68
+341        <activity
+341-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:330:9-334:71
+342            android:name="org.phomellolitepos.RegistrationActivity"
+342-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:331:13-49
+343            android:label="@string/title_activity_registration"
+343-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:332:13-64
+344            android:theme="@style/AppTheme.NoActionBar"
+344-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:333:13-56
+345            android:windowSoftInputMode="stateVisible|adjustResize" />
+345-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:334:13-68
+346        <activity
+346-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:335:9-339:71
+347            android:name="org.phomellolitepos.CategoryListActivity"
+347-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:336:13-49
+348            android:label="@string/title_activity_category_list"
+348-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:337:13-65
+349            android:theme="@style/AppTheme.NoActionBar"
+349-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:338:13-56
+350            android:windowSoftInputMode="stateVisible|adjustResize" />
+350-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:339:13-68
+351        <activity
+351-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:340:9-344:71
+352            android:name="org.phomellolitepos.ItemListActivity"
+352-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:341:13-45
+353            android:label="@string/title_activity_item_list"
+353-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:342:13-61
+354            android:theme="@style/AppTheme.NoActionBar"
+354-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:343:13-56
+355            android:windowSoftInputMode="stateVisible|adjustResize" />
+355-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:344:13-68
+356        <activity
+356-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:345:9-349:71
+357            android:name="org.phomellolitepos.ActivateEmailActivity"
+357-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:346:13-50
+358            android:label="@string/title_activity_activate_email"
+358-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:347:13-66
+359            android:theme="@style/AppTheme.NoActionBar"
+359-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:348:13-56
+360            android:windowSoftInputMode="stateVisible|adjustResize" />
+360-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:349:13-68
+361        <activity
+361-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:350:9-354:71
+362            android:name="org.phomellolitepos.ActivateActivity"
+362-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:351:13-45
+363            android:label="@string/title_activity_activate"
+363-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:352:13-60
+364            android:theme="@style/AppTheme.NoActionBar"
+364-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:353:13-56
+365            android:windowSoftInputMode="stateVisible|adjustResize" />
+365-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:354:13-68
+366        <activity
+366-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:355:9-359:71
+367            android:name="org.phomellolitepos.RetailActivity"
+367-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:356:13-43
+368            android:label="@string/title_activity_retail"
+368-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:357:13-58
+369            android:theme="@style/AppTheme.NoActionBar"
+369-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:358:13-56
+370            android:windowSoftInputMode="stateVisible|adjustResize" />
+370-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:359:13-68
+371        <activity
+371-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:360:9-364:71
+372            android:name="org.phomellolitepos.MainCategoryListActivity"
+372-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:361:13-53
+373            android:label="@string/title_activity_mian_category_list"
+373-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:362:13-70
+374            android:theme="@style/AppTheme.NoActionBar"
+374-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:363:13-56
+375            android:windowSoftInputMode="stateVisible|adjustResize" />
+375-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:364:13-68
+376        <activity
+376-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:365:9-375:20
+377            android:name="org.phomellolitepos.SplashScreen"
+377-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:366:13-41
+378            android:label="@string/app_name"
+378-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:367:13-45
+379            android:theme="@style/AppTheme.NoActionBar" >
+379-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:368:13-56
+380            <intent-filter>
+380-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:369:13-374:29
+381                <action android:name="android.intent.action.MAIN" />
+381-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:187:17-69
+381-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:187:25-66
+382
+383                <category android:name="android.intent.category.LAUNCHER" />
+383-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:372:17-77
+383-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:372:27-74
+384                <category android:name="android.intent.category.DEFAULT" />
+384-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:373:17-76
+384-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:373:27-73
+385            </intent-filter>
+386        </activity>
+387        <activity
+387-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:376:9-380:71
+388            android:name="org.phomellolitepos.printer.PrintLayout"
+388-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:377:13-48
+389            android:excludeFromRecents="true"
+389-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:378:13-46
+390            android:theme="@android:style/Theme.Holo.Light.Dialog"
+390-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:379:13-67
+391            android:windowSoftInputMode="stateVisible|adjustResize" />
+391-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:380:13-68
+392        <activity
+392-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:381:9-385:57
+393            android:name="org.phomellolitepos.PaymentActivity"
+393-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:382:13-44
+394            android:label="@string/title_activity_payment"
+394-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:383:13-59
+395            android:theme="@style/AppTheme.NoActionBar"
+395-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:384:13-56
+396            android:windowSoftInputMode="stateHidden" />
+396-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:385:13-54
+397        <activity
+397-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:386:9-390:57
+398            android:name="org.phomellolitepos.ReceptDetailActivity"
+398-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:387:13-49
+399            android:label="@string/title_activity_recept_detail"
+399-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:388:13-65
+400            android:theme="@style/AppTheme.NoActionBar"
+400-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:389:13-56
+401            android:windowSoftInputMode="stateHidden" />
+401-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:390:13-54
+402        <activity
+402-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:391:9-395:71
+403            android:name="org.phomellolitepos.TestActivity"
+403-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:392:13-41
+404            android:label="@string/title_activity_test"
+404-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:393:13-56
+405            android:theme="@style/AppTheme.NoActionBar"
+405-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:394:13-56
+406            android:windowSoftInputMode="stateVisible|adjustResize" />
+406-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:395:13-68
+407        <activity
+407-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:396:9-400:71
+408            android:name="org.phomellolitepos.DataBaseActivity"
+408-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:397:13-45
+409            android:label="@string/title_activity_data_base"
+409-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:398:13-61
+410            android:theme="@style/AppTheme.NoActionBar"
+410-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:399:13-56
+411            android:windowSoftInputMode="stateVisible|adjustResize" />
+411-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:400:13-68
+412        <activity
+412-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:401:9-405:71
+413            android:name="org.phomellolitepos.ReportActivity"
+413-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:402:13-43
+414            android:label="@string/title_activity_report"
+414-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:403:13-58
+415            android:theme="@style/AppTheme.NoActionBar"
+415-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:404:13-56
+416            android:windowSoftInputMode="stateVisible|adjustResize" />
+416-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:405:13-68
+417        <!--
+418<activity
+419            android:name=".ItemSummaryActivity"
+420            android:label="@string/title_activity_item_summary"
+421            android:theme="@style/AppTheme.NoActionBar" />
+422        <activity
+423            android:name=".MiniPOSTestActivity"
+424            android:label="@string/title_activity_mini_postest"
+425            android:theme="@style/AppTheme.NoActionBar" />
+426        -->
+427        <activity
+427-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:416:9-420:71
+428            android:name="org.phomellolitepos.LoginActivity"
+428-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:417:13-42
+429            android:label="@string/title_activity_login"
+429-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:418:13-57
+430            android:theme="@style/AppTheme.NoActionBar"
+430-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:419:13-56
+431            android:windowSoftInputMode="stateVisible|adjustResize" />
+431-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:420:13-68
+432        <activity
+432-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:421:9-425:71
+433            android:name="org.phomellolitepos.ReadJson"
+433-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:422:13-37
+434            android:label="@string/title_activity_read_json"
+434-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:423:13-61
+435            android:theme="@style/AppTheme.NoActionBar"
+435-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:424:13-56
+436            android:windowSoftInputMode="stateVisible|adjustResize" />
+436-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:425:13-68
+437        <activity
+437-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:426:9-430:71
+438            android:name="org.phomellolitepos.BussinessGroupActivity"
+438-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:427:13-51
+439            android:label="@string/title_activity_bussiness_group"
+439-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:428:13-67
+440            android:theme="@style/AppTheme.NoActionBar"
+440-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:429:13-56
+441            android:windowSoftInputMode="stateVisible|adjustResize" />
+441-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:430:13-68
+442        <activity
+442-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:431:9-435:71
+443            android:name="org.phomellolitepos.ContactActivity"
+443-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:432:13-44
+444            android:label="@string/title_activity_contact"
+444-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:433:13-59
+445            android:theme="@style/AppTheme.NoActionBar"
+445-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:434:13-56
+446            android:windowSoftInputMode="stateVisible|adjustResize" />
+446-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:435:13-68
+447        <activity
+447-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:436:9-440:71
+448            android:name="org.phomellolitepos.BussinessGroupListActivity"
+448-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:437:13-55
+449            android:label="@string/title_activity_bussiness_group_list"
+449-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:438:13-72
+450            android:theme="@style/AppTheme.NoActionBar"
+450-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:439:13-56
+451            android:windowSoftInputMode="stateVisible|adjustResize" />
+451-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:440:13-68
+452        <activity
+452-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:441:9-445:71
+453            android:name="org.phomellolitepos.ContactListActivity"
+453-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:442:13-48
+454            android:label="@string/title_activity_contact_list"
+454-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:443:13-64
+455            android:theme="@style/AppTheme.NoActionBar"
+455-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:444:13-56
+456            android:windowSoftInputMode="stateVisible|adjustResize" />
+456-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:445:13-68
+457        <activity
+457-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:446:9-450:71
+458            android:name="org.phomellolitepos.BussinessGroupCheckListActivity"
+458-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:447:13-60
+459            android:label="@string/title_activity_bussiness_group_check_list"
+459-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:448:13-78
+460            android:theme="@style/AppTheme.NoActionBar"
+460-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:449:13-56
+461            android:windowSoftInputMode="stateVisible|adjustResize" />
+461-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:450:13-68
+462        <activity
+462-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:451:9-455:71
+463            android:name="org.phomellolitepos.ManufactureActivity"
+463-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:452:13-48
+464            android:label="@string/title_activity_manufacture"
+464-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:453:13-63
+465            android:theme="@style/AppTheme.NoActionBar"
+465-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:454:13-56
+466            android:windowSoftInputMode="stateVisible|adjustResize" />
+466-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:455:13-68
+467        <activity
+467-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:456:9-460:71
+468            android:name="org.phomellolitepos.ManufactureListActivity"
+468-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:457:13-52
+469            android:label="@string/title_activity_manufacture_list"
+469-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:458:13-68
+470            android:theme="@style/AppTheme.NoActionBar"
+470-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:459:13-56
+471            android:windowSoftInputMode="stateVisible|adjustResize" />
+471-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:460:13-68
+472        <activity
+472-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:461:9-465:71
+473            android:name="org.phomellolitepos.ItemCheckListActivity"
+473-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:462:13-50
+474            android:label="@string/title_activity_item_check_list"
+474-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:463:13-67
+475            android:theme="@style/AppTheme.NoActionBar"
+475-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:464:13-56
+476            android:windowSoftInputMode="stateVisible|adjustResize" />
+476-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:465:13-68
+477        <activity
+477-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:466:9-470:71
+478            android:name="org.phomellolitepos.TaxActivity"
+478-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:467:13-40
+479            android:label="@string/title_activity_tax"
+479-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:468:13-55
+480            android:theme="@style/AppTheme.NoActionBar"
+480-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:469:13-56
+481            android:windowSoftInputMode="stateVisible|adjustResize" />
+481-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:470:13-68
+482        <activity
+482-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:471:9-475:71
+483            android:name="org.phomellolitepos.TaxListActivity"
+483-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:472:13-44
+484            android:label="@string/title_activity_tax_list"
+484-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:473:13-60
+485            android:theme="@style/AppTheme.NoActionBar"
+485-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:474:13-56
+486            android:windowSoftInputMode="stateVisible|adjustResize" />
+486-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:475:13-68
+487        <activity
+487-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:476:9-480:71
+488            android:name="org.phomellolitepos.OrderTypeListActivity"
+488-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:477:13-50
+489            android:label="@string/title_activity_order_type_list"
+489-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:478:13-67
+490            android:theme="@style/AppTheme.NoActionBar"
+490-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:479:13-56
+491            android:windowSoftInputMode="stateVisible|adjustResize" />
+491-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:480:13-68
+492        <activity
+492-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:481:9-485:71
+493            android:name="org.phomellolitepos.ItemGroupCheckListActivity"
+493-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:482:13-55
+494            android:label="@string/title_activity_item_group_check_list"
+494-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:483:13-73
+495            android:theme="@style/AppTheme.NoActionBar"
+495-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:484:13-56
+496            android:windowSoftInputMode="stateVisible|adjustResize" />
+496-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:485:13-68
+497        <activity
+497-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:486:9-490:71
+498            android:name="org.phomellolitepos.OrderTypeCheckListActivity"
+498-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:487:13-55
+499            android:label="@string/title_activity_order_type_check_list"
+499-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:488:13-73
+500            android:theme="@style/AppTheme.NoActionBar"
+500-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:489:13-56
+501            android:windowSoftInputMode="stateVisible|adjustResize" />
+501-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:490:13-68
+502        <activity
+502-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:491:9-495:71
+503            android:name="org.phomellolitepos.ContactCheckListActivity"
+503-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:492:13-53
+504            android:label="@string/title_activity_suppier_group_check_list"
+504-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:493:13-76
+505            android:theme="@style/AppTheme.NoActionBar"
+505-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:494:13-56
+506            android:windowSoftInputMode="stateVisible|adjustResize" />
+506-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:495:13-68
+507        <activity
+507-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:496:9-500:71
+508            android:name="org.phomellolitepos.ManagerActivity"
+508-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:497:13-44
+509            android:label="@string/title_activity_manager"
+509-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:498:13-59
+510            android:theme="@style/AppTheme.NoActionBar"
+510-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:499:13-56
+511            android:windowSoftInputMode="stateVisible|adjustResize" />
+511-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:500:13-68
+512        <activity
+512-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:501:9-505:71
+513            android:name="org.phomellolitepos.OpeningBalanceActivity"
+513-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:502:13-51
+514            android:label="@string/title_activity_opening_balance"
+514-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:503:13-67
+515            android:theme="@style/AppTheme.NoActionBar"
+515-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:504:13-56
+516            android:windowSoftInputMode="stateVisible|adjustResize" />
+516-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:505:13-68
+517        <activity
+517-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:506:9-510:71
+518            android:name="org.phomellolitepos.ExpensesListActivity"
+518-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:507:13-49
+519            android:label="@string/title_activity_expenses_list"
+519-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:508:13-65
+520            android:theme="@style/AppTheme.NoActionBar"
+520-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:509:13-56
+521            android:windowSoftInputMode="stateVisible|adjustResize" />
+521-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:510:13-68
+522        <activity
+522-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:511:9-515:71
+523            android:name="org.phomellolitepos.ExpensesActivity"
+523-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:512:13-45
+524            android:label="@string/title_activity_expenses"
+524-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:513:13-60
+525            android:theme="@style/AppTheme.NoActionBar"
+525-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:514:13-56
+526            android:windowSoftInputMode="stateVisible|adjustResize" />
+526-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:515:13-68
+527        <activity
+527-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:516:9-520:71
+528            android:name="org.phomellolitepos.X_ZActivity"
+528-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:517:13-40
+529            android:label="@string/title_activity_x__z"
+529-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:518:13-56
+530            android:theme="@style/AppTheme.NoActionBar"
+530-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:519:13-56
+531            android:windowSoftInputMode="stateVisible|adjustResize" />
+531-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:520:13-68
+532        <activity
+532-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:521:9-525:71
+533            android:name="org.phomellolitepos.UserListActivity"
+533-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:522:13-45
+534            android:label="@string/title_activity_user_llist"
+534-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:523:13-62
+535            android:theme="@style/AppTheme.NoActionBar"
+535-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:524:13-56
+536            android:windowSoftInputMode="stateVisible|adjustResize" />
+536-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:525:13-68
+537        <activity
+537-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:526:9-530:71
+538            android:name="org.phomellolitepos.UserActivity"
+538-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:527:13-41
+539            android:label="@string/title_activity_user"
+539-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:528:13-56
+540            android:theme="@style/AppTheme.NoActionBar"
+540-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:529:13-56
+541            android:windowSoftInputMode="stateVisible|adjustResize" />
+541-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:530:13-68
+542        <activity
+542-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:531:9-535:71
+543            android:name="org.phomellolitepos.BluetoothDeviceListActivity"
+543-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:532:13-56
+544            android:label="@string/title_activity_bluetooth_device_list"
+544-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:533:13-73
+545            android:theme="@style/AppTheme.NoActionBar"
+545-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:534:13-56
+546            android:windowSoftInputMode="stateVisible|adjustResize" />
+546-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:535:13-68
+547
+548        <receiver android:name="sunmi.ds.MsgReceiver" >
+548-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:537:9-542:20
+548-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:537:19-54
+549            <intent-filter>
+549-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:538:13-541:29
+550                <action android:name="com.sunmi.hcservice" />
+550-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:539:17-62
+550-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:539:25-59
+551                <action android:name="com.sunmi.hcservice.status" />
+551-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:540:17-69
+551-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:540:25-66
+552            </intent-filter>
+553        </receiver>
+554        <receiver android:name="org.phomellolitepos.ShutDownBroadcastRecevier" >
+554-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:543:9-547:20
+554-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:543:19-60
+555            <intent-filter android:priority="1000" >
+555-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:544:13-546:29
+555-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:544:28-51
+556                <action android:name="com.sunmi.action_shutdown_client" />
+556-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:545:17-75
+556-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:545:25-72
+557            </intent-filter>
+558        </receiver>
+559
+560        <activity
+560-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:549:9-553:71
+561            android:name="org.phomellolitepos.AboutActivity"
+561-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:550:13-42
+562            android:label="@string/title_activity_about"
+562-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:551:13-57
+563            android:theme="@style/AppTheme.NoActionBar"
+563-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:552:13-56
+564            android:windowSoftInputMode="stateVisible|adjustResize" />
+564-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:553:13-68
+565        <activity
+565-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:554:9-558:71
+566            android:name="org.phomellolitepos.TaxCheckListActivity"
+566-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:555:13-49
+567            android:label="@string/title_activity_tax_check_list"
+567-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:556:13-66
+568            android:theme="@style/AppTheme.NoActionBar"
+568-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:557:13-56
+569            android:windowSoftInputMode="stateVisible|adjustResize" />
+569-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:558:13-68
+570        <activity
+570-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:559:9-563:71
+571            android:name="org.phomellolitepos.ReservationActivity"
+571-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:560:13-48
+572            android:label="@string/title_activity_reservation"
+572-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:561:13-63
+573            android:theme="@style/AppTheme.NoActionBar"
+573-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:562:13-56
+574            android:windowSoftInputMode="stateVisible|adjustResize" />
+574-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:563:13-68
+575        <activity
+575-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:564:9-568:71
+576            android:name="org.phomellolitepos.ReservationListActivity"
+576-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:565:13-52
+577            android:label="@string/title_activity_reservation_list"
+577-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:566:13-68
+578            android:theme="@style/AppTheme.NoActionBar"
+578-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:567:13-56
+579            android:windowSoftInputMode="stateVisible|adjustResize" />
+579-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:568:13-68
+580        <activity
+580-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:569:9-573:71
+581            android:name="org.phomellolitepos.ReservationItemCheckListActivity"
+581-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:570:13-61
+582            android:label="@string/title_activity_reservation_item_check_list"
+582-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:571:13-79
+583            android:theme="@style/AppTheme.NoActionBar"
+583-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:572:13-56
+584            android:windowSoftInputMode="stateVisible|adjustResize" />
+584-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:573:13-68
+585        <activity
+585-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:574:9-578:71
+586            android:name="org.phomellolitepos.CustomerImageActivity"
+586-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:575:13-50
+587            android:label="@string/title_activity_customer_image"
+587-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:576:13-66
+588            android:theme="@style/AppTheme.NoActionBar"
+588-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:577:13-56
+589            android:windowSoftInputMode="stateVisible|adjustResize" />
+589-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:578:13-68
+590        <activity
+590-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:579:9-583:71
+591            android:name="org.phomellolitepos.PaymentCollectionActivity"
+591-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:580:13-54
+592            android:label="@string/title_activity_payment_collection"
+592-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:581:13-70
+593            android:theme="@style/AppTheme.NoActionBar"
+593-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:582:13-56
+594            android:windowSoftInputMode="stateVisible|adjustResize" /> <!-- <receiver -->
+594-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:583:13-68
+595        <!-- android:name=".Util.BootStartUpReciever" -->
+596        <!-- android:enabled="true" -->
+597        <!-- android:exported="true"> -->
+598        <!-- <intent-filter> -->
+599        <!-- <action android:name="android.intent.action.BOOT_COMPLETED" /> -->
+600        <!-- <category android:name="android.intent.category.LAUNCHER" /> -->
+601        <!-- </intent-filter> -->
+602        <!-- </receiver> -->
+603        <activity
+603-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:592:9-596:71
+604            android:name="org.phomellolitepos.PayCollectionListActivity"
+604-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:593:13-54
+605            android:label="@string/title_activity_pay_collection_list"
+605-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:594:13-71
+606            android:theme="@style/AppTheme.NoActionBar"
+606-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:595:13-56
+607            android:windowSoftInputMode="stateVisible|adjustResize" />
+607-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:596:13-68
+608        <activity
+608-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:597:9-601:71
+609            android:name="org.phomellolitepos.ItemTaxActivity"
+609-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:598:13-44
+610            android:label="@string/title_activity_item_tax"
+610-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:599:13-60
+611            android:theme="@style/AppTheme.NoActionBar"
+611-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:600:13-56
+612            android:windowSoftInputMode="stateVisible|adjustResize" />
+612-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:601:13-68
+613        <activity
+613-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:602:9-606:71
+614            android:name="org.phomellolitepos.PaymentSplitActivity"
+614-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:603:13-49
+615            android:label="@string/title_activity_payment_split"
+615-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:604:13-65
+616            android:theme="@style/AppTheme.NoActionBar"
+616-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:605:13-56
+617            android:windowSoftInputMode="stateVisible|adjustResize" />
+617-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:606:13-68
+618        <activity
+618-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:607:9-612:57
+619            android:name="org.phomellolitepos.Main2Activity"
+619-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:608:13-42
+620            android:configChanges="orientation|keyboardHidden"
+620-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:609:13-63
+621            android:label="@string/title_activity_main2"
+621-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:610:13-57
+622            android:theme="@style/AppTheme.NoActionBar"
+622-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:611:13-56
+623            android:windowSoftInputMode="stateHidden" />
+623-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:612:13-54
+624        <activity
+624-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:613:9-617:71
+625            android:name="org.phomellolitepos.SearchOrderActivity"
+625-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:614:13-48
+626            android:label="@string/title_activity_search_order"
+626-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:615:13-64
+627            android:theme="@style/AppTheme.NoActionBar"
+627-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:616:13-56
+628            android:windowSoftInputMode="stateVisible|adjustResize" />
+628-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:617:13-68
+629        <activity
+629-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:618:9-622:71
+630            android:name="org.phomellolitepos.UnitListActivity"
+630-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:619:13-45
+631            android:label="@string/title_activity_unit_list"
+631-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:620:13-61
+632            android:theme="@style/AppTheme.NoActionBar"
+632-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:621:13-56
+633            android:windowSoftInputMode="stateVisible|adjustResize" />
+633-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:622:13-68
+634        <activity
+634-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:623:9-627:71
+635            android:name="org.phomellolitepos.UnitActivity"
+635-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:624:13-41
+636            android:label="@string/title_activity_unit"
+636-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:625:13-56
+637            android:theme="@style/AppTheme.NoActionBar"
+637-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:626:13-56
+638            android:windowSoftInputMode="stateVisible|adjustResize" />
+638-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:627:13-68
+639        <activity
+639-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:628:9-632:71
+640            android:name="org.phomellolitepos.UserParmissionCheckListActivity"
+640-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:629:13-60
+641            android:label="@string/title_activity_user_parmission_check_list"
+641-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:630:13-78
+642            android:theme="@style/AppTheme.NoActionBar"
+642-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:631:13-56
+643            android:windowSoftInputMode="stateVisible|adjustResize" />
+643-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:632:13-68
+644        <activity
+644-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:633:9-637:71
+645            android:name="org.phomellolitepos.ReportViewerActivity"
+645-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:634:13-49
+646            android:label="@string/title_activity_report_viewer"
+646-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:635:13-65
+647            android:theme="@style/AppTheme.NoActionBar"
+647-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:636:13-56
+648            android:windowSoftInputMode="stateVisible|adjustResize" />
+648-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:637:13-68
+649        <activity
+649-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:638:9-642:71
+650            android:name="org.phomellolitepos.YouTubeVideoListActivity"
+650-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:639:13-53
+651            android:label="@string/title_activity_you_tube_video_list"
+651-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:640:13-71
+652            android:theme="@style/AppTheme.NoActionBar"
+652-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:641:13-56
+653            android:windowSoftInputMode="stateVisible|adjustResize" />
+653-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:642:13-68
+654        <activity
+654-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:643:9-647:71
+655            android:name="org.phomellolitepos.AccountsListActivity"
+655-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:644:13-49
+656            android:label="@string/title_activity_accounts_list"
+656-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:645:13-65
+657            android:theme="@style/AppTheme.NoActionBar"
+657-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:646:13-56
+658            android:windowSoftInputMode="stateVisible|adjustResize" />
+658-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:647:13-68
+659        <activity
+659-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:648:9-652:71
+660            android:name="org.phomellolitepos.AccountsActivity"
+660-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:649:13-45
+661            android:label="@string/title_activity_accounts"
+661-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:650:13-60
+662            android:theme="@style/AppTheme.NoActionBar"
+662-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:651:13-56
+663            android:windowSoftInputMode="stateVisible|adjustResize" />
+663-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:652:13-68
+664        <activity
+664-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:653:9-657:71
+665            android:name="org.phomellolitepos.StockAdjestmentListActivity"
+665-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:654:13-56
+666            android:label="@string/title_activity_stock_adjestment_list"
+666-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:655:13-73
+667            android:theme="@style/AppTheme.NoActionBar"
+667-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:656:13-56
+668            android:windowSoftInputMode="stateVisible|adjustResize" />
+668-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:657:13-68
+669        <activity
+669-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:658:9-662:71
+670            android:name="org.phomellolitepos.StockAdjestmentHeaderActivity"
+670-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:659:13-58
+671            android:label="@string/title_activity_stock_adjestment_header"
+671-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:660:13-75
+672            android:theme="@style/AppTheme.NoActionBar"
+672-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:661:13-56
+673            android:windowSoftInputMode="stateVisible|adjustResize" />
+673-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:662:13-68
+674        <activity
+674-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:663:9-667:71
+675            android:name="org.phomellolitepos.StockAdjestmentFinalActivity"
+675-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:664:13-57
+676            android:label="@string/title_activity_stock_adjestment_final"
+676-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:665:13-74
+677            android:theme="@style/AppTheme.NoActionBar"
+677-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:666:13-56
+678            android:windowSoftInputMode="stateVisible|adjustResize" />
+678-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:667:13-68
+679        <activity
+679-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:668:9-672:71
+680            android:name="org.phomellolitepos.CustomerReturnListActivity"
+680-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:669:13-55
+681            android:label="@string/title_activity_return_list"
+681-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:670:13-63
+682            android:theme="@style/AppTheme.NoActionBar"
+682-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:671:13-56
+683            android:windowSoftInputMode="stateVisible|adjustResize" />
+683-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:672:13-68
+684        <activity
+684-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:673:9-677:71
+685            android:name="org.phomellolitepos.CusReturnHeaderActivity"
+685-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:674:13-52
+686            android:label="@string/title_activity_return_header"
+686-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:675:13-65
+687            android:theme="@style/AppTheme.NoActionBar"
+687-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:676:13-56
+688            android:windowSoftInputMode="stateVisible|adjustResize" />
+688-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:677:13-68
+689        <activity
+689-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:678:9-682:71
+690            android:name="org.phomellolitepos.CusReturnFinalActivity"
+690-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:679:13-51
+691            android:label="@string/title_activity_return_final"
+691-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:680:13-64
+692            android:theme="@style/AppTheme.NoActionBar"
+692-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:681:13-56
+693            android:windowSoftInputMode="stateVisible|adjustResize" />
+693-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:682:13-68
+694        <activity
+694-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:683:9-687:71
+695            android:name="org.phomellolitepos.PurchaseListActivity"
+695-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:684:13-49
+696            android:label="@string/title_activity_purchase_list"
+696-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:685:13-65
+697            android:theme="@style/AppTheme.NoActionBar"
+697-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:686:13-56
+698            android:windowSoftInputMode="stateVisible|adjustResize" />
+698-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:687:13-68
+699        <activity
+699-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:688:9-692:71
+700            android:name="org.phomellolitepos.PurchaseHeaderActivity"
+700-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:689:13-51
+701            android:label="@string/title_activity_purchase_header"
+701-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:690:13-67
+702            android:theme="@style/AppTheme.NoActionBar"
+702-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:691:13-56
+703            android:windowSoftInputMode="stateVisible|adjustResize" />
+703-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:692:13-68
+704        <activity
+704-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:693:9-697:71
+705            android:name="org.phomellolitepos.PurchaseFinalActivity"
+705-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:694:13-50
+706            android:label="@string/title_activity_purchase_final"
+706-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:695:13-66
+707            android:theme="@style/AppTheme.NoActionBar"
+707-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:696:13-56
+708            android:windowSoftInputMode="stateVisible|adjustResize" />
+708-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:697:13-68
+709        <activity
+709-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:698:9-702:71
+710            android:name="org.phomellolitepos.PusrchasePaymentActivity"
+710-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:699:13-53
+711            android:label="@string/title_activity_pusrchase_payment"
+711-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:700:13-69
+712            android:theme="@style/AppTheme.NoActionBar"
+712-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:701:13-56
+713            android:windowSoftInputMode="stateVisible|adjustResize" />
+713-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:702:13-68
+714        <activity
+714-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:703:9-712:20
+715            android:name="org.phomellolitepos.SendLogActivity"
+715-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:704:13-44
+716            android:textAppearance="@android:style/TextAppearance.Large"
+716-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:705:13-73
+717            android:windowSoftInputMode="stateAlwaysHidden" >
+717-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:706:13-60
+718            <intent-filter>
+718-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:707:13-711:29
+719                <action android:name=".SendLogActivity" />
+719-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:708:17-59
+719-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:708:25-56
+720
+721                <category android:name="android.intent.category.DEFAULT" />
+721-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:373:17-76
+721-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:373:27-73
+722            </intent-filter>
+723        </activity>
+724        <activity
+724-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:713:9-717:71
+725            android:name="org.phomellolitepos.TicketSolution.TicketActivity"
+725-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:714:13-58
+726            android:label="@string/title_activity_login"
+726-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:715:13-57
+727            android:theme="@style/AppTheme.NoActionBar"
+727-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:716:13-56
+728            android:windowSoftInputMode="stateVisible|adjustResize" />
+728-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:717:13-68
+729        <!--
+730     Add this activity to your manifest
+731     it comes with the Paytm SDK
+732        -->
+733        <activity
+733-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:722:9-726:71
+734            android:name="com.paytm.pgsdk.PaytmPGActivity"
+734-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:723:13-59
+735            android:configChanges="keyboardHidden|orientation|keyboard"
+735-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:724:13-72
+736            android:screenOrientation="portrait"
+736-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:725:13-49
+737            android:windowSoftInputMode="stateVisible|adjustResize" />
+737-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:726:13-68
+738        <activity
+738-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:727:9-731:71
+739            android:name="org.phomellolitepos.TicketSolution.TicketListActivity"
+739-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:728:13-62
+740            android:label="@string/title_activity_ticket_list"
+740-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:729:13-63
+741            android:theme="@style/AppTheme.NoActionBar"
+741-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:730:13-56
+742            android:windowSoftInputMode="stateVisible|adjustResize" />
+742-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:731:13-68
+743        <activity
+743-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:732:9-736:71
+744            android:name="org.phomellolitepos.TicketSolution.TicketPaymentActivity"
+744-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:733:13-65
+745            android:label="@string/title_activity_ticket_payment"
+745-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:734:13-66
+746            android:theme="@style/AppTheme.NoActionBar"
+746-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:735:13-56
+747            android:windowSoftInputMode="stateVisible|adjustResize" />
+747-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:736:13-68
+748        <activity
+748-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:737:9-741:71
+749            android:name="org.phomellolitepos.TicketCategoryActivity"
+749-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:738:13-51
+750            android:label="@string/title_activity_ticket_category"
+750-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:739:13-67
+751            android:theme="@style/AppTheme.NoActionBar"
+751-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:740:13-56
+752            android:windowSoftInputMode="stateVisible|adjustResize" />
+752-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:741:13-68
+753        <activity
+753-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:742:9-746:71
+754            android:name="org.phomellolitepos.TicketSetupActivity"
+754-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:743:13-48
+755            android:label="@string/title_activity_ticket_setup"
+755-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:744:13-64
+756            android:theme="@style/AppTheme.NoActionBar"
+756-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:745:13-56
+757            android:windowSoftInputMode="stateVisible|adjustResize" />
+757-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:746:13-68
+758        <activity
+758-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:747:9-751:71
+759            android:name="org.phomellolitepos.TicketSetupListActivity"
+759-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:748:13-52
+760            android:label="@string/title_activity_ticket_setup_list"
+760-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:749:13-69
+761            android:theme="@style/AppTheme.NoActionBar"
+761-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:750:13-56
+762            android:windowSoftInputMode="stateVisible|adjustResize" />
+762-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:751:13-68
+763        <activity
+763-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:752:9-756:71
+764            android:name="org.phomellolitepos.TicketSetupTaxCheckListActivity"
+764-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:753:13-60
+765            android:label="@string/title_activity_ticket_setup_tax_check_list"
+765-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:754:13-79
+766            android:theme="@style/AppTheme.NoActionBar"
+766-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:755:13-56
+767            android:windowSoftInputMode="stateVisible|adjustResize" />
+767-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:756:13-68
+768        <activity
+768-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:757:9-761:71
+769            android:name="org.phomellolitepos.TicketSetupCategoryCheckListActivity"
+769-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:758:13-65
+770            android:label="@string/title_activity_ticket_setup_category_check_list"
+770-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:759:13-84
+771            android:theme="@style/AppTheme.NoActionBar"
+771-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:760:13-56
+772            android:windowSoftInputMode="stateVisible|adjustResize" />
+772-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:761:13-68
+773        <activity
+773-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:762:9-766:71
+774            android:name="org.phomellolitepos.TicketSetupDaysCheckListActivity"
+774-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:763:13-61
+775            android:label="@string/title_activity_ticket_setup_days_check_list"
+775-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:764:13-80
+776            android:theme="@style/AppTheme.NoActionBar"
+776-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:765:13-56
+777            android:windowSoftInputMode="stateVisible|adjustResize" />
+777-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:766:13-68
+778        <activity
+778-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:767:9-771:71
+779            android:name="org.phomellolitepos.ClassDestinationListActivity"
+779-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:768:13-57
+780            android:label="@string/title_activity_class_destination_list"
+780-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:769:13-74
+781            android:theme="@style/AppTheme.NoActionBar"
+781-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:770:13-56
+782            android:windowSoftInputMode="stateVisible|adjustResize" />
+782-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:771:13-68
+783        <activity
+783-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:772:9-776:71
+784            android:name="org.phomellolitepos.TicketingActivity"
+784-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:773:13-46
+785            android:label="@string/title_activity_ticteting"
+785-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:774:13-61
+786            android:theme="@style/AppTheme.NoActionBar"
+786-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:775:13-56
+787            android:windowSoftInputMode="stateVisible|adjustResize" />
+787-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:776:13-68
+788        <activity
+788-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:777:9-781:71
+789            android:name="org.phomellolitepos.ProLoyaltySetupActivity"
+789-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:778:13-52
+790            android:label="@string/title_activity_pro_loyalty_setup"
+790-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:779:13-69
+791            android:theme="@style/AppTheme.NoActionBar"
+791-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:780:13-56
+792            android:windowSoftInputMode="stateVisible|adjustResize" />
+792-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:781:13-68
+793        <activity
+793-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:782:9-786:71
+794            android:name="org.phomellolitepos.CouponListActivity"
+794-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:783:13-47
+795            android:label="@string/title_activity_coupon_list"
+795-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:784:13-63
+796            android:theme="@style/AppTheme.NoActionBar"
+796-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:785:13-56
+797            android:windowSoftInputMode="stateVisible|adjustResize" />
+797-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:786:13-68
+798        <activity
+798-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:787:9-791:71
+799            android:name="org.phomellolitepos.CouponSetupActivity"
+799-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:788:13-48
+800            android:label="@string/title_activity_coupon_setup"
+800-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:789:13-64
+801            android:theme="@style/AppTheme.NoActionBar"
+801-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:790:13-56
+802            android:windowSoftInputMode="stateVisible|adjustResize" />
+802-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:791:13-68
+803        <activity
+803-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:792:9-796:71
+804            android:name="org.phomellolitepos.CouponGenerateActivity"
+804-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:793:13-51
+805            android:label="@string/title_activity_coupon_generate"
+805-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:794:13-67
+806            android:theme="@style/AppTheme.NoActionBar"
+806-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:795:13-56
+807            android:windowSoftInputMode="stateVisible|adjustResize" />
+807-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:796:13-68
+808        <activity
+808-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:797:9-801:71
+809            android:name="org.phomellolitepos.ReturnOptionActivity"
+809-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:798:13-49
+810            android:label="@string/title_activity_return_option"
+810-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:799:13-65
+811            android:theme="@style/AppTheme.NoActionBar"
+811-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:800:13-56
+812            android:windowSoftInputMode="stateVisible|adjustResize" />
+812-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:801:13-68
+813        <activity
+813-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:802:9-806:71
+814            android:name="org.phomellolitepos.InvReturnListActivity"
+814-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:803:13-50
+815            android:label="@string/title_activity_inv_return_list"
+815-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:804:13-67
+816            android:theme="@style/AppTheme.NoActionBar"
+816-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:805:13-56
+817            android:windowSoftInputMode="stateVisible|adjustResize" />
+817-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:806:13-68
+818        <activity
+818-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:807:9-811:71
+819            android:name="org.phomellolitepos.InvReturnHeaderActivity"
+819-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:808:13-52
+820            android:label="@string/title_activity_inv_return_header"
+820-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:809:13-69
+821            android:theme="@style/AppTheme.NoActionBar"
+821-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:810:13-56
+822            android:windowSoftInputMode="stateVisible|adjustResize" />
+822-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:811:13-68
+823        <activity
+823-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:812:9-816:71
+824            android:name="org.phomellolitepos.InvReturnFinalActivity"
+824-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:813:13-51
+825            android:label="@string/title_activity_inv_return_final"
+825-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:814:13-68
+826            android:theme="@style/AppTheme.NoActionBar"
+826-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:815:13-56
+827            android:windowSoftInputMode="stateVisible|adjustResize" />
+827-->C:\Users\Pegasus\Android Studio Projects\Backup_19082021_beforeabaakariproj(changed)\PhomelloLite-lic\app\src\main\AndroidManifest.xml:816:13-68
+828        <activity
+828-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:22:9-25:52
+829            android:name="cn.finalteam.galleryfinal.PhotoSelectActivity"
+829-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:23:13-73
+830            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+830-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:24:13-83
+831            android:screenOrientation="portrait" />
+831-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:25:13-49
+832        <activity
+832-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:26:9-29:52
+833            android:name="cn.finalteam.galleryfinal.PhotoEditActivity"
+833-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:27:13-71
+834            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+834-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:28:13-83
+835            android:screenOrientation="portrait" />
+835-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:29:13-49
+836        <activity
+836-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:30:9-33:52
+837            android:name="cn.finalteam.galleryfinal.PhotoPreviewActivity"
+837-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:31:13-74
+838            android:configChanges="orientation|keyboard|keyboardHidden|screenSize"
+838-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:32:13-83
+839            android:screenOrientation="portrait" />
+839-->[cn.finalteam:galleryfinal:1.4.8.7] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\c626518182e617501e24224ac234d9e1\jetified-galleryfinal-1.4.8.7\AndroidManifest.xml:33:13-49
+840
+841        <receiver
+841-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:29:9-33:20
+842            android:name="com.google.android.gms.measurement.AppMeasurementReceiver"
+842-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:30:13-85
+843            android:enabled="true"
+843-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:31:13-35
+844            android:exported="false" >
+844-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:32:13-37
+845        </receiver>
+846
+847        <service
+847-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:35:9-38:40
+848            android:name="com.google.android.gms.measurement.AppMeasurementService"
+848-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:36:13-84
+849            android:enabled="true"
+849-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:37:13-35
+850            android:exported="false" />
+850-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:38:13-37
+851        <service
+851-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:39:9-43:72
+852            android:name="com.google.android.gms.measurement.AppMeasurementJobService"
+852-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:40:13-87
+853            android:enabled="true"
+853-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:41:13-35
+854            android:exported="false"
+854-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:42:13-37
+855            android:permission="android.permission.BIND_JOB_SERVICE" />
+855-->[com.google.android.gms:play-services-measurement:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4b241fbad0e39abbb47a4accb14b54ce\jetified-play-services-measurement-18.0.2\AndroidManifest.xml:43:13-69
+856        <service
+856-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:27:9-33:19
+857            android:name="com.google.firebase.components.ComponentDiscoveryService"
+857-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:28:13-84
+858            android:directBootAware="true"
+858-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:35:13-43
+859            android:exported="false" >
+859-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:29:13-37
+860            <meta-data
+860-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:30:13-32:85
+861                android:name="com.google.firebase.components:com.google.firebase.analytics.connector.internal.AnalyticsConnectorRegistrar"
+861-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:31:17-139
+862                android:value="com.google.firebase.components.ComponentRegistrar" />
+862-->[com.google.android.gms:play-services-measurement-api:18.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\43580d43a7796529a028a0093b6335c0\jetified-play-services-measurement-api-18.0.2\AndroidManifest.xml:32:17-82
+863            <meta-data
+863-->[com.google.firebase:firebase-crashlytics:17.3.1] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\22178be113dbab0376604863de0a0017\jetified-firebase-crashlytics-17.3.1\AndroidManifest.xml:18:13-20:85
+864                android:name="com.google.firebase.components:com.google.firebase.crashlytics.CrashlyticsRegistrar"
+864-->[com.google.firebase:firebase-crashlytics:17.3.1] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\22178be113dbab0376604863de0a0017\jetified-firebase-crashlytics-17.3.1\AndroidManifest.xml:19:17-115
+865                android:value="com.google.firebase.components.ComponentRegistrar" />
+865-->[com.google.firebase:firebase-crashlytics:17.3.1] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\22178be113dbab0376604863de0a0017\jetified-firebase-crashlytics-17.3.1\AndroidManifest.xml:20:17-82
+866            <meta-data
+866-->[com.google.firebase:firebase-installations:16.3.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\e8b8c122af98a3c3e3565cb421242f2c\jetified-firebase-installations-16.3.5\AndroidManifest.xml:18:13-20:85
+867                android:name="com.google.firebase.components:com.google.firebase.installations.FirebaseInstallationsRegistrar"
+867-->[com.google.firebase:firebase-installations:16.3.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\e8b8c122af98a3c3e3565cb421242f2c\jetified-firebase-installations-16.3.5\AndroidManifest.xml:19:17-127
+868                android:value="com.google.firebase.components.ComponentRegistrar" />
+868-->[com.google.firebase:firebase-installations:16.3.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\e8b8c122af98a3c3e3565cb421242f2c\jetified-firebase-installations-16.3.5\AndroidManifest.xml:20:17-82
+869            <!--
+870                This registrar is not defined in the dynamic-module-support sdk itself to allow non-firebase
+871                clients to use it as well, by defining this registrar in their own core/common library.
+872            -->
+873            <meta-data
+873-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:43:13-45:85
+874                android:name="com.google.firebase.components:com.google.firebase.dynamicloading.DynamicLoadingRegistrar"
+874-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:44:17-121
+875                android:value="com.google.firebase.components.ComponentRegistrar" />
+875-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:45:17-82
+876        </service>
+877
+878        <provider
+878-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:26:9-31:39
+879            android:name="com.google.firebase.provider.FirebaseInitProvider"
+879-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:27:13-77
+880            android:authorities="org.phomellolitepos.firebaseinitprovider"
+880-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:28:13-72
+881            android:directBootAware="true"
+881-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:29:13-43
+882            android:exported="false"
+882-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:30:13-37
+883            android:initOrder="100" />
+883-->[com.google.firebase:firebase-common:19.5.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\89c422a1bbe5d1eaa7a849d94f772763\jetified-firebase-common-19.5.0\AndroidManifest.xml:31:13-36
+884
+885        <meta-data
+885-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4a68e5de6340ee11573bce617e2f9f38\jetified-play-services-basement-17.0.0\AndroidManifest.xml:23:9-25:69
+886            android:name="com.google.android.gms.version"
+886-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4a68e5de6340ee11573bce617e2f9f38\jetified-play-services-basement-17.0.0\AndroidManifest.xml:24:13-58
+887            android:value="@integer/google_play_services_version" />
+887-->[com.google.android.gms:play-services-basement:17.0.0] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\4a68e5de6340ee11573bce617e2f9f38\jetified-play-services-basement-17.0.0\AndroidManifest.xml:25:13-66
+888        <meta-data
+888-->[com.sunmi:DS_Lib:1.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\320880d3fc8b4abd4a6bbe3bd0f46c1a\jetified-DS_Lib-1.0.2\AndroidManifest.xml:24:9-26:39
+889            android:name="SUNMI_APPKEY"
+889-->[com.sunmi:DS_Lib:1.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\320880d3fc8b4abd4a6bbe3bd0f46c1a\jetified-DS_Lib-1.0.2\AndroidManifest.xml:25:13-40
+890            android:value="DEFAULT" />
+890-->[com.sunmi:DS_Lib:1.0.2] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\320880d3fc8b4abd4a6bbe3bd0f46c1a\jetified-DS_Lib-1.0.2\AndroidManifest.xml:26:13-36
+891
+892        <service
+892-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:29:9-35:19
+893            android:name="com.google.android.datatransport.runtime.backends.TransportBackendDiscovery"
+893-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:30:13-103
+894            android:exported="false" >
+894-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:31:13-37
+895            <meta-data
+895-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:32:13-34:39
+896                android:name="backend:com.google.android.datatransport.cct.CctBackendFactory"
+896-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:33:17-94
+897                android:value="cct" />
+897-->[com.google.android.datatransport:transport-backend-cct:2.3.3] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\0ef4d312ffa3aa6fd120f6d713d668cc\jetified-transport-backend-cct-2.3.3\AndroidManifest.xml:34:17-36
+898        </service>
+899        <service
+899-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:26:9-30:19
+900            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.JobInfoSchedulerService"
+900-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:27:13-117
+901            android:exported="false"
+901-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:28:13-37
+902            android:permission="android.permission.BIND_JOB_SERVICE" >
+902-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:29:13-69
+903        </service>
+904
+905        <receiver
+905-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:32:9-34:40
+906            android:name="com.google.android.datatransport.runtime.scheduling.jobscheduling.AlarmManagerSchedulerBroadcastReceiver"
+906-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:33:13-132
+907            android:exported="false" />
+907-->[com.google.android.datatransport:transport-runtime:2.2.5] C:\Users\Pegasus\.gradle\caches\transforms-2\files-2.1\15a262ea50b58c384ca2844a255ad72c\jetified-transport-runtime-2.2.5\AndroidManifest.xml:34:13-37
+908    </application>
+909
+910</manifest>

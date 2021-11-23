@@ -17,7 +17,8 @@ import android.net.Uri;
 import android.os.Environment;
 import android.os.IBinder;
 import android.provider.MediaStore;
-import android.support.v7.widget.RecyclerView;
+import androidx.recyclerview.widget.RecyclerView;
+import android.util.Base64;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -33,55 +34,17 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.google.gson.Gson;
-import com.itextpdf.text.Image;
-import com.itextpdf.text.pdf.codec.Base64;
-import com.squareup.picasso.Picasso;
-
 import org.json.JSONObject;
-import org.phomellolitepos.ChangePriceActivity;
-import org.phomellolitepos.ContactActivity;
-import org.phomellolitepos.ContactListActivity;
-import org.phomellolitepos.Fragment.ItemFragment2;
-import org.phomellolitepos.ItemActivity;
-import org.phomellolitepos.ItemListActivity;
-import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
-import org.phomellolitepos.Util.RecyclerTouchListener;
-import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
-import org.phomellolitepos.database.Item_Group_Tax;
 import org.phomellolitepos.database.Item_Location;
-import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Order_Item_Tax;
 import org.phomellolitepos.database.Settings;
-import org.phomellolitepos.database.ShoppingCart;
-import org.phomellolitepos.database.Sys_Tax_Type;
-import org.phomellolitepos.database.Tax_Detail;
-import org.phomellolitepos.database.Tax_Master;
-import org.phomellolitepos.utils.ImageCache;
 
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
-
-import sunmi.bean.SecondScreenData;
-import sunmi.ds.DSKernel;
-import sunmi.ds.callback.IConnectionCallback;
-import sunmi.ds.callback.IReceiveCallback;
-import sunmi.ds.callback.ISendCallback;
-import sunmi.ds.callback.ISendFilesCallback;
-import sunmi.ds.data.DSData;
-import sunmi.ds.data.DSFile;
-import sunmi.ds.data.DSFiles;
-import sunmi.ds.data.Data;
-import sunmi.ds.data.DataPacket;
-import sunmi.ds.data.UPacketFactory;
-import woyou.aidlservice.jiuiv5.IWoyouService;
-
-import static com.squareup.picasso.Picasso.Priority.HIGH;
 
 /**
  * Created by LENOVO on 11/8/2017.
@@ -91,13 +54,14 @@ public class MainItemListAdapter2 extends RecyclerView.Adapter<MainItemListAdapt
     Context context;
     LayoutInflater inflater;
     String result1;
+    String lastext;
     ArrayList<Item> data;
     Item_Location item_location;
     String decimal_check, qty_decimal_check;
     Settings settings;
     SQLiteDatabase database;
     Database db;
-
+    ArrayList<String>nameList;
 
     public class MyViewHolder extends RecyclerView.ViewHolder {
         TextView txt_item_name, txt_price;
@@ -144,19 +108,159 @@ public class MainItemListAdapter2 extends RecyclerView.Adapter<MainItemListAdapt
         LinearLayout.LayoutParams layoutParams = new LinearLayout.LayoutParams(100, 100);
         holder.item_image.setLayoutParams(layoutParams);
         try {
-            if (resultp.get_item_image().equals("") || resultp.get_item_image().toString().equals("null") || resultp.get_item_image().toString().equals("0")) {
+
+
+                /*try {
+                    byte[] decodedString = Base64.decode(resultp.getItem_image(), Base64.DEFAULT);
+                    Bitmap decodedByte = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                    // byte[] imgbyte =resultp.get_ItemLogo().getBytes();
+                    if (decodedByte != null) {
+                        Glide.with(context)
+                                .asBitmap()
+                                .load(decodedByte)
+                                .into(holder.item_image);
+                        // Bitmap bmp = BitmapFactory.decodeByteArray(decodedString, 0, decodedString.length);
+                       *//* holder.item_image.setImageBitmap(decodedByte);
+                        holder.item_image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);*//*
+                    } else {
+                        holder.item_image.setImageResource(R.drawable.recipemaker);
+                        holder.item_image.setScaleType(ImageView.ScaleType.CENTER_INSIDE);
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+
+*/
+            File imgFile = null;
+/*            if(Globals.arrayListGetFile_Image.size()>0) {
+    for(int i=0; i<Globals.arrayListGetFile_Image.size();i++) {
+        String folder = Globals.folder + "ItemImages/" + Globals.arrayListGetFile_Image.get(i);
+        String lastext = folder.substring(folder.lastIndexOf("."));
+   
+    imgFile = new  File(Globals.folder + "ItemImages/" + Globals.arrayListGetFile_Image.get(i));
+       File files[]= imgFile.listFiles();
+
+        if(imgFile.exists()) {
+
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            if(myBitmap!=null) {
+
+                holder.item_image.setImageBitmap(myBitmap);
+            }
+            *//*else{
                 InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
                 Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
                 holder.item_image.setImageBitmap(bitmap);
-            } else {
-                try {
-                    holder.item_image.setImageBitmap(
-                            ImageCache.decodeSampledBitmapFromResource(resultp.get_item_image(), 100, 100));
-                }catch (Exception ex){
-                    String ab = ex.getMessage();
-                    ab=ab;
+            }*//*
+
+        }
+        else{
+            InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+            Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+            holder.item_image.setImageBitmap(bitmap);
+        }
+
+    }
+}
+else {*/
+//String imgpath=Globals.folder+"ItemImages/"+ resultp.get_item_code();
+         //   String imgpath1=Globals.folder+"ItemImages/" + resultp.get_item_code() + ".jpeg";
+             //lastext = imgpath.substring(imgpath.lastIndexOf("/")+1);
+/*if(lastext.equals(".jpg")) {*/
+
+
+
+            nameList = new ArrayList<String>();
+            File yourDir = new File(Globals.folder, "ItemImages/");
+         /*   for (File f : yourDir.listFiles())
+            {
+
+                if (f.isFile())
+                {
+                    nameList.add(f.getName());
+
+                }
+
+            }*/
+
+
+            File[] listFile = yourDir.listFiles();
+            if (listFile != null) {
+                for (int i = 0; i < listFile.length; i++) {
+
+
+                    nameList.add(listFile[i].getName());
+                    String fileext = listFile[i].getName().substring(listFile[i].getName().lastIndexOf(".") + 1);
+                    // nameList.add(listFile[i].getAbsolutePath());
+
+                    String namefile= listFile[i].getName();
+                    int iend = namefile.indexOf("."); //this finds the first occurrence of "."
+                    String subString = null;
+                    if (iend != -1)
+                    {
+                        subString= namefile.substring(0 , iend); //this will give abc
+                    }
+                    if (subString.equals(resultp.get_item_code())) {
+                        imgFile = new File(Globals.folder, "ItemImages/" + resultp.get_item_code()+"."+fileext);
+
+                        if (imgFile.exists()) {
+
+                             Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+                             if (myBitmap != null) {
+
+
+                            holder.item_image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
+                          }
+                             else {
+                                 InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+                                 Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+                                 holder.item_image.setImageBitmap(bitmap);
+
+                             }
+
+
+                        } else {
+                            InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+                            Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+                            holder.item_image.setImageBitmap(bitmap);
+
+                        }
+                    }
                 }
             }
+
+/*if(nameList.size()>0) {
+    for (int i = 0; i < nameList.size(); i++) {
+        imgFile = new File(Globals.folder, "ItemImages/" + nameList.get(i));
+        if (imgFile.exists()) {
+
+            Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
+            if (myBitmap != null) {
+
+                holder.item_image.setImageBitmap(myBitmap);
+            }
+
+
+        } else {
+            InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+            Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+            holder.item_image.setImageBitmap(bitmap);
+        }
+        // Toast.makeText(context, f.getName(), Toast.LENGTH_SHORT).show();
+        //System.out.println("File name" + f.getName());
+    }
+}*/
+           /* }
+            if(lastext.equals(".png")) {
+                imgFile = new File(Globals.folder, "ItemImages/" + resultp.get_item_code() + ".png");
+            }if(lastext.equals(".jpeg")) {
+                imgFile = new File(Globals.folder, "ItemImages/" + resultp.get_item_code() + ".jpeg");
+            }*/
+
+//}
+
+
+
         } catch (Exception e) {
             InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
             Bitmap bitmap = BitmapFactory.decodeStream(imageIS);

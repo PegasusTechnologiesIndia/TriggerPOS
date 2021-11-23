@@ -42,7 +42,7 @@
         </TableRow>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_code"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -53,10 +53,10 @@
                     style="@style/AppTheme.EditText"
                     android:hint="Collection Code" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_amount"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -68,7 +68,7 @@
                 android:hint="@string/Amount"
                 android:inputType="numberDecimal"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
 
@@ -115,7 +115,7 @@
                 android:layout_marginTop="10dp"
                 />
 
-            <android.support.design.widget.TextInputLayout
+            <com.google.android.material.textfield.TextInputLayout
                 android:id="@+id/edt_layout_cheque"
                 style="@style/AppTheme.TextInputLayout"
                 app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -126,11 +126,11 @@
                     style="@style/AppTheme.EditText"
                     android:hint="@string/cheque_no" />
 
-            </android.support.design.widget.TextInputLayout>
+            </com.google.android.material.textfield.TextInputLayout>
 
         </LinearLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_on_account"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -141,9 +141,9 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/on_account" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-       <android.support.design.widget.TextInputLayout
+       <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_layout_remarks"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
@@ -155,7 +155,7 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Remarks" />
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
         <LinearLayout

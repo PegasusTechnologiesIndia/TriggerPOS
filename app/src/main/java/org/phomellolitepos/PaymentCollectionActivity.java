@@ -7,9 +7,9 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.v4.view.ViewPager;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import androidx.viewpager.widget.ViewPager;
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.view.LayoutInflater;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -27,7 +27,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import org.phomellolitepos.Adapter.BankListAdapter;
-import org.phomellolitepos.Adapter.DialogContactMainListAdapter;
 import org.phomellolitepos.Adapter.DialogPayCollectionCustomerAdapter;
 import org.phomellolitepos.Adapter.PayColInvoiceListAdapter;
 import org.phomellolitepos.Adapter.PaymentListAdapter;
@@ -35,7 +34,6 @@ import org.phomellolitepos.CheckBoxClass.PaymentInvoiceCheck;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Bank;
-import org.phomellolitepos.database.Bussiness_Group;
 import org.phomellolitepos.database.Contact;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Pay_Collection;
@@ -49,9 +47,6 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
-
-import me.srodrigo.androidhintspinner.HintAdapter;
-import me.srodrigo.androidhintspinner.HintSpinner;
 
 public class PaymentCollectionActivity extends AppCompatActivity {
     EditText edt_cus_name, edt_amount, edt_cheque, edt_remarks, edt_code, edt_on_account;

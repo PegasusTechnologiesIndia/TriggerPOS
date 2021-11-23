@@ -1,0 +1,55 @@
+{
+    "logs": [
+        {
+            "outputFile": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\incremental\\mergeDebugResources\\merged.dir\\values-hdpi-v4\\values-hdpi-v4.xml",
+            "map": [
+                {
+                    "source": "C:\\Users\\Pegasus\\.gradle\\caches\\transforms-2\\files-2.1\\4b282a1d5ed2d6952fafce97ecfba240\\appcompat-1.0.0\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2",
+                        "startColumns": "4",
+                        "startOffsets": "55",
+                        "endLines": "6",
+                        "endColumns": "13",
+                        "endOffsets": "327"
+                    },
+                    "to": {
+                        "startLines": "6",
+                        "startColumns": "4",
+                        "startOffsets": "255",
+                        "endLines": "10",
+                        "endColumns": "13",
+                        "endOffsets": "527"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Pegasus\\.gradle\\caches\\transforms-2\\files-2.1\\8edfc0115f58132f027a15924ac0623f\\jetified-core-1.9.8\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,113",
+                        "endColumns": "57,55",
+                        "endOffsets": "108,164"
+                    },
+                    "to": {
+                        "startLines": "4,5",
+                        "startColumns": "4,4",
+                        "startOffsets": "141,199",
+                        "endColumns": "57,55",
+                        "endOffsets": "194,250"
+                    }
+                },
+                {
+                    "source": "C:\\Users\\Pegasus\\.gradle\\caches\\transforms-2\\files-2.1\\785d81b963aba4ea18e2e754d487a404\\jetified-sunmiui-1.0.2\\res\\values-hdpi-v4\\values-hdpi-v4.xml",
+                    "from": {
+                        "startLines": "2,3",
+                        "startColumns": "4,4",
+                        "startOffsets": "55,97",
+                        "endColumns": "41,43",
+                        "endOffsets": "92,136"
+                    }
+                }
+            ]
+        }
+    ]
+}

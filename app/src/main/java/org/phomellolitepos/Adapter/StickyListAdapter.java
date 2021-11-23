@@ -8,33 +8,44 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
-import android.support.v4.view.ViewPager;
+import androidx.viewpager.widget.ViewPager;
+
+import android.os.AsyncTask;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
+import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.ListView;
 import android.widget.SectionIndexer;
+import android.widget.Spinner;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import java.util.ArrayList;
 
-import org.phomellolitepos.DataBaseActivity;
+import org.phomellolitepos.Main2Activity;
 import org.phomellolitepos.MainActivity;
 
 import org.phomellolitepos.R;
 import org.phomellolitepos.ReceptActivity;
 import org.phomellolitepos.ReceptDetailActivity;
+import org.phomellolitepos.Retail_IndustryActivity;
 import org.phomellolitepos.StickyList.StickyListHeadersAdapter;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Acc_Customer;
 import org.phomellolitepos.database.Database;
+import org.phomellolitepos.database.Lite_POS_Registration;
+import org.phomellolitepos.database.Order_Payment;
 import org.phomellolitepos.database.Orders;
+import org.phomellolitepos.database.Payment;
+import org.phomellolitepos.database.Table;
+import org.phomellolitepos.database.Unit;
 import org.phomellolitepos.database.User;
 
 public class StickyListAdapter extends BaseAdapter implements
@@ -48,7 +59,9 @@ public class StickyListAdapter extends BaseAdapter implements
     String decimal_check;
     SQLiteDatabase database;
     private Activity activity;
-
+    ArrayList<Payment> paymentArrayList;
+    String Strpassword="";
+    String PayId,strPayMethod;
     public StickyListAdapter(Context context, ArrayList<Orders> arrayList, ReceptActivity receptActivity) {
         mContext = context;
         mInflater = LayoutInflater.from(context);
@@ -149,19 +162,28 @@ public class StickyListAdapter extends BaseAdapter implements
             decimal_check = "1";
         }
         String line_total;
-        try {
-            line_total = Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check);
-        } catch (Exception ex) {
-            line_total = "0";
-        }
-        holder.txt_table_code.setText(resultp.get_table_code());
-        holder.txt_line_total.setText(line_total);
+       // if(!resultp.get_order_status().equals("CANCEL")) {
+
+            try {
+                line_total = Globals.myNumberFormat2Price(Double.parseDouble(resultp.get_total()), decimal_check);
+            } catch (Exception ex) {
+                line_total = "0";
+            }
+            holder.txt_line_total.setText(line_total);
+       // }
+        Table table = Table.getTable(mContext, database, db, " WHERE table_code='" + resultp.get_table_code() + "'");
+if(table!=null) {
+    holder.txt_table_code.setText(table.get_table_name());
+}
+else{
+
+}
         convertView.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
 
                 if (resultp.get_order_status().equals("CLOSE")) {
-                    Orders resultp = result_list.get(position);
+
                     String strOrderCode = resultp.get_order_code();
                     Intent intent = new Intent(mContext, ReceptDetailActivity.class);
                     intent.putExtra("order_code", strOrderCode);
@@ -186,6 +208,7 @@ public class StickyListAdapter extends BaseAdapter implements
 
                     if (resultp.get_z_code().equals("0")) {
                         Orders resultp = result_list.get(position);
+
                         String strOrderCode = resultp.get_order_code();
                         String strOrderStatus = resultp.get_order_status();
                         String strContactCode = resultp.get_contact_code();
@@ -213,18 +236,26 @@ public class StickyListAdapter extends BaseAdapter implements
         } else {
             holder = (HeaderViewHolder) convertView.getTag();
         }
-        String strheaderQry = "select count(*),SUM(total) from orders where DATE(order_date)  = '" + result_list.get(position).get_order_date().subSequence(0, 10) + "' And is_active = '1' And z_code ='0'";
+        String strheaderQry = "select count(*),SUM(total) from orders where DATE(order_date)  = '" + result_list.get(position).get_order_date().subSequence(0, 10) + "' And is_active = '1' And z_code ='0' AND order_status!='CANCEL'";
         Cursor cursor = database.rawQuery(strheaderQry, null);
         String headerTotal = "";
         while (cursor.moveToNext()) {
-            String header_total;
-            header_total = Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(1)), decimal_check);
-            headerTotal = header_total + " (" + cursor.getString(0) + ")";
+            String header_total="";
+            try {
+                header_total = Globals.myNumberFormat2Price(Double.parseDouble(cursor.getString(1)), decimal_check);
+                if(header_total!=null) {
+                    headerTotal = header_total + " (" + cursor.getString(0) + ")";
+                    holder.text2.setText(headerTotal);
+                }
+            }catch(Exception e){
+
+            }
         }
         cursor.close();
         CharSequence headerChar = result_list.get(position).get_order_date().subSequence(0, 10);
         holder.text1.setText(headerChar);
-        holder.text2.setText(headerTotal);
+
+
         return convertView;
     }
 
@@ -295,6 +326,117 @@ public class StickyListAdapter extends BaseAdapter implements
                 LinearLayout.LayoutParams.MATCH_PARENT);
 
         if (strOrderStatus.equals("CLOSE")) {
+            if(Globals.objsettings.getIs_paymentmethod().equals("true")) {
+                alertDialog.setNegativeButton("Change Payment Type",
+                        new DialogInterface.OnClickListener() {
+                            public void onClick(DialogInterface dialog,
+                                                int which) {
+                                if (Globals.cart.size() > 0) {
+                                    Toast.makeText(activity, "Cart should be clear for edit any order,Go back to POS screen", Toast.LENGTH_SHORT).show();
+                                } else {
+
+                                    Dialog listDialog1 = new Dialog(activity);
+                                    listDialog1.setTitle(R.string.Select_paymentmethod);
+                                    LayoutInflater li1 = (LayoutInflater) activity.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
+                                    View v1 = li1.inflate(R.layout.custom_payment_layout, null, false);
+                                    listDialog1.setContentView(v1);
+                                    listDialog1.setCancelable(true);
+
+                                    final TextView tv_paymentname = (TextView) listDialog1.findViewById(R.id.txt_paymentname);
+                                    final Spinner spn_payment = (Spinner) listDialog1.findViewById(R.id.spin_paymenttype);
+                                    Button btnsave = (Button) listDialog1.findViewById(R.id.btn_save);
+
+
+                                    listDialog1.show();
+
+                                    Window window = listDialog1.getWindow();
+                                    window.setLayout(500, 300);
+                                    String name = "";
+                                    ArrayList<Order_Payment> order_payment_array = Order_Payment.getAllOrder_Payment(activity, " where order_code='" + strOrderCode + "'");
+                                    if (order_payment_array.size() > 0) {
+                                        for (int i = 0; i < order_payment_array.size(); i++) {
+                                            Payment payment = Payment.getPayment(activity, " where payment_id = '" + order_payment_array.get(i).get_payment_id() + "'");
+
+                                            if (payment != null) {
+                                                name = payment.get_payment_name();
+                                                tv_paymentname.setText("OrderPayment Type Selected : " + name);
+
+                                            }
+
+                                        }
+                                    }
+
+                                    if (Globals.strContact_Code.equals("")) {
+                                        paymentArrayList = Payment.getAllPayment(activity, " WHERE is_active ='1'  and payment_id!=3");
+                                    } else {
+                                        paymentArrayList = Payment.getAllPayment(activity, " WHERE is_active ='1'");
+                                    }
+
+                                    PaymentListAdapter paymentListAdapter = new PaymentListAdapter(mContext, paymentArrayList);
+                                    spn_payment.setAdapter(paymentListAdapter);
+
+                                    if (!name.equals("")) {
+                                        for (int i = 0; i < paymentListAdapter.getCount(); i++) {
+                                            String iname = paymentArrayList.get(i).get_payment_name();
+                                            if (name.equals(iname)) {
+                                                spn_payment.setSelection(i);
+                                                System.out.println("selection"+i);
+                                                break;
+                                            }
+                                        }
+                                    }
+                                    spn_payment.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
+                                        @Override
+                                        public void onItemSelected(AdapterView<?> parent, View view, int position, long id) {
+
+                                            Payment resultp = paymentArrayList.get(position);
+                                            strPayMethod = resultp.get_payment_name();
+                                            try {
+                                               PayId = resultp.get_payment_id();
+                                                System.out.println("Paymentid" + PayId);
+                                            } catch (Exception ex) {
+                                                PayId = "";
+                                            }
+
+                                            if (PayId.equals("5")) {
+                                                if (Globals.strContact_Code.equals("")) {
+                                                    Toast.makeText(activity, "Please select customer for this mode", Toast.LENGTH_SHORT).show();
+
+                                                }
+                                            }
+
+                                        }
+
+                                        @Override
+                                        public void onNothingSelected(AdapterView<?> parent) {
+
+                                        }
+                                    });
+                                    btnsave.setOnClickListener(new View.OnClickListener() {
+                                        @Override
+                                        public void onClick(View view) {
+
+                                            Order_Payment orderpayment = Order_Payment.getOrder_Payment(activity, "where order_code='"+strOrderCode+"'", database);
+                                            orderpayment.set_payment_id(PayId);
+                                            long ct = orderpayment.updateOrder_Payment("order_code=?", new String[]{strOrderCode}, database);
+                                            if (ct > 0) {
+                                                Toast.makeText(activity, "update successfully", Toast.LENGTH_SHORT).show();
+
+                                            }
+
+                                            listDialog1.dismiss();
+                                        }
+                                    });
+
+
+                                }
+                            }
+                        }
+                );
+            }
+            else{
+
+            }
         } else {
             alertDialog.setNegativeButton("Edit",
                     new DialogInterface.OnClickListener() {
@@ -305,11 +447,29 @@ public class StickyListAdapter extends BaseAdapter implements
                             } else {
                                 Globals.CheckContact = "1";
                                 String strOperation = "Edit";
-                                Intent intent = new Intent(mContext, MainActivity.class);
-                                intent.putExtra("order_code", strOrderCode);
-                                intent.putExtra("opr", strOperation);
-                                intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                mContext.startActivity(intent);
+                                if(Globals.objLPR.getIndustry_Type().equals("1")) {
+                                    if (Globals.objsettings.get_Home_Layout().equals("0")) {
+                                        Intent intent = new Intent(mContext, MainActivity.class);
+                                        intent.putExtra("order_code", strOrderCode);
+                                        intent.putExtra("opr", strOperation);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mContext.startActivity(intent);
+                                    }
+                                    else if(Globals.objsettings.get_Home_Layout().equals("1")){
+                                        Intent intent = new Intent(mContext, Main2Activity.class);
+                                        intent.putExtra("order_code", strOrderCode);
+                                        intent.putExtra("opr", strOperation);
+                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                        mContext.startActivity(intent);
+                                    }
+                                }
+                                else if(Globals.objLPR.getIndustry_Type().equals("2")){
+                                    Intent intent = new Intent(mContext, Retail_IndustryActivity.class);
+                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+                                    intent.putExtra("order_code", strOrderCode);
+                                    intent.putExtra("opr", strOperation);
+                                    mContext.startActivity(intent);
+                                }
                             }
                         }
                     });
@@ -332,47 +492,71 @@ public class StickyListAdapter extends BaseAdapter implements
                         Window window = listDialog2.getWindow();
                         window.setLayout(ViewPager.LayoutParams.MATCH_PARENT, ViewPager.LayoutParams.MATCH_PARENT);
                         edt_pass.setText("");
-                        final String finalStr = Globals.str_userpassword;
+
+                        try {
+                            User user = User.getUser(mContext, " Where user_code='" + Globals.user + "'", database);
+                             Strpassword = user.get_password();
+                        }
+                        catch (Exception e){
+
+                        }
+
                         btn_ok.setOnClickListener(new View.OnClickListener() {
                             @Override
                             public void onClick(View view) {
-
-                                if (edt_pass.getText().toString().trim().equals("")) {
-                                    edt_pass.setError("Password is required");
-                                    return;
-                                }
-
-                                if (finalStr.equals(edt_pass.getText().toString().trim())) {
-                                    listDialog2.dismiss();
-                                    Orders orders = Orders.getOrders(mContext, database, " WHERE order_code = '" + strOrderCode + "'");
-                                    orders.set_order_status("CANCEL");
-                                    long l = orders.updateOrders("order_code=?", new String[]{strOrderCode}, database);
-
-                                    if (l > 0) {
-                                        Double strOldBalance = 0d;
-                                        Double strAmount = 0d;
-                                        Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(mContext, " where contact_code='" + strContactCode + "'", database);
-                                        if (acc_customer == null) {
-                                            strAmount = strOldBalance + Double.parseDouble(orders.get_total());
-                                            acc_customer = new Acc_Customer(mContext, null, strContactCode, strAmount + "");
-                                            acc_customer.insertAcc_Customer(database);
-                                        } else {
-                                            strOldBalance = Double.parseDouble(acc_customer.get_amount());
-                                            strAmount = strOldBalance + Double.parseDouble(orders.get_total());
-                                            acc_customer.set_amount(strAmount + "");
-                                            long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{strContactCode}, database);
-                                        }
-
-                                        Toast.makeText(mContext, "Order has beed canceled", Toast.LENGTH_SHORT).show();
-                                        Intent intent = new Intent(mContext, ReceptActivity.class);
-                                        intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-                                        mContext.startActivity(intent);
+                                try {
+                                    if (edt_pass.getText().toString().trim().equals("")) {
+                                        edt_pass.setError("Password is required");
+                                        return;
                                     }
-                                } else {
-                                    Toast.makeText(activity, R.string.password_is_wrong, Toast.LENGTH_SHORT).show();
+
+                                    if (Strpassword.equals(edt_pass.getText().toString().trim())) {
+                                        listDialog2.dismiss();
+                                        Orders orders = Orders.getOrders(mContext, database, " WHERE order_code = '" + strOrderCode + "'");
+                                        orders.set_order_status("CANCEL");
+                                        orders.set_is_push("N");
+                                        long l = orders.updateOrders("order_code=?", new String[]{strOrderCode}, database);
+
+                                        if (l > 0) {
+                                            try {
+                                                Double strOldBalance = 0d;
+                                                Double strAmount = 0d;
+                                                Acc_Customer acc_customer = Acc_Customer.getAcc_Customer(mContext, " where contact_code='" + strContactCode + "'", database);
+                                                if (acc_customer == null) {
+                                                    strAmount = strOldBalance + Double.parseDouble(orders.get_total());
+                                                    acc_customer = new Acc_Customer(mContext, null, strContactCode, strAmount + "");
+                                                    acc_customer.insertAcc_Customer(database);
+                                                } else {
+                                                    strOldBalance = Double.parseDouble(acc_customer.get_amount());
+                                                    strAmount = strOldBalance + Double.parseDouble(orders.get_total());
+                                                    acc_customer.set_amount(strAmount + "");
+                                                    long a = acc_customer.updateAcc_Customer("contact_code=?", new String[]{strContactCode}, database);
+                                                }
+                                                if (Globals.objLPR.getproject_id().equals("cloud") && Globals.objsettings.get_IsOnline().equals("true")) {
+                                                    Intent intent = new Intent(mContext, ReceptActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+                                                    intent.putExtra("cancelflag","CANCEL");
+                                                    mContext.startActivity(intent);
+                                                }
+                                                else {
+                                                    Toast.makeText(mContext, "Order has been canceled", Toast.LENGTH_SHORT).show();
+                                                    Intent intent = new Intent(mContext, ReceptActivity.class);
+                                                    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
+
+                                                    mContext.startActivity(intent);
+                                                }
+                                            } catch (Exception e) {
+                                                System.out.println(e.getMessage());
+                                            }
+                                        }
+                                    } else {
+                                        Toast.makeText(activity, R.string.password_is_wrong, Toast.LENGTH_SHORT).show();
+                                    }
+                                }
+                                catch(Exception e){
+
                                 }
                             }
-
 
                         });
                     }
@@ -399,5 +583,7 @@ public class StickyListAdapter extends BaseAdapter implements
         nbutton.setTextColor(mContext.getResources().getColor(R.color.colorPrimary));
 
     }
+
+
 }
 

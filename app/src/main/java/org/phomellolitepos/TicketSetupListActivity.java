@@ -9,10 +9,10 @@ import android.content.Intent;
 import android.content.SharedPreferences;
 import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
-import android.support.design.widget.FloatingActionButton;
-import android.support.design.widget.Snackbar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.v7.widget.Toolbar;
+import com.google.android.material.floatingactionbutton.FloatingActionButton;
+
+import androidx.appcompat.app.AppCompatActivity;
+import androidx.appcompat.widget.Toolbar;
 import android.util.Log;
 import android.view.Menu;
 import android.view.MenuItem;
@@ -24,25 +24,16 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import org.phomellolitepos.Adapter.ItemAdapter;
 import org.phomellolitepos.Adapter.TicketSetupListAdapter;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
-import org.phomellolitepos.database.Item;
-import org.phomellolitepos.database.Lite_POS_Registration;
-import org.phomellolitepos.database.Orders;
 import org.phomellolitepos.database.Settings;
 import org.phomellolitepos.database.Ticket_Setup;
 
-import java.io.BufferedReader;
-import java.io.File;
-import java.io.FileReader;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
 
 public class TicketSetupListActivity extends AppCompatActivity {

@@ -1,0 +1,230 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:id="@+id/content_order_item_tax"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    app:layout_behavior="@string/appbar_scrolling_view_behavior"
+    tools:context="litepos.pegasus_andorid_1.example.com.litepos.org.phomellolitepos.OrderItemTaxActivity"
+    tools:showIn="@layout/activity_order_item_tax">
+
+    <HorizontalScrollView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:layout_marginTop="5dp"
+        android:scrollbars="horizontal">
+
+        <LinearLayout
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingRight="0dp">
+
+            <TableLayout
+                android:layout_width="match_parent"
+                android:layout_height="wrap_content">
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/txt_sr_no"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="10dp"
+                        android:text="S_No."
+                        android:textColor="#333333"
+                        android:textSize="17sp"
+
+                        />
+
+                    <TextView
+                        android:id="@+id/txt_item_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="-130dp"
+                        android:paddingLeft="10dp"
+                        android:text="Item Code"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+
+                    <TextView
+                        android:id="@+id/txt_item_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="-110dp"
+                        android:paddingLeft="10dp"
+                        android:text="Name"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/txt_tax_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="70dp"
+                        android:text="Tax Name"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+
+                    <TextView
+                        android:id="@+id/txt_item_gp_code"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="50dp"
+                        android:text="Item Group Code"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/txt_item_gp_name"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="50dp"
+                        android:text="Item Group Name"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/tax_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="50dp"
+                        android:text="Tax Amount"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+                    <TextView
+                        android:id="@+id/tax_invc_amount"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:paddingLeft="50dp"
+                        android:text="@string/Invoice_Amount"
+                        android:textColor="#333333"
+                        android:textSize="17sp" />
+
+                </TableRow>
+
+                <View
+                    android:id="@+id/devider"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_below="@+id/layout1"
+                    android:layout_marginTop="10dp"
+                    android:background="#D3D3D3">
+
+                </View>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/item_title"
+                        style="@style/AppTheme.NoListfoundText"
+                        android:layout_gravity="center_horizontal"
+                        android:text="No Report Found" />
+
+                </TableRow>
+
+                <!--<TableRow-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent"-->
+                <!--android:layout_marginTop="5dp">-->
+
+                <!--<ListView-->
+                <!--android:id="@+id/list_invoice_report"-->
+                <!--android:layout_width="match_parent"-->
+                <!--android:layout_height="match_parent">-->
+
+                <!--</ListView>-->
+
+                <!--</TableRow>-->
+
+
+                <ListView
+                    android:id="@+id/list_invoice_report"
+                    android:layout_width="match_parent"
+                    android:layout_height="wrap_content">
+
+                </ListView>
+
+                <View
+                    android:id="@+id/devider1"
+                    android:layout_width="match_parent"
+                    android:layout_height="0.5dp"
+                    android:layout_below="@+id/layout2"
+                    android:layout_marginTop="10dp"
+                    android:background="#D3D3D3">
+
+                </View>
+
+                <TableRow
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginTop="5dp">
+
+                    <TextView
+                        android:id="@+id/lbl_total_qty"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="194dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center_horizontal"
+                        android:text="qty"
+                        android:textColor="#333333"
+                        android:textSize="17sp"
+                        android:visibility="invisible" />
+
+                    <TextView
+                        android:id="@+id/lbl_Total"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="76dp"
+                        android:layout_marginTop="5dp"
+                        android:gravity="center_horizontal"
+                        android:text="dfg"
+                        android:textColor="#333333"
+                        android:textSize="17sp"
+                        android:visibility="invisible" />
+
+                </TableRow>
+
+                <LinearLayout
+                    android:layout_width="match_parent"
+                    android:layout_height="match_parent"
+                    android:layout_marginLeft="20dp"
+                    android:layout_marginTop="5dp"
+                    android:orientation="vertical">
+
+                    <TextView
+                        android:id="@+id/lbl_total_qty1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="5dp"
+                        android:text=""
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+
+                    <TextView
+                        android:id="@+id/lbl_Total1"
+                        android:layout_width="match_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_marginTop="10dp"
+                        android:text=""
+                        android:textColor="#333333"
+                        android:textSize="16sp" />
+
+                </LinearLayout>
+
+            </TableLayout>
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</LinearLayout>

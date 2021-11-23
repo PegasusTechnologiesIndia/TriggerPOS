@@ -68,7 +68,21 @@ public class Settings {
     private String Print_Memo;
     private String Is_Cost_Show;
     private String QR_Type;
-
+    private String Is_singleWindow;
+    private String Is_FillAdvanceAmnt;
+    private String Is_ValidateVehNo;
+    private String Is_ValidateMobNo;
+    private String Is_NFC;
+    private String Is_KitchenPrint;
+    private String is_saveprint;
+    private String is_cloudprint;
+    private String is_deliverydate;
+    private String is_selfpos_KOT;
+    private String is_paymentmethod;
+    private String Api_Ip;
+    private String param1;
+    private String param2;
+    private String param3;
 
     private Database db;
     private ContentValues value;
@@ -89,7 +103,8 @@ public class Settings {
                     String Is_Device_Customer_Show,
                     String Is_Print_Dialog_Show,
                     String Is_BR_Scanner_Show,String Default_Ordertype
-                    ,String Print_Memo,String Is_Cost_Show,String QR_Type) {
+                    ,String Print_Memo,String Is_Cost_Show,String QR_Type,String is_singlewindow,String is_filladvamnt,String isvalidVehNo,String is_validMobno,String is_nfc,String is_kitchenprint,String issaveprint,
+                    String iscloudprint,String isdeliverydate,String is_selfposkot,String is_paymentmethod,String apiip,String p1,String p2,String p3) {
 
         db = new Database(context);
         value = new ContentValues();
@@ -148,6 +163,164 @@ public class Settings {
         this.set_Print_Memo(Print_Memo);
         this.set_Is_Cost_Show(Is_Cost_Show);
         this.set_QR_Type(QR_Type);
+        this.setIs_singleWindow(is_singlewindow);
+        this.setIs_FillAdvanceAmnt(is_filladvamnt);
+        this.setIs_ValidateVehNo(isvalidVehNo);
+        this.setIs_ValidateMobNo(is_validMobno);
+        this.setIs_NFC(is_nfc);
+        this.setIs_KitchenPrint(is_kitchenprint);
+        this.setIs_saveprint(issaveprint);
+        this.setIs_cloudprint(iscloudprint);
+        this.setIs_deliverydate(isdeliverydate);
+        this.setIs_selfpos_KOT(is_selfposkot);
+        this.setIs_paymentmethod(is_paymentmethod);
+        this.setApi_Ip(apiip);
+        this.setParam1(p1);
+        this.setParam2(p2);
+        this.setParam3(p3);
+    }
+
+
+    public String getApi_Ip() {
+        return Api_Ip;
+    }
+
+    public void setApi_Ip(String api_Ip) {
+        Api_Ip = api_Ip;
+        value.put("Api_Ip", api_Ip);
+    }
+
+    public String getParam1() {
+        return param1;
+    }
+
+    public void setParam1(String param1) {
+        this.param1 = param1;
+        value.put("param1", param1);
+    }
+
+    public String getParam2() {
+        return param2;
+    }
+
+    public void setParam2(String param2) {
+        this.param2 = param2;
+        value.put("param2", param2);
+    }
+
+    public String getParam3() {
+        return param3;
+    }
+
+    public void setParam3(String param3) {
+        this.param3 = param3;
+        value.put("param3", param3);
+    }
+
+    public String getIs_paymentmethod() {
+        return is_paymentmethod;
+    }
+
+    public void setIs_paymentmethod(String is_paymentmethod) {
+        this.is_paymentmethod = is_paymentmethod;
+        value.put("is_paymentmethod", is_paymentmethod);
+    }
+
+    public String getIs_selfpos_KOT() {
+        return is_selfpos_KOT;
+    }
+
+    public void setIs_selfpos_KOT(String is_selfpos_KOT) {
+        this.is_selfpos_KOT = is_selfpos_KOT;
+        value.put("is_selfpos_KOT", is_selfpos_KOT);
+    }
+
+    public String getIs_deliverydate() {
+        return is_deliverydate;
+    }
+
+    public void setIs_deliverydate(String is_deliverydate) {
+        this.is_deliverydate = is_deliverydate;
+        value.put("is_deliverydate", is_deliverydate);
+    }
+
+    public String getIs_cloudprint() {
+        return is_cloudprint;
+    }
+
+    public void setIs_cloudprint(String is_cloudprint) {
+        this.is_cloudprint = is_cloudprint;
+        value.put("is_cloudprint", is_cloudprint);
+    }
+
+    public String getIs_saveprint() {
+        return is_saveprint;
+    }
+
+    public void setIs_saveprint(String is_saveprint) {
+        this.is_saveprint = is_saveprint;
+        value.put("is_saveprint", is_saveprint);
+    }
+    public String getIs_KitchenPrint() {
+        return Is_KitchenPrint;
+    }
+
+    public void setIs_KitchenPrint(String is_KitchenPrint) {
+        Is_KitchenPrint = is_KitchenPrint;
+        value.put("Is_KitchenPrint", is_KitchenPrint);
+    }
+
+    public String getIs_NFC() {
+        return Is_NFC;
+    }
+
+    public void setIs_NFC(String is_NFC) {
+        Is_NFC = is_NFC;
+        value.put("Is_NFC", is_NFC);
+    }
+
+    public static String getTableName() {
+        return tableName;
+    }
+
+    public static void setTableName(String tableName) {
+        Settings.tableName = tableName;
+    }
+
+    public String getIs_singleWindow() {
+        return Is_singleWindow;
+    }
+
+    public void setIs_singleWindow(String is_singleWindow) {
+        Is_singleWindow = is_singleWindow;
+        value.put("Is_singleWindow", is_singleWindow);
+    }
+
+    public String getIs_FillAdvanceAmnt() {
+        return Is_FillAdvanceAmnt;
+    }
+
+    public void setIs_FillAdvanceAmnt(String is_FillAdvanceAmnt) {
+        Is_FillAdvanceAmnt = is_FillAdvanceAmnt;
+        value.put("Is_FillAdvanceAmnt", is_FillAdvanceAmnt);
+    }
+
+    public String getIs_ValidateVehNo() {
+        return Is_ValidateVehNo;
+    }
+
+    public void setIs_ValidateVehNo(String is_ValidateVehNo) {
+        Is_ValidateVehNo = is_ValidateVehNo;
+        value.put("Is_ValidateVehNo", Is_ValidateVehNo);
+    }
+
+    public String getIs_ValidateMobNo() {
+        return Is_ValidateMobNo;
+    }
+
+    public void setIs_ValidateMobNo(String is_ValidateMobNo) {
+        Is_ValidateMobNo = is_ValidateMobNo;
+        value.put("Is_ValidateMobNo", is_ValidateMobNo);
     }
 
     public String get_QR_Type() {
@@ -363,14 +536,24 @@ public class Settings {
         value.put("CustomerDisplay", CustomerDisplay);
     }
 
+//    public String get_Is_Denomination() {
+//        return Is_Denomination;
+//    }
+//
+//    public void set_Is_Denomination(String Is_Denomination) {
+//        this.Is_Denomination = Is_Denomination;
+//        value.put("Is_Denomination", Is_Denomination);
+//    }
+
     public String get_Is_Denomination() {
-        return Is_Denomination;
+        return "true";
     }
 
     public void set_Is_Denomination(String Is_Denomination) {
-        this.Is_Denomination = Is_Denomination;
-        value.put("Is_Denomination", Is_Denomination);
+        this.Is_Denomination = "true";
+        value.put("Is_Denomination", "true");
     }
+
 
     public String get_Is_BarcodePrint() {
         return Is_BarcodePrint;
@@ -683,7 +866,9 @@ public class Settings {
                             ,cursor.getString(44),cursor.getString(45),
                             cursor.getString(46),cursor.getString(47)
                             ,cursor.getString(48),cursor.getString(49)
-                            ,cursor.getString(50),cursor.getString(51),cursor.getString(52));
+                            ,cursor.getString(50),cursor.getString(51),cursor.getString(52)
+                            ,cursor.getString(53),cursor.getString(54),cursor.getString(55),cursor.getString(56),cursor.getString(57),cursor.getString(58)
+                            ,cursor.getString(59),cursor.getString(60),cursor.getString(61),cursor.getString(62),cursor.getString(63),cursor.getString(64),cursor.getString(65),cursor.getString(66),cursor.getString(67));
                 } while (cursor.moveToNext());
             }
             cursor.close();
@@ -727,7 +912,8 @@ public class Settings {
                         ,cursor.getString(44),cursor.getString(45)
                         ,cursor.getString(46),cursor.getString(47)
                         ,cursor.getString(48),cursor.getString(49)
-                        ,cursor.getString(50),cursor.getString(51),cursor.getString(52));
+                        ,cursor.getString(50),cursor.getString(51),cursor.getString(52),
+                        cursor.getString(53),cursor.getString(54),cursor.getString(55),cursor.getString(56),cursor.getString(57),cursor.getString(58),cursor.getString(59),cursor.getString(60),cursor.getString(61),cursor.getString(62),cursor.getString(63),cursor.getString(64),cursor.getString(65),cursor.getString(66),cursor.getString(67));
                 list.add(master);
             } while (cursor.moveToNext());
         }

@@ -19,7 +19,7 @@
         android:orientation="vertical">
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_company_name_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_alignParentLeft="true"
@@ -33,10 +33,10 @@
                 android:hint="@string/CompanyName"
                 android:paddingLeft="10dp"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_contact_person_layout"
             style="@style/AppTheme.TextInputLayout"
             app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
@@ -46,9 +46,9 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Contact_Person"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_email_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_license_no_layout"
@@ -59,9 +59,9 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Email"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_mobile_no_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_contact_person_layout"
@@ -73,10 +73,10 @@
                 android:hint="@string/Mobile_No"
                 android:inputType="number"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_license_no_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_password_conf_layout"
@@ -87,9 +87,9 @@
                 style="@style/AppTheme.EditText"
                 android:hint="License No.(GST/PAN No.)"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_srvc_tarf_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_password_conf_layout"
@@ -100,7 +100,7 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Service_Tariff_Code"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <TextView
             android:id="@+id/lbl_projuct_id"
@@ -147,7 +147,7 @@
             style="@style/AppTheme.Spinner"/>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_password_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/spn_zone"
@@ -159,9 +159,9 @@
                 android:hint="@string/Password"
                 android:inputType="textPassword"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_password_conf_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_password_layout"
@@ -173,10 +173,10 @@
                 android:hint="@string/Confirm_Password"
                 android:inputType="textPassword"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
 
-        <android.support.design.widget.TextInputLayout
+        <com.google.android.material.textfield.TextInputLayout
             android:id="@+id/edt_address_layout"
             style="@style/AppTheme.TextInputLayout"
             android:layout_below="@+id/edt_email_layout"
@@ -187,7 +187,7 @@
                 style="@style/AppTheme.EditText"
                 android:hint="@string/Address"/>
 
-        </android.support.design.widget.TextInputLayout>
+        </com.google.android.material.textfield.TextInputLayout>
 
         <LinearLayout
             android:layout_width="match_parent"
