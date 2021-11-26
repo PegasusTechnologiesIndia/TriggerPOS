@@ -48,6 +48,7 @@ import androidx.core.view.MenuItemCompat;
 import androidx.viewpager.widget.ViewPager;
 import androidx.appcompat.widget.SearchView;
 import android.telephony.TelephonyManager;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -63,6 +64,8 @@ import android.view.MenuItem;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.animation.Animation;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
@@ -1281,7 +1284,35 @@ catch(Exception e){
                         break;
 
                     case R.id.action_reset:
-                        setupViewPager(viewPager, "Main", "", "", "");
+                       // setupViewPager(viewPager, "Main", "", "", "");
+                        // change_table_icon();
+                        defult_ordertype();
+                        Globals.strContact_Code = "";
+                        Globals.strResvContact_Code = "";
+                        Globals.CheckContact = "0";
+                        Globals.NoTax="";
+                        Globals.Taxwith_state="";
+                        Globals.Taxdifferent_state="";
+                        setContactAction();
+                        String cart_check2 = Globals.TotalItemPrice + "";
+                        if (Globals.cart.size() == 0) {
+                            change_customer_icon();
+                        } else {
+                            change_customer_icon();
+                            Globals.setEmpty();
+                            btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
+                            String itemPrice;
+                            itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
+                            btn_Item_Price.setText(itemPrice);
+                            if (OrintValue == Configuration.ORIENTATION_LANDSCAPE) {
+
+                                retail_list_load();
+                            }
+                        }
+
+                        Intent intent=new Intent(Main2Activity.this,Main2Activity.class);
+                        finish();
+                        startActivity(intent);
 
                         break;
                 }
@@ -2759,7 +2790,7 @@ catch(Exception e){
             ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
             searchEditText = (EditText) searchView.findViewById(R.id.search_src_text);
             searchEditText.setTextColor(getResources().getColor(R.color.black));
-            searchEditText.setBackgroundColor(getResources().getColor(R.color.white));
+            searchEditText.setBackgroundColor(getResources().getColor(R.color.whitecolor));
             searchEditText.setHintTextColor(getResources().getColor(R.color.search_hint_color));
             searchEditText.setHint(R.string.Search);
             closeButton.setOnClickListener(new View.OnClickListener() {
@@ -3478,6 +3509,28 @@ catch(Exception e){
         final ListView list11 = (ListView) listDialog1.findViewById(R.id.lv_custom_ortype);
         final TextView contact_title = (TextView) listDialog1.findViewById(R.id.contact_title);
         final EditText edt_srch_contct = (EditText) listDialog1.findViewById(R.id.edt_srch_contct);
+        edt_srch_contct.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        edt_srch_contct.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_srch_contct.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFiltr = edt_srch_contct.getText().toString().trim();
+                    strFiltr = " and (name Like '%" + strFiltr + "%' OR email_1 Like '%" + strFiltr + "%'  OR contact_1 Like '%" + strFiltr + "%')";
+                    edt_srch_contct.selectAll();
+                    fill_dialog_contact_List(contact_title, list11, strSelectedCategory, strFiltr);
+                    return true;
+                }
+                return false;
+            }
+        });
         ImageView srch_image = (ImageView) listDialog1.findViewById(R.id.srch_image);
         ImageView img_brs = (ImageView) listDialog1.findViewById(R.id.img_brs);
         listDialog1.show();
@@ -4979,6 +5032,9 @@ catch(Exception e){
                 catch(Exception e){
 
                 }
+                if (searchView != null)
+                    searchView.onActionViewCollapsed();
+
                 spn_item_category.setTitle("Select Category");
                 spn_item_category.setPositiveButton("CLOSE");
                 Bundle bundle = new Bundle();

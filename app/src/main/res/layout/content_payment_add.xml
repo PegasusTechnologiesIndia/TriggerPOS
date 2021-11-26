@@ -14,20 +14,18 @@
     tools:showIn="@layout/activity_add_payment">
 
 
-
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_pt_code"
-        android:layout_marginTop="10dp"
         style="@style/AppTheme.TextInputLayout"
-        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
         android:layout_below="@+id/ll"
-        >
+        android:layout_marginTop="10dp"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
         <EditText
             android:id="@+id/edt_pt_code"
-            android:hint="@string/payment_code_auto_generated"
             style="@style/AppTheme.EditText"
-            android:selectAllOnFocus="true"/>
+            android:hint="@string/payment_code_auto_generated"
+            android:selectAllOnFocus="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
 

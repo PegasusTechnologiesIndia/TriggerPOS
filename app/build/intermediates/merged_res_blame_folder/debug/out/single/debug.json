@@ -64,12 +64,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_stock_adjestment_header.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_bussiness_group.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_bussiness_group.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_tax_list_item.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\tax_list_item.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_bussiness_group.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_bussiness_group.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_cell_shapecolor.xml.flat",
@@ -200,16 +200,16 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-xhdpi\\triggerpos_splash.png"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_report.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_report.xml"
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp-land_customer_list_item.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp-land\\customer_list_item.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_content_stock_adjestment_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\content_stock_adjestment_list.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp-land_customer_list_item.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp-land\\customer_list_item.xml"
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_report.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_report.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_item_check_list.xml.flat",
@@ -400,12 +400,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\subitem.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_receipt.png.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable\\receipt.png"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_coupon_generate.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_coupon_generate.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_receipt.png.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable\\receipt.png"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_nav_right_header.xml.flat",
@@ -472,12 +472,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp-land\\pay_dialog.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_items_spinner.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\items_spinner.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_activity_report_viewer.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\activity_report_viewer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_items_spinner.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\items_spinner.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_tax_item_check_list_item.xml.flat",
@@ -532,16 +532,16 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\main_list_item.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_user_chk_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\user_chk_list.xml"
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_content_item_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_item_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-ar_content_manufacture_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-ar\\content_manufacture_list.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_content_item_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_item_list.xml"
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_user_chk_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\user_chk_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-ar_order_tax_item.xml.flat",
@@ -1208,12 +1208,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-land\\category_list.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_update_license.png.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-xxxhdpi\\update_license.png"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_customer_return_main_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\customer_return_main_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable-xxxhdpi_update_license.png.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-xxxhdpi\\update_license.png"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\anim_fade_in.xml.flat",
@@ -2228,12 +2228,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-xxxhdpi\\item_category.png"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp-land_item_spinner_item.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\item_spinner_item.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_contact_report_view.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\activity_contact_report_view.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp-land_item_spinner_item.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\item_spinner_item.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\raw_country.json.flat",
@@ -3940,16 +3940,16 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-mdpi\\setting.png"
     },
     {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_sales_by_item_report__view.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\activity_sales_by_item_report__view.xml"
+    },
+    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_arrow_down.png.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\generated\\res\\pngs\\debug\\drawable-mdpi\\arrow_down.png"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_unit.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_unit.xml"
-    },
-    {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_activity_sales_by_item_report__view.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\activity_sales_by_item_report__view.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp-land_content_user_parmission_check_list.xml.flat",
@@ -4416,12 +4416,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\activity_manager.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_about_us.png.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable\\about_us.png"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp-land_activity_report_viewer.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\activity_report_viewer.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_about_us.png.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable\\about_us.png"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_tax_list_item.xml.flat",
@@ -4444,16 +4444,16 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_item_tax.xml"
     },
     {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_orderheader_report_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\orderheader_report_list.xml"
+    },
+    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp-land_items_for_files.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\items_for_files.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_retail_list_item.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\retail_list_item.xml"
-    },
-    {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_orderheader_report_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\orderheader_report_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable_revert.png.flat",
@@ -5012,12 +5012,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\tax_item_group_check_list.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp-land_content_accounts_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp-land\\content_accounts_list.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_order_payment_reportlist.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\order_payment_reportlist.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp-land_content_accounts_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp-land\\content_accounts_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_category_list_item.xml.flat",
@@ -6648,12 +6648,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\content_class_destination_list.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_table_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_table_list.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_content_contactreport_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_contactreport_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_table_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_table_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_bussiness_gp_check_list_item.xml.flat",
@@ -7524,12 +7524,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\purchase_list_item.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_pusrchase_payment.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_pusrchase_payment.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_content_cancel_report_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_cancel_report_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_content_pusrchase_payment.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw720dp\\content_pusrchase_payment.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-land_content_item_group_check_list.xml.flat",
@@ -8548,12 +8548,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\mipmap-hdpi\\ic_launcher.png"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_item_check_list.xml.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_item_check_list.xml"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-ar_content_ticket_setup_tax_check_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-ar\\content_ticket_setup_tax_check_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw600dp_content_item_check_list.xml.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp\\content_item_check_list.xml"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\anim_flip.xml.flat",
@@ -8844,12 +8844,12 @@
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout-sw600dp-land\\content_customer_image.xml"
     },
     {
-        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_database.png.flat",
-        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-mdpi\\database.png"
-    },
-    {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout_content_gst_order_header_report_list.xml.flat",
         "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\layout\\content_gst_order_header_report_list.xml"
+    },
+    {
+        "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\drawable-mdpi_database.png.flat",
+        "source": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\src\\main\\res\\drawable-mdpi\\database.png"
     },
     {
         "merged": "C:\\Users\\Pegasus\\Android Studio Projects\\Backup_19082021_beforeabaakariproj(changed)\\PhomelloLite-lic\\app\\build\\intermediates\\res\\merged\\debug\\layout-sw720dp_activity_return_option.xml.flat",

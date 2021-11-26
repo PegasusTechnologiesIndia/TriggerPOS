@@ -14,99 +14,101 @@
     tools:showIn="@layout/activity_item_category">
 
     <LinearLayout
-        android:id="@+id/ll"
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
+        android:layout_height="match_parent"
         android:orientation="vertical">
 
-        <TextView
-            android:id="@+id/lbl_spinner"
-            style="@style/AppTheme.LabelText_720dp"
-            android:layout_marginTop="20dp"
-            android:text="@string/parent_category" />
-
-        <Spinner
-            android:id="@+id/spn_parent_category"
-            style="@style/AppTheme.Spinner"
-            android:paddingLeft="30dp"
-            android:paddingRight="30dp"
-            android:layout_marginTop="10dp"
-            android:inputType="text"
-            android:foreground="@drawable/border"
+        <LinearLayout
+            android:id="@+id/ll"
             android:layout_width="match_parent"
-            android:layout_height="45dp"
-            android:spinnerMode="dropdown">
-        </Spinner>
+            android:layout_height="wrap_content"
+            android:layout_alignParentTop="true"
+            android:orientation="vertical">
+
+            <TextView
+                android:id="@+id/lbl_spinner"
+                style="@style/AppTheme.LabelText_720dp"
+                android:layout_marginTop="20dp"
+                android:text="@string/parent_category" />
+
+            <Spinner
+                android:id="@+id/spn_parent_category"
+                style="@style/AppTheme.Spinner"
+                android:layout_width="match_parent"
+                android:layout_height="45dp"
+                android:layout_marginTop="10dp"
+                android:foreground="@drawable/border"
+                android:inputType="text"
+                android:paddingLeft="30dp"
+                android:paddingRight="30dp"
+                android:spinnerMode="dropdown"></Spinner>
+        </LinearLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_item_ct_code"
+            style="@style/AppTheme.TextInputLayout_720dp"
+            android:layout_below="@+id/ll"
+            android:layout_marginTop="10dp"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_ct_code"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/item_group_code_auto_generated"
+                android:selectAllOnFocus="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_item_ct_name"
+            style="@style/AppTheme.TextInputLayout_720dp"
+            android:layout_below="@+id/edt_layout_item_ct_code"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_ct_name"
+                style="@style/AppTheme.EditText_720dp"
+                android:hint="@string/CategoryName"
+                android:selectAllOnFocus="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <com.google.android.material.textfield.TextInputLayout
+            android:id="@+id/edt_layout_item_ct_ip"
+            style="@style/AppTheme.TextInputLayout"
+            android:layout_below="@+id/edt_layout_item_ct_name"
+            app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
+
+            <EditText
+                android:id="@+id/edt_item_ct_ip"
+                style="@style/AppTheme.EditText"
+                android:hint="@string/categoryip"
+                android:selectAllOnFocus="true" />
+
+        </com.google.android.material.textfield.TextInputLayout>
+
+        <LinearLayout
+
+            style="@style/AppTheme.HorizontalButtonLayout"
+            android:layout_below="@+id/edt_layout_item_ct_name"
+            android:layout_marginTop="40dp">
+
+            <Button
+                android:id="@+id/btn_save"
+                style="@style/AppTheme.HorizontalButton_720dp"
+                android:text="@string/save"
+
+                />
+
+            <Button
+                android:id="@+id/btn_delete"
+                style="@style/AppTheme.HorizontalButton_720dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="#403c3c"
+                android:text="@string/delete"
+                android:visibility="gone" />
+
+        </LinearLayout>
     </LinearLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edt_layout_item_ct_code"
-        android:layout_marginTop="10dp"
-        style="@style/AppTheme.TextInputLayout_720dp"
-        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
-        android:layout_below="@+id/ll"
-        >
-
-        <EditText
-            android:id="@+id/edt_item_ct_code"
-            android:hint="@string/item_group_code_auto_generated"
-            style="@style/AppTheme.EditText_720dp"
-            android:selectAllOnFocus="true"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edt_layout_item_ct_name"
-        android:layout_below="@+id/edt_layout_item_ct_code"
-        style="@style/AppTheme.TextInputLayout_720dp"
-        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
-        >
-
-        <EditText
-            android:id="@+id/edt_item_ct_name"
-            android:hint="@string/CategoryName"
-            style="@style/AppTheme.EditText_720dp"
-            android:selectAllOnFocus="true"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-    <com.google.android.material.textfield.TextInputLayout
-        android:id="@+id/edt_layout_item_ct_ip"
-        android:layout_below="@+id/edt_layout_item_ct_name"
-        style="@style/AppTheme.TextInputLayout"
-        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
-        >
-
-        <EditText
-            android:id="@+id/edt_item_ct_ip"
-            android:hint="@string/categoryip"
-            style="@style/AppTheme.EditText"
-            android:selectAllOnFocus="true"/>
-
-    </com.google.android.material.textfield.TextInputLayout>
-
-<LinearLayout
-
-    android:layout_below="@+id/edt_layout_item_ct_name"
-    android:layout_marginTop="40dp"
-    style="@style/AppTheme.HorizontalButtonLayout">
-
-    <Button
-        android:id="@+id/btn_save"
-        android:text="@string/save"
-        style="@style/AppTheme.HorizontalButton_720dp"
-
-        />
-
-    <Button
-        android:id="@+id/btn_delete"
-        android:text="@string/delete"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="#403c3c"
-        style="@style/AppTheme.HorizontalButton_720dp"
-        android:visibility="gone"
-         />
-
-</LinearLayout>
 </RelativeLayout>

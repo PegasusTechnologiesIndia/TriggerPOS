@@ -1550,9 +1550,11 @@ if(Globals.objLPR.getIndustry_Type().equals("3")){
                    }
 
                     if (Globals.PrinterType.equals("") || Globals.PrinterType.equals("0")) {
-                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
-                        startActivity(intent);
-                        finish();
+//                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+//                        startActivity(intent);
+//                        finish();
+                        Toast.makeText(getApplicationContext(), "Check Printer Setting", Toast.LENGTH_SHORT).show();
+
                     } else {
                         try {
                             if (is_directPrint.equals("true")) {
@@ -1583,9 +1585,9 @@ if(Globals.objLPR.getIndustry_Type().equals("3")){
                                     public void onClick(DialogInterface dialog, int which) {
 
                                         dialog.cancel();
-                                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
-                                        startActivity(intent);
-                                        finish();
+//                                        Intent intent = new Intent(X_ZActivity.this, ManagerActivity.class);
+//                                        startActivity(intent);
+//                                        finish();
                                     }
                                 });
 

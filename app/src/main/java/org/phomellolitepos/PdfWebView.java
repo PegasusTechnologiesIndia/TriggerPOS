@@ -13,6 +13,7 @@ import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.view.WindowManager;
 import android.webkit.WebChromeClient;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
@@ -28,10 +29,12 @@ Button btn_print;
     String contactcode,Fromgetevent;
     @RequiresApi(api = Build.VERSION_CODES.JELLY_BEAN)
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState)
+    {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_pdf_web_view);
         btn_print = (Button) findViewById(R.id.btn_print);
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         Intent i = getIntent();
         contactcode = i.getStringExtra("contact_code");
@@ -80,29 +83,30 @@ if(printJobId.equals(true)){
     public void onBackPressed() {
         Globals.strContact_Code = "";
         Globals.data.clear();
-        Toast.makeText(getApplicationContext(), getString(R.string.postsuccful), Toast.LENGTH_SHORT).show();
-        if(Fromgetevent.equals("CustomerReturn")){
-            Intent intent1 = new Intent(PdfWebView.this, CustomerReturnListActivity.class);
-            startActivity(intent1);
-            finish();
-        }
-        else if(Fromgetevent.equals("InvoiceReturn")) {
-            Intent intent1 = new Intent(PdfWebView.this, InvReturnListActivity.class);
-            startActivity(intent1);
-            finish();
-        }
-        else if(Fromgetevent.equals("Accounts")) {
-            if(Globals.objLPR.getIndustry_Type().equals("3")){
-                Intent intent1 = new Intent(PdfWebView.this, PaymentCollection_MainScreen.class);
-                startActivity(intent1);
-                finish();
-            }
-            else {
-                Intent intent1 = new Intent(PdfWebView.this, AccountsListActivity.class);
-                startActivity(intent1);
-                finish();
-            }
-        }
+//        Toast.makeText(getApplicationContext(), getString(R.string.postsuccful), Toast.LENGTH_SHORT).show();
+        finish();
+//        if(Fromgetevent.equals("CustomerReturn")){
+//            Intent intent1 = new Intent(PdfWebView.this, CustomerReturnListActivity.class);
+//            startActivity(intent1);
+//            finish();
+//        }
+//        else if(Fromgetevent.equals("InvoiceReturn")) {
+//            Intent intent1 = new Intent(PdfWebView.this, InvReturnListActivity.class);
+//            startActivity(intent1);
+//            finish();
+//        }
+//        else if(Fromgetevent.equals("Accounts")) {
+//            if(Globals.objLPR.getIndustry_Type().equals("3")){
+//                Intent intent1 = new Intent(PdfWebView.this, PaymentCollection_MainScreen.class);
+//                startActivity(intent1);
+//                finish();
+//            }
+//            else {
+//                Intent intent1 = new Intent(PdfWebView.this, AccountsListActivity.class);
+//                startActivity(intent1);
+//                finish();
+//            }
+//        }
         super.onBackPressed();
 
     }

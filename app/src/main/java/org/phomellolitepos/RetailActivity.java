@@ -5,6 +5,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
+import android.content.pm.PackageManager;
 import android.content.res.Configuration;
 import android.database.Cursor;
 import android.database.sqlite.SQLiteDatabase;
@@ -18,6 +19,11 @@ import androidx.annotation.NonNull;
 import com.google.android.material.bottomnavigation.BottomNavigationView;
 import androidx.appcompat.app.AppCompatActivity;
 import androidx.appcompat.widget.Toolbar;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
+
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -31,6 +37,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.Window;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -56,6 +63,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 import org.phomellolitepos.Adapter.DialogContactMainListAdapter;
 import org.phomellolitepos.Adapter.RetailListAdapter;
+import org.phomellolitepos.Adapter.RetailRecycleAdapter;
 import org.phomellolitepos.Util.DateUtill;
 import org.phomellolitepos.Util.ExceptionHandler;
 import org.phomellolitepos.Util.Globals;
@@ -90,7 +98,7 @@ import org.phomellolitepos.zbar.ZBarScannerView;
 import static org.phomellolitepos.Util.Globals.StringSplit;
 
 public class RetailActivity extends AppCompatActivity implements ZBarScannerView.ResultHandler {
-    RetailListAdapter retailListAdapter;
+    RetailRecycleAdapter retailListAdapter;
     AutoCompleteTextView edt_toolbar_retail;
     EditText edt_toolbar_search;
     Button btn_retail_1, btn_retail_2;
@@ -163,11 +171,16 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
     private void retail_list_load() {
         ArrayList<ShoppingCart> myCart = Globals.cart;
 //        Collections.reverse(myCart);
-        ListView retail_list = (ListView) findViewById(R.id.retail_list);
+        RecyclerView retail_list =  findViewById(R.id.retail_list);
         if (myCart.size() > 0) {
-            retailListAdapter = new RetailListAdapter(RetailActivity.this, myCart, opr, strOrderCode, "");
+            retailListAdapter = new RetailRecycleAdapter(RetailActivity.this, myCart, opr, strOrderCode, "");
             retail_list.setVisibility(View.VISIBLE);
             txt_title.setVisibility(View.GONE);
+            RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getApplicationContext());
+            retail_list.setLayoutManager(mLayoutManager);
+
+            retail_list.addItemDecoration(new DividerItemDecoration(getApplicationContext(), LinearLayoutManager.VERTICAL));
+            retail_list.setItemAnimator(new DefaultItemAnimator());
             retail_list.setAdapter(retailListAdapter);
             retailListAdapter.notifyDataSetChanged();
         } else {
@@ -195,16 +208,25 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
             return true;
         }
 
-        if (id == R.id.action_qr) {
-            Globals.BarcodeReslt = "";
-            flag_scan = true;
-            if(mScannerView!=null) {
-                mScannerView = new ZBarScannerView(RetailActivity.this);
-                mScannerView.setResultHandler(RetailActivity.this);
-                mScannerView.startCamera(); // Programmatically initialize the scanner view
-                setContentView(mScannerView);
-            }
-            return true;
+        if (id == R.id.action_qr)
+        {
+            PackageManager pm = getPackageManager();
+            if (pm.hasSystemFeature(PackageManager.FEATURE_CAMERA))
+            {
+                Globals.BarcodeReslt = "";
+                flag_scan = true;
+                if(mScannerView!=null) {
+                    mScannerView = new ZBarScannerView(RetailActivity.this);
+                    mScannerView.setResultHandler(RetailActivity.this);
+                    mScannerView.startCamera(); // Programmatically initialize the scanner view
+                    setContentView(mScannerView);
+                }
+
+            }else
+                {
+                    Toast.makeText(RetailActivity.this,"No Camera Found ",Toast.LENGTH_SHORT).show();
+                }
+
         }
 
        /* if (id == R.id.action_contact) {
@@ -244,6 +266,28 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
         final ListView list11 = (ListView) listDialog1.findViewById(R.id.lv_custom_ortype);
         final TextView contact_title = (TextView) listDialog1.findViewById(R.id.contact_title);
         final EditText edt_srch_contct = (EditText) listDialog1.findViewById(R.id.edt_srch_contct);
+        edt_srch_contct.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        edt_srch_contct.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_srch_contct.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFiltr = edt_srch_contct.getText().toString().trim();
+                    strFiltr = " and (name Like '%" + strFiltr + "%' OR email_1 Like '%" + strFiltr + "%'  OR contact_1 Like '%" + strFiltr + "%')";
+                    edt_srch_contct.selectAll();
+                    fill_dialog_contact_List(contact_title, list11, strSelectedCategory, strFiltr);
+                    return true;
+                }
+                return false;
+            }
+        });
         ImageView srch_image = (ImageView) listDialog1.findViewById(R.id.srch_image);
         ImageView img_brs = (ImageView) listDialog1.findViewById(R.id.img_brs);
         listDialog1.show();
@@ -251,15 +295,15 @@ public class RetailActivity extends AppCompatActivity implements ZBarScannerView
         Window window = listDialog1.getWindow();
         window.setLayout(LinearLayout.LayoutParams.WRAP_CONTENT, LinearLayout.LayoutParams.WRAP_CONTENT);
 
-        srch_image.setOnClickListener(new View.OnClickListener()
-        {
+        srch_image.setOnClickListener(new View.OnClickListener() {
             @Override
-            public void onClick(View view)
-            {
+            public void onClick(View view) {
+
                 String strFiltr = edt_srch_contct.getText().toString().trim();
                 strFiltr = " and (name Like '%" + strFiltr + "%' OR email_1 Like '%" + strFiltr + "%'  OR contact_1 Like '%" + strFiltr + "%')";
                 edt_srch_contct.selectAll();
                 fill_dialog_contact_List(contact_title, list11, strSelectedCategory, strFiltr);
+
             }
         });
 

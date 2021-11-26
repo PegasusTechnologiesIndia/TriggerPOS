@@ -18,6 +18,8 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -67,6 +69,7 @@ public class UserActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
         int id = pref.getInt("id", 0);
         if (id == 0) {
             toolbar.setNavigationIcon(R.drawable.ic_arrow_back_white_24dp_mdpi);
@@ -124,8 +127,14 @@ public class UserActivity extends AppCompatActivity {
 
 
         edt_user_code = (EditText) findViewById(R.id.edt_user_code);
+        edt_user_code.setEnabled(false);
         edt_user_name = (EditText) findViewById(R.id.edt_user_name);
+        edt_user_name.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_user_name.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_email = (EditText) findViewById(R.id.edt_email);
+        edt_email.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_email.setInputType(InputType.TYPE_CLASS_TEXT);
         edt_password = (EditText) findViewById(R.id.edt_password);
         edt_max_discount = (EditText) findViewById(R.id.edt_max_discount);
 

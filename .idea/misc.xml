@@ -5,43 +5,110 @@
       <map>
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/drawable/cardview_border.xml" value="0.12361111111111112" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/activity_login.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/activity_main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/app_bar_main.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/contact_list_item.xml" value="0.13" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/content_main.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/fragment_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/item_list_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/password_dialog.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-ar/retail_list_item.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_activate_email.xml" value="0.1359375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_contact_list.xml" value="0.14921875" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_item.xml" value="0.159765625" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_item_category.xml" value="0.13984375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_item_tax.xml" value="0.127734375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_main.xml" value="0.14" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_main_land.xml" value="0.13984375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_payment.xml" value="0.105078125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/activity_report.xml" value="0.1251700680272109" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/add_remarks_dialog.xml" value="0.137109375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/contact_list_item.xml" value="0.155859375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/content_activate_email.xml" value="0.1359375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/content_item_category.xml" value="0.13984375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/content_payment.xml" value="0.105078125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/content_report.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/content_retail.xml" value="0.1251700680272109" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/fragment_item.xml" value="0.127734375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/item_list_item.xml" value="0.155859375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/main_list_item.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-land/retail_list_item.xml" value="0.1251700680272109" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_activate_email.xml" value="0.18125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_main.xml" value="0.18125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/app_bar_main.xml" value="0.18125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_item_category.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_main.xml" value="0.25" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_main_land.xml" value="0.1921875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/activity_report.xml" value="0.22" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/app_bar_main.xml" value="0.22" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/contact_list_item.xml" value="0.2078125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/content_activate_email.xml" value="0.18125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/content_main.xml" value="0.18125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/content_report.xml" value="0.14959349593495935" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/content_retail.xml" value="0.31869918699186994" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/fragment_item.xml" value="0.1703125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/item_list_item.xml" value="0.2078125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/main_list_item.xml" value="0.15260416666666668" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/nav_header_main.xml" value="0.18645833333333334" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/password_dialog.xml" value="0.18489583333333334" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/report_category_list.xml" value="0.14959349593495935" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp-land/retail_list_item.xml" value="0.14959349593495935" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_activate_email.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_item_category.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_main_land.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_report.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_retail.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_setttings.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/activity_tax_check_list.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/app_bar_main.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/contact_list_item.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/content_activate_email.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/content_report.xml" value="0.19470899470899472" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/content_retail.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/fragment_item.xml" value="0.20416666666666666" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/item_list_item.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/main_list_item.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/password_dialog.xml" value="0.20416666666666666" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw600dp/retail_list_item.xml" value="0.18" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/activity_activate_email.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/activity_item_category.xml" value="0.13984375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/activity_main.xml" value="0.144140625" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/activity_main_land.xml" value="0.1359375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/activity_report.xml" value="0.11288343558282209" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/app_bar_main.xml" value="0.1359375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/contact_list_item.xml" value="0.155859375" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/content_activate_email.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/content_item_category.xml" value="0.13" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/content_report.xml" value="0.21" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/content_retail.xml" value="0.24049079754601227" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/fragment_item.xml" value="0.127734375" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/item_list_item.xml" value="0.25" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/main_list_item.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/nav_header_main.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/password_dialog.xml" value="0.138671875" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp-land/retail_list_item.xml" value="0.11288343558282209" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_activate_email.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_item_category.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_main.xml" value="0.25" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_payment.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_payment_collection__main_screen.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_report.xml" value="0.12" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/activity_retail.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/contact_list_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/content_activate_email.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/content_item.xml" value="0.22" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/content_payment.xml" value="0.22" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/content_report.xml" value="0.18" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/content_retail.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/fragment_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/item_list_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/main_list_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/nav_header_main.xml" value="0.18" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/password_dialog.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/payment_main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout-sw720dp/retail_list_item.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_accounts.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_activate_email.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_add_payment.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_cancel_report_view.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_category_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_change_price.xml" value="0.153125" />
@@ -51,31 +118,42 @@
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_expenses.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_expenses_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_item.xml" value="0.153125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_item_category.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_item_category.xml" value="0.22" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_item_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_item_tax.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_login.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_main2.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_main_land.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_manager.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_mian_category_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_modifer_check_list.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_new_registration.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_parking_industry.xml" value="0.14275956284153005" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_payment.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_payment_collection__main_screen.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_pdf_web_view.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_print_layout.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_profile.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_recept.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_registration.xml" value="0.18" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_report.xml" value="0.19" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_reservation_item_check_list.xml" value="0.153125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_retail.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_retail.xml" value="0.13" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_setttings.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_spash_screen.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_tax.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_tax_check_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_unit.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_user.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_vehicle_history_screen.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_vehicle_in_report.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_vehicle_out_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_view_order.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/activity_x__z.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/add_remarks_dialog.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/app_bar_main.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/app_bar_main2.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/bussiness_group_list_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/contact_list_item.xml" value="0.2013888888888889" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_accounts.xml" value="0.25" />
@@ -86,51 +164,73 @@
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_data_base.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_expenses.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_item_category.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_item_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_item_tax.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_login.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_main2.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_mian_category_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_mofifier_checklist.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_payment.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_payment_add.xml" value="0.18" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_profile.xml" value="0.153125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_report.xml" value="0.22" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_recept.xml" value="0.11" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_report.xml" value="0.10874704491725769" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_report_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_report_vehicleinlist.xml" value="0.25" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_retail.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_retailindustry.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_setttings.xml" value="0.16" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_tax.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_tax_check_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_unit.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_user.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_vehiclehistory.xml" value="0.18" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_vehiclein_report.xml" value="0.22" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_vehicleout_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_view_order.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/content_x__z.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/contentfrag_parking_vehicleout.xml" value="0.2" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/contentfrag_parkingindustry.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/custom_layout_ipchange.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/customdialog.xml" value="0.153125" />
-        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/fragment_item.xml" value="0.22" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/fragment_item.xml" value="0.2" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/item_fragment2.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/item_list_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/item_tax_check_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/item_tax_check_list_item.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/main_list_item.xml" value="0.22" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/nav_header_main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/order_item_tax_item.xml" value="0.1" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/order_type_list.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/parkingindustry_main.xml" value="0.14275956284153005" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/password_dialog.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/payment_main.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/pos_contact_list_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/recept_detail_list_item.xml" value="0.22" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/report_category_list.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/retail_list_item.xml" value="0.18" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/vehicle_inlist.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/layout/vehicleout_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/activity_right_drawer.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/bussiness_gp_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/item_listmenu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/list_menu.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/main.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/main2.xml" value="0.1" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/menu_category_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/menu_item_list.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/menu_retail.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/menu_retail_industry.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/order_type_list_menu.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/parking_main.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/receipt_detail_menu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/reports_menu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/select_all_menu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/settings_menu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/split_payment_menu.xml" value="0.153125" />
+        <entry key="..\:/Users/Pegasus/Android Studio Projects/Backup_19082021_beforeabaakariproj(changed)/PhomelloLite-lic/app/src/main/res/menu/top_nav_menu.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/AppData/Local/Android/Sdk/platforms/android-30/data/res/layout/simple_spinner_dropdown_item.xml" value="0.153125" />
         <entry key="..\:/Users/Pegasus/AppData/Local/Android/Sdk/platforms/android-30/data/res/layout/simple_spinner_item.xml" value="0.153125" />
         <entry key="..\:/Users/pegasus/AndroidStudioProjects/Backup_19082021_beforeabaakariproj/PhomelloLite-lic/app/src/main/res/layout-ar/content_main.xml" value="0.14765625" />

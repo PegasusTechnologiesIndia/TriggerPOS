@@ -4,7 +4,13 @@
     android:layout_height="match_parent"
     tools:context="org.phomellolitepos.Fragment.ItemFragment">
 
-    <ListView
+    <TextView
+        android:id="@+id/item_title"
+        android:text="@string/No_Itm_Fnd"
+        android:visibility="gone"
+        style="@style/AppTheme.NoListfoundText"/>
+
+    <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/main_list"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -13,7 +19,7 @@
         android:fastScrollEnabled="true"
 
         android:layout_marginTop="10dp">
-    </ListView>
+    </androidx.recyclerview.widget.RecyclerView>
 
     <ProgressBar
         android:id="@+id/progressBar2"
@@ -21,6 +27,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_gravity="center"
+        android:visibility="gone"
         />
 
 </FrameLayout>

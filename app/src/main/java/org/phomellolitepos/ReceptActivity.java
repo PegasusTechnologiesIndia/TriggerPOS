@@ -178,7 +178,7 @@ public class ReceptActivity extends AppCompatActivity {
 
         arrayList = new ArrayList<Orders>();
         mListView = (ExpandableStickyListHeadersListView) findViewById(R.id.recept_list);
-        arrayList = Orders.getAllOrders(getApplicationContext(), "WHERE is_active = '1' And z_code ='0' Order by order_code desc", database);
+        arrayList = Orders.getAllOrders(getApplicationContext(), "WHERE is_active = '1' And z_code ='0'  ORDER BY order_date DESC", database);
         if (arrayList.size() > 0) {
             mListView.clearAnimation();
             item_title.setVisibility(View.GONE);

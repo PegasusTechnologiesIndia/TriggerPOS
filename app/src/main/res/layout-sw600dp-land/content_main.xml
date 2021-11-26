@@ -46,19 +46,19 @@
         android:textStyle="bold|italic"
         android:layout_centerHorizontal="true"
         android:layout_below="@+id/spinner_item_category"></TextView>
+
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/top_navigation"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:clickable="true"
         android:background="@color/topnav"
+        android:clickable="true"
         app:itemBackground="@color/topnav"
         app:itemIconTint="#ffffff"
-        app:itemTextColor="#ffffff"
         app:itemTextAppearanceInactive="@style/BottomNavigationView"
-        app:menu="@menu/top_nav_menu"
+        app:itemTextColor="#ffffff"
         app:labelVisibilityMode="labeled"
-        />
+        app:menu="@menu/top_nav_menu" />
 
     <LinearLayout
 
@@ -90,6 +90,6 @@
         android:layout_height="match_parent"
         android:layout_below="@+id/top_navigation"
         android:layout_marginTop="90dp"
-        android:layout_marginBottom="55dp"/>
+        android:layout_marginBottom="55dp" />
 
 </RelativeLayout>

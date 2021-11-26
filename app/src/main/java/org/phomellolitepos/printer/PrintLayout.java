@@ -15955,9 +15955,9 @@ Globals.strZoneName="";
                                                 finalitemTax += valueFinal;
                                             }
                                         }*/
-
-                                            count++;
                                         }
+                                            count++;
+
                                     }
 
                                     woyouService.printTextWithFont("------------------------------------------------\n", "", 24, callback);

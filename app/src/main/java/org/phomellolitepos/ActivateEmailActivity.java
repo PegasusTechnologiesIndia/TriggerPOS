@@ -899,7 +899,7 @@ return succ;
 
                                    try {
                                        androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(ActivateEmailActivity.this);
-
+                                       builder.setCancelable(false);
                                        builder.setTitle(getString(R.string.alerttitle));
                                        builder.setMessage(getString(R.string.alert_loginmsg));
 
@@ -945,7 +945,11 @@ return succ;
 
                            }
 
-                        } catch (Exception e) {
+                        } catch (Exception e)
+                        {
+                            pDialog.dismiss();
+                            Toast.makeText(getApplicationContext(),e+"", Toast.LENGTH_SHORT).show();
+
                         }
 
 

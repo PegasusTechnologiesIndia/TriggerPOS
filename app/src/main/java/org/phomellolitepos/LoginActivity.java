@@ -1102,7 +1102,7 @@ public class LoginActivity extends AppCompatActivity {
                     androidx.appcompat.app.AlertDialog.Builder builder = new androidx.appcompat.app.AlertDialog.Builder(LoginActivity.this);
 
                     builder.setTitle(getString(R.string.alerttitle));
-                    builder.setMessage(getString(R.string.alertmsg) + user_name);
+                    builder.setMessage(getString(R.string.alertmsg)+" " + user_name);
 
                     builder.setPositiveButton(getString(R.string.alert_posbtn), new DialogInterface.OnClickListener() {
 
@@ -1782,6 +1782,7 @@ public class LoginActivity extends AppCompatActivity {
 
     public void postDeviceInfo(final String email, final String password, final String isuse, final String masterproductid, final String liccustomerlicenseid, final String devicecode, final String syscode1, final String syscode2, final String syscode3, final String syscode4, final String registrationcode, final String defaultlogout) {
 
+        pDialog.dismiss();
         pDialog = new ProgressDialog(LoginActivity.this);
         pDialog.setMessage("Logging In....");
         pDialog.show();
@@ -1999,15 +2000,22 @@ public class LoginActivity extends AppCompatActivity {
                 new Response.ErrorListener() {
                     @Override
                     public void onErrorResponse(VolleyError error) {
-                        if (error instanceof TimeoutError || error instanceof NoConnectionError) {
-
+                        if (error instanceof TimeoutError || error instanceof NoConnectionError)
+                        {
+                            pDialog.dismiss();
                             Toast.makeText(getApplicationContext(), "Internet not available", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof AuthFailureError) {
+                        } else if (error instanceof AuthFailureError)
+                        {
+                            pDialog.dismiss();
                             Toast.makeText(getApplicationContext(), "Authentication issue", Toast.LENGTH_LONG).show();
-                        } else if (error instanceof ServerError) {
+                        } else if (error instanceof ServerError)
+                        {
+                            pDialog.dismiss();
                             Toast.makeText(getApplicationContext(), "Server not available", Toast.LENGTH_LONG).show();
 
-                        } else if (error instanceof NetworkError) {
+                        } else if (error instanceof NetworkError)
+                        {
+                            pDialog.dismiss();
                             Toast.makeText(getApplicationContext(), "Internet not available", Toast.LENGTH_LONG).show();
 
                         } else if (error instanceof ParseError) {

@@ -21,6 +21,7 @@ import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
@@ -126,8 +127,17 @@ String taxname;
         edt_layout_value = (TextInputLayout) findViewById(R.id.edt_layout_value);
         edt_layout_comment = (TextInputLayout) findViewById(R.id.edt_layout_comment);
         edt_tax_name = (EditText) findViewById(R.id.edt_tax_name);
+        edt_tax_name.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_tax_name.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_value = (EditText) findViewById(R.id.edt_value);
+        edt_value.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_value.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_comment = (EditText) findViewById(R.id.edt_comment);
+        edt_comment.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_comment.setMaxLines(3);
+
         btn_next = (Button) findViewById(R.id.btn_next);
         btn_tax_delete = (Button) findViewById(R.id.btn_tax_delete);
         spinner_type = (Spinner) findViewById(R.id.spinner__type);

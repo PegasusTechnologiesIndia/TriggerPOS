@@ -45,10 +45,14 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.itextpdf.text.pdf.codec.Base64;
+import com.squareup.picasso.Picasso;
 
 import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.FileOutputStream;
+import java.io.OutputStream;
 import java.net.URISyntaxException;
+import java.nio.file.Files;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -206,6 +210,7 @@ CheckBox chk_ismodifier;
         edt_item_name.setImeOptions(EditorInfo.IME_ACTION_GO);
 
         edt_item_code = (EditText) findViewById(R.id.edt_item_code);
+        edt_item_code.setEnabled(false);
         edt_item_sales_price = (EditText) findViewById(R.id.edt_item_sales_price);
         edt_item_sku = (EditText) findViewById(R.id.edt_item_sku);
 
@@ -424,6 +429,13 @@ CheckBox chk_ismodifier;
             } catch (Exception e) {
                 e.printStackTrace();
             }*/
+//
+            String path = Environment.getExternalStorageDirectory()+"/TriggerPOS/ItemImages/" + edt_item_code.getText().toString().trim()+".PNG";
+            Bitmap b = BitmapFactory.decodeFile(path);
+   //         Picasso.with(getApplicationContext()).load(path).into(img_logo);
+            img_logo.setImageBitmap(b);
+            img_logo.setVisibility(View.VISIBLE);
+
         } else {
             btn_next.setBackgroundColor(getResources().getColor(R.color.button_color));
             fill_spinner("");
@@ -921,7 +933,71 @@ CheckBox chk_ismodifier;
             };
             timerThread.start();
         }
+ if(img_logo.getDrawable()==null)
+ {
+     Bitmap bitmap=BitmapFactory.decodeResource(getResources(),R.raw.recipemaker);
+     img_logo.setImageBitmap(bitmap);
+     img_logo.buildDrawingCache();
+     Bitmap bm=img_logo.getDrawingCache();
+     OutputStream fOut = null;
+     Uri outputFileUri;
+     String path = Environment.getExternalStorageDirectory()+"/TriggerPOS/ItemImages/" ;
+
+     try {
+         String filename;
+         if(edt_item_code.getText().toString().equals(""))
+             filename=strITCode;
+         else
+             filename=edt_item_code.getText().toString().trim();
+         File sdImageMainDirectory = new File(path, filename+".png");
+         if (sdImageMainDirectory.exists()){
+             sdImageMainDirectory.delete();
+         }
+         outputFileUri = Uri.fromFile(sdImageMainDirectory);
+         fOut = new FileOutputStream(sdImageMainDirectory);
+     } catch (Exception e) {
+         Toast.makeText(this, "Error occured. Please try again later.",
+                 Toast.LENGTH_SHORT).show();
+     }
+     try {
+         bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+         fOut.flush();
+         fOut.close();
+     } catch (Exception e) {
+     }
+ }else {
+                img_logo.buildDrawingCache();
+                Bitmap bm=img_logo.getDrawingCache();
+                OutputStream fOut = null;
+                Uri outputFileUri;
+                String path = Environment.getExternalStorageDirectory()+"/TriggerPOS/ItemImages/" ;
+
+                try {
+                    String filename;
+                      if(edt_item_code.getText().toString().equals(""))
+                          filename=strITCode;
+                      else
+                          filename=edt_item_code.getText().toString().trim();
+                    File sdImageMainDirectory = new File(path, filename+".png");
+                    if (sdImageMainDirectory.exists()){
+                        sdImageMainDirectory.delete();
+                    }
+                    outputFileUri = Uri.fromFile(sdImageMainDirectory);
+                    fOut = new FileOutputStream(sdImageMainDirectory);
+                } catch (Exception e) {
+                    Toast.makeText(this, "Error occured. Please try again later.",
+                            Toast.LENGTH_SHORT).show();
+                }
+                try {
+                    bm.compress(Bitmap.CompressFormat.PNG, 100, fOut);
+                    fOut.flush();
+                    fOut.close();
+                } catch (Exception e) {
+                }
+        }
     }
+
+
 
     private void fill_spinner_unit(String str) {
         Unit unit;

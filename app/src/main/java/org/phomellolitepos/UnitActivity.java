@@ -16,6 +16,7 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -96,8 +97,17 @@ public class UnitActivity extends AppCompatActivity {
         });
 
         edt_unit_name = (EditText) findViewById(R.id.edt_unit_name);
+        edt_unit_name.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_unit_name.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_description = (EditText) findViewById(R.id.edt_description);
+        edt_description.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_description.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_code = (EditText) findViewById(R.id.edt_code);
+        edt_code.setImeOptions(EditorInfo.IME_ACTION_GO);
+        edt_code.setInputType(InputType.TYPE_CLASS_TEXT);
+
         btn_save = (Button) findViewById(R.id.btn_save);
         btn_delete = (Button) findViewById(R.id.btn_delete);
         btn_save.setVisibility(View.GONE);

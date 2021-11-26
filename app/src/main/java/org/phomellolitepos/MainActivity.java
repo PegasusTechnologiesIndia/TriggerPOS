@@ -261,6 +261,7 @@ public class MainActivity extends AppCompatActivity
     ArrayList<Item> arrayList;
     ArrayList<Fragment> fragList;
     private SearchView searchView;
+    MenuItem searchItem;
     String operation = "";
     String code_category = "";
     String versionname;
@@ -1531,7 +1532,8 @@ if(Globals.PrinterType.equals("0")){
                                     }
                                     break;
                                 case R.id.action_clear:
-                                    if (Globals.objsettings.get_Is_Customer_Display().equals("true")) {
+                                    if (Globals.objsettings.get_Is_Customer_Display().equals("true"))
+                                    {
                                         mDSKernel = DSKernel.newInstance();
                                         mDSKernel.checkConnection();
                                         mDSKernel.init(getApplicationContext(), mConnCallback);
@@ -1637,8 +1639,63 @@ if(Globals.PrinterType.equals("0")){
                         //reset
                         case R.id.action_reset:
 
-                            setupViewPager(viewPager, "Main", "", "", "");
+//                          setupViewPager(viewPager, "Main", "", "", "");
+                            if (Globals.objsettings.get_Is_Customer_Display().equals("true"))
+                            {
+                                mDSKernel = DSKernel.newInstance();
+                                mDSKernel.checkConnection();
+                                mDSKernel.init(getApplicationContext(), mConnCallback);
+                                mDSKernel.addReceiveCallback(mReceiveCallback);
+                                Thread timerThread = new Thread() {
+                                    public void run() {
+                                        try {
+                                            //Lite_POS_Registration lite_pos_registration = Lite_POS_Registration.getRegistration(getApplicationContext(), database, db, "");
+                                            if (Globals.objLPR.getShort_companyname().equals("") || Globals.objLPR.getShort_companyname().equals("null") || Globals.objLPR.getShort_companyname().length() == 0 || Globals.objLPR.getShort_companyname().isEmpty()) {
+                                                displayTilte = Globals.objLPR.getCompany_Name();
+                                            } else {
+                                                displayTilte = Globals.objLPR.getShort_companyname();
+                                            }
+                                            if (Globals.objsettings.get_CustomerDisplay().equals("1")) {
+                                                call_CMD();
+                                                call_MN(displayTilte);
+                                            } else {
+                                                call_customer_disply_title(displayTilte);
+                                                call_MN(displayTilte);
+                                            }
+                                        } finally {
+                                        }
+                                    }
+                                };
+                                timerThread.start();
+                            }
+                            // change_table_icon();
+                            defult_ordertype();
+                            Globals.strContact_Code = "";
+                            Globals.strResvContact_Code = "";
+                            Globals.CheckContact = "0";
+                            Globals.NoTax="";
+                            Globals.Taxwith_state="";
+                            Globals.Taxdifferent_state="";
+                            setContactAction();
+                            String cart_check2 = Globals.TotalItemPrice + "";
+                            if (Globals.cart.size() == 0) {
+                                change_customer_icon();
+                            } else {
+                                change_customer_icon();
+                                Globals.setEmpty();
+                                btn_Qty.setText(Globals.myNumberFormat2QtyDecimal(Globals.TotalQty, qty_decimal_check));
+                                String itemPrice;
+                                itemPrice = Globals.myNumberFormat2Price(Double.parseDouble(Globals.TotalItemPrice + ""), decimal_check);
+                                btn_Item_Price.setText(itemPrice);
+                                if (OrintValue == Configuration.ORIENTATION_LANDSCAPE) {
 
+                                    retail_list_load();
+                                }
+                            }
+
+                            Intent intent=new Intent(MainActivity.this,MainActivity.class);
+                            finish();
+                            startActivity(intent);
                             break;
                     }
                     return true;
@@ -3104,7 +3161,7 @@ catch (ActivityNotFoundException e) {
         getMenuInflater().inflate(R.menu.main, menu);
         this.menu2 = menu;
         SearchManager searchManager = (SearchManager) getSystemService(Context.SEARCH_SERVICE);
-        MenuItem searchItem = menu.findItem(R.id.search);
+        searchItem = menu.findItem(R.id.search);
         searchView = (SearchView) MenuItemCompat.getActionView(searchItem);
 
         InputMethodManager manager
@@ -3121,13 +3178,17 @@ catch (ActivityNotFoundException e) {
             ImageView closeButton = (ImageView) searchView.findViewById(R.id.search_close_btn);
             searchEditText = (EditText) searchView.findViewById(R.id.search_src_text);
             searchEditText.setTextColor(getResources().getColor(R.color.black));
-            searchEditText.setBackgroundColor(getResources().getColor(R.color.white));
+            searchEditText.setBackgroundColor(getResources().getColor(R.color.whitecolor));
             searchEditText.setHintTextColor(getResources().getColor(R.color.search_hint_color));
             searchEditText.setHint(R.string.Search);
             closeButton.setOnClickListener(new View.OnClickListener() {
 
                 @Override
-                public void onClick(View v) {
+                public void onClick(View v)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
                     if (searchView.getQuery().length() > 0) {
                         searchView.setQuery("", false);
                         setupViewPager(viewPager, "Main", "", "", "");
@@ -3168,8 +3229,12 @@ catch (ActivityNotFoundException e) {
                     searchEditText.setOnKeyListener(new View.OnKeyListener() {
                                                         @Override
                                                         public boolean onKey(View v, int keyCode, KeyEvent event) {
-                                                            if (event.getAction() == KeyEvent.ACTION_DOWN
-                                                                    && keyCode == KeyEvent.KEYCODE_ENTER) {
+                                                            if (event.getAction() == KeyEvent.ACTION_DOWN && keyCode == KeyEvent.KEYCODE_ENTER)
+                                                            {
+                                                                View view = getCurrentFocus();
+                                                                InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                                                                imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
                                                                 String strValue = searchEditText.getText().toString();
 
                                                                 if (searchEditText.getText().toString().equals("\n") || searchEditText.getText().toString().equals("")) {
@@ -4349,6 +4414,26 @@ catch (ActivityNotFoundException e) {
         final EditText edt_srch_contct = (EditText) listDialog1.findViewById(R.id.edt_srch_contct);
         edt_srch_contct.setImeOptions(EditorInfo.IME_ACTION_DONE);
         edt_srch_contct.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_srch_contct.setOnEditorActionListener(new TextView.OnEditorActionListener()
+        {
+            @Override
+            public boolean onEditorAction(TextView v, int actionId, KeyEvent event)
+            {
+                if (actionId == EditorInfo.IME_ACTION_SEARCH)
+                {
+                    View view = getCurrentFocus();
+                    InputMethodManager imm = (InputMethodManager)getSystemService(Context.INPUT_METHOD_SERVICE);
+                    imm.hideSoftInputFromWindow(view.getWindowToken(), 0);
+
+                    String strFiltr = edt_srch_contct.getText().toString().trim();
+                    strFiltr = " and (name Like '%" + strFiltr + "%' OR email_1 Like '%" + strFiltr + "%'  OR contact_1 Like '%" + strFiltr + "%')";
+                    edt_srch_contct.selectAll();
+                    fill_dialog_contact_List(contact_title, list11, strSelectedCategory, strFiltr);
+                    return true;
+                }
+                return false;
+            }
+        });
         ImageView srch_image = (ImageView) listDialog1.findViewById(R.id.srch_image);
         ImageView img_brs = (ImageView) listDialog1.findViewById(R.id.img_brs);
         listDialog1.show();
@@ -6493,8 +6578,11 @@ Log.i("filepath:"," "+fUrl) ;
         spn_item_category.setOnItemSelectedListener(new AdapterView.OnItemSelectedListener() {
 
             @Override
-            public void onItemSelected(AdapterView<?> adapter, View v, int position, long id) {
+            public void onItemSelected(AdapterView<?> adapter, View v, int position, long id)
+            {
                 // On selecting a spinner item
+                if (searchView != null)
+                    searchView.onActionViewCollapsed();
                 try {
                     spn_item_category.setTitle("Select Category");
                     spn_item_category.setPositiveButton("CLOSE");

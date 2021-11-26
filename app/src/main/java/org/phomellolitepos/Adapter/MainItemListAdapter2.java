@@ -39,12 +39,14 @@ import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
 import org.phomellolitepos.database.Item;
+import org.phomellolitepos.database.Item_Group;
 import org.phomellolitepos.database.Item_Location;
 import org.phomellolitepos.database.Settings;
 
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 
 /**
  * Created by LENOVO on 11/8/2017.
@@ -185,49 +187,83 @@ else {*/
 
 
             File[] listFile = yourDir.listFiles();
-            if (listFile != null) {
+            if (listFile != null)
+            {
+                for (int i = 0; i < listFile.length; i++)
+                nameList.add(listFile[i].getName());
+
                 for (int i = 0; i < listFile.length; i++) {
 
-
-                    nameList.add(listFile[i].getName());
                     String fileext = listFile[i].getName().substring(listFile[i].getName().lastIndexOf(".") + 1);
                     // nameList.add(listFile[i].getAbsolutePath());
 
                     String namefile= listFile[i].getName();
                     int iend = namefile.indexOf("."); //this finds the first occurrence of "."
                     String subString = null;
+
+
+
                     if (iend != -1)
                     {
                         subString= namefile.substring(0 , iend); //this will give abc
+                        Arrays.asList(nameList).contains(resultp.get_item_code()+fileext);
                     }
-                    if (subString.equals(resultp.get_item_code())) {
+                    Boolean r = null;
+                    for (String element : nameList)
+                        if (element.equals(resultp.get_item_code()+"."+fileext)) {
+                            r = true;
+                            break;
+                        }
+                    // subString.equals(resultp.get_item_code());
+                    if (true)
+                    {
                         imgFile = new File(Globals.folder, "ItemImages/" + resultp.get_item_code()+"."+fileext);
 
-                        if (imgFile.exists()) {
-
+                        if (imgFile.exists())
+                        {
                              Bitmap myBitmap = BitmapFactory.decodeFile(imgFile.getAbsolutePath());
-                             if (myBitmap != null) {
-
-
-                            holder.item_image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
-                          }
-                             else {
-                                 InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
-                                 Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
-                                 holder.item_image.setImageBitmap(bitmap);
-
+                             if (myBitmap != null)
+                             {
+                               holder.item_image.setImageBitmap(BitmapFactory.decodeFile(imgFile.getAbsolutePath()));
                              }
-
+                             else{
+//                                 InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+//                                 Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+//                                 holder.item_image.setImageBitmap(bitmap);
+//                                 Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(),R.raw.recipemaker);
+//                                 holder.item_image.setImageBitmap(bitmap);
+                                 }
 
                         } else {
-                            InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
-                            Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
-                            holder.item_image.setImageBitmap(bitmap);
+                                // InputStream imageIS = context.getResources().openRawResource(R.raw.recipemaker);
+                                 //Bitmap bitmap = BitmapFactory.decodeStream(imageIS);
+//                                Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(),R.raw.recipemaker);
+//                                holder.item_image.setImageBitmap(bitmap);
+                         //   image.setImageBitmap(bitmap);
 
-                        }
+                               }
+                    }else{
+//                        Item item1 = Item.getItem(context, "WHERE item_code = '" + resultp.get_item_code() + "'", database, db);
+//                        Item item2 = Item.getItem(context, "WHERE item_code = '" + subString + "'", database, db);
+//
+//                        Item_Group item_group = Item_Group.getItem_Group(context, database, db, "WHERE item_group_code='" + item1.get_item_group_code() + "'AND is_active=1 COLLATE NOCASE"  );
+//                        Item_Group image_group = Item_Group.getItem_Group(context, database, db, "WHERE item_group_code='" + item2.get_item_group_code() + "'AND is_active=1 COLLATE NOCASE"  );
+
+
+//                        if(item_group.get_item_group_name().equals(image_group.get_item_group_name()))
+//                        {
+                        Bitmap bitmap=BitmapFactory.decodeResource(context.getResources(),R.raw.recipemaker);
+                        holder.item_image.setImageBitmap(bitmap);
+              //          }
                     }
                 }
-            }
+            }else
+                {
+
+                        Bitmap bitmap = BitmapFactory.decodeResource(context.getResources(), R.raw.recipemaker);
+                        holder.item_image.setImageBitmap(bitmap);
+
+                }
 
 /*if(nameList.size()>0) {
     for (int i = 0; i < nameList.size(); i++) {

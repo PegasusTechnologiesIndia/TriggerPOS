@@ -687,7 +687,10 @@ String itemgroup_value;
                                         });
 
 
-                                    }
+                                    }else
+                                        {
+                                            pDialog.dismiss();
+                                        }
                                 } catch (final Exception e) {
                                     pDialog.dismiss();
                                     runOnUiThread(new Runnable() {
@@ -2178,16 +2181,49 @@ pDialog.dismiss();
             ListSampleItem listSampleItem = new ListSampleItem("item_code", "item_group_name", "item_name", "description", "sku", "barcode", "unit_name", "hsn_sac_code", "is_inclusive_tax", "cost_price",  "sales_price_with_tax", "tax1", "tax2","categoryIp");
             list_sampleitem.add((listSampleItem));
 
-            listSampleItem = new ListSampleItem("1001", "Juice", "Applie Juice", "عصير تفاح", "sku", "1001", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
-            list_sampleitem.add((listSampleItem));
-            listSampleItem = new ListSampleItem("1002", "Juice", "Mango Juice", "description", "sku", "1002", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
-            list_sampleitem.add((listSampleItem));
-            listSampleItem = new ListSampleItem("1003", "Shake", "Kitkat Shake", "عصير تفاح", "sku", "1003", "PCS", "hsncode", "0", "50", "70", "0", "0","192.168.2.200:9100");
-            list_sampleitem.add((listSampleItem));
-            listSampleItem = new ListSampleItem("1004", "Shake", "Choclate Shake", "description", "sku", "1004", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
-            list_sampleitem.add((listSampleItem));
-            listSampleItem = new ListSampleItem("1005", "Shake", "Applie Shake", "description", "sku", "1005", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
-            list_sampleitem.add((listSampleItem));
+//            listSampleItem = new ListSampleItem("1001", "Juice", "Applie Juice", "عصير تفاح", "sku", "1001", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
+//            list_sampleitem.add((listSampleItem));
+//            listSampleItem = new ListSampleItem("1002", "Juice", "Mango Juice", "description", "sku", "1002", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
+//            list_sampleitem.add((listSampleItem));
+//            listSampleItem = new ListSampleItem("1003", "Shake", "Kitkat Shake", "عصير تفاح", "sku", "1003", "PCS", "hsncode", "0", "50", "70", "0", "0","192.168.2.200:9100");
+//            list_sampleitem.add((listSampleItem));
+//            listSampleItem = new ListSampleItem("1004", "Shake", "Choclate Shake", "description", "sku", "1004", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
+//            list_sampleitem.add((listSampleItem));
+//            listSampleItem = new ListSampleItem("1005", "Shake", "Applie Shake", "description", "sku", "1005", "PCS", "hsncode", "0", "50",  "70", "0", "0","192.168.2.200:9100");
+//            list_sampleitem.add((listSampleItem));
+
+            Database db = new Database(ItemListActivity.this);
+            SQLiteDatabase database = db.getReadableDatabase();
+            String q="Select it.item_code,itgroup.item_group_name,it.item_name,it.description,it.sku,barcode,it.hsn_sac_code,it.is_inclusive_tax FROM item it  LEFT JOIN  item_group itgroup ON itgroup.item_group_code=it.item_group_code";
+            Cursor cursor=database.rawQuery(q,null);
+            String item_code,item_group_name, item_name,description, sku,barcode, unit_name, hsn_sac_code, is_inclusive_tax,cost_price,sales_price_with_tax,tax1,tax2,categoryIp;
+
+            if((cursor != null) && (cursor.getCount() > 0))
+                while (cursor.moveToNext())
+                {
+                    item_code=cursor.getString(0);
+                    item_group_name=cursor.getString(1);
+                    item_name=cursor.getString(2);
+                    description=cursor.getString(3);
+                    sku=cursor.getString(4);
+                    barcode=cursor.getString(5);
+                    unit_name=" ";
+                    hsn_sac_code=cursor.getString(6);
+
+                    if(cursor.getInt(7)>0)
+                        is_inclusive_tax="true";
+                    else
+                        is_inclusive_tax="false";
+                    cost_price=" ";
+                    sales_price_with_tax=" ";
+                    tax1=" ";
+                    tax2=" ";
+                    categoryIp=" ";
+
+                    listSampleItem = new ListSampleItem(item_code,item_group_name, item_name,description, sku,barcode, unit_name, hsn_sac_code, is_inclusive_tax,cost_price,sales_price_with_tax,tax1,tax2,categoryIp);
+                    list_sampleitem.add((listSampleItem));
+
+                }
 
 
             int RowCount = 0;

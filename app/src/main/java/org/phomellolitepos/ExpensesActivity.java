@@ -13,6 +13,7 @@ import android.text.InputType;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.EditText;
@@ -104,7 +105,11 @@ public class ExpensesActivity extends AppCompatActivity {
 
         edt_layout_expenses = (TextInputLayout) findViewById(R.id.edt_layout_expenses);
         edt_layout_expense_name = (TextInputLayout) findViewById(R.id.edt_layout_expense_name);
+
         edt_expense_name = (EditText) findViewById(R.id.edt_expense_name);
+        edt_expense_name.setInputType(InputType.TYPE_CLASS_TEXT);
+        edt_expense_name.setImeOptions(EditorInfo.IME_ACTION_GO);
+
         edt_expenses = (EditText) findViewById(R.id.edt_expenses);
         btn_save = (Button) findViewById(R.id.btn_save);
         btn_delete = (Button) findViewById(R.id.btn_delete);

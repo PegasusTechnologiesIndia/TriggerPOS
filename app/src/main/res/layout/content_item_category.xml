@@ -58,16 +58,15 @@
 
     <com.google.android.material.textfield.TextInputLayout
         android:id="@+id/edt_layout_item_ct_name"
-        android:layout_below="@+id/edt_layout_item_ct_code"
         style="@style/AppTheme.TextInputLayout"
-        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout"
-        >
+        android:layout_below="@+id/edt_layout_item_ct_code"
+        app:hintTextAppearance="@style/TextAppearence.App.TextInputLayout">
 
         <EditText
             android:id="@+id/edt_item_ct_name"
-            android:hint="@string/CategoryName"
             style="@style/AppTheme.EditText"
-            android:selectAllOnFocus="true"/>
+            android:hint="@string/CategoryName"
+            android:selectAllOnFocus="true" />
 
     </com.google.android.material.textfield.TextInputLayout>
     <com.google.android.material.textfield.TextInputLayout
@@ -102,13 +101,12 @@
 
     <Button
         android:id="@+id/btn_delete"
-        android:text="@string/delete"
+        style="@style/AppTheme.HorizontalButton"
         android:layout_marginLeft="10dp"
         android:layout_marginRight="10dp"
         android:background="#403c3c"
-        style="@style/AppTheme.HorizontalButton"
-        android:visibility="gone"
-         />
+        android:text="@string/delete"
+        android:visibility="gone" />
 
 </LinearLayout>
 </RelativeLayout>

@@ -7,6 +7,10 @@ import android.database.sqlite.SQLiteDatabase;
 import android.os.Bundle;
 import android.os.Handler;
 import androidx.fragment.app.Fragment;
+import androidx.recyclerview.widget.DefaultItemAnimator;
+import androidx.recyclerview.widget.DividerItemDecoration;
+import androidx.recyclerview.widget.LinearLayoutManager;
+import androidx.recyclerview.widget.RecyclerView;
 
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +23,7 @@ import android.widget.Toast;
 import java.util.ArrayList;
 
 import org.phomellolitepos.Adapter.MainItemListAdapter;
+import org.phomellolitepos.Adapter.MainItemRecyclerAdapter;
 import org.phomellolitepos.R;
 import org.phomellolitepos.Util.Globals;
 import org.phomellolitepos.database.Database;
@@ -29,8 +34,8 @@ import org.phomellolitepos.database.Settings;
 public class ItemFragment extends Fragment {
     ArrayList<Item> arrayList;
     View v;
-    private ListView category_list;
-    MainItemListAdapter mainItemListAdapter;
+    private RecyclerView category_list;
+    MainItemRecyclerAdapter mainItemRecyclerAdapter;
     Activity activity;
     Context context;
     Button btn_Item_Price, btn_Qty;
@@ -59,17 +64,17 @@ public class ItemFragment extends Fragment {
         Globals.item_category_code = itemGrpCode;
         strFilter = bundle.getString("filter");
         operation = bundle.getString("operation");
-try {
-    init_View();
-}
-catch(Exception e){
-    System.out.println(e.getMessage());
-}
+        try {
+            init_View();
+        }
+        catch(Exception e){
+            System.out.println(e.getMessage());
+        }
         return v;
     }
 
     public void init_View() {
-        category_list = (ListView) v.findViewById(R.id.main_list);
+        category_list = (RecyclerView) v.findViewById(R.id.main_list);
         btn_Item_Price = (Button) v.findViewById(R.id.btn_Item_Price);
         btn_Qty = (Button) v.findViewById(R.id.btn_Qty);
         progressBar = (ProgressBar) v.findViewById(R.id.progressBar2);
@@ -90,10 +95,17 @@ catch(Exception e){
             }
 
             if (arrayList.size() > 0) {
-                mainItemListAdapter = new MainItemListAdapter(activity, arrayList, category_list,progressBar);
-                category_list.setAdapter(mainItemListAdapter);
-                category_list.setTextFilterEnabled(true);
-                mainItemListAdapter.notifyDataSetChanged();
+                mainItemRecyclerAdapter = new MainItemRecyclerAdapter(activity, arrayList);
+                category_list.setHasFixedSize(true);
+                //txttitle.setVisibility(View.GONE);
+                category_list.setVisibility(View.VISIBLE);
+                //contact_title.setVisibility(View.GONE);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                category_list.setLayoutManager(mLayoutManager);
+
+                category_list.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+                category_list.setItemAnimator(new DefaultItemAnimator());
+                category_list.setAdapter(mainItemRecyclerAdapter);
             } else {
                 progressBar.setVisibility(View.GONE);
             }
@@ -108,10 +120,17 @@ catch(Exception e){
             }
 
             if (arrayList.size() > 0) {
-                mainItemListAdapter = new MainItemListAdapter(activity, arrayList, category_list,progressBar);
-                category_list.setAdapter(mainItemListAdapter);
-                category_list.setTextFilterEnabled(true);
-                mainItemListAdapter.notifyDataSetChanged();
+                mainItemRecyclerAdapter = new MainItemRecyclerAdapter(activity, arrayList);
+                category_list.setHasFixedSize(true);
+                // txttitle.setVisibility(View.GONE);
+                category_list.setVisibility(View.VISIBLE);
+                //contact_title.setVisibility(View.GONE);
+                RecyclerView.LayoutManager mLayoutManager = new LinearLayoutManager(getActivity());
+                category_list.setLayoutManager(mLayoutManager);
+
+                category_list.addItemDecoration(new DividerItemDecoration(getActivity(), LinearLayoutManager.VERTICAL));
+                category_list.setItemAnimator(new DefaultItemAnimator());
+                category_list.setAdapter(mainItemRecyclerAdapter);
             } else {
                 progressBar.setVisibility(View.GONE);
             }

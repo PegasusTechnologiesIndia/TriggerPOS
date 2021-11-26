@@ -12,10 +12,13 @@ import com.google.android.material.textfield.TextInputLayout;
 import androidx.appcompat.app.AppCompatActivity;
 import android.os.Bundle;
 import androidx.appcompat.widget.Toolbar;
+
+import android.text.InputType;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.inputmethod.EditorInfo;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -59,6 +62,7 @@ public class AddPaymentActivity extends AppCompatActivity {
         setSupportActionBar(toolbar);
         Thread.setDefaultUncaughtExceptionHandler(new ExceptionHandler(this));
         SharedPreferences pref = getApplicationContext().getSharedPreferences("MyPref", Context.MODE_MULTI_PROCESS); // 0 - for private mode
+        getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 
         int id = pref.getInt("id", 0);
         if (id == 0) {
@@ -113,7 +117,11 @@ public class AddPaymentActivity extends AppCompatActivity {
         edt_layout_pt_name = (TextInputLayout) findViewById(R.id.edt_layout_pt_name);
         edt_layout_pt_code = (TextInputLayout) findViewById(R.id.edt_layout_pt_code);
         edt_pt_name = (EditText) findViewById(R.id.edt_pt_name);
+        edt_pt_name.setImeOptions(EditorInfo.IME_ACTION_DONE);
+        edt_pt_name.setInputType(InputType.TYPE_CLASS_TEXT);
+
         edt_pt_code = (EditText) findViewById(R.id.edt_pt_code);
+        edt_pt_code.setEnabled(false);
 
         btn_save = (Button) findViewById(R.id.btn_save);
         btn_delete = (Button) findViewById(R.id.btn_delete);

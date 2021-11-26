@@ -51,7 +51,7 @@
                 style="@style/AppTheme.NoListfoundText"
                 android:layout_gravity="center_horizontal"/>
 
-            <ListView
+            <androidx.recyclerview.widget.RecyclerView
                 android:id="@+id/retail_list"
                 android:layout_width="match_parent"
                 android:layout_height="match_parent"
@@ -61,7 +61,7 @@
                 android:fastScrollEnabled="true"
                 android:transcriptMode="alwaysScroll"
                 android:layout_marginBottom="10dp">
-            </ListView>
+            </androidx.recyclerview.widget.RecyclerView>
 
         </LinearLayout>
 

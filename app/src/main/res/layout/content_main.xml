@@ -36,17 +36,18 @@
         android:layout_marginTop="5sp"
         android:layout_marginRight="30sp"
         android:background="@drawable/spinner_border" />
-<TextView
-    android:id="@+id/txt_subcategory"
-    android:layout_width="match_parent"
-    android:layout_height="wrap_content"
-    android:text=""
-    android:gravity="center"
-    android:textColor="@color/black"
-    android:textSize="16sp"
-    android:textStyle="bold|italic"
-    android:layout_centerHorizontal="true"
-    android:layout_below="@+id/spinner_item_category"></TextView>
+
+    <TextView
+        android:id="@+id/txt_subcategory"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/spinner_item_category"
+        android:layout_centerHorizontal="true"
+        android:gravity="center"
+        android:text=""
+        android:textColor="@color/black"
+        android:textSize="16sp"
+        android:textStyle="bold|italic"></TextView>
 
     <com.google.android.material.bottomnavigation.BottomNavigationView
         android:id="@+id/top_navigation"
